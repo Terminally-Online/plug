@@ -9,104 +9,28 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type AaveOptionsProvider struct{}
-
-func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
-	switch action {
-	case actions.ActionDeposit:
-		collateralOptions, err := GetCollateralAssetOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: collateralOptions},
-		}, nil
-	case actions.ActionBorrow:
-		borrowOptions, err := GetBorrowAssetOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: borrowOptions},
-		}, nil
-	case actions.ActionRepay:
-		borrowOptions, err := GetBorrowAssetOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: borrowOptions},
-		}, nil
-	case actions.ActionWithdraw:
-		collateralOptions, err := GetCollateralAssetOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: collateralOptions},
-		}, nil
-	case actions.ConstraintHealthFactor:
-		riskOptions := []actions.Option{
-			{
-				Name:  "Liquidatable",
-				Label: "liquidatable",
-				Value: "1.0",
-				Info: actions.OptionInfo{ 
-					Value: "1.0",
-				},
-			}, {
-				Name: "Risky",
-				Label: "risky",
-				Value: "1.25",
-				Info: actions.OptionInfo{ 
-					Value: "1.25",
-				},
-			}, {
-				Name: "Safe",
-				Label: "safe",
-				Value: "2.0",
-				Info: actions.OptionInfo{ 
-					Value: "2.0",
-				},
-			},
-		}
-		return map[int]actions.Options{
-			0: {Simple: actions.BaseThresholdFields},
-			1: {Simple: riskOptions},
-		}, nil
-	case actions.ConstraintAPY:
-		collateralOptions, err := GetCollateralAssetOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		borrowOptions, err := GetBorrowAssetOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		aggregatedOptions := func() []actions.Option {
-			seen := make(map[string]bool)
-			options := make([]actions.Option, 0)
-			for _, opt := range append(collateralOptions, borrowOptions...) {
-				if !seen[opt.Value] {
-					seen[opt.Value] = true
-					opt.Info = actions.OptionInfo{}
-					options = append(options, opt)
-				}
-			}
-			return options
-		}()
-
-		return map[int]actions.Options{
-			0: {Simple: actions.BaseLendActionTypeFields},
-			1: {Simple: aggregatedOptions},
-			2: {Simple: actions.BaseThresholdFields},
-		}, nil
-	default:
-		return nil, fmt.Errorf("unsupported action for options: %s", action)
+var (
+	riskOptions = []actions.Option{
+		{
+			Name:  "Liquidatable",
+			Label: "liquidatable",
+			Value: "1.0",
+			Info:  &actions.OptionInfo{Value: "1.0"},
+		}, {
+			Name:  "Risky",
+			Label: "risky",
+			Value: "1.25",
+			Info:  &actions.OptionInfo{Value: "1.25"},
+		}, {
+			Name:  "Safe",
+			Label: "safe",
+			Value: "2.0",
+			Info:  &actions.OptionInfo{Value: "2.0"},
+		},
 	}
-}
+)
 
-func GetCollateralAssetOptions(chainId uint64) ([]actions.Option, error) {
+func GetCollateralOptions(chainId uint64) ([]actions.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
@@ -143,21 +67,28 @@ func GetCollateralAssetOptions(chainId uint64) ([]actions.Option, error) {
 			rate = rateFloat.Text('f', 2) + "%"
 		}
 		options = append(options, actions.Option{
-			Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String()))},
 			Label: reserve.Symbol,
-			Name:  reserve.Name,
-			Info: actions.OptionInfo{
-				Label: "Rate",
-				Value: rate,
-			},
 			Value: fmt.Sprintf("%s:%d", reserve.UnderlyingAsset.String(), uint8(reserve.Decimals.Uint64())),
+			Name:  reserve.Name,
+			Info:  &actions.OptionInfo{Label: "Rate", Value: rate},
+			Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String()))},
 		})
 	}
 
 	return options, nil
 }
 
-func GetBorrowAssetOptions(chainId uint64) ([]actions.Option, error) {
+func CollateralOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	collateralOptions, err := GetCollateralOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: collateralOptions},
+	}, nil
+}
+
+func GetBorrowOptions(chainId uint64) ([]actions.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
@@ -182,28 +113,59 @@ func GetBorrowAssetOptions(chainId uint64) ([]actions.Option, error) {
 		}
 
 		options = append(options, actions.Option{
-			Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String()))},
 			Label: reserve.Symbol,
-			Name:  reserve.Name,
-			Info: actions.OptionInfo{
-				Label: "Rate",
-				Value: rate,
-			},
 			Value: fmt.Sprintf("%s:%d", reserve.UnderlyingAsset.String(), uint8(reserve.Decimals.Uint64())),
+			Name:  reserve.Name,
+			Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String()))},
+			Info:  &actions.OptionInfo{Label: "Rate", Value: rate},
 		})
 	}
 
 	return options, nil
 }
 
-func GetOptions(chainId uint64) ([]actions.Option, []actions.Option, error) {
-	collateralOptions, err := GetCollateralAssetOptions(chainId)
+func BorrowOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	borrowOptions, err := GetBorrowOptions(chainId)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	debtOptions, err := GetBorrowAssetOptions(chainId)
+	return map[int]actions.Options{
+		1: {Simple: borrowOptions},
+	}, nil
+}
+
+func HealthFactorOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	return map[int]actions.Options{
+		0: {Simple: actions.BaseThresholdFields},
+		1: {Simple: riskOptions},
+	}, nil
+}
+
+func APYOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	collateralOptions, err := GetCollateralOptions(chainId)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return collateralOptions, debtOptions, nil
+	borrowOptions, err := GetBorrowOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	aggregatedOptions := func() []actions.Option {
+		seen := make(map[string]bool)
+		options := make([]actions.Option, 0)
+		for _, opt := range append(collateralOptions, borrowOptions...) {
+			if !seen[opt.Value] {
+				seen[opt.Value] = true
+				opt.Info = nil
+				options = append(options, opt)
+			}
+		}
+		return options
+	}()
+
+	return map[int]actions.Options{
+		0: {Simple: actions.BaseLendActionTypeFields},
+		1: {Simple: aggregatedOptions},
+		2: {Simple: actions.BaseThresholdFields},
+	}, nil
 }

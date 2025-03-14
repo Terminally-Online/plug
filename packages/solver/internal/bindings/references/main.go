@@ -23,7 +23,7 @@ var (
 	Multicall = map[string]string{
 		"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 	}
-	// NOTE: We are not actively verifying our contracts when they are deployed 
+	// NOTE: We are not actively verifying our contracts when they are deployed
 	//       because we are still in development so to set the ABI you just toss it
 	//       into the abi directory above.
 	Plug = map[string]string{
@@ -50,10 +50,6 @@ var (
 				"pool":                     "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 				"ui_pool_data_provider":    "0x3F78BBD206e4D3c504Eb854232EdA7e47E9Fd8FC",
 				"ui_pool_address_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
-			},
-			"ens": {
-				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
-				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
 			},
 			"euler": {
 				"evault_implementation":     "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",

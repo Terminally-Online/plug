@@ -364,3 +364,33 @@ func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerPara
 
 	return nil, nil
 }
+
+func HandleBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Token   string `json:"token"`
+		Address string `json:"address"`
+	}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
+	}
+
+	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
+	if err != nil {
+		return nil, err
+	}
+
+	balanceCalldata, err := erc20Abi.Pack("balanceOf", common.HexToAddress(inputs.Address))
+	if err != nil {
+		return nil, err
+	}
+
+	return []signature.Plug{{
+		To:   *token,
+		Data: balanceCalldata,
+	}}, nil
+}

@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Deposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
@@ -69,7 +69,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}}, nil
 }
 
-func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Borrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
@@ -108,10 +108,10 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 	}}, nil
 }
 
-func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Repay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  
-		Amount string `json:"amount"` 
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
@@ -162,10 +162,10 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Withdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  
-		Amount string `json:"amount"` 
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -200,7 +200,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	}}, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
@@ -237,7 +237,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func APY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Action    int    `json:"action"`
 		Token     string `json:"token"`

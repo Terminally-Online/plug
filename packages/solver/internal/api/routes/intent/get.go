@@ -68,10 +68,8 @@ func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
 		for protocol, handler := range s.Protocols {
-			protocolChains, err := handler.GetChains(chainId)
-			if err != nil {
-				continue
-			}
+			protocolChains := handler.Chains
+			// TODO: Only show matching chain ids. I removed this when refactoring.
 			chains := make([]*references.Network, len(protocolChains))
 			for i, chain := range protocolChains {
 				chainCopy := *chain
@@ -81,15 +79,15 @@ func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 
 			protocolSchema := actions.ProtocolSchema{
 				Metadata: actions.ProtocolMetadata{
-					Icon:   handler.GetIcon(),
-					Tags:   handler.GetTags(),
+					Icon:   handler.Icon,
+					Tags:   handler.Tags,
 					Chains: chains,
 				},
 				Schema: make(map[string]actions.Schema),
 			}
 
-			schemas := handler.GetSchemas()
-			for _, supportedAction := range handler.GetActions() {
+			schemas := handler.Schemas
+			for supportedAction, _ := range handler.Actions {
 				if chainSchema, ok := schemas[supportedAction]; ok {
 					protocolSchema.Schema[supportedAction] = actions.Schema{
 						Type:     chainSchema.Schema.Type,
@@ -119,31 +117,25 @@ func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 		return
 	}
 
-	protocolChains, err := handler.GetChains(chainId)
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	chains := make([]*references.Network, len(protocolChains))
-	for _, chain := range protocolChains {
+	chains := make([]*references.Network, len(handler.Chains))
+	for i, chain := range handler.Chains {
 		chainCopy := *chain
 		chainCopy.References = nil
-		chains = append(chains, &chainCopy)
+		chains[i] = &chainCopy
 	}
 
 	if action == "" {
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
-				Icon:   handler.GetIcon(),
-				Tags:   handler.GetTags(),
+				Icon:   handler.Icon,
+				Tags:   handler.Tags,
 				Chains: chains,
 			},
 			Schema: make(map[string]actions.Schema),
 		}
 
-		schemas := handler.GetSchemas()
-		for _, supportedAction := range handler.GetActions() {
+		schemas := handler.Schemas
+		for supportedAction, _ := range handler.Actions {
 			if chainSchema, ok := schemas[supportedAction]; ok {
 				protocolSchema.Schema[supportedAction] = actions.Schema{
 					Type:     chainSchema.Schema.Type,
@@ -171,8 +163,8 @@ func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 
 	protocolSchema := actions.ProtocolSchema{
 		Metadata: actions.ProtocolMetadata{
-			Icon:   handler.GetIcon(),
-			Tags:   handler.GetTags(),
+			Icon:   handler.Icon,
+			Tags:   handler.Tags,
 			Chains: chains,
 		},
 		Schema: map[string]actions.Schema{

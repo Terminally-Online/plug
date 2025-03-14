@@ -18,57 +18,58 @@ var (
 
 type PlugOptionsProvider struct{}
 
-func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]actions.Options, error) {
-	switch action {
-	case actions.ActionTransfer:
-		recipientIndex := 2
-		recipientOptions, err := GetAddressOptions(chainId, from, search[recipientIndex])
-		if err != nil {
-			return nil, err
-		}
-		transferOptions, err := GetTransferOptions(chainId, from)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1:              {Simple: transferOptions},
-			recipientIndex: {Simple: recipientOptions},
-		}, nil
-	case actions.ActionSwap:
-		transferOptions, err := GetTransferOptions(chainId, from)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: transferOptions},
-			2: {Simple: transferOptions},
-		}, nil
-	case actions.ConstraintPrice:
-		transferOptions, err := GetTransferOptions(chainId, from)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: transferOptions},
-			1: {Simple: actions.BaseThresholdFields},
-		}, nil
-	case ReadBalance:
-		addressOptions, err := GetAddressOptions(chainId, from, search[1])
-		if err != nil {
-			return nil, err
-		}
-		transferOptions, err := GetTransferOptions(chainId, from)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: transferOptions},
-			1: {Simple: addressOptions},
-			2: {Simple: actions.BaseThresholdFields},
-		}, nil
-	default:
-		return nil, nil
+func TransferOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+	recipientIndex := 2
+	recipientOptions, err := GetAddressOptions(chainId, from, search[recipientIndex])
+	if err != nil {
+		return nil, err
 	}
+	transferOptions, err := GetTransferOptions(chainId, from)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1:              {Simple: transferOptions},
+		recipientIndex: {Simple: recipientOptions},
+	}, nil
+}
+
+func SwapOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+	transferOptions, err := GetTransferOptions(chainId, from)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: transferOptions},
+		2: {Simple: transferOptions},
+	}, nil
+}
+
+func PriceOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+	transferOptions, err := GetTransferOptions(chainId, from)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		0: {Simple: transferOptions},
+		1: {Simple: actions.BaseThresholdFields},
+	}, nil
+}
+
+func BalanceOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+	addressOptions, err := GetAddressOptions(chainId, from, search[1])
+	if err != nil {
+		return nil, err
+	}
+	transferOptions, err := GetTransferOptions(chainId, from)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		0: {Simple: transferOptions},
+		1: {Simple: addressOptions},
+		2: {Simple: actions.BaseThresholdFields},
+	}, nil
 }
 
 func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, error) {
@@ -100,8 +101,8 @@ func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, 
 			Label: strings.ToUpper(position.Attributes.FungibleInfo.Symbol),
 			Name:  position.Attributes.FungibleInfo.Name,
 			Value: option,
-			Icon:  actions.OptionIcon{Default: defaultIcon, Secondary: secondaryIcon},
-			Info:  actions.OptionInfo{Label: quantity, Value: value},
+			Icon:  &actions.OptionIcon{Default: defaultIcon, Secondary: secondaryIcon},
+			Info:  &actions.OptionInfo{Label: quantity, Value: value},
 		})
 	}
 
@@ -173,7 +174,7 @@ func GetAddressOptions(chainId uint64, from common.Address, search string) ([]ac
 				Label: transformed,
 				Name:  utils.FormatAddress(address),
 				Value: address.Hex(),
-				Icon: actions.OptionIcon{
+				Icon: &actions.OptionIcon{
 					Default: fmt.Sprintf("https://cdn.onplug.io/ens/%s", address.Hex()),
 				},
 			})

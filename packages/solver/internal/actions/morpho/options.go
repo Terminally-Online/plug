@@ -7,99 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type MorphoOptionsProvider struct{}
-
-func (p *MorphoOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
-
-	switch action {
-	case ActionEarn:
-		supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: supplyTokenOptions},
-			2: {Complex: supplyTokenToVaultOptions},
-		}, nil
-	case ActionSupplyCollateral:
-		collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-
-		return map[int]actions.Options{
-			1: {Simple: collateralOptions},
-			2: {Complex: collateralToMarketOptions},
-		}, nil
-	case ActionWithdraw:
-		supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: supplyAndCollateralTokenOptions},
-			2: {Complex: supplyAndCollateralTokenToMarketOptions},
-		}, nil
-	case ActionWithdrawAll:
-		supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: supplyAndCollateralTokenOptions},
-			1: {Complex: supplyAndCollateralTokenToMarketOptions},
-		}, nil
-	case ActionBorrow:
-		borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: borrowOptions},
-			2: {Complex: borrowToMarketOptions},
-		}, nil
-	case ActionRepay:
-		borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: borrowOptions},
-			2: {Complex: borrowToMarketOptions},
-		}, nil
-	case ActionRepayAll:
-		borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: borrowOptions},
-			1: {Complex: borrowToMarketOptions},
-		}, nil
-	case actions.ConstraintHealthFactor:
-		marketOptions, _, err := GetMarketAndVaultOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: marketOptions},
-			1: {Simple: actions.BaseThresholdFields},
-		}, nil
-	case ConstraintAPY:
-		_, marketAndVaultOptions, err := GetMarketAndVaultOptions(chainId)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: actions.BaseLendActionTypeFields},
-			1: {Simple: marketAndVaultOptions},
-			2: {Simple: actions.BaseThresholdFields},
-		}, nil
-	default:
-		return nil, nil
-	}
-}
-
 func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
 	vaults, err := GetVaults(chainId)
 	if err != nil {
@@ -117,7 +24,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
 				Value: assetAddress,
-				Icon:  actions.OptionIcon{Default: vault.Asset.LogoURI},
+				Icon:  &actions.OptionIcon{Default: vault.Asset.LogoURI},
 			})
 			seenToken[assetAddress] = true
 		}
@@ -126,8 +33,8 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: assetAddress,
-			Icon:  actions.OptionIcon{Default: vault.Metadata.Image},
-			Info: actions.OptionInfo{
+			Icon:  &actions.OptionIcon{Default: vault.Metadata.Image},
+			Info: &actions.OptionInfo{
 				Label: "Net APY",
 				Value: fmt.Sprintf("%.2f%%", vault.DailyApys.NetApy*100),
 			},
@@ -135,6 +42,17 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 	}
 
 	return tokenOptions, tokenToVaultOptions, nil
+}
+
+func SupplyTokenToVaultOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: supplyTokenOptions},
+		2: {Complex: supplyTokenToVaultOptions},
+	}, nil
 }
 
 func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Option, error) {
@@ -154,7 +72,7 @@ func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Optio
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
-			Icon:  actions.OptionIcon{Default: market.Metadata.Icon},
+			Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
 		})
 	}
 
@@ -165,11 +83,34 @@ func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Optio
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
-			Icon:  actions.OptionIcon{Default: vault.Metadata.Image},
+			Icon:  &actions.OptionIcon{Default: vault.Metadata.Image},
 		})
 	}
 
 	return marketOptions, marketAndVaultOptions, nil
+}
+
+func HealthFactorOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	marketOptions, _, err := GetMarketAndVaultOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		0: {Simple: marketOptions},
+		1: {Simple: actions.BaseThresholdFields},
+	}, nil
+}
+
+func APYOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	_, marketAndVaultOptions, err := GetMarketAndVaultOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		0: {Simple: actions.BaseLendActionTypeFields},
+		1: {Simple: marketAndVaultOptions},
+		2: {Simple: actions.BaseThresholdFields},
+	}, nil
 }
 
 func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
@@ -189,7 +130,7 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
 				Value: collateralAddress,
-				Icon:  actions.OptionIcon{Default: market.CollateralAsset.LogoURI},
+				Icon:  &actions.OptionIcon{Default: market.CollateralAsset.LogoURI},
 			})
 			seenCollateral[collateralAddress] = true
 		}
@@ -200,16 +141,36 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
-				Icon:  actions.OptionIcon{Default: market.Metadata.Icon},
-				Info: actions.OptionInfo{
-					Label: "Supply APY",
-					Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
-				},
+				Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
+				Info:  &actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
 			},
 		)
 	}
 
 	return tokenOptions, tokenToMarketOptions, nil
+}
+
+func CollateralTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[int]actions.Options{
+		1: {Simple: collateralOptions},
+		2: {Complex: collateralToMarketOptions},
+	}, nil
+}
+
+func SupplyAndCollateralTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: supplyAndCollateralTokenOptions},
+		2: {Complex: supplyAndCollateralTokenToMarketOptions},
+	}, nil
 }
 
 func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
@@ -229,7 +190,7 @@ func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string
 				Label: market.LoanAsset.Symbol,
 				Name:  market.LoanAsset.Name,
 				Value: loanAssetAddress,
-				Icon:  actions.OptionIcon{Default: market.LoanAsset.LogoURI},
+				Icon:  &actions.OptionIcon{Default: market.LoanAsset.LogoURI},
 			})
 			seenLoanAssets[loanAssetAddress] = true
 		}
@@ -238,12 +199,23 @@ func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
-			Icon:  actions.OptionIcon{Default: market.Metadata.Icon},
-			Info:  actions.OptionInfo{Label: "Borrow APY", Value: fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100)},
+			Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
+			Info:  &actions.OptionInfo{Label: "Borrow APY", Value: fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100)},
 		})
 	}
 
 	return tokenOptions, tokenToMarketOptions, nil
+}
+
+func BorrowTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: borrowOptions},
+		2: {Complex: borrowToMarketOptions},
+	}, nil
 }
 
 func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
@@ -268,7 +240,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
 				Value: collateralAssetAddress,
-				Icon:  actions.OptionIcon{Default: market.CollateralAsset.LogoURI},
+				Icon:  &actions.OptionIcon{Default: market.CollateralAsset.LogoURI},
 			})
 			seenToken[collateralAssetAddress] = true
 		}
@@ -279,8 +251,8 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
-				Icon:  actions.OptionIcon{Default: market.Metadata.Icon},
-				Info:  actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
+				Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
+				Info:  &actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
 			},
 		)
 	}
@@ -292,7 +264,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
 				Value: vaultAssetAddress,
-				Icon:  actions.OptionIcon{Default: vault.Asset.LogoURI},
+				Icon:  &actions.OptionIcon{Default: vault.Asset.LogoURI},
 			})
 			seenToken[vaultAssetAddress] = true
 		}
@@ -301,7 +273,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
-			Icon:  actions.OptionIcon{Default: vault.Metadata.Image},
+			Icon:  &actions.OptionIcon{Default: vault.Metadata.Image},
 		})
 	}
 

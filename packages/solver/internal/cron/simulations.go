@@ -24,7 +24,7 @@ func Simulations(s *solver.Solver) {
 		return
 	}
 
-	livePlugs := make(map[string][]*signature.LivePlugs, 0)
+	livePlugs := make(map[string]*signature.LivePlugs, 0)
 	for _, intent := range intents {
 		if intent.Locked {
 			solution, err := s.RebuildSolutionFromModels(&intent)

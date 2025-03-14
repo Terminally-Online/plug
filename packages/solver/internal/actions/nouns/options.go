@@ -9,25 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type NounsOptionsProvider struct{}
-
-func (p *NounsOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
-
-	switch action {
-	case HasTrait:
-		traitTypeOptions, traitOptions, err := GetTraitOptions()
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: traitTypeOptions},
-			1: {Complex: traitOptions},
-		}, nil
-	default:
-		return nil, nil // Most actions don't have options
-	}
-}
-
 func GetTraitTypeOptions() ([]actions.Option, error) {
 	fields := []string{"background", "body", "accessory", "head", "glasses"}
 
@@ -75,10 +56,21 @@ func GetTraitOptions() ([]actions.Option, map[string][]actions.Option, error) {
 				Name:  trait.Name,
 				Label: trait.Label,
 				Value: trait.Value,
-				Icon:  actions.OptionIcon{Default: trait.Icon},
+				Icon:  &actions.OptionIcon{Default: trait.Icon},
 			})
 		}
 	}
 
 	return traitTypes, traitOptions, nil
+}
+
+func HasTraitOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+	traitTypeOptions, traitOptions, err := GetTraitOptions()
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		0: {Simple: traitTypeOptions},
+		1: {Complex: traitOptions},
+	}, nil
 }

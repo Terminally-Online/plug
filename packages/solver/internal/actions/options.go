@@ -22,16 +22,16 @@ type OptionIcon struct {
 }
 
 type OptionInfo struct {
-	Label string `json:"label"`
-	Value string `json:"value"`
+	Label string `json:"label,omitempty"`
+	Value string `json:"value,omitempty"`
 }
 
 type Option struct {
-	Label string     `json:"label"`
-	Name  string     `json:"name"`
-	Value string     `json:"value"`
-	Icon  OptionIcon `json:"icon,omitempty"`
-	Info  OptionInfo `json:"info,omitempty"`
+	Label string      `json:"label"`
+	Value string      `json:"value"`
+	Name  string      `json:"name,omitempty"`
+	Icon  *OptionIcon `json:"icon,omitempty"`
+	Info  *OptionInfo `json:"info,omitempty"`
 }
 
 type Options struct {

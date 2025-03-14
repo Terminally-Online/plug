@@ -5,57 +5,41 @@ import (
 	"solver/internal/bindings/references"
 )
 
-var (
-	name = "Yearn V3"
-	icon = "https://cdn.onplug.io/protocols/yearn.png"
-	tags = []string{"yield", "defi"}
-
-	chains = []*references.Network{references.Mainnet, references.Base}
-	
-	schemas = map[string]actions.ActionDefinition{
-		actions.ActionDeposit: {
-			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}",
-			Handler:  HandleActionDeposit,
+func New() actions.Protocol {
+	return actions.New(
+		actions.Protocol{
+			Name:   "Yearn V3",
+			Icon:   "https://cdn.onplug.io/protocols/yearn.png",
+			Tags:   []string{"yield", "defi"},
+			Chains: []*references.Network{references.Mainnet, references.Base},
+			Actions: map[string]actions.ActionDefinition{
+				actions.ActionDeposit: {
+					Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}",
+					Handler:  HandleActionDeposit,
+					Options:  UnderlyingAssetToVaultOptions,
+				},
+				actions.ActionWithdraw: {
+					Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}",
+					Handler:  HandleActionWithdraw,
+					Options:  UnderlyingAssetToVaultOptions,
+				},
+				actions.ActionStake: {
+					Sentence: "Stake {0<amount:float>} {1<token:address:uint8>}",
+					Handler:  HandleActionStake,
+					Options:  AvailableStakingGaugeOptions,
+				},
+				actions.ActionRedeem: {
+					Sentence: "Redeem {0<amount:float>} {1<token:address:uint8>}",
+					Handler:  HandleActionRedeem,
+					Options:  AvailableStakingGaugeOptions,
+				},
+				actions.ConstraintAPY: {
+					Type:     actions.TypeConstraint,
+					Sentence: "APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:float>} %",
+					Handler:  HandleConstraintAPY,
+					Options:  APYOptions,
+				},
+			},
 		},
-		actions.ActionWithdraw: {
-			Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}",
-			Handler:  HandleActionWithdraw,
-		},
-		// actions.ActionWithdrawMax: {
-		// 	Sentence: "Withdraw max {0<token:address>} from {0=>1<vault:address>}",
-		// 	Handler:  HandleActionWithdrawMax,
-		// },
-		actions.ActionStake: {
-			Sentence: "Stake {0<amount:float>} {1<token:address:uint8>}",
-			Handler:  HandleActionStake,
-		},
-		actions.ActionStakeMax: {
-			Sentence: "Stake max {0<token:address:uint8>}",
-			Handler:  HandleActionStakeMax,
-		},
-		actions.ActionRedeem: {
-			Sentence: "Redeem {0<amount:float>} {1<token:address:uint8>}",
-			Handler:  HandleActionRedeem,
-		},
-		actions.ActionRedeemMax: {
-			Sentence: "Redeem max staking rewards for {0<token:address:uint8>}",
-			Handler:  HandleActionRedeemMax,
-		},
-		actions.ConstraintAPY: {
-			Type:     actions.TypeConstraint,
-			Sentence: "APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:float>} %",
-			Handler:  HandleConstraintAPY,
-		},
-	}
-)
-
-func New() actions.BaseProtocolHandler {
-	return actions.NewBaseHandler(
-		name,
-		icon,
-		tags,
-		chains,
-		schemas,
-		&YearnV3OptionsProvider{},
 	)
 }

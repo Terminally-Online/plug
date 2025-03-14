@@ -10,7 +10,6 @@ import (
 	"solver/internal/actions/assert"
 	"solver/internal/actions/boolean"
 	dbactions "solver/internal/actions/database"
-	"solver/internal/actions/ens"
 	"solver/internal/actions/euler"
 	"solver/internal/actions/math"
 	"solver/internal/actions/morpho"
@@ -29,18 +28,17 @@ import (
 )
 
 type Solver struct {
-	Protocols map[string]actions.BaseProtocolHandler
+	Protocols map[string]actions.Protocol
 	IsKilled  bool
 }
 
 func New() *Solver {
 	return &Solver{
-		Protocols: map[string]actions.BaseProtocolHandler{
+		Protocols: map[string]actions.Protocol{
 			actions.Plug:     plug.New(),
 			actions.Boolean:  boolean.New(),
 			actions.AaveV3:   aave_v3.New(),
 			actions.YearnV3:  yearn_v3.New(),
-			actions.ENS:      ens.New(),
 			actions.Nouns:    nouns.New(),
 			actions.Morpho:   morpho.New(),
 			actions.Euler:    euler.New(),
@@ -62,7 +60,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	}
 
 	handler, exists := s.Protocols[inputs.Protocol]
-	if !exists {
+	if !exists || handler.Actions[inputs.Action].Handler == nil {
 		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
 
@@ -72,7 +70,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		return nil, err
 	}
 
-	transactions, err := handler.GetTransaction(inputs.Action, rawInputs, params)
+	transactions, err := handler.Actions[inputs.Action].Handler(rawInputs, params)
 	if err != nil {
 		return nil, err
 	}
@@ -86,29 +84,13 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	return transactions, nil
 }
 
-func (s *Solver) GetPlugsArray(
-	head []signature.Plug,
-	inputs []byte,
-	chainId uint64,
-	from common.Address,
-) (plugs []signature.Plug, exclusive bool, error error) {
+func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uint64, from common.Address) (plugs []signature.Plug, error error) {
 	plugs, err := s.GetTransaction(inputs, chainId, from)
 	if err != nil {
-		return nil, false, err
+		return nil, err
 	}
 
-	// NOTE: Some plug actions have exclusive transactions that need to be run alone
-	//       before the rest of the Plug can run. For this, we will just break out
-	//       of the loop and execute any solo transactions that are needed for
-	//       the rest of the batch to run in sequence.
-	for _, plug := range plugs {
-		if plug.Exclusive {
-			plug.Exclusive = false
-			return []signature.Plug{plug}, true, nil
-		}
-	}
-
-	return append(head, plugs...), false, nil
+	return append(head, plugs...), nil
 }
 
 func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
@@ -125,7 +107,7 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 		}
 
 		var exclusive bool
-		plugs, exclusive, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
+		plugs, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
 		}
@@ -173,58 +155,30 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 }
 
 func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
-	var livePlug signature.LivePlugs
+	var livePlugs signature.LivePlugs
 	if err := database.DB.Where("intent_id = ?", intent.Id).
 		Order("created_at DESC").
-		First(&livePlug).Error; err != nil {
+		First(&livePlugs).Error; err != nil {
 		return nil, fmt.Errorf("failed to find live plug: %v", err)
 	}
 
 	var run models.Run
-	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlug.Id).
+	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlugs.Id).
 		Order("created_at DESC").
 		First(&run).Error; err != nil {
 		return nil, fmt.Errorf("failed to find run: %v", err)
 	}
 
 	var plugs []signature.Plug
-	if err := database.DB.Where("bundle_id = ?", livePlug.Id).
+	if err := database.DB.Where("bundle_id = ?", livePlugs.Id).
 		Find(&plugs).Error; err != nil {
 		return nil, fmt.Errorf("failed to find plugs: %v", err)
 	}
-	livePlug.Plugs.Plugs = plugs
-
-	// TODO: Move the next_simulation_at forward.
-
-	// var livePlugs *signature.LivePlugs
-	// if livePlug.Signature != nil {
-	// 	// Only reconstruct LivePlugs if this wasn't an EOA transaction
-	// 	signatureBytes := []byte(*livePlug.Signature)
-	//
-	// 	// Convert models.Plug to signature.Plug
-	// 	signaturePugs := make([]signature.Plug, len(plugs))
-	// 	for i, plug := range plugs {
-	// 		signaturePugs[i] = signature.Plug{
-	// 			To:        common.HexToAddress(plug.To),
-	// 			Value:     plug.Value.Int,
-	// 			Data:      []byte(plug.Data),
-	// 			Exclusive: plug.Exclusive,
-	// 		}
-	// 	}
-	//
-	// 	livePlugs = &signature.LivePlugs{
-	// 		Signature: signatureBytes,
-	// 		Plugs: signature.Plugs{
-	// 			Socket: common.HexToAddress(intent.From),
-	// 			Plugs:  signaturePugs,
-	// 		},
-	// 	}
-	// }
+	livePlugs.Plugs.Plugs = plugs
 
 	return &Solution{
-		// LivePlugs: livePlugs,
-		// Transactions: livePlug.Plugs,
-		Run: &run,
+		LivePlugs: &livePlugs,
+		Run:       &run,
 	}, nil
 }
 
