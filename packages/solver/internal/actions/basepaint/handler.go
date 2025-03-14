@@ -13,7 +13,7 @@ func New() actions.Protocol {
 		Chains: []*references.Network{references.Base},
 		Actions: map[string]actions.ActionDefinition{
 			actions.ActionMint: {
-				Sentence: "Mint {0<count:uint64>} copy of the latest canvas to {1<recipient:address>}",
+				Sentence: "Mint {0<count:uint64>} of the latest canvas to {1<recipient:address>}",
 				Handler:  MintLatest,
 				Options:  MintLatestOptions,
 			},
