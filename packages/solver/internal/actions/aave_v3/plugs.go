@@ -110,8 +110,8 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 
 func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  
-		Amount string `json:"amount"` 
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
@@ -164,8 +164,8 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  
-		Amount string `json:"amount"` 
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -239,7 +239,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Action    int    `json:"action"`
+		Direction int    `json:"direction"`
 		Token     string `json:"token"`
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
@@ -275,13 +275,13 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	}
 
 	var rate *big.Int
-	switch inputs.Action {
+	switch inputs.Direction {
 	case -1:
 		rate = targetReserve.VariableBorrowRate
 	case 1:
 		rate = targetReserve.LiquidityRate
 	default:
-		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Action)
+		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
 	}
 
 	switch inputs.Operator {

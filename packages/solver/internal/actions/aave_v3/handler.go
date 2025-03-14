@@ -36,7 +36,7 @@ var (
 		},
 		actions.ConstraintAPY: {
 			Type:     actions.TypeConstraint,
-			Sentence: "{0<action:int8>} APY of {1<token:address:uint8>} is {2<operator:int8>} than {3<threshold:float>}%",
+			Sentence: "{0<direction:int8>} APY of {1<token:address:uint8>} is {2<operator:int8>} than {3<threshold:float>}%",
 			Handler:  HandleConstraintAPY,
 		},
 	}
