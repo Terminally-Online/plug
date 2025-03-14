@@ -1,0 +1,125 @@
+[
+  {
+    "name": "Aave V3 Deposit",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "aave_v3",
+          "action": "deposit",
+          "amount": "0.001",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
+          "vault": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Aave V3 Borrow",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "aave_v3",
+          "action": "borrow",
+          "amount": "0.001",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Aave V3 Repay",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "aave_v3",
+          "action": "repay",
+          "amount": "0.001",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Aave V3 Withdraw",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "aave_v3",
+          "action": "withdraw",
+          "amount": "0.001",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Aave V3 Health Factor Constraint",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "aave_v3",
+          "action": "health_factor",
+          "operator": 1,
+          "threshold": "1.5"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Aave V3 APY Constraint",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "aave_v3",
+          "action": "apy",
+          "direction": 1,
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
+          "operator": 1,
+          "threshold": "0.5"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  }
+]

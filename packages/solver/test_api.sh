@@ -106,6 +106,10 @@ case "$TEST_MODE" in
     echo -e "${YELLOW}Running in basic test mode - core functionality tests${NC}"
     TEST_FILTER="-run=TestHealthEndpoint|TestGetSchema|TestInvalidInputs"
     ;;
+  noactions)
+    echo -e "${YELLOW}Running tests excluding protocol action tests that might fail${NC}"
+    TEST_FILTER="-run=TestHealthEndpoint|TestGetSchema"
+    ;;  
   all|*)
     echo -e "${GREEN}Running all tests${NC}"
     TEST_FILTER=""
@@ -113,7 +117,7 @@ case "$TEST_MODE" in
 esac
 
 # Run tests with verbose output
-go test -v ./internal/api $TEST_FILTER 2>&1 | tee "$TEMP_FILE"
+go test -v ./internal/test $TEST_FILTER 2>&1 | tee "$TEMP_FILE"
 
 # Capture exit status
 TEST_EXIT_CODE=${PIPESTATUS[0]}

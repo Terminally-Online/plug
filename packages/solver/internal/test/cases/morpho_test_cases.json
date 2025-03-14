@@ -1,0 +1,208 @@
+[
+  {
+    "name": "Morpho Earn",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "earn",
+          "amount": "0.001",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "vault": "0xB323495f7E4148BE5643A4EA4C38A573F521Cfc2"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Supply Collateral",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "supply_collateral",
+          "amount": "0.001",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "USDC-WETH"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Withdraw",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "withdraw",
+          "amount": "0.001",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "USDC-WETH"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Withdraw All",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "withdraw_all",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "USDC-WETH"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Borrow",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "borrow",
+          "amount": "0.001",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "USDC-WETH"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Repay",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "repay",
+          "amount": "0.001",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "USDC-WETH"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Repay All",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "repay_all",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "USDC-WETH"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Claim Rewards",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "claim_rewards"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho Health Factor Constraint",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "health_factor",
+          "target": "USDC-WETH",
+          "operator": 1,
+          "threshold": "1.5"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Morpho APY Constraint",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "morpho",
+          "action": "apy",
+          "direction": 1,
+          "target": "USDC-WETH",
+          "operator": 1,
+          "threshold": "0.5"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  }
+]

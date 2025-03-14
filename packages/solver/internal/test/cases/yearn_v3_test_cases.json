@@ -1,0 +1,143 @@
+[
+  {
+    "name": "Yearn V3 Deposit",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "deposit",
+          "amount": "0.001",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
+          "vault": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Yearn V3 Withdraw",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "withdraw",
+          "amount": "0.001",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
+          "vault": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Yearn V3 Stake",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "stake",
+          "amount": "0.001",
+          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Yearn V3 Stake Max",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "stake_max",
+          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Yearn V3 Redeem",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "redeem",
+          "amount": "0.001",
+          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Yearn V3 Redeem Max",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "redeem_max",
+          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Yearn V3 APY Constraint",
+    "intent": {
+      "chainId": 1,
+      "inputs": [
+        {
+          "protocol": "yearn_v3",
+          "action": "apy",
+          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18",
+          "operator": 1,
+          "threshold": "0.5"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  }
+]

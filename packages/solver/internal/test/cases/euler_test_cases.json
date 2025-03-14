@@ -1,0 +1,197 @@
+[
+  {
+    "name": "Euler Supply",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "supply",
+          "amount": "0.001",
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Withdraw",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "withdraw",
+          "amount": "0.001",
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Supply Collateral",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "supply_collateral",
+          "amount": "0.001",
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Withdraw Collateral",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "withdraw_collateral",
+          "amount": "0.001",
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Borrow",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "borrow",
+          "amount": "0.001",
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Repay",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "repay",
+          "amount": "0.001",
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Health Factor Constraint",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "health_factor",
+          "operator": 1,
+          "threshold": "1.5",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler Time to Liquidation Constraint",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "time_to_liquidation",
+          "operator": 1,
+          "threshold": "60",
+          "sub-account": 5
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Euler APY Constraint",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "euler",
+          "action": "apy",
+          "direction": 1,
+          "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+          "operator": 1,
+          "threshold": "0.5"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  }
+]
