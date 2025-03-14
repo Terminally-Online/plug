@@ -19,6 +19,52 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// ANSI color codes for terminal output
+const (
+	colorReset  = "\033[0m"
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorBlue   = "\033[34m"
+	colorPurple = "\033[35m"
+	colorCyan   = "\033[36m"
+	colorWhite  = "\033[37m"
+)
+
+// Helper functions for colored logging
+func successLog(t *testing.T, format string, args ...interface{}) {
+	t.Logf(colorGreen+format+colorReset, args...)
+}
+
+func errorLog(t *testing.T, format string, args ...interface{}) {
+	t.Logf(colorRed+format+colorReset, args...)
+}
+
+func infoLog(t *testing.T, format string, args ...interface{}) {
+	t.Logf(colorBlue+format+colorReset, args...)
+}
+
+func warningLog(t *testing.T, format string, args ...interface{}) {
+	t.Logf(colorYellow+format+colorReset, args...)
+}
+
+// Console output helpers (for non-test contexts)
+func successPrint(format string, args ...interface{}) {
+	fmt.Printf(colorGreen+format+colorReset+"\n", args...)
+}
+
+func errorPrint(format string, args ...interface{}) {
+	fmt.Printf(colorRed+format+colorReset+"\n", args...)
+}
+
+func infoPrint(format string, args ...interface{}) {
+	fmt.Printf(colorBlue+format+colorReset+"\n", args...)
+}
+
+func warningPrint(format string, args ...interface{}) {
+	fmt.Printf(colorYellow+format+colorReset+"\n", args...)
+}
+
 // Test intent struct matching the expected API format
 type TestIntent struct {
 	Id      string           `json:"id,omitempty"`
@@ -68,17 +114,17 @@ func TestMain(m *testing.M) {
 	// Get database availability status
 	dbAvailable := isDatabaseAvailable()
 
-	// Print status
+	// Print status with colors
 	if !serverRunning {
-		fmt.Println("⚠️ WARNING: Solver server is not running on localhost:8080 - tests requiring server will be skipped")
+		warningPrint("⚠️ WARNING: Solver server is not running on localhost:8080 - tests requiring server will be skipped")
 	} else {
-		fmt.Println("✓ Solver server is available - will run server-dependent tests")
+		successPrint("✓ Solver server is available - will run server-dependent tests")
 	}
 
 	if !dbAvailable {
-		fmt.Println("⚠️ WARNING: Database is not fully available - tests using database features will be limited")
+		warningPrint("⚠️ WARNING: Database is not fully available - tests using database features will be limited")
 	} else {
-		fmt.Println("✓ Database is available - will run database-dependent tests")
+		successPrint("✓ Database is available - will run database-dependent tests")
 	}
 
 	// Set environment variables to indicate availability
@@ -215,7 +261,7 @@ func makeTestRequest(url, method string, body interface{}) (*http.Response, []by
 
 	// Detailed logging in debug mode
 	if os.Getenv("TEST_DEBUG") == "true" {
-		fmt.Println("REQUEST:", reqInfo)
+		infoPrint("REQUEST: %s", reqInfo)
 	}
 
 	resp, err := client.Do(req)
@@ -243,7 +289,7 @@ func makeTestRequest(url, method string, body interface{}) (*http.Response, []by
 
 	// Detailed logging in debug mode
 	if os.Getenv("TEST_DEBUG") == "true" {
-		fmt.Println("RESPONSE:", respInfo)
+		infoPrint("RESPONSE: %s", respInfo)
 	}
 
 	// For all responses (including errors), attach context information to help with debugging
@@ -263,13 +309,13 @@ func TestHealthEndpoint(t *testing.T) {
 	// Try health endpoint
 	resp, body, err := makeTestRequest("http://localhost:8080/health", http.MethodGet, nil)
 	if err != nil {
-		t.Logf("ERROR: %v", err)
+		warningLog(t, "ERROR: %v", err)
 		t.Skip("Skipping test: server is not running or encountered an error")
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected status code %d, got %d. Response: %s",
+		errorLog(t, "Expected status code %d, got %d. Response: %s",
 			http.StatusOK, resp.StatusCode, string(body))
 		return
 	}
@@ -277,21 +323,21 @@ func TestHealthEndpoint(t *testing.T) {
 	var healthResponse map[string]interface{}
 	err = json.Unmarshal(body, &healthResponse)
 	if err != nil {
-		t.Errorf("Failed to unmarshal response: %v. Response body: %s", err, string(body))
+		errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
 		return
 	}
 
 	// Check for "status" field - accept both "ok" or "healthy" values
 	status, ok := healthResponse["status"].(string)
 	if !ok {
-		t.Errorf("Missing or invalid 'status' field in health response: %v", healthResponse)
+		errorLog(t, "Missing or invalid 'status' field in health response: %v", healthResponse)
 		return
 	}
 
 	if status != "ok" && status != "healthy" {
-		t.Errorf("Expected status 'ok' or 'healthy', got '%v'", status)
+		errorLog(t, "Expected status 'ok' or 'healthy', got '%v'", status)
 	} else {
-		t.Logf("Health endpoint returned status: %s", status)
+		successLog(t, "Health endpoint returned status: %s", status)
 	}
 }
 
@@ -300,7 +346,7 @@ func TestGetSchemaEndpoint(t *testing.T) {
 	// Make the request
 	resp, body, err := makeTestRequest("http://localhost:8080/solver?chainId=1", http.MethodGet, nil)
 	if err != nil {
-		t.Logf("ERROR: %v", err)
+		warningLog(t, "ERROR: %v", err)
 		t.Skip("Skipping test: encountered an error")
 		return
 	}
@@ -313,6 +359,7 @@ func TestGetSchemaEndpoint(t *testing.T) {
 
 	// Check that we have some protocols returned
 	assert.Greater(t, len(schemaResponse), 0)
+	successLog(t, "Successfully retrieved schema with %d protocols", len(schemaResponse))
 }
 
 // TestGetSchemaForProtocol tests the /solver endpoint for a specific protocol
@@ -344,6 +391,7 @@ func TestGetSchemaForProtocol(t *testing.T) {
 
 			// Some protocols might not be available on chain 1, so we'll skip if we get 400
 			if resp.StatusCode == http.StatusBadRequest {
+				warningLog(t, "Protocol %s not available on chain 1", protocol)
 				t.Skipf("Protocol %s not available on chain 1", protocol)
 				return
 			}
@@ -357,6 +405,7 @@ func TestGetSchemaForProtocol(t *testing.T) {
 			// Check that our protocol is in the response
 			_, ok := schemaResponse[protocol]
 			assert.True(t, ok, "Protocol %s should be in the response", protocol)
+			successLog(t, "Successfully retrieved schema for protocol %s", protocol)
 		})
 	}
 }
@@ -417,6 +466,7 @@ func TestGetSchemaForActions(t *testing.T) {
 
 			// Some combinations might not be available, so we'll skip if we get 400
 			if resp.StatusCode == http.StatusBadRequest {
+				warningLog(t, "Action %s not available for protocol %s on chain %d", tc.action, tc.protocol, tc.chainId)
 				t.Skipf("Action %s not available for protocol %s on chain %d", tc.action, tc.protocol, tc.chainId)
 				return
 			}
@@ -440,6 +490,7 @@ func TestGetSchemaForActions(t *testing.T) {
 
 			_, ok = schema[tc.action]
 			assert.True(t, ok, "Action %s should be in the schema", tc.action)
+			successLog(t, "Successfully retrieved schema for %s.%s", tc.protocol, tc.action)
 		})
 	}
 }
@@ -447,7 +498,7 @@ func TestGetSchemaForActions(t *testing.T) {
 // TestGetSolution tests the POST /solver endpoint with various protocol/action combinations
 func TestGetSolution(t *testing.T) {
 	// This test is especially important as it tests the core functionality with real inputs
-	t.Log("Testing solution generation for all supported protocol/action combinations")
+	infoLog(t, "Testing solution generation for all supported protocol/action combinations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
 
 	testCases := []struct {
@@ -756,11 +807,12 @@ func TestGetSolution(t *testing.T) {
 					action = a
 				}
 			}
-			t.Logf("Testing protocol=%s action=%s on chain=%d", protocol, action, tc.intent.ChainId)
+			infoLog(t, "Testing protocol=%s action=%s on chain=%d", protocol, action, tc.intent.ChainId)
 
 			// Make the request
 			resp, body, err := makeTestRequest("http://localhost:8080/solver", http.MethodPost, tc.intent)
 			if err != nil {
+				errorLog(t, "ERROR: %v", err)
 				t.Fatalf("ERROR: %v", err)
 				return
 			}
@@ -768,9 +820,9 @@ func TestGetSolution(t *testing.T) {
 			// For cases where we expect failure
 			if !tc.expectOk {
 				if resp.StatusCode == http.StatusOK {
-					t.Errorf("Expected error status code, got %d (OK)", resp.StatusCode)
+					errorLog(t, "Expected error status code, got %d (OK)", resp.StatusCode)
 				} else {
-					t.Logf("Got expected error status code: %d", resp.StatusCode)
+					successLog(t, "Got expected error status code: %d", resp.StatusCode)
 				}
 				return
 			}
@@ -796,7 +848,7 @@ func TestGetSolution(t *testing.T) {
 
 				// Print full request for debugging
 				reqJSON, _ := json.MarshalIndent(tc.intent, "", "  ")
-				t.Errorf("%s\nRequest: %s", errorMsg, string(reqJSON))
+				errorLog(t, "%s\nRequest: %s", errorMsg, string(reqJSON))
 				return
 			}
 
@@ -804,7 +856,7 @@ func TestGetSolution(t *testing.T) {
 			var solution map[string]interface{}
 			err = json.Unmarshal(body, &solution)
 			if err != nil {
-				t.Errorf("Failed to unmarshal response: %v. Response body: %s", err, string(body))
+				errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
 				return
 			}
 
@@ -817,7 +869,7 @@ func TestGetSolution(t *testing.T) {
 			}
 
 			if len(missingFields) > 0 {
-				t.Errorf("Response missing required fields: %v.\nFull response: %s",
+				errorLog(t, "Response missing required fields: %v.\nFull response: %s",
 					missingFields, string(body))
 				return
 			}
@@ -826,30 +878,30 @@ func TestGetSolution(t *testing.T) {
 			if intents, ok := solution["intents"].([]interface{}); ok {
 				// Check that we have at least one intent
 				if len(intents) == 0 {
-					t.Errorf("Solution contains empty intents array")
+					errorLog(t, "Solution contains empty intents array")
 					return
 				}
 
 				// Log the number of intents for debugging
-				t.Logf("Solution contains %d intents", len(intents))
+				infoLog(t, "Solution contains %d intents", len(intents))
 			}
 
 			// Validate simulation results
 			if sim, ok := solution["simulationResults"].(map[string]interface{}); ok {
 				// Check if we have simulation data
 				if status, exists := sim["status"].(string); exists {
-					t.Logf("Simulation status: %s", status)
+					infoLog(t, "Simulation status: %s", status)
 				}
 			}
 
-			t.Logf("✓ Successfully generated solution for %s (%s)", protocol, action)
+			successLog(t, "✓ Successfully generated solution for %s (%s)", protocol, action)
 		})
 	}
 }
 
 // TestMultipleProtocolsInIntent tests using multiple protocols in a single intent
 func TestMultipleProtocolsInIntent(t *testing.T) {
-	t.Log("Testing multi-protocol intent with assert, boolean, and math operations")
+	infoLog(t, "Testing multi-protocol intent with assert, boolean, and math operations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
 
 	// Create a complex intent that uses multiple protocols
@@ -890,6 +942,7 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 	// Make the multi-protocol request
 	resp, body, err := makeTestRequest("http://localhost:8080/solver", http.MethodPost, intent)
 	if err != nil {
+		errorLog(t, "ERROR: %v", err)
 		t.Fatalf("ERROR: %v", err)
 		return
 	}
@@ -915,14 +968,14 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 
 		// Print full request for debugging
 		reqJSON, _ := json.MarshalIndent(intent, "", "  ")
-		t.Errorf("%s\nRequest: %s", errorMsg, string(reqJSON))
+		errorLog(t, "%s\nRequest: %s", errorMsg, string(reqJSON))
 		return
 	}
 
 	// Parse the response
 	var solution map[string]interface{}
 	if err := json.Unmarshal(body, &solution); err != nil {
-		t.Errorf("Failed to unmarshal response: %v. Response body: %s", err, string(body))
+		errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
 		return
 	}
 
@@ -936,7 +989,7 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 	}
 
 	if len(missingFields) > 0 {
-		t.Errorf("Response missing required fields: %v.\nFull response: %s",
+		errorLog(t, "Response missing required fields: %v.\nFull response: %s",
 			missingFields, string(body))
 		return
 	}
@@ -944,7 +997,7 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 	// Validate intent count (should include all 3 protocols)
 	if intents, ok := solution["intents"].([]interface{}); ok {
 		if len(intents) == 0 {
-			t.Errorf("Expected intents in solution, got empty array. Full response: %s",
+			errorLog(t, "Expected intents in solution, got empty array. Full response: %s",
 				string(body))
 			return
 		}
@@ -968,20 +1021,20 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 			}
 		}
 
-		t.Logf("Multi-protocol intent processed with %d intents", len(intents))
-		t.Logf("Protocols included: %v", getMapKeys(protocols))
+		infoLog(t, "Multi-protocol intent processed with %d intents", len(intents))
+		infoLog(t, "Protocols included: %v", getMapKeys(protocols))
 
 		// Verify all 3 protocols are included
 		expectedProtocols := []string{"assert", "boolean", "math"}
 		for _, proto := range expectedProtocols {
 			if !protocols[proto] {
-				t.Errorf("Expected protocol %s in response, but it was not found", proto)
+				errorLog(t, "Expected protocol %s in response, but it was not found", proto)
 			}
 		}
 
-		t.Logf("✓ Multi-protocol intent successfully processed")
+		successLog(t, "✓ Multi-protocol intent successfully processed")
 	} else {
-		t.Errorf("Invalid intents field format in response: %s", string(body))
+		errorLog(t, "Invalid intents field format in response: %s", string(body))
 	}
 }
 
