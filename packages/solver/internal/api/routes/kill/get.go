@@ -19,7 +19,6 @@ func GetContext(oc openapi.OperationContext) error {
 	oc.SetDescription("Returns the current status of the kill switch, which controls whether new solver operations are allowed")
 
 	oc.AddRespStructure(KillResponse{}, openapi.WithHTTPStatus(http.StatusOK))
-
 	oc.AddRespStructure(
 		map[string]string{"error": "Internal server error"},
 		openapi.WithContentType("text/plain"),

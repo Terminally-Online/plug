@@ -18,6 +18,7 @@ func PostContext(oc openapi.OperationContext) error {
 	oc.SetDescription("Processes an intent and returns a solution (transaction data). Requires API key.")
 
 	oc.AddReqStructure(models.Intent{})
+
 	oc.AddRespStructure(map[string]interface{}{}, openapi.WithHTTPStatus(http.StatusOK))
 	oc.AddRespStructure(
 		map[string]string{"error": "invalid request body"},

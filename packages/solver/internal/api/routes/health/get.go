@@ -13,7 +13,7 @@ type HealthResponse struct {
 	Status string `json:"status" description:"The health status of the API"`
 }
 
-func context(oc openapi.OperationContext) error {
+func GetContext(oc openapi.OperationContext) error {
 	oc.SetTags("System")
 	oc.SetSummary("Health Check")
 	oc.SetDescription("Returns the health status of the API")
@@ -30,7 +30,7 @@ func context(oc openapi.OperationContext) error {
 	return nil
 }
 
-func request(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
+func GetRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
 	if err := json.NewEncoder(w).Encode(HealthResponse{
 		Status: "healthy",
 	}); err != nil {
@@ -40,5 +40,5 @@ func request(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
 }
 
 func GetHealth() *routes.RouteHandler {
-	return routes.NewRouteHandler(request, context, nil)
+	return routes.NewRouteHandler(GetRequest, GetContext, nil)
 }

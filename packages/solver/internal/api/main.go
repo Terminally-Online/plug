@@ -57,7 +57,9 @@ func SetupOpenAPIRoutes(r *mux.Router) http.Handler {
 func SetupRouter(s *solver.Solver) *mux.Router {
 	m := middleware.New(*s)
 	r := mux.NewRouter()
+
 	r.Use(m.Json)
+	r.Use(m.Timeout(middleware.DefaultTimeout))
 
 	r.Handle("/health", health.GetHealth()).Methods(http.MethodGet)
 

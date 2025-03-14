@@ -15,7 +15,6 @@ func PostContext(oc openapi.OperationContext) error {
 	oc.SetDescription("Toggles the state of the kill switch that controls whether new solver operations are allowed")
 
 	oc.AddRespStructure(KillResponse{}, openapi.WithHTTPStatus(http.StatusOK))
-
 	oc.AddRespStructure(
 		map[string]string{"error": "Internal server error"},
 		openapi.WithContentType("text/plain"),

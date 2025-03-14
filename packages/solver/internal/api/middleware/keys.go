@@ -142,7 +142,7 @@ func lookupApiKey(apiKey string) (dbKey *models.ApiKey, statusCode int, err erro
 	return dbApiKey, http.StatusOK, nil
 }
 
-func (h *Handler) AdminApiKey(next http.Handler) http.Handler {
+func (h *Middleware) AdminApiKey(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
 
@@ -163,7 +163,7 @@ func (h *Handler) AdminApiKey(next http.Handler) http.Handler {
 	})
 }
 
-func (h *Handler) ApiKey(next http.Handler) http.Handler {
+func (h *Middleware) ApiKey(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
 		dbKey, limitInfo, statusCode, err := h.apiKeyLimiter.Allow(apiKey)

@@ -23,13 +23,11 @@ func ToggleStatusContext(oc openapi.OperationContext) error {
 	}{})
 
 	oc.AddRespStructure(models.Intent{}, openapi.WithHTTPStatus(http.StatusOK))
-
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to find intent"},
 		openapi.WithContentType("application/json"),
 		openapi.WithHTTPStatus(http.StatusNotFound),
 	)
-
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to toggle intent"},
 		openapi.WithContentType("application/json"),
