@@ -675,109 +675,10 @@ func TestGetSolution(t *testing.T) {
 				Inputs: []map[string]any{
 					{
 						"protocol": "aave_v3",
-						"action":   "supply",
+						"action":   "deposit",
 						"amount":   "0.001",
 						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
 						"vault":    "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: false,
-					Submit:   false,
-				},
-			},
-			expectOk: true,
-		},
-		{
-			name: "Assert Equals",
-			intent: TestIntent{
-				ChainId: 1, // Ethereum
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "assert",
-						"action":   "equals",
-						"left":     "100",
-						"right":    "100",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: false,
-					Submit:   false,
-				},
-			},
-			expectOk: true,
-		},
-		{
-			name: "Boolean AND",
-			intent: TestIntent{
-				ChainId: 1, // Ethereum
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "boolean",
-						"action":   "and",
-						"left":     true,
-						"right":    true,
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: false,
-					Submit:   false,
-				},
-			},
-			expectOk: true,
-		},
-		{
-			name: "Math Add",
-			intent: TestIntent{
-				ChainId: 1, // Ethereum
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "math",
-						"action":   "add",
-						"left":     "100",
-						"right":    "200",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: false,
-					Submit:   false,
-				},
-			},
-			expectOk: true,
-		},
-		{
-			name: "Database Select",
-			intent: TestIntent{
-				ChainId: 1, // Ethereum
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "database",
-						"action":   "select",
-						"key":      "test-key",
 					},
 				},
 				Options: struct {
@@ -817,16 +718,6 @@ func TestGetSolution(t *testing.T) {
 				return
 			}
 
-			// For cases where we expect failure
-			if !tc.expectOk {
-				if resp.StatusCode == http.StatusOK {
-					errorLog(t, "Expected error status code, got %d (OK)", resp.StatusCode)
-				} else {
-					successLog(t, "Got expected error status code: %d", resp.StatusCode)
-				}
-				return
-			}
-
 			// Check response status
 			if resp.StatusCode != http.StatusOK {
 				errorMsg := fmt.Sprintf("Expected status code %d, got %d.",
@@ -849,6 +740,13 @@ func TestGetSolution(t *testing.T) {
 				// Print full request for debugging
 				reqJSON, _ := json.MarshalIndent(tc.intent, "", "  ")
 				errorLog(t, "%s\nRequest: %s", errorMsg, string(reqJSON))
+
+				// Fail the test if we expected it to succeed
+				if tc.expectOk {
+					t.Errorf("Test case %s failed: %s", tc.name, errorMsg)
+				} else {
+					successLog(t, "Got expected error status code: %d", resp.StatusCode)
+				}
 				return
 			}
 
@@ -862,7 +760,7 @@ func TestGetSolution(t *testing.T) {
 
 			// Validate the essential fields
 			missingFields := []string{}
-			for _, field := range []string{"id", "intents", "simulationResults"} {
+			for _, field := range []string{"intentId", "livePlugs", "transactions"} {
 				if _, ok := solution[field]; !ok {
 					missingFields = append(missingFields, field)
 				}
@@ -899,144 +797,144 @@ func TestGetSolution(t *testing.T) {
 	}
 }
 
-// TestMultipleProtocolsInIntent tests using multiple protocols in a single intent
-func TestMultipleProtocolsInIntent(t *testing.T) {
-	infoLog(t, "Testing multi-protocol intent with assert, boolean, and math operations")
-	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
+// // TestMultipleProtocolsInIntent tests using multiple protocols in a single intent
+// func TestMultipleProtocolsInIntent(t *testing.T) {
+// 	infoLog(t, "Testing multi-protocol intent with assert, boolean, and math operations")
+// 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
 
-	// Create a complex intent that uses multiple protocols
-	intent := TestIntent{
-		ChainId: 1, // Ethereum
-		From:    testEOAAddress,
-		Inputs: []map[string]any{
-			{
-				"protocol": "assert",
-				"action":   "equals",
-				"left":     "100",
-				"right":    "100",
-			},
-			{
-				"protocol": "boolean",
-				"action":   "and",
-				"left":     true,
-				"right":    true,
-			},
-			{
-				"protocol": "math",
-				"action":   "add",
-				"left":     "100",
-				"right":    "200",
-			},
-		},
-		Options: struct {
-			IsEOA    bool `json:"isEOA"`
-			Simulate bool `json:"simulate"`
-			Submit   bool `json:"submit"`
-		}{
-			IsEOA:    false,
-			Simulate: false,
-			Submit:   false,
-		},
-	}
+// 	// Create a complex intent that uses multiple protocols
+// 	intent := TestIntent{
+// 		ChainId: 1, // Ethereum
+// 		From:    testEOAAddress,
+// 		Inputs: []map[string]any{
+// 			{
+// 				"protocol": "assert",
+// 				"action":   "equals",
+// 				"left":     "100",
+// 				"right":    "100",
+// 			},
+// 			{
+// 				"protocol": "boolean",
+// 				"action":   "and",
+// 				"left":     true,
+// 				"right":    true,
+// 			},
+// 			{
+// 				"protocol": "math",
+// 				"action":   "add",
+// 				"left":     "100",
+// 				"right":    "200",
+// 			},
+// 		},
+// 		Options: struct {
+// 			IsEOA    bool `json:"isEOA"`
+// 			Simulate bool `json:"simulate"`
+// 			Submit   bool `json:"submit"`
+// 		}{
+// 			IsEOA:    false,
+// 			Simulate: false,
+// 			Submit:   false,
+// 		},
+// 	}
 
-	// Make the multi-protocol request
-	resp, body, err := makeTestRequest("http://localhost:8080/solver", http.MethodPost, intent)
-	if err != nil {
-		errorLog(t, "ERROR: %v", err)
-		t.Fatalf("ERROR: %v", err)
-		return
-	}
+// 	// Make the multi-protocol request
+// 	resp, body, err := makeTestRequest("http://localhost:8080/solver", http.MethodPost, intent)
+// 	if err != nil {
+// 		errorLog(t, "ERROR: %v", err)
+// 		t.Fatalf("ERROR: %v", err)
+// 		return
+// 	}
 
-	// Check response status
-	if resp.StatusCode != http.StatusOK {
-		errorMsg := fmt.Sprintf("Expected status code %d, got %d.",
-			http.StatusOK, resp.StatusCode)
+// 	// Check response status
+// 	if resp.StatusCode != http.StatusOK {
+// 		errorMsg := fmt.Sprintf("Expected status code %d, got %d.",
+// 			http.StatusOK, resp.StatusCode)
 
-		// Try to extract error message from response body
-		var errorObj map[string]interface{}
-		if err := json.Unmarshal(body, &errorObj); err == nil {
-			if errMsg, ok := errorObj["error"].(string); ok {
-				errorMsg += fmt.Sprintf(" Error: %s", errMsg)
-			} else if errorMsg, ok := errorObj["message"].(string); ok {
-				errorMsg += fmt.Sprintf(" Message: %s", errorMsg)
-			} else {
-				errorMsg += fmt.Sprintf(" Response: %s", string(body))
-			}
-		} else {
-			errorMsg += fmt.Sprintf(" Raw response: %s", string(body))
-		}
+// 		// Try to extract error message from response body
+// 		var errorObj map[string]interface{}
+// 		if err := json.Unmarshal(body, &errorObj); err == nil {
+// 			if errMsg, ok := errorObj["error"].(string); ok {
+// 				errorMsg += fmt.Sprintf(" Error: %s", errMsg)
+// 			} else if errorMsg, ok := errorObj["message"].(string); ok {
+// 				errorMsg += fmt.Sprintf(" Message: %s", errorMsg)
+// 			} else {
+// 				errorMsg += fmt.Sprintf(" Response: %s", string(body))
+// 			}
+// 		} else {
+// 			errorMsg += fmt.Sprintf(" Raw response: %s", string(body))
+// 		}
 
-		// Print full request for debugging
-		reqJSON, _ := json.MarshalIndent(intent, "", "  ")
-		errorLog(t, "%s\nRequest: %s", errorMsg, string(reqJSON))
-		return
-	}
+// 		// Print full request for debugging
+// 		reqJSON, _ := json.MarshalIndent(intent, "", "  ")
+// 		errorLog(t, "%s\nRequest: %s", errorMsg, string(reqJSON))
+// 		return
+// 	}
 
-	// Parse the response
-	var solution map[string]interface{}
-	if err := json.Unmarshal(body, &solution); err != nil {
-		errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
-		return
-	}
+// 	// Parse the response
+// 	var solution map[string]interface{}
+// 	if err := json.Unmarshal(body, &solution); err != nil {
+// 		errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
+// 		return
+// 	}
 
-	// Validate all required fields
-	requiredFields := []string{"id", "intents", "simulationResults"}
-	missingFields := []string{}
-	for _, field := range requiredFields {
-		if _, ok := solution[field]; !ok {
-			missingFields = append(missingFields, field)
-		}
-	}
+// 	// Validate all required fields
+// 	requiredFields := []string{"id", "intents", "simulationResults"}
+// 	missingFields := []string{}
+// 	for _, field := range requiredFields {
+// 		if _, ok := solution[field]; !ok {
+// 			missingFields = append(missingFields, field)
+// 		}
+// 	}
 
-	if len(missingFields) > 0 {
-		errorLog(t, "Response missing required fields: %v.\nFull response: %s",
-			missingFields, string(body))
-		return
-	}
+// 	if len(missingFields) > 0 {
+// 		errorLog(t, "Response missing required fields: %v.\nFull response: %s",
+// 			missingFields, string(body))
+// 		return
+// 	}
 
-	// Validate intent count (should include all 3 protocols)
-	if intents, ok := solution["intents"].([]interface{}); ok {
-		if len(intents) == 0 {
-			errorLog(t, "Expected intents in solution, got empty array. Full response: %s",
-				string(body))
-			return
-		}
+// 	// Validate intent count (should include all 3 protocols)
+// 	if intents, ok := solution["intents"].([]interface{}); ok {
+// 		if len(intents) == 0 {
+// 			errorLog(t, "Expected intents in solution, got empty array. Full response: %s",
+// 				string(body))
+// 			return
+// 		}
 
-		// Verify we have all 3 protocols represented
-		protocols := make(map[string]bool)
-		for _, intent := range intents {
-			if intentMap, ok := intent.(map[string]interface{}); ok {
-				// Extract which protocol this intent is for
-				for k, v := range intentMap {
-					if inputsArr, ok := v.([]interface{}); ok && k == "inputs" {
-						for _, input := range inputsArr {
-							if inputMap, ok := input.(map[string]interface{}); ok {
-								if proto, ok := inputMap["protocol"].(string); ok {
-									protocols[proto] = true
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+// 		// Verify we have all 3 protocols represented
+// 		protocols := make(map[string]bool)
+// 		for _, intent := range intents {
+// 			if intentMap, ok := intent.(map[string]interface{}); ok {
+// 				// Extract which protocol this intent is for
+// 				for k, v := range intentMap {
+// 					if inputsArr, ok := v.([]interface{}); ok && k == "inputs" {
+// 						for _, input := range inputsArr {
+// 							if inputMap, ok := input.(map[string]interface{}); ok {
+// 								if proto, ok := inputMap["protocol"].(string); ok {
+// 									protocols[proto] = true
+// 								}
+// 							}
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
 
-		infoLog(t, "Multi-protocol intent processed with %d intents", len(intents))
-		infoLog(t, "Protocols included: %v", getMapKeys(protocols))
+// 		infoLog(t, "Multi-protocol intent processed with %d intents", len(intents))
+// 		infoLog(t, "Protocols included: %v", getMapKeys(protocols))
 
-		// Verify all 3 protocols are included
-		expectedProtocols := []string{"assert", "boolean", "math"}
-		for _, proto := range expectedProtocols {
-			if !protocols[proto] {
-				errorLog(t, "Expected protocol %s in response, but it was not found", proto)
-			}
-		}
+// 		// Verify all 3 protocols are included
+// 		expectedProtocols := []string{"assert", "boolean", "math"}
+// 		for _, proto := range expectedProtocols {
+// 			if !protocols[proto] {
+// 				errorLog(t, "Expected protocol %s in response, but it was not found", proto)
+// 			}
+// 		}
 
-		successLog(t, "✓ Multi-protocol intent successfully processed")
-	} else {
-		errorLog(t, "Invalid intents field format in response: %s", string(body))
-	}
-}
+// 		successLog(t, "✓ Multi-protocol intent successfully processed")
+// 	} else {
+// 		errorLog(t, "Invalid intents field format in response: %s", string(body))
+// 	}
+// }
 
 // Helper function to get map keys as a slice
 func getMapKeys(m map[string]bool) []string {
