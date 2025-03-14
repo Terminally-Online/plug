@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"solver/internal/actions"
 	"solver/internal/api"
-	"solver/internal/api/solver"
 	"solver/internal/cron"
+	"solver/internal/solver"
 	"solver/internal/utils"
 	"time"
 
@@ -25,40 +25,12 @@ func main() {
 	provider := actions.NewCachedOptionsProvider(&actions.DefaultOptionsProvider{})
 	actions.SetCachedOptionsProvider(provider)
 
-	// TODO: Would be nice if we did not define the list here. Honestly, not even really
-	//       sure this is doing what I expected when I wrote it. Either way, we should
-	//       just have a rolling job that updates the global cache of all protocols and
-	//       all actions that we currently support. The exception being those that are
-	//       user specific because the cache will never even be hit for those.
-	actionsList := []string{
-		actions.ActionDeposit,
-		actions.ActionBorrow,
-		actions.ActionRedeem,
-		actions.ActionRedeemMax,
-		actions.ActionWithdraw,
-		actions.ActionWithdrawMax,
-		actions.ActionRepay,
-		actions.ActionHarvest,
-		actions.ActionTransfer,
-		actions.ActionTransferFrom,
-		actions.ActionApprove,
-		actions.ActionSwap,
-		actions.ActionRoute,
-		actions.ActionStake,
-		actions.ActionStakeMax,
-		actions.ActionBuy,
-		actions.ActionBid,
-		actions.ActionRenew,
-	}
-	provider.PreWarmCache(8453, utils.ZeroAddress, actionsList)
-
 	var CronJobs = []struct {
 		Schedule string
 		Job      func()
 	}{
-		// {"0 */5 * * * *", func() { provider.PreWarmCache(8453, utils.ZeroAddress, actionsList) }}, 
-		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }},            
-		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }}, 
+		{"0 */1 * * * *", func() { cron.Simulations(s) }},
+		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }},
 	}
 
 	schedule := scheduler.New()
@@ -76,6 +48,6 @@ func main() {
 
 	log.Println("Started server on http://localhost:8080")
 	log.Println("OpenAPI specification available at: http://localhost:8080/openapi.json")
-	log.Println("API Documentation UI available at: http://localhost:8080/api-docs")
+	log.Println("API Documentation UI available at: http://localhost:8080/docs")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func Simulations(s solver.Solver) {
+func Simulations(s *solver.Solver) {
 	if s.IsKilled {
 		return
 	}

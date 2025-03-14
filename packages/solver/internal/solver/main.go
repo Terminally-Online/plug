@@ -33,8 +33,8 @@ type Solver struct {
 	IsKilled  bool
 }
 
-func New() Solver {
-	return Solver{
+func New() *Solver {
+	return &Solver{
 		Protocols: map[string]actions.BaseProtocolHandler{
 			actions.Plug:     plug.New(),
 			actions.Boolean:  boolean.New(),

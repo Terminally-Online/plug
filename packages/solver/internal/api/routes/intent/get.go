@@ -1,59 +1,50 @@
-package solver
+package intent
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"solver/internal/actions"
+	"solver/internal/api/routes"
 	"solver/internal/bindings/references"
-	"solver/internal/database"
-	"solver/internal/database/models"
+	"solver/internal/solver"
 	"solver/internal/utils"
 	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/swaggest/openapi-go"
 )
 
-type IntentDomain struct {
-	ChainId uint64 `json:"chainId"`
-	From    string `json:"from"`
+type SchemaQueryParams struct {
+	ChainID  string `query:"chainId" description:"Chain ID to filter schemas by"`
+	Protocol string `query:"protocol" description:"Protocol name to filter schemas by"`
+	Action   string `query:"action" description:"Action name to filter schemas by"`
+	From     string `query:"from" description:"Wallet address to generate schemas for"`
 }
 
-type IntentRequest struct {
-	Id     string            `json:"id"`
-	Inputs []json.RawMessage `json:"inputs"`
-	IntentDomain
-}
+func GetContext(oc openapi.OperationContext) error {
+	oc.SetTags("Solver")
+	oc.SetSummary("Get Schema")
+	oc.SetDescription("Retrieves available action schemas for protocols based on query parameters. Requires API key.")
 
-func (r *IntentRequest) Validate() error {
-	if r.ChainId == 0 {
-		return fmt.Errorf("'chainId' is required")
-	}
-
-	if r.From == "" {
-		return fmt.Errorf("'from' is required")
-	}
+	oc.AddReqStructure(SchemaQueryParams{})
+	oc.AddRespStructure(map[string]actions.ProtocolSchema{}, openapi.WithHTTPStatus(http.StatusOK))
+	oc.AddRespStructure(
+		map[string]string{"error": "no protocols found on chainId"},
+		openapi.WithContentType("application/json"),
+		openapi.WithHTTPStatus(http.StatusNotFound),
+	)
+	oc.AddRespStructure(
+		map[string]string{"error": "unsupported protocol"},
+		openapi.WithContentType("application/json"),
+		openapi.WithHTTPStatus(http.StatusBadRequest),
+	)
 
 	return nil
 }
 
-func (req *IntentRequest) UnmarshalJSON(data []byte) error {
-	type AuxIntentRequest IntentRequest
-	aux := (*AuxIntentRequest)(req)
-
-	if err := json.Unmarshal(data, &aux); err != nil {
-		return fmt.Errorf("invalid request body: %w", err)
-	}
-
-	if err := req.Validate(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
+func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 	chainId := r.URL.Query().Get("chainId")
 	protocol := r.URL.Query().Get("protocol")
 	action := r.URL.Query().Get("action")
@@ -76,7 +67,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 	if protocol == "" {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
-		for protocol, handler := range h.Solver.Protocols {
+		for protocol, handler := range s.Protocols {
 			protocolChains, err := handler.GetChains(chainId)
 			if err != nil {
 				continue
@@ -122,7 +113,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handler, exists := h.Solver.Protocols[protocol]
+	handler, exists := s.Protocols[protocol]
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
@@ -198,27 +189,6 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
-	var intent *models.Intent
-	if err := json.NewDecoder(r.Body).Decode(&intent); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	intent.ApiKeyId = r.Header.Get("X-Api-Key-Id")
-	var err error
-
-	intent, err = intent.GetOrCreate(database.DB)
-	if err != nil {
-		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if solution, err := h.Solver.Solve(intent, true, false); err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
-	} else {
-		if err := json.NewEncoder(w).Encode(solution); err != nil {
-			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
-		}
-	}
+func Get(s *solver.Solver) *routes.RouteHandler {
+	return routes.NewRouteHandler(GetRequest, GetContext, s)
 }
