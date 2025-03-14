@@ -218,7 +218,7 @@ func GetMainAddressVaultHoldings(address common.Address, chainId uint64) ([]zeri
 			vaultAddresses[strings.ToLower(vault.Vault.String())] = true
 		}
 
-		positions, err := zerion.GetFungiblePositions([]string{"base"}, address, address)
+		positions, err := zerion.GetFungiblePositions([]string{"base"}, address, address, "")
 		if err != nil {
 			return nil, err
 		}

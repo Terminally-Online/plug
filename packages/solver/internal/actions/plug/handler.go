@@ -19,7 +19,7 @@ func New() actions.Protocol {
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinition{
 				actions.ActionTransfer: {
-					Sentence:       "Transfer {0<amount:float>} {1<token:address:uint8:uint256>} to {2<recipient:string>}",
+					Sentence:       "Transfer {0<amount:float>} {1<token:address:uint256:uint256>} to {2<recipient:string>}",
 					Handler:        HandleTransfer,
 					Options:        TransferOptions,
 					IsUserSpecific: true,
