@@ -127,23 +127,15 @@ func TestMain(m *testing.M) {
 
 	// Print status with colors
 	if !serverRunning {
-		warningPrint("⚠️ WARNING: Solver server is not running on localhost:8080 - tests requiring server will be skipped")
+		errorPrint("❌ ERROR: Solver server is not running on localhost:8080 - tests will fail")
 	} else {
-		successPrint("✓ Solver server is available - will run server-dependent tests")
+		successPrint("✓ Solver server is available")
 	}
 
 	if !dbAvailable {
-		warningPrint("⚠️ WARNING: Database is not fully available - tests using database features will be limited")
+		errorPrint("❌ ERROR: Database is not available - tests will fail")
 	} else {
-		successPrint("✓ Database is available - will run database-dependent tests")
-	}
-
-	// Set environment variables to indicate availability
-	if serverRunning {
-		os.Setenv("TEST_SERVER_AVAILABLE", "true")
-	}
-	if dbAvailable {
-		os.Setenv("TEST_DB_AVAILABLE", "true")
+		successPrint("✓ Database is available")
 	}
 
 	// Mark that we're in test mode
@@ -320,14 +312,14 @@ func TestHealthEndpoint(t *testing.T) {
 	// Try health endpoint
 	resp, body, err := makeTestRequest("http://localhost:8080/health", http.MethodGet, nil)
 	if err != nil {
-		warningLog(t, "ERROR: %v", err)
-		t.Skip("Skipping test: server is not running or encountered an error")
-		return
+		errorLog(t, "ERROR: %v", err)
+		t.Fatalf("Health endpoint test failed: server is not running or encountered an error: %v", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		errorLog(t, "Expected status code %d, got %d. Response: %s",
 			http.StatusOK, resp.StatusCode, string(body))
+		t.Errorf("Health endpoint returned unexpected status code: %d", resp.StatusCode)
 		return
 	}
 
@@ -335,6 +327,7 @@ func TestHealthEndpoint(t *testing.T) {
 	err = json.Unmarshal(body, &healthResponse)
 	if err != nil {
 		errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
+		t.Errorf("Failed to parse health response: %v", err)
 		return
 	}
 
@@ -342,11 +335,13 @@ func TestHealthEndpoint(t *testing.T) {
 	status, ok := healthResponse["status"].(string)
 	if !ok {
 		errorLog(t, "Missing or invalid 'status' field in health response: %v", healthResponse)
+		t.Errorf("Missing or invalid 'status' field in health response")
 		return
 	}
 
 	if status != "ok" && status != "healthy" {
 		errorLog(t, "Expected status 'ok' or 'healthy', got '%v'", status)
+		t.Errorf("Health endpoint returned unexpected status: %s", status)
 	} else {
 		successLog(t, "Health endpoint returned status: %s", status)
 	}
@@ -357,9 +352,8 @@ func TestGetSchemaEndpoint(t *testing.T) {
 	// Make the request
 	resp, body, err := makeTestRequest("http://localhost:8080/solver?chainId=1", http.MethodGet, nil)
 	if err != nil {
-		warningLog(t, "ERROR: %v", err)
-		t.Skip("Skipping test: encountered an error")
-		return
+		errorLog(t, "ERROR: %v", err)
+		t.Fatalf("Schema endpoint test failed: %v", err)
 	}
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -396,8 +390,8 @@ func TestGetSchemaForProtocol(t *testing.T) {
 				nil,
 			)
 			if err != nil {
-				t.Skip("Skipping test: server is not running")
-				return
+				errorLog(t, "ERROR: %v", err)
+				t.Fatalf("Failed to make request for protocol %s: %v", protocol, err)
 			}
 
 			// Some protocols might not be available on chain 1, so we'll skip if we get 400
@@ -439,8 +433,14 @@ func TestGetSchemaForActions(t *testing.T) {
 	for _, protocol := range protocols {
 		testCases, err := loadTestCasesForProtocol(protocol)
 		if err != nil {
-			t.Logf("Skipping schema tests for protocol %s: %v", protocol, err)
-			continue
+			warningLog(t, "Warning: %v", err)
+			// Continue with empty test cases rather than skipping entirely
+			testCases = []TestCase{}
+		}
+
+		// If we have no test cases, log a warning but don't skip
+		if len(testCases) == 0 {
+			warningLog(t, "No test cases found for protocol %s", protocol)
 		}
 
 		// Create a map to track which actions we've already tested
@@ -513,8 +513,8 @@ func TestGetSchemaForActions(t *testing.T) {
 					nil,
 				)
 				if err != nil {
-					t.Skip("Skipping test: server is not running")
-					return
+					errorLog(t, "ERROR: %v", err)
+					t.Fatalf("Failed to make request for protocol %s action %s: %v", protocol, action, err)
 				}
 
 				// All schema endpoints should work with status 200 for valid inputs
@@ -567,8 +567,8 @@ func TestGetSchemaForActions(t *testing.T) {
 				nil,
 			)
 			if err != nil {
-				t.Skip("Skipping test: server is not running")
-				return
+				errorLog(t, "ERROR: %v", err)
+				t.Fatalf("Failed to make request for protocol %s action %s: %v", tc.protocol, tc.action, err)
 			}
 
 			// All schema endpoints should work with status 200 for valid inputs
@@ -649,8 +649,14 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 	// Load test cases for this protocol from its JSON file
 	testCases, err := loadTestCasesForProtocol(protocol)
 	if err != nil {
-		warningLog(t, "Skipping tests for protocol %s: %v", protocol, err)
-		return
+		warningLog(t, "Warning: %v", err)
+		// Continue with empty test cases rather than skipping entirely
+		testCases = []TestCase{}
+	}
+
+	// If we have no test cases, log a warning but don't skip
+	if len(testCases) == 0 {
+		warningLog(t, "No test cases found for protocol %s", protocol)
 	}
 
 	// Filter test cases by chain
@@ -735,8 +741,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 			resp, body, err := makeTestRequest("http://localhost:8080/solver", http.MethodPost, tc.Intent)
 			if err != nil {
 				errorLog(t, "ERROR: %v", err)
-				t.Skip("Skipping test: server is not running")
-				return
+				t.Fatalf("Failed to make request for protocol %s action %s: %v", protocol, action, err)
 			}
 
 			// Check response status
