@@ -38,10 +38,13 @@ if [ "$HELP" = true ]; then
   echo -e ""
   echo -e "Options:"
   echo -e "  --skip-db-check           Skip database connection check"
-  echo -e "  --test-mode=MODE          Set test mode (all, basic, minimal)"
+  echo -e "  --test-mode=MODE          Set test mode (all, base, mainnet, basic, minimal, noactions)"
   echo -e "                            - all: Run all tests"
+  echo -e "                            - base: Run only tests for Base chain (chain ID 8453)"
+  echo -e "                            - mainnet: Run only tests for Ethereum mainnet (chain ID 1)"
   echo -e "                            - basic: Run most critical tests"
   echo -e "                            - minimal: Run only essential tests"
+  echo -e "                            - noactions: Skip protocol action tests that might fail"
   echo -e "  --help                    Show this help message"
   exit 0
 fi
@@ -106,10 +109,20 @@ case "$TEST_MODE" in
     echo -e "${YELLOW}Running in basic test mode - core functionality tests${NC}"
     TEST_FILTER="-run=TestHealthEndpoint|TestGetSchema|TestInvalidInputs"
     ;;
+  base)
+    echo -e "${BLUE}Running tests focusing on Base chain (8453) protocols${NC}"
+    # Target tests specifically marked with chain_8453 in the test name
+    TEST_FILTER="-run=.*chain_8453"
+    ;;
   noactions)
     echo -e "${YELLOW}Running tests excluding protocol action tests that might fail${NC}"
     TEST_FILTER="-run=TestHealthEndpoint|TestGetSchema"
-    ;;  
+    ;;
+  mainnet)
+    echo -e "${BLUE}Running tests focusing on Ethereum mainnet (chain ID 1)${NC}"
+    # Target tests specifically marked with chain_1 in the test name
+    TEST_FILTER="-run=.*chain_1"
+    ;;
   all|*)
     echo -e "${GREEN}Running all tests${NC}"
     TEST_FILTER=""
@@ -177,6 +190,17 @@ echo
 echo -e "${BLUE}Actions tested:${NC}"
 ACTIONS=$(grep -o "Testing protocol=[a-z0-9_]* action=[a-z0-9_]*" "$TEMP_FILE" 2>/dev/null | sort | uniq | sed 's/Testing protocol=\([a-z0-9_]*\) action=\([a-z0-9_]*\)/    ✓ \1: \2/' || echo "    None detected")
 echo "$ACTIONS"
+
+# Chain-specific statistics
+echo
+echo -e "${BLUE}Chain-specific test statistics:${NC}"
+BASE_TESTS=$(grep -c "chain_8453" "$TEMP_FILE" || echo 0)
+BASE_PASSED=$(grep -o "Successfully generated solution.*chain_8453" "$TEMP_FILE" | wc -l || echo 0)
+MAINNET_TESTS=$(grep -c "chain_1" "$TEMP_FILE" || echo 0)
+MAINNET_PASSED=$(grep -o "Successfully generated solution.*chain_1" "$TEMP_FILE" | wc -l || echo 0)
+
+echo -e "    Base (Chain 8453): Ran ${BASE_TESTS} tests, ${GREEN}${BASE_PASSED} passed${NC}"
+echo -e "    Ethereum (Chain 1): Ran ${MAINNET_TESTS} tests, ${GREEN}${MAINNET_PASSED} passed${NC}"
 
 # Clean up temp file
 rm "$TEMP_FILE"

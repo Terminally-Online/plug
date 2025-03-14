@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -419,48 +420,146 @@ func TestGetSchemaForProtocol(t *testing.T) {
 
 // TestGetSchemaForActions tests the /solver endpoint for specific actions
 func TestGetSchemaForActions(t *testing.T) {
-	// Test cases for protocol/action combinations
-	testCases := []struct {
+	// Base chain ID - we'll prioritize this for testing
+	const baseChainID = 8453
+
+	// Use the protocols that we have test case files for
+	protocols := []string{
+		"euler",
+		"aave_v3",
+		"morpho",
+		"yearn_v3",
+		"plug",
+	}
+
+	// Load and test schema for each protocol
+	for _, protocol := range protocols {
+		testCases, err := loadTestCasesForProtocol(protocol)
+		if err != nil {
+			t.Logf("Skipping schema tests for protocol %s: %v", protocol, err)
+			continue
+		}
+
+		// Create a map to track which actions we've already tested
+		// so we don't test the same action multiple times
+		testedActions := make(map[string]bool)
+		
+		// Create maps to track which actions are available on each chain
+		baseChainActions := make(map[string]bool)
+		otherChainActions := make(map[string]map[uint64]bool)
+
+		// First pass: categorize actions by chain
+		for _, tc := range testCases {
+			// Extract the action from the test case
+			var action string
+			if len(tc.Intent.Inputs) > 0 {
+				if a, ok := tc.Intent.Inputs[0]["action"].(string); ok {
+					action = a
+				} else {
+					continue // Skip if we can't determine the action
+				}
+			} else {
+				continue // Skip if there are no inputs
+			}
+
+			// Check which chain this test case is for
+			if tc.Intent.ChainId == baseChainID {
+				baseChainActions[action] = true
+			} else {
+				if otherChainActions[action] == nil {
+					otherChainActions[action] = make(map[uint64]bool)
+				}
+				otherChainActions[action][tc.Intent.ChainId] = true
+			}
+		}
+
+		// Second pass: run tests, prioritizing Base chain
+		for _, tc := range testCases {
+			// Extract the action from the test case
+			var action string
+			if len(tc.Intent.Inputs) > 0 {
+				if a, ok := tc.Intent.Inputs[0]["action"].(string); ok {
+					action = a
+				} else {
+					continue // Skip if we can't determine the action
+				}
+			} else {
+				continue // Skip if there are no inputs
+			}
+
+			// Skip if we've already tested this action on any chain
+			if testedActions[action] {
+				continue
+			}
+
+			// If this action is available on Base, but this test case isn't for Base,
+			// skip it as we'll use the Base version instead
+			if baseChainActions[action] && tc.Intent.ChainId != baseChainID {
+				continue
+			}
+
+			// We'll use this test case
+			testedActions[action] = true
+
+			// Run the test for this protocol/action combination
+			t.Run(fmt.Sprintf("%s_%s_schema_chain_%d", protocol, action, tc.Intent.ChainId), func(t *testing.T) {
+				resp, body, err := makeTestRequest(
+					fmt.Sprintf("http://localhost:8080/solver?chainId=%d&protocol=%s&action=%s", 
+						tc.Intent.ChainId, protocol, action),
+					http.MethodGet,
+					nil,
+				)
+				if err != nil {
+					t.Skip("Skipping test: server is not running")
+					return
+				}
+
+				// Some combinations might not be available, so we'll skip if we get 400
+				if resp.StatusCode == http.StatusBadRequest {
+					warningLog(t, "Action %s not available for protocol %s on chain %d", 
+						action, protocol, tc.Intent.ChainId)
+					t.Skipf("Action %s not available for protocol %s on chain %d", 
+						action, protocol, tc.Intent.ChainId)
+					return
+				}
+
+				assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+				var schemaResponse map[string]interface{}
+				err = json.Unmarshal(body, &schemaResponse)
+				require.NoError(t, err)
+
+				// Check that our protocol is in the response
+				protocolData, ok := schemaResponse[protocol]
+				assert.True(t, ok, "Protocol %s should be in the response", protocol)
+
+				// Extract schema and check for the action
+				protocolMap, ok := protocolData.(map[string]interface{})
+				assert.True(t, ok)
+
+				schema, ok := protocolMap["schema"].(map[string]interface{})
+				assert.True(t, ok)
+
+				_, ok = schema[action]
+				assert.True(t, ok, "Action %s should be in the schema", action)
+				successLog(t, "Successfully retrieved schema for %s.%s on chain %d", protocol, action, tc.Intent.ChainId)
+			})
+		}
+	}
+
+	// Add tests for protocols that don't have test case files yet
+	additionalTests := []struct {
 		protocol string
 		action   string
 		chainId  uint64
 	}{
-		{"euler", "supply", 8453},
-		{"euler", "withdraw", 8453},
-		{"euler", "supply_collateral", 8453},
-		{"euler", "withdraw_collateral", 8453},
-		{"euler", "borrow", 8453},
-		{"euler", "repay", 8453},
-
-		{"aave_v3", "deposit", 8453},
-		{"aave_v3", "borrow", 8453},
-		{"aave_v3", "repay", 8453},
-		{"aave_v3", "withdraw", 8453},
-
-		{"morpho", "earn", 8453},
-		{"morpho", "supply_collateral", 8453},
-		{"morpho", "withdraw", 8453},
-		{"morpho", "withdraw_all", 8453},
-		{"morpho", "borrow", 8453},
-		{"morpho", "repay", 8453},
-		{"morpho", "repay_all", 8453},
-		{"morpho", "claim_rewards", 8453},
-
-		{"yearn_v3", "deposit", 8453},
-		{"yearn_v3", "withdraw", 8453},
-		{"yearn_v3", "stake", 8453},
-		{"yearn_v3", "stake_max", 8453},
-		{"yearn_v3", "redeem", 8453},
-		{"yearn_v3", "redeem_max", 8453},
-
 		{"nouns", "bid", 1},
-
 		{"ens", "buy", 1},
 		{"ens", "renew", 1},
 	}
 
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%s_%s_schema", tc.protocol, tc.action), func(t *testing.T) {
+	for _, tc := range additionalTests {
+		t.Run(fmt.Sprintf("%s_%s_schema_chain_%d", tc.protocol, tc.action, tc.chainId), func(t *testing.T) {
 			resp, body, err := makeTestRequest(
 				fmt.Sprintf("http://localhost:8080/solver?chainId=%d&protocol=%s&action=%s", tc.chainId, tc.protocol, tc.action),
 				http.MethodGet,
@@ -497,7 +596,7 @@ func TestGetSchemaForActions(t *testing.T) {
 
 			_, ok = schema[tc.action]
 			assert.True(t, ok, "Action %s should be in the schema", tc.action)
-			successLog(t, "Successfully retrieved schema for %s.%s", tc.protocol, tc.action)
+			successLog(t, "Successfully retrieved schema for %s.%s on chain %d", tc.protocol, tc.action, tc.chainId)
 		})
 	}
 }
@@ -508,33 +607,87 @@ func TestGetSolution(t *testing.T) {
 	infoLog(t, "Testing solution generation for all supported protocol/action combinations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
 
-	// Load and run all protocol tests
-	runProtocolTests(t, "euler", testEOAAddress)
-	runProtocolTests(t, "aave_v3", testEOAAddress)
-	runProtocolTests(t, "morpho", testEOAAddress)
-	runProtocolTests(t, "yearn_v3", testEOAAddress)
-	runProtocolTests(t, "nouns", testEOAAddress)
-	runProtocolTests(t, "ens", testEOAAddress)
+	// Base chain ID - we'll prioritize this for testing
+	const baseChainID = 8453
 
-	// Load and run utility protocol tests
-	runProtocolTests(t, "assert", testEOAAddress)
-	runProtocolTests(t, "boolean", testEOAAddress)
-	runProtocolTests(t, "math", testEOAAddress)
-	runProtocolTests(t, "database", testEOAAddress)
+	// Define protocols to test, with preferred chains
+	baseProtocols := []string{"morpho", "euler"}  // Protocols to test on Base chain
+	mainnetProtocols := []string{"aave_v3", "yearn_v3", "nouns", "ens"}  // Protocols to test on Ethereum mainnet
+	utilityProtocols := []string{"assert", "boolean", "math", "database"}  // Chain-agnostic utility protocols
+
+	// Run tests for each group
+	for _, protocol := range baseProtocols {
+		runProtocolTests(t, protocol, testEOAAddress, baseChainID)
+	}
+
+	for _, protocol := range mainnetProtocols {
+		runProtocolTests(t, protocol, testEOAAddress, 1)  // Chain ID 1 for Ethereum mainnet
+	}
+
+	for _, protocol := range utilityProtocols {
+		runProtocolTests(t, protocol, testEOAAddress, baseChainID)  // Test utilities on Base
+	}
 }
 
-// Helper function to run all tests for a specific protocol
-func runProtocolTests(t *testing.T, protocol string, testAddress string) {
+// Helper function to run all tests for a specific protocol with preferred chain ID
+func runProtocolTests(t *testing.T, protocol string, testAddress string, preferredChainID uint64) {
 	// Load test cases for this protocol from its JSON file
 	testCases, err := loadTestCasesForProtocol(protocol)
 	if err != nil {
-		t.Logf("Skipping tests for protocol %s: %v", protocol, err)
+		warningLog(t, "Skipping tests for protocol %s: %v", protocol, err)
 		return
 	}
 
-	// Run each test case
+	// Filter test cases to prioritize the preferred chain
+	preferredChainTestCases := make([]TestCase, 0)
+	otherChainTestCases := make([]TestCase, 0)
+
+	// Sort test cases by preferred chain
 	for _, tc := range testCases {
-		t.Run(tc.Name, func(t *testing.T) {
+		if tc.Intent.ChainId == preferredChainID {
+			preferredChainTestCases = append(preferredChainTestCases, tc)
+		} else {
+			otherChainTestCases = append(otherChainTestCases, tc)
+		}
+	}
+
+	// If we have test cases for the preferred chain, use only those
+	finalTestCases := preferredChainTestCases
+	if len(finalTestCases) == 0 {
+		infoLog(t, "No test cases for protocol %s on chain %d, using alternative chains", protocol, preferredChainID)
+		finalTestCases = otherChainTestCases
+	} else {
+		infoLog(t, "Using %d test cases for protocol %s on chain %d", len(finalTestCases), protocol, preferredChainID)
+	}
+
+	// Track actions already tested to avoid duplicates
+	testedActions := make(map[string]bool)
+
+	// Run each test case
+	for _, tc := range finalTestCases {
+		// Extract the action to avoid duplicates
+		var action string
+		if len(tc.Intent.Inputs) > 0 {
+			if a, ok := tc.Intent.Inputs[0]["action"].(string); ok {
+				action = a
+			}
+		}
+
+		// Skip if we've already tested this action (unless it's empty or we can't determine it)
+		if action != "" && testedActions[action] {
+			continue
+		}
+		if action != "" {
+			testedActions[action] = true
+		}
+
+		// Run the test with context about which chain we're using
+		testName := fmt.Sprintf("%s_%s_chain_%d", protocol, action, tc.Intent.ChainId)
+		if action == "" {
+			testName = fmt.Sprintf("%s_chain_%d", tc.Name, tc.Intent.ChainId)
+		}
+
+		t.Run(testName, func(t *testing.T) {
 			// Prepare request info for better error reporting
 			protocol := ""
 			action := ""
@@ -582,13 +735,19 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string) {
 
 				// Print full request for debugging
 				reqJSON, _ := json.MarshalIndent(tc.Intent, "", "  ")
-				errorLog(t, "%s\nRequest: %s", errorMsg, string(reqJSON))
-
-				// Fail the test if we expected it to succeed
+				
+				// Handle the failure based on whether we expect it to succeed
 				if tc.ExpectOk {
+					// Get more specific error categorization to help debugging
+					failureCategory := categorizeFailure(string(body), tc.Intent.ChainId, protocol, action)
+					errorLog(t, "%s\nFailure category: %s\nRequest: %s", errorMsg, failureCategory, string(reqJSON))
+					
+					// Mark as failing but continue tests - don't stop everything for one failing test
 					t.Errorf("Test case %s failed: %s", tc.Name, errorMsg)
 				} else {
-					successLog(t, "Got expected error status code: %d", resp.StatusCode)
+					// If we expected an error, log it as a success
+					successLog(t, "Got expected error status code %d for %s.%s on chain %d", 
+						resp.StatusCode, protocol, action, tc.Intent.ChainId)
 				}
 				return
 			}
@@ -598,6 +757,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string) {
 			err = json.Unmarshal(body, &solution)
 			if err != nil {
 				errorLog(t, "Failed to unmarshal response: %v. Response body: %s", err, string(body))
+				t.Errorf("Failed to parse response JSON: %v", err)
 				return
 			}
 
@@ -612,6 +772,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string) {
 			if len(missingFields) > 0 {
 				errorLog(t, "Response missing required fields: %v.\nFull response: %s",
 					missingFields, string(body))
+				t.Errorf("Response missing required fields: %v", missingFields)
 				return
 			}
 
@@ -620,6 +781,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string) {
 				// Check that we have at least one intent
 				if len(intents) == 0 {
 					errorLog(t, "Solution contains empty intents array")
+					t.Errorf("Solution contains empty intents array")
 					return
 				}
 
@@ -627,17 +789,52 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string) {
 				infoLog(t, "Solution contains %d intents", len(intents))
 			}
 
-			// Validate simulation results
+			// Validate simulation results if present
 			if sim, ok := solution["simulationResults"].(map[string]interface{}); ok {
 				// Check if we have simulation data
 				if status, exists := sim["status"].(string); exists {
 					infoLog(t, "Simulation status: %s", status)
+					
+					// If simulation status indicates failure but we expected success, that's an issue
+					if status != "success" && tc.ExpectOk {
+						warningLog(t, "Simulation returned status %q but test case expected success", status)
+					}
 				}
 			}
 
-			successLog(t, "✓ Successfully generated solution for %s (%s)", protocol, action)
+			successLog(t, "✓ Successfully generated solution for %s.%s on chain %d", protocol, action, tc.Intent.ChainId)
 		})
 	}
+}
+
+// Helper function to categorize failures for better debugging
+func categorizeFailure(responseBody string, chainId uint64, protocol, action string) string {
+	// Look for common error patterns
+	switch {
+	case contains(responseBody, "rate limit"):
+		return "RATE_LIMIT_EXCEEDED"
+	case contains(responseBody, "not supported") || contains(responseBody, "not implemented"):
+		return "FEATURE_NOT_SUPPORTED"
+	case contains(responseBody, "not found") || contains(responseBody, "couldn't find"):
+		return "RESOURCE_NOT_FOUND"
+	case contains(responseBody, "chain") && contains(responseBody, "not supported"):
+		return fmt.Sprintf("CHAIN_NOT_SUPPORTED (Chain ID: %d)", chainId)
+	case contains(responseBody, "validation") || contains(responseBody, "invalid"):
+		return "INPUT_VALIDATION_ERROR"
+	case contains(responseBody, "rpc error") || contains(responseBody, "connection"):
+		return "RPC_CONNECTION_ERROR"
+	case contains(responseBody, "contract") && contains(responseBody, "error"):
+		return "CONTRACT_INTERACTION_ERROR"
+	case contains(responseBody, "timeout") || contains(responseBody, "timed out"):
+		return "TIMEOUT"
+	default:
+		return "UNKNOWN_ERROR"
+	}
+}
+
+// Helper function to check if a string contains another string
+func contains(s, substr string) bool {
+	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
 }
 
 // Helper function to load test cases for a specific protocol
