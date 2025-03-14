@@ -7,7 +7,8 @@ import { Eye, GitFork } from "lucide-react"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, colors, formatTitle } from "@/lib"
-import { api, RouterOutputs } from "@/server/client"
+import { RouterOutputs } from "@/server/client"
+import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnActions } from "@/state/columns"
 
 import { Avatar } from "../../sockets/profile"
@@ -16,7 +17,7 @@ type Props = { index: number; from: string; plug: RouterOutputs["plugs"]["all"][
 
 export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 	const { navigate } = useColumnActions(index)
-	const { data: session } = useSession()
+	const { socket } = useSocket()
 
 	return (
 		<>
@@ -24,16 +25,19 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 				onExpand={
 					plug
 						? () =>
-							navigate({
-								index,
-								key: COLUMNS.KEYS.PLUG,
-								item: plug.id,
-								from
-							})
+								navigate({
+									index,
+									key: COLUMNS.KEYS.PLUG,
+									item: plug.id,
+									from
+								})
 						: undefined
 				}
 				loading={!plug}
-				className={cn("relative flex h-[160px] w-full flex-col overflow-hidden text-left", !!plug && "bg-plug-white")}
+				className={cn(
+					"relative flex h-[160px] w-full flex-col overflow-hidden text-left",
+					!!plug && "bg-plug-white"
+				)}
 				noPadding
 			>
 				{plug === undefined ? (
@@ -87,12 +91,17 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 							</div>
 
 							<div className="relative z-10 flex-1">
-								<p className={cn("line-clamp-2 break-words font-bold leading-snug", !plug && "invisible")}>
+								<p
+									className={cn(
+										"line-clamp-2 break-words font-bold leading-snug",
+										!plug && "invisible"
+									)}
+								>
 									{plug ? (plug.name === "" ? "Untitled Plug" : formatTitle(plug.name)) : "."}
 								</p>
 							</div>
 
-							{plug?.socketId !== session?.user.id && (
+							{plug?.socketId !== socket?.id && (
 								<div className="relative ml-auto h-6 w-6 min-w-6 shrink-0">
 									<div className="relative z-[21] h-6 w-6">
 										{plug?.socket?.identity?.ens?.avatar ? (

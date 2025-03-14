@@ -6,10 +6,10 @@
 	"scripts": {
 		"predev:env": "pnpm env:decrypt",
 		"predev:db": "tsx ./lib/scripts/db.ts",
-		"predev:prisma": "pnpm prisma:migrate && pnpm prisma:push && pnpm prisma:seed",
-		"predev:md": "pnpm tsx ./lib/scripts/md.ts",
+		"predev:prisma": "pnpm prisma:migrate && pnpm prisma:push",
 		"predev": "run-s predev:*",
 		"dev": "next dev --turbo",
+		"build:md": "pnpm tsx ./lib/scripts/md.ts",
 		"build:lint": "next lint",
 		"build:prisma": "pnpm prisma:generate",
 		"build:next": "next build",
