@@ -16,7 +16,6 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
-	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver/signature"
@@ -282,23 +281,6 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		if err != nil {
 			return nil, err
 		}
-
-		// if run != nil {
-		// 	run.IntentId = intent.Id
-		// 	run.LivePlugsId = livePlugs.Id
-		// 	intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
-		//
-		// 	if err := database.DB.Create(run).Error; err != nil {
-		// 		return nil, fmt.Errorf("failed to save simulation run: %v", err)
-		// 	}
-		//
-		// 	if err := database.DB.Model(&intent).Updates(map[string]any{
-		// 		"period_end_at":      intent.PeriodEndAt,
-		// 		"next_simulation_at": intent.NextSimulationAt,
-		// 	}).Error; err != nil {
-		// 		return nil, fmt.Errorf("failed to update intent: %v", err)
-		// 	}
-		// }
 	}
 
 	if err := database.DB.Create(run).Error; err != nil {
@@ -355,55 +337,4 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 	}
 
 	return result, nil
-}
-
-// Submit executes multiple Intents on-chain through the Plug router contract.
-// For each Intent:
-// 1. It solves the Intent to generate the LivePlugs
-// 2. Filters out unsuccessful simulations
-// 3. Submits the valid LivePlugs to the blockchain with one transaction per Intent
-// This is typically used for cron-scheduled or batched transaction execution.
-func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
-	if len(intents) == 0 {
-		return nil, utils.ErrBuild("no plugs generated to execute")
-	}
-
-	chainId := intents[0].ChainId
-	errors := make([]error, len(intents))
-
-	var livePlugsList []*signature.LivePlugs
-	for i, intent := range intents {
-		if intent.ChainId != chainId {
-			errors[i] = utils.ErrChainId("chainId", intent.ChainId)
-			continue
-		}
-
-		solution, err := s.SolveAndSimulateSocket(&intent)
-		if err != nil {
-			errors[i] = err
-			continue
-		}
-
-		if submit, ok := intent.Options["submit"].(bool); ok && submit {
-			// Only include LivePlugs if the run was successful or doesn't exist
-			if solution.Run == nil || solution.Run.Status == "success" || solution.Run.Status == "pending" {
-				// We can get LivePlugs directly from the solution now
-				// if solution.LivePlugs != nil {
-				// 	livePlugsList = append(livePlugsList, solution.LivePlugs)
-				// }
-			}
-		}
-	}
-
-	provider, err := client.New(chainId)
-	if err != nil {
-		return nil, err
-	}
-
-	results, err := provider.Plug(livePlugsList)
-	if err != nil {
-		return nil, err
-	}
-
-	return results, nil
 }
