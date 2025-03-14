@@ -75,5 +75,7 @@ func main() {
 	router := api.SetupRouter(s)
 
 	log.Println("Started server on http://localhost:8080")
+	log.Println("OpenAPI specification available at: http://localhost:8080/openapi.json")
+	log.Println("API Documentation UI available at: http://localhost:8080/api-docs")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

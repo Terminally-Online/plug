@@ -621,10 +621,14 @@ func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccoun
 		fmt.Printf("WrapEVCCall pack error: %v\n", err)
 		return signature.Plug{}, utils.ErrTransaction(err.Error())
 	}
+	var finalUpdates []coil.Update
+	if updates != nil {
+		finalUpdates = *updates
+	}
 
 	return signature.Plug{
 		To:      common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
 		Data:    callCalldata,
-		Updates: *updates,
+		Updates: finalUpdates,
 	}, nil
 }

@@ -40,7 +40,7 @@ func getHealthFactor(chainId uint64, userAddress common.Address) (*big.Int, erro
 		return nil, err
 	}
 	pool, err := aave_v3_pool.NewAaveV3Pool(
-		common.HexToAddress(references.Networks[chainId].References["aave"]["pool"]),
+		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["pool"]),
 		client,
 	)
 	if err != nil {

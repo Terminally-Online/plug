@@ -24,7 +24,7 @@ func Simulations(s solver.Solver) {
 		return
 	}
 
-	livePlugs := make(map[string][]*signature.LivePlugs, 0)
+	livePlugs := make(map[string]*signature.LivePlugs, 0)
 	for _, intent := range intents {
 		if intent.Locked {
 			solution, err := s.RebuildSolutionFromModels(&intent)
@@ -38,6 +38,14 @@ func Simulations(s solver.Solver) {
 			} else {
 				log.Printf("failed to simulation: %v", err)
 			}
+		}
+
+		intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
+		if err := database.DB.Model(&intent).Updates(map[string]any{
+			"period_end_at":      intent.PeriodEndAt,
+			"next_simulation_at": intent.NextSimulationAt,
+		}).Error; err != nil {
+			log.Printf("failed to update intent simulation interval: %v", err)
 		}
 	}
 
