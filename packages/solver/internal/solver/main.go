@@ -8,6 +8,7 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/assert"
+	"solver/internal/actions/basepaint"
 	"solver/internal/actions/boolean"
 	dbactions "solver/internal/actions/database"
 	"solver/internal/actions/euler"
@@ -34,16 +35,17 @@ type Solver struct {
 func New() *Solver {
 	return &Solver{
 		Protocols: map[string]actions.Protocol{
-			actions.Plug:     plug.New(),
-			actions.Boolean:  boolean.New(),
-			actions.AaveV3:   aave_v3.New(),
-			actions.YearnV3:  yearn_v3.New(),
-			actions.Nouns:    nouns.New(),
-			actions.Morpho:   morpho.New(),
-			actions.Euler:    euler.New(),
-			actions.Math:     math.New(),
-			actions.Assert:   assert.New(),
-			actions.Database: dbactions.New(),
+			actions.AaveV3:    aave_v3.New(),
+			actions.Assert:    assert.New(),
+			actions.BasePaint: basepaint.New(),
+			actions.Boolean:   boolean.New(),
+			actions.Euler:     euler.New(),
+			actions.Math:      math.New(),
+			actions.Morpho:    morpho.New(),
+			actions.Nouns:     nouns.New(),
+			actions.Plug:      plug.New(),
+			actions.Database:  dbactions.New(),
+			actions.YearnV3:   yearn_v3.New(),
 		},
 		IsKilled: false,
 	}

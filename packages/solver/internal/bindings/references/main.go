@@ -18,7 +18,9 @@ var (
 	terminateResults = []string{"Invalid API Key"}
 	sleepResults     = []string{"Rate limit"}
 
-	Referral = "0x62180042606624f02d8a130da8a3171e9b33894d"
+	MultichainEtherscan = "https://api.etherscan.io/v2/api?chainid=%d"
+
+	Referral = "0xE09C3f7a144D3b1Bef42499486cA5C36d20ec5d1"
 
 	Multicall = map[string]string{
 		"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
@@ -44,7 +46,6 @@ var (
 			Default: "https://cdn.onplug.io/blockchain/ethereum.png",
 		},
 		ChainIds: []uint64{1, 31337},
-		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
 			"aave_v3": {
 				"pool":                     "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
@@ -93,12 +94,14 @@ var (
 			Default: "https://cdn.onplug.io/blockchain/base.png",
 		},
 		ChainIds: []uint64{8453},
-		Explorer: "https://api.basescan.org/api",
 		References: map[string]map[string]string{
 			"aave_v3": {
 				"pool":                     "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
 				"ui_pool_data_provider":    "0x68100bD5345eA474D93577127C11F39FF8463e93",
 				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
+			},
+			"basepaint": {
+				"referral": "0xaff1A9E200000061fC3283455d8B0C7e3e728161",
 			},
 			"euler": {
 				"evault_implementation":     "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
@@ -129,7 +132,7 @@ var (
 		},
 	}
 
-	Networks = map[uint64]*Network{1: Mainnet, 31337: Mainnet, 8453: Base}
+	Networks = map[uint64]*Network{1: Mainnet, 8453: Base}
 )
 
 func GenerateReference(explorer string, folderName string, contractName string, address string, retries int) error {
@@ -145,7 +148,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		return fmt.Errorf("failed to create directory: %v", err)
 	}
 
-	url := fmt.Sprintf("%s?module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY"))
+	url := fmt.Sprintf("%s&module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY"))
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -248,19 +251,21 @@ func GenerateReferences() error {
 	processed := make(map[string]bool)
 
 	for _, network := range Networks {
+		explorer := fmt.Sprintf(MultichainEtherscan, network.ChainIds[0])
+
 		for folderName, contracts := range network.References {
 			for contractName, address := range contracts {
 				key := fmt.Sprintf("%s:%s", folderName, contractName)
 
-				fmt.Printf("Generating reference for %s/%s on %s\n", folderName, contractName, network.Explorer)
+				fmt.Printf("Generating reference for %s/%s on %s\n", folderName, contractName, explorer)
 
 				if processed[key] {
 					fmt.Printf("Skipping %s/%s on %s - already processed\n",
-						folderName, contractName, network.Explorer)
+						folderName, contractName, explorer)
 					continue
 				}
 
-				if err := GenerateReference(network.Explorer, folderName, contractName, address, retries); err != nil {
+				if err := GenerateReference(explorer, folderName, contractName, address, retries); err != nil {
 					return err
 				}
 
