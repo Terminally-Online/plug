@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"solver/internal/actions"
 	"solver/internal/api"
 	"solver/internal/cron"
 	"solver/internal/solver"
@@ -21,9 +20,6 @@ func main() {
 	}
 
 	s := solver.New()
-
-	provider := actions.NewCachedOptionsProvider(&actions.DefaultOptionsProvider{})
-	actions.SetCachedOptionsProvider(provider)
 
 	var CronJobs = []struct {
 		Schedule string
