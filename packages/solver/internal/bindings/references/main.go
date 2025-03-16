@@ -3,8 +3,6 @@ package references
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"solver/internal/utils"
@@ -148,28 +146,25 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		return fmt.Errorf("failed to create directory: %v", err)
 	}
 
-	url := fmt.Sprintf("%s&module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY"))
-	resp, err := http.Get(url)
+	response, err := utils.MakeHTTPRequest(
+		fmt.Sprintf("%s&module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY")),
+		"GET",
+		map[string]string{
+			"accept":        "application/json",
+			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_KEY")),
+		},
+		nil,
+		nil,
+		struct {
+			Message string            `json:"message"`
+			Result  []json.RawMessage `json:"result"`
+		}{},
+	)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
 	fmt.Printf("Getting source for %s/%s\n", folderName, contractName)
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	var response struct {
-		Message string            `json:"message"`
-		Result  []json.RawMessage `json:"result"`
-	}
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return err
-	}
 
 	if response.Message == "NOTOK" {
 		fmt.Printf("Failed to get source for %s/%s: %s.\n", folderName, contractName, response.Result[0])
@@ -226,7 +221,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		return GenerateReference(explorer, folderName, contractName, explorerResponse.Implementation, retries)
 	}
 
-	var abiJSON interface{}
+	var abiJSON any
 	err = json.Unmarshal([]byte(explorerResponse.ABI), &abiJSON)
 	if err != nil {
 		return fmt.Errorf("failed to parse ABI JSON: %v", err)
