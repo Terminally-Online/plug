@@ -38,14 +38,14 @@ type TimePropertyInput struct {
 	Property  string   `json:"property"`
 }
 
-func HandleLogicOperation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleLogicOperation(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs LogicOperationInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal logic operation inputs: %w", err)
 	}
 
 	operation := strings.ToLower(inputs.Operation)
-	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
 	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
@@ -87,14 +87,14 @@ func HandleLogicOperation(rawInputs json.RawMessage, params actions.HandlerParam
 	return []signature.Plug{plug}, nil
 }
 
-func HandleCompareNumbers(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleCompareNumbers(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs NumberComparisonInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal number comparison inputs: %w", err)
 	}
 
 	comparison := strings.ToLower(inputs.Comparison)
-	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
 	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
@@ -129,14 +129,14 @@ func HandleCompareNumbers(rawInputs json.RawMessage, params actions.HandlerParam
 	return []signature.Plug{plug}, nil
 }
 
-func HandleCompareTimes(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleCompareTimes(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs TimeCompareInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal time comparison inputs: %w", err)
 	}
 
 	comparison := strings.ToLower(inputs.Comparison)
-	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
 	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
@@ -168,9 +168,9 @@ func HandleCompareTimes(rawInputs json.RawMessage, params actions.HandlerParams)
 	return []signature.Plug{plug}, nil
 }
 
-func HandleCheckTimeProperty(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleCheckTimeProperty(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs TimePropertyInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal time property inputs: %w", err)
 	}
 
@@ -185,7 +185,7 @@ func HandleCheckTimeProperty(rawInputs json.RawMessage, params actions.HandlerPa
 	}
 
 	property := strings.ToLower(inputs.Property)
-	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
 	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)

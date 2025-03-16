@@ -5,8 +5,6 @@ import (
 	"math/big"
 	"solver/internal/actions"
 	"strings"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -78,8 +76,8 @@ func GetCollateralOptions(chainId uint64) ([]actions.Option, error) {
 	return options, nil
 }
 
-func CollateralOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	collateralOptions, err := GetCollateralOptions(chainId)
+func CollateralOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	collateralOptions, err := GetCollateralOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +122,8 @@ func GetBorrowOptions(chainId uint64) ([]actions.Option, error) {
 	return options, nil
 }
 
-func BorrowOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	borrowOptions, err := GetBorrowOptions(chainId)
+func BorrowOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	borrowOptions, err := GetBorrowOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -134,19 +132,19 @@ func BorrowOptions(chainId uint64, _ common.Address, _ map[int]string, _ string)
 	}, nil
 }
 
-func HealthFactorOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+func HealthFactorOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	return map[int]actions.Options{
 		0: {Simple: actions.BaseThresholdFields},
 		1: {Simple: riskOptions},
 	}, nil
 }
 
-func APYOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	collateralOptions, err := GetCollateralOptions(chainId)
+func APYOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	collateralOptions, err := GetCollateralOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
-	borrowOptions, err := GetBorrowOptions(chainId)
+	borrowOptions, err := GetBorrowOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}

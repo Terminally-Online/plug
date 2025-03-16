@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"strings"
 	"solver/bindings/plug_database"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -65,9 +65,9 @@ type RemoveValueInput struct {
 }
 
 type BatchSetInput struct {
-	Count  *big.Int   `json:"count"`
-	Keys   []string   `json:"keys"`
-	Values []string   `json:"values"`
+	Count  *big.Int `json:"count"`
+	Keys   []string `json:"keys"`
+	Values []string `json:"values"`
 }
 
 func stringNameToKey(str string) [32]byte {
@@ -83,13 +83,13 @@ func getDatabaseContractInfo(chainId uint64) (common.Address, *abi.ABI, error) {
 	if err != nil {
 		return common.Address{}, nil, fmt.Errorf("failed to get PlugDatabase ABI: %w", err)
 	}
-	
+
 	return databaseContract, databaseAbi, nil
 }
 
-func HandleSetUint256(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetUint256(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetUint256Input
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal set uint256 inputs: %w", err)
 	}
 
@@ -99,7 +99,7 @@ func HandleSetUint256(rawInputs json.RawMessage, params actions.HandlerParams) (
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +118,9 @@ func HandleSetUint256(rawInputs json.RawMessage, params actions.HandlerParams) (
 	return []signature.Plug{plug}, nil
 }
 
-func HandleSetInt256(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetInt256(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetInt256Input
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal set int256 inputs: %w", err)
 	}
 
@@ -130,7 +130,7 @@ func HandleSetInt256(rawInputs json.RawMessage, params actions.HandlerParams) ([
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -149,27 +149,27 @@ func HandleSetInt256(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	return []signature.Plug{plug}, nil
 }
 
-func HandleSetBytes32(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetBytes32(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetBytes32Input
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		var stringInput struct {
 			Key   string `json:"key"`
 			Value string `json:"value"`
 		}
-		if err2 := json.Unmarshal(rawInputs, &stringInput); err2 == nil {
+		if err2 := json.Unmarshal(raw, &stringInput); err2 == nil {
 			valueStr := strings.TrimPrefix(stringInput.Value, "0x")
 			if len(valueStr) > 64 {
 				return nil, fmt.Errorf("bytes32 value too long: max 32 bytes (64 hex chars)")
 			}
-			
+
 			valueBytes, err := hex.DecodeString(valueStr)
 			if err != nil {
 				return nil, fmt.Errorf("invalid bytes32 hex string: %w", err)
 			}
-			
+
 			var bytes32Value [32]byte
 			copy(bytes32Value[32-len(valueBytes):], valueBytes)
-			
+
 			inputs = SetBytes32Input{
 				SetInputBase: SetInputBase{Key: stringInput.Key},
 				Value:        bytes32Value,
@@ -182,7 +182,7 @@ func HandleSetBytes32(rawInputs json.RawMessage, params actions.HandlerParams) (
 	key := stringNameToKey(inputs.Key)
 	value := inputs.Value
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -201,20 +201,20 @@ func HandleSetBytes32(rawInputs json.RawMessage, params actions.HandlerParams) (
 	return []signature.Plug{plug}, nil
 }
 
-func HandleSetBytes(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetBytes(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetBytesInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		var stringInput struct {
 			Key   string `json:"key"`
 			Value string `json:"value"`
 		}
-		if err2 := json.Unmarshal(rawInputs, &stringInput); err2 == nil {
+		if err2 := json.Unmarshal(raw, &stringInput); err2 == nil {
 			valueStr := strings.TrimPrefix(stringInput.Value, "0x")
 			valueBytes, err := hex.DecodeString(valueStr)
 			if err != nil {
 				return nil, fmt.Errorf("invalid bytes hex string: %w", err)
 			}
-			
+
 			inputs = SetBytesInput{
 				SetInputBase: SetInputBase{Key: stringInput.Key},
 				Value:        valueBytes,
@@ -226,7 +226,7 @@ func HandleSetBytes(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -245,18 +245,18 @@ func HandleSetBytes(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	return []signature.Plug{plug}, nil
 }
 
-func HandleSetAddress(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetAddress(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetAddressInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		var stringInput struct {
 			Key   string `json:"key"`
 			Value string `json:"value"`
 		}
-		if err2 := json.Unmarshal(rawInputs, &stringInput); err2 == nil {
+		if err2 := json.Unmarshal(raw, &stringInput); err2 == nil {
 			if !common.IsHexAddress(stringInput.Value) {
 				return nil, fmt.Errorf("invalid ethereum address: %s", stringInput.Value)
 			}
-			
+
 			inputs = SetAddressInput{
 				SetInputBase: SetInputBase{Key: stringInput.Key},
 				Value:        common.HexToAddress(stringInput.Value),
@@ -272,7 +272,7 @@ func HandleSetAddress(rawInputs json.RawMessage, params actions.HandlerParams) (
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -291,15 +291,15 @@ func HandleSetAddress(rawInputs json.RawMessage, params actions.HandlerParams) (
 	return []signature.Plug{plug}, nil
 }
 
-func HandleSetBool(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetBool(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetBoolInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal set bool inputs: %w", err)
 	}
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -318,15 +318,15 @@ func HandleSetBool(rawInputs json.RawMessage, params actions.HandlerParams) ([]s
 	return []signature.Plug{plug}, nil
 }
 
-func HandleSetString(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSetString(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SetStringInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal set string inputs: %w", err)
 	}
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -345,9 +345,9 @@ func HandleSetString(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetUint256(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetUint256(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get uint256 inputs: %w", err)
 	}
 
@@ -357,7 +357,7 @@ func HandleGetUint256(rawInputs json.RawMessage, params actions.HandlerParams) (
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -376,9 +376,9 @@ func HandleGetUint256(rawInputs json.RawMessage, params actions.HandlerParams) (
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetInt256(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetInt256(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get int256 inputs: %w", err)
 	}
 
@@ -388,7 +388,7 @@ func HandleGetInt256(rawInputs json.RawMessage, params actions.HandlerParams) ([
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -407,9 +407,9 @@ func HandleGetInt256(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetBytes32(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetBytes32(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get bytes32 inputs: %w", err)
 	}
 
@@ -419,7 +419,7 @@ func HandleGetBytes32(rawInputs json.RawMessage, params actions.HandlerParams) (
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -438,9 +438,9 @@ func HandleGetBytes32(rawInputs json.RawMessage, params actions.HandlerParams) (
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetBytes(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetBytes(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get bytes inputs: %w", err)
 	}
 
@@ -450,7 +450,7 @@ func HandleGetBytes(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -469,9 +469,9 @@ func HandleGetBytes(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetAddress(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetAddress(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get address inputs: %w", err)
 	}
 
@@ -481,7 +481,7 @@ func HandleGetAddress(rawInputs json.RawMessage, params actions.HandlerParams) (
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -500,9 +500,9 @@ func HandleGetAddress(rawInputs json.RawMessage, params actions.HandlerParams) (
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetBool(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetBool(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get bool inputs: %w", err)
 	}
 
@@ -512,7 +512,7 @@ func HandleGetBool(rawInputs json.RawMessage, params actions.HandlerParams) ([]s
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -531,9 +531,9 @@ func HandleGetBool(rawInputs json.RawMessage, params actions.HandlerParams) ([]s
 	return []signature.Plug{plug}, nil
 }
 
-func HandleGetString(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleGetString(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs GetInputBase
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal get string inputs: %w", err)
 	}
 
@@ -543,7 +543,7 @@ func HandleGetString(rawInputs json.RawMessage, params actions.HandlerParams) ([
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -562,15 +562,15 @@ func HandleGetString(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	return []signature.Plug{plug}, nil
 }
 
-func HandleRemoveValue(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleRemoveValue(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs RemoveValueInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal remove value inputs: %w", err)
 	}
 
 	key := stringNameToKey(inputs.Key)
 
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -589,33 +589,33 @@ func HandleRemoveValue(rawInputs json.RawMessage, params actions.HandlerParams) 
 	return []signature.Plug{plug}, nil
 }
 
-func HandleBatchSet(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleBatchSet(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs BatchSetInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal batch set inputs: %w", err)
 	}
-	
+
 	if inputs.Count == nil || len(inputs.Keys) == 0 || len(inputs.Values) == 0 {
 		return nil, fmt.Errorf("batch set requires count, keys, and values")
 	}
-	
-	if inputs.Count.Cmp(big.NewInt(int64(len(inputs.Keys)))) != 0 || 
-	   len(inputs.Keys) != len(inputs.Values) {
+
+	if inputs.Count.Cmp(big.NewInt(int64(len(inputs.Keys)))) != 0 ||
+		len(inputs.Keys) != len(inputs.Values) {
 		return nil, fmt.Errorf("count must match the number of keys and values")
 	}
-	
+
 	keys := make([][32]byte, len(inputs.Keys))
 	for i, key := range inputs.Keys {
 		keys[i] = stringNameToKey(key)
 	}
-	
+
 	values := make([][32]byte, len(inputs.Values))
 	for i, value := range inputs.Values {
 		valueStr := strings.TrimPrefix(value, "0x")
 		if len(valueStr) > 64 {
 			return nil, fmt.Errorf("bytes32 value too long at index %d: max 32 bytes (64 hex chars)", i)
 		}
-		
+
 		var bytes32Value [32]byte
 		if len(valueStr) > 0 {
 			valueBytes, err := hex.DecodeString(valueStr)
@@ -626,22 +626,22 @@ func HandleBatchSet(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		}
 		values[i] = bytes32Value
 	}
-	
-	databaseContract, databaseAbi, err := getDatabaseContractInfo(params.ChainId)
+
+	databaseContract, databaseAbi, err := getDatabaseContractInfo(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
-	
-	calldata, err := databaseAbi.Pack("batchSet", keys, values, uint8(1)) 
+
+	calldata, err := databaseAbi.Pack("batchSet", keys, values, uint8(1))
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack batchSet calldata: %w", err)
 	}
-	
+
 	plug := signature.Plug{
 		To:    databaseContract,
 		Data:  calldata,
 		Value: nil,
 	}
-	
+
 	return []signature.Plug{plug}, nil
 }

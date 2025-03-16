@@ -16,13 +16,13 @@ type AssertInput struct {
 	Assertion bool `json:"assertion"`
 }
 
-func HandleAssert(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleAssert(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs AssertInput
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal assert inputs: %w", err)
 	}
 
-	assertContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["assert"])
+	assertContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["assert"])
 	assertAbi, err := plug_assert.PlugAssertMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugAssert ABI: %w", err)

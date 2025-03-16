@@ -3,19 +3,17 @@ package plug
 import (
 	"solver/internal/actions"
 	"solver/internal/actions/options"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
-func TransferOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+func TransferOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	fungiblesIndex := 1
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(chainId, from, search[fungiblesIndex])
+	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
 	if err != nil {
 		return nil, err
 	}
 
 	recipientIndex := 2
-	recipientOptions, err := options.GetAddressOptions(chainId, from, search[recipientIndex])
+	recipientOptions, err := options.GetAddressOptions(lookup, recipientIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -26,15 +24,15 @@ func TransferOptions(chainId uint64, from common.Address, search map[int]string,
 	}, nil
 }
 
-func SwapOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+func SwapOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	fungiblesOutIndex := 1
-	fungiblesOutOptions, err := options.GetFungiblesAndFungiblesHeldOptions(chainId, from, search[fungiblesOutIndex])
+	fungiblesOutOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesOutIndex)
 	if err != nil {
 		return nil, err
 	}
 
 	fungiblesInIndex := 2
-	fungiblesInOptions, err := options.GetFungiblesAndFungiblesHeldOptions(chainId, from, search[fungiblesInIndex])
+	fungiblesInOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesInIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +42,9 @@ func SwapOptions(chainId uint64, from common.Address, search map[int]string, _ s
 	}, nil
 }
 
-func PriceOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+func PriceOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	fungiblesIndex := 0
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(chainId, from, search[fungiblesIndex])
+	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -56,15 +54,15 @@ func PriceOptions(chainId uint64, from common.Address, search map[int]string, _ 
 	}, nil
 }
 
-func BalanceOptions(chainId uint64, from common.Address, search map[int]string, _ string) (map[int]actions.Options, error) {
+func BalanceOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	fungiblesIndex := 0
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(chainId, from, search[fungiblesIndex])
+	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
 	if err != nil {
 		return nil, err
 	}
 
 	addressIndex := 1
-	addressOptions, err := options.GetAddressOptions(chainId, from, search[addressIndex])
+	addressOptions, err := options.GetAddressOptions(lookup, addressIndex)
 	if err != nil {
 		return nil, err
 	}

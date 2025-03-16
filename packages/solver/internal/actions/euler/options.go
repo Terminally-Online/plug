@@ -24,6 +24,9 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	}
 
 	cacheKey := fmt.Sprintf("euler:supplyTokens:%d", chainId)
+	// TODO: There is no reason to be doing a cache here as there are no calls made and it's just a loop.
+	//       We are used to memoizing things on the frontend, but you don't need to cache in-memory things
+	//       like this when you're working on a server.
 	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
@@ -75,13 +78,13 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
 }
 
-func SupplyTokenToVaultOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaults(chainId)
+func SupplyTokenToVaultOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
+	supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(lookup.ChainId, vaults)
 	if err != nil {
 		return nil, err
 	}
@@ -264,8 +267,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 	})
 }
 
-func PositionOptions(chainId uint64, from common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	addressPositions, err := GetAddressPositions(chainId, from)
+func PositionOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	addressPositions, err := GetAddressPositions(lookup.ChainId, lookup.From)
 	if err != nil {
 		fmt.Printf("error getting address positions: %v\n", err)
 		return nil, err
@@ -275,17 +278,17 @@ func PositionOptions(chainId uint64, from common.Address, _ map[int]string, _ st
 	}, nil
 }
 
-func SupplyTokenToVaultToPositionsOptions(chainId uint64, from common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaults(chainId)
+func SupplyTokenToVaultToPositionsOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
+	supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(lookup.ChainId, vaults)
 	if err != nil {
 		return nil, err
 	}
-	addressPositions, err := GetAddressPositions(chainId, from)
+	addressPositions, err := GetAddressPositions(lookup.ChainId, lookup.From)
 	if err != nil {
 		fmt.Printf("error getting address positions: %v\n", err)
 		return nil, err
@@ -356,17 +359,17 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
 }
 
-func BorrowTokenToVaultOptions(chainId uint64, from common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaults(chainId)
+func BorrowTokenToVaultOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	borrowTokenOptions, _, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(chainId, vaults)
+	borrowTokenOptions, _, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(lookup.ChainId, vaults)
 	if err != nil {
 		return nil, err
 	}
-	addressPositions, err := GetAddressPositions(chainId, from)
+	addressPositions, err := GetAddressPositions(lookup.ChainId, lookup.From)
 	if err != nil {
 		fmt.Printf("error getting address positions: %v\n", err)
 		return nil, err
@@ -378,17 +381,17 @@ func BorrowTokenToVaultOptions(chainId uint64, from common.Address, _ map[int]st
 	}, nil
 }
 
-func GetTokenOptions(chainId uint64, from common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaults(chainId)
+func TokenOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	_, supplyVaultOptions, _, err := GetSupplyTokenToVaultOptions(chainId, vaults)
+	_, supplyVaultOptions, _, err := GetSupplyTokenToVaultOptions(lookup.ChainId, vaults)
 	if err != nil {
 		return nil, err
 	}
-	_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(chainId, vaults)
+	_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(lookup.ChainId, vaults)
 	if err != nil {
 		return nil, err
 	}

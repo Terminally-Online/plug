@@ -45,10 +45,16 @@ func GetContext(oc openapi.OperationContext) error {
 }
 
 func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
-	chainId := r.URL.Query().Get("chainId")
+	chainIdQueryParam := r.URL.Query().Get("chainId")
 	protocol := r.URL.Query().Get("protocol")
 	action := r.URL.Query().Get("action")
 	from := r.URL.Query().Get("from")
+
+	chainId, err := strconv.ParseUint(chainIdQueryParam, 10, 64)
+	if err != nil {
+		utils.MakeHttpError(w, fmt.Sprintf("invalid chain ID: %s", chainId), http.StatusBadRequest)
+		return
+	}
 
 	searchParams := make(map[int]string)
 	for key, values := range r.URL.Query() {

@@ -3,8 +3,6 @@ package morpho
 import (
 	"fmt"
 	"solver/internal/actions"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
@@ -44,8 +42,8 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 	return tokenOptions, tokenToVaultOptions, nil
 }
 
-func SupplyTokenToVaultOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
+func SupplyTokenToVaultOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +88,8 @@ func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Optio
 	return marketOptions, marketAndVaultOptions, nil
 }
 
-func HealthFactorOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	marketOptions, _, err := GetMarketAndVaultOptions(chainId)
+func HealthFactorOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	marketOptions, _, err := GetMarketAndVaultOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +99,8 @@ func HealthFactorOptions(chainId uint64, _ common.Address, _ map[int]string, _ s
 	}, nil
 }
 
-func APYOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	_, marketAndVaultOptions, err := GetMarketAndVaultOptions(chainId)
+func APYOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	_, marketAndVaultOptions, err := GetMarketAndVaultOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +148,8 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func CollateralTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions(chainId)
+func CollateralTokenToMarketOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -162,8 +160,8 @@ func CollateralTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]
 	}, nil
 }
 
-func SupplyAndCollateralTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions(chainId)
+func SupplyAndCollateralTokenToMarketOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -207,8 +205,8 @@ func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func BorrowTokenToMarketOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(chainId)
+func BorrowTokenToMarketOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}

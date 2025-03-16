@@ -10,9 +10,7 @@ import (
 )
 
 var (
-	vaultsCache     []YearnVault
 	tokensCache     []Token
-	vaultsUpdatedAt int64
 	tokensUpdatedAt int64
 	cacheDuration   int64 = 300
 )

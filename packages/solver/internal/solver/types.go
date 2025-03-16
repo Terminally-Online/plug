@@ -11,7 +11,7 @@ type SolutionStatus struct {
 }
 
 type Solution struct {
-	LivePlugs    *signature.LivePlugs
+	LivePlugs    *signature.LivePlugs     `json:"-"`
 	Transactions []*signature.MinimalPlug `json:"transactions,omitempty"`
 	Run          *models.Run              `json:"run,omitempty"`
 }

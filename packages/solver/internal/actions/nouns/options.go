@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"solver/internal/actions"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func GetTraitTypeOptions() ([]actions.Option, error) {
@@ -64,7 +62,7 @@ func GetTraitOptions() ([]actions.Option, map[string][]actions.Option, error) {
 	return traitTypes, traitOptions, nil
 }
 
-func HasTraitOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+func HasTraitOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	traitTypeOptions, traitOptions, err := GetTraitOptions()
 	if err != nil {
 		return nil, err

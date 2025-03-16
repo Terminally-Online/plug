@@ -79,7 +79,7 @@ func New() actions.Protocol {
 					Type:     actions.TypeConstraint,
 					Sentence: "{0<direction:int8>} APY in {1<vault:string>} is {2<operator:int8>} than {3<threshold:float>}%.",
 					Handler:  HandleConstraintAPY,
-					Options:  GetTokenOptions,
+					Options:  TokenOptions,
 				},
 			},
 		},

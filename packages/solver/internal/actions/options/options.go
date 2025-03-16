@@ -45,11 +45,11 @@ func getENSName(address common.Address) (*string, error) {
 	return &name, nil
 }
 
-func GetAddressOptions(chainId uint64, from common.Address, search string) ([]actions.Option, error) {
+func GetAddressOptions(lookup *actions.SchemaLookup, index int) ([]actions.Option, error) {
 	var options []actions.Option
 
-	if search != "" && common.IsHexAddress(search) {
-		address := common.HexToAddress(search)
+	if lookup.Search[index] != "" && common.IsHexAddress(lookup.Search[index]) {
+		address := common.HexToAddress(lookup.Search[index])
 		ensName, err := getENSName(address)
 		if err != nil {
 			return nil, err
@@ -68,12 +68,12 @@ func GetAddressOptions(chainId uint64, from common.Address, search string) ([]ac
 	// NOTE: It may look like we are always checking the ENS data even when an
 	//       address is provided and that would be correct -- There are hundreds of
 	//       ENS minted and renewed that use their address as their ENS.
-	if search != "" && !strings.HasSuffix(search, ensSuffix) {
+	if lookup.Search[index] != "" && !strings.HasSuffix(lookup.Search[index], ensSuffix) {
 		// NOTE: This is only here for optimistic suffixing so that we can start polling
 		//       results for a name before they have technically finished. If we wanted to
 		//       save some RPC calls we could only search when the search already ends with
 		//       .eth, but we are in the business of making things feel magic.
-		transformed := strings.TrimSuffix(search, ".")
+		transformed := strings.TrimSuffix(lookup.Search[index], ".")
 		transformed = strings.TrimSuffix(transformed, "eth")
 		transformed = fmt.Sprintf("%s%s", transformed, ensSuffix)
 
@@ -90,20 +90,20 @@ func GetAddressOptions(chainId uint64, from common.Address, search string) ([]ac
 	}
 
 	options = append(options, actions.Option{
-		Label: utils.FormatAddress(from),
-		Name:  utils.FormatAddress(from),
-		Value: from.Hex(),
+		Label: utils.FormatAddress(lookup.From),
+		Name:  utils.FormatAddress(lookup.From),
+		Value: lookup.From.Hex(),
 	})
 
 	return options, nil
 }
 
-func GetFungiblesHeldOptions(chainId uint64, from common.Address, search string) ([]actions.Option, error) {
-	positions, err := zerion.GetFungiblePositions([]string{"base"}, from, from, search)
+func GetFungiblesHeldOptions(lookup *actions.SchemaLookup, index int) ([]actions.Option, error) {
+	positions, err := zerion.GetFungiblePositions([]string{"base"}, lookup.From, lookup.From, lookup.Search[index])
 	if err != nil {
 		return nil, err
 	}
-	chainName := client.GetChainName(chainId)
+	chainName := client.GetChainName(lookup.ChainId)
 	var options []actions.Option
 	for _, position := range positions {
 		var option string
@@ -115,7 +115,7 @@ func GetFungiblesHeldOptions(chainId uint64, from common.Address, search string)
 				address = utils.NativeTokenAddress.Hex()
 			}
 			option = fmt.Sprintf("%s:%d:%d", address, chainImplementation.Decimals, 20)
-			defaultIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, address)
+			defaultIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", lookup.ChainId, address)
 			secondaryIcon = fmt.Sprintf("https://cdn.onplug.io/blockchain/%s.png", chainName)
 		}
 		if position.Attributes.FungibleInfo.Icon != nil {
@@ -135,13 +135,13 @@ func GetFungiblesHeldOptions(chainId uint64, from common.Address, search string)
 	return options, nil
 }
 
-func GetFungiblesOptions(chainId uint64, from common.Address, search string) ([]actions.Option, error) {
-	fungibles, err := zerion.GetFungibles(search, []string{"base"})
+func GetFungiblesOptions(lookup *actions.SchemaLookup, index int) ([]actions.Option, error) {
+	fungibles, err := zerion.GetFungibles(lookup.Search[index], []string{"base"})
 	if err != nil {
 		return nil, err
 	}
 
-	chainName := client.GetChainName(chainId)
+	chainName := client.GetChainName(lookup.ChainId)
 	var options []actions.Option
 	for _, fungible := range fungibles {
 		var option string
@@ -153,7 +153,7 @@ func GetFungiblesOptions(chainId uint64, from common.Address, search string) ([]
 				address = utils.NativeTokenAddress.Hex()
 			}
 			option = fmt.Sprintf("%s:%d:%d", address, chainImplementation.Decimals, 20)
-			defaultIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, address)
+			defaultIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", lookup.ChainId, address)
 			secondaryIcon = fmt.Sprintf("https://cdn.onplug.io/blockchain/%s.png", chainName)
 		}
 
@@ -169,13 +169,13 @@ func GetFungiblesOptions(chainId uint64, from common.Address, search string) ([]
 	return options, nil
 }
 
-func GetFungiblesAndFungiblesHeldOptions(chainId uint64, from common.Address, search string) ([]actions.Option, error) {
-	fungiblesHeldOptions, err := GetFungiblesHeldOptions(chainId, from, search)
+func GetFungiblesAndFungiblesHeldOptions(lookup *actions.SchemaLookup, index int) ([]actions.Option, error) {
+	fungiblesHeldOptions, err := GetFungiblesHeldOptions(lookup, index)
 	if err != nil {
 		return nil, err
 	}
 
-	fungiblesOptions, err := GetFungiblesOptions(chainId, from, search)
+	fungiblesOptions, err := GetFungiblesOptions(lookup, index)
 	if err != nil {
 		return nil, err
 	}

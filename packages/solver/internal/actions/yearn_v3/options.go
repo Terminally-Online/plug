@@ -4,18 +4,14 @@ import (
 	"fmt"
 	"solver/internal/actions"
 	"strings"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
-type YearnV3OptionsProvider struct{}
-
-func UnderlyingAssetToVaultOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
+func UnderlyingAssetToVaultOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	underlyingAssetOptions, err := GetUnderlyingAssetOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
-	underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions(chainId)
+	underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -25,16 +21,16 @@ func UnderlyingAssetToVaultOptions(chainId uint64, _ common.Address, _ map[int]s
 	}, nil
 }
 
-func AvailableStakingGaugeOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions(chainId)
+func AvailableStakingGaugeOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
 	return map[int]actions.Options{1: {Simple: availableStakingGaugeOptions}}, nil
 }
 
-func APYOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
-	vaultOptions, err := GetVaultOptions(chainId)
+func APYOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaultOptions, err := GetVaultOptions(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -42,19 +38,6 @@ func APYOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (m
 		0: {Simple: vaultOptions},
 		1: {Simple: actions.BaseThresholdFields},
 	}, nil
-}
-
-func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
-	switch action {
-	case actions.ActionDeposit, actions.ActionWithdraw:
-		return UnderlyingAssetToVaultOptions(chainId, common.Address{}, nil, action)
-	case actions.ActionStake, actions.ActionRedeem:
-		return AvailableStakingGaugeOptions(chainId, common.Address{}, nil, action)
-	case actions.ConstraintAPY:
-		return APYOptions(chainId, common.Address{}, nil, action)
-	default:
-		return nil, fmt.Errorf("unsupported action for options: %s", action)
-	}
 }
 
 func GetUnderlyingAssetOptions(chainId uint64) ([]actions.Option, error) {

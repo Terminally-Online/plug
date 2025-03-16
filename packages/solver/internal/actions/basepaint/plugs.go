@@ -13,12 +13,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func MintLatest(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func MintLatest(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Recipient common.Address `json:"recipient"`
 		Count     uint64         `json:"count"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal mint latest inputs: %w", err)
 	}
 

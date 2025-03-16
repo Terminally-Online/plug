@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type SwapInputs struct {
@@ -25,13 +25,13 @@ type SwapInputs struct {
 	TokenIn string `json:"tokenIn"`
 }
 
-func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleTransfer(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token     string         `json:"token"`
 		Recipient common.Address `json:"recipient"`
 		Amount    string         `json:"amount"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
@@ -56,7 +56,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	if token == utils.NativeTokenAddress {
-		transaction := ethtypes.NewTransaction(
+		transaction := types.NewTransaction(
 			0,
 			inputs.Recipient,
 			amount,
@@ -90,17 +90,17 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}}, nil
 }
 
-func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleTransferFrom(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token     string  `json:"token"`     // Address of the token to transfer.
 		Recipient string  `json:"recipient"` // Address of the recipient.
 		Amount    big.Int `json:"amount"`    // Raw amount of tokens to transfer.
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
-	tokenType, err := getTokenType(params.ChainId, inputs.Token)
+	tokenType, err := getTokenType(lookup.ChainId, inputs.Token)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -110,7 +110,7 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 	return []signature.Plug{}, nil
 }
 
-func handleWrap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]signature.Plug, error) {
+func handleWrap(_ *actions.SchemaLookup, inputs SwapInputs, wethAddress string) ([]signature.Plug, error) {
 	isEthToWeth := common.HexToAddress(inputs.TokenIn) == utils.NativeTokenAddress &&
 		strings.EqualFold(inputs.Token, wethAddress)
 	isWethToEth := strings.EqualFold(inputs.TokenIn, wethAddress) &&
@@ -209,7 +209,7 @@ func handleWrap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) 
 	}}, nil
 }
 
-func handleSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
+func handleSwap(lookup *actions.SchemaLookup, inputs SwapInputs) ([]signature.Plug, error) {
 	// TODO: Right now 'base' is hard-coded as the intended chain for swapping. This should
 	//       consume the chain id provided in the params.
 	bebopApiUrl := fmt.Sprintf(
@@ -217,7 +217,7 @@ func handleSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Pl
 		inputs.TokenIn,
 		inputs.Token,
 		inputs.Amount,
-		params.From,
+		lookup.From,
 	)
 
 	quoteResponse, err := utils.MakeHTTPRequest(
@@ -288,9 +288,9 @@ func handleSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Pl
 	return transactions, nil
 }
 
-func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSwap(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs SwapInputs
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal inputs: %v", err)
 	}
 
@@ -307,29 +307,29 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	tokenInParts := strings.Split(inputs.TokenIn, ":")
 	inputs.TokenIn = tokenInParts[0]
 
-	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
+	wethAddress := references.Networks[lookup.ChainId].References["weth"]["address"]
 	adjustedAmount, err := utils.StringToUint(inputs.Amount, uint8(decimals))
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert swap amount to uint: %w", err)
 	}
 	inputs.Amount = adjustedAmount.String()
 
-	if txs, err := handleWrap(inputs, params, wethAddress); err != nil {
+	if txs, err := handleWrap(lookup, inputs, wethAddress); err != nil {
 		return nil, err
 	} else if txs != nil {
 		return txs, nil
 	}
 
-	return handleSwap(inputs, params)
+	return handleSwap(lookup, inputs)
 }
 
-func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintPrice(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token     string `json:"token"`
 		Operator  int8   `json:"operator"`
 		Threshold string `json:"threshold"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal price constraint inputs: %w", err)
 	}
 
@@ -365,12 +365,12 @@ func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerPara
 	return nil, nil
 }
 
-func HandleBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleBalance(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token   string `json:"token"`
 		Address string `json:"address"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
 	}
 

@@ -8,7 +8,6 @@ import (
 	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
-	"strconv"
 
 	"slices"
 
@@ -17,27 +16,29 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 )
 
-type HandlerParams struct {
-	Client  *client.Client
+type SchemaLookup struct {
 	ChainId uint64
+	Client  *client.Client
 	From    common.Address
+	Search  map[int]string
 }
 
-func (p *HandlerParams) New(chainId uint64, from common.Address) (HandlerParams, error) {
+func NewSchemaLookup(chainId uint64, from common.Address, search map[int]string) (*SchemaLookup, error) {
 	client, err := client.New(chainId)
 	if err != nil {
-		return HandlerParams{}, err
+		return nil, err
 	}
 
-	return HandlerParams{
+	return &SchemaLookup{
 		Client:  client,
 		ChainId: chainId,
 		From:    from,
+		Search:  search,
 	}, nil
 }
 
-type ActionFunc func(rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
-type OptionsFunc func(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error)
+type ActionFunc func(lookup *SchemaLookup, raw json.RawMessage) ([]signature.Plug, error)
+type OptionsFunc func(lookup *SchemaLookup) (map[int]Options, error)
 type ActionDefinition struct {
 	Type     string `default:"action,omitempty"`
 	Sentence string
@@ -118,23 +119,14 @@ func (p *Protocol) SupportsChain(chainId uint64) bool {
 	return false
 }
 
-func (p *Protocol) GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
-	chainSchema, exists := p.Schemas[action]
-	if !exists {
-		return nil, fmt.Errorf("unsupported action: %s", action)
-	}
-
-	actionDefinition, exists := p.Actions[action]
-	if !exists {
+func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
+	chainSchema, schemaExists := p.Schemas[action]
+	actionDefinition, actionExists := p.Actions[action]
+	if !schemaExists || !actionExists {
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
 
 	if actionDefinition.Options != nil {
-		chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
-		if err != nil {
-			return nil, fmt.Errorf("invalid chain ID: %s", chainId)
-		}
-
 		// NOTE: Override the address value so that we utilize the cache from the global state
 		//       instead of using the "from" parameter as a key lookup even when provided if
 		//       the action being queried against only supports global state.
@@ -142,7 +134,12 @@ func (p *Protocol) GetSchema(chainId string, from common.Address, search map[int
 			from = utils.ZeroAddress
 		}
 
-		inputs, err := actionDefinition.Options(chainIdInt, from, search, action)
+		lookup, err := NewSchemaLookup(chainId, from, search)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
+		}
+
+		inputs, err := actionDefinition.Options(lookup)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get options: %w", err)
 		}

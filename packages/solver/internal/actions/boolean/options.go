@@ -2,8 +2,6 @@ package boolean
 
 import (
 	"solver/internal/actions"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -32,7 +30,7 @@ var (
 	}
 )
 
-func LogicOperationOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+func LogicOperationOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	return map[int]actions.Options{
 		0: {Simple: booleanOptions},
 		1: {Simple: logicalOperationOptions},
@@ -40,7 +38,7 @@ func LogicOperationOptions(chainId uint64, _ common.Address, _ map[int]string, _
 	}, nil
 }
 
-func CompareNumbersOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+func CompareNumbersOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	return map[int]actions.Options{
 		1: {Simple: numberComparisonOptions},
 	}, nil

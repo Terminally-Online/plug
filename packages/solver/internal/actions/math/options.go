@@ -2,8 +2,6 @@ package math
 
 import (
 	"solver/internal/actions"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -40,6 +38,6 @@ var (
 	}
 )
 
-func CalculateOptions(chainId uint64, _ common.Address, _ map[int]string, _ string) (map[int]actions.Options, error) {
+func CalculateOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
 	return operationOptions, nil
 }

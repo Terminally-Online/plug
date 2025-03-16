@@ -51,12 +51,12 @@ func New() *Solver {
 	}
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
 	}
 
@@ -65,13 +65,12 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
 
-	params := actions.HandlerParams{}
-	params, err := params.New(chainId, from)
+	lookup, err := actions.NewSchemaLookup(chainId, from, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := handler.Actions[inputs.Action].Handler(rawInputs, params)
+	transactions, err := handler.Actions[inputs.Action].Handler(lookup, raw)
 	if err != nil {
 		return nil, err
 	}
