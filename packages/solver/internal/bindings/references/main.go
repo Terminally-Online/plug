@@ -79,7 +79,6 @@ var (
 				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
-				"gauge":    "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
 			},
 		},
 	}
@@ -125,7 +124,6 @@ var (
 				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
-				"gauge":    "", // Not available on Base?
 			},
 		},
 	}
