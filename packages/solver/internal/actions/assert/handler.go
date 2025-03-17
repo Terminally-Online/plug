@@ -7,31 +7,25 @@ import (
 )
 
 var (
-	name = "Assert"
-	icon = "https://cdn.onplug.io/protocols/assert.png"
-	tags = []string{"validation", "assert", "condition"}
-
-	AssertTrue  = "assertTrue"
-	AssertFalse = "assertFalse"
-
-	chains  = []*references.Network{references.Mainnet, references.Base}
-	schemas = map[string]actions.ActionDefinition{
-		AssertTrue: {
-			Sentence:     "Assert that {0<condition:bool>} is {1<assertion:bool>}",
-			Handler:      HandleAssertTrue,
-			Metadata:     plug_assert.PlugAssertMetaData,
-			FunctionName: "assertTrue",
-		},
-	}
+	Assert = "assert"
 )
 
-func New() actions.BaseProtocolHandler {
-	return actions.NewBaseHandler(
-		name,
-		icon,
-		tags,
-		chains,
-		schemas,
-		&AssertOptionsProvider{},
+func New() actions.Protocol {
+	return actions.New(
+		actions.Protocol{
+			Name:   "Assert",
+			Icon:   "https://cdn.onplug.io/protocols/assert.png",
+			Tags:   []string{"validation", "assert", "condition"},
+			Chains: []*references.Network{references.Mainnet, references.Base},
+			Actions: map[string]actions.ActionDefinition{
+				Assert: {
+					Sentence:     "Assert that {0<condition:bool>} is {1<assertion:bool>}",
+					Handler:      HandleAssert,
+					Options:      AssertOptions,
+					Metadata:     plug_assert.PlugAssertMetaData,
+					FunctionName: "assertTrue",
+				},
+			},
+		},
 	)
 }

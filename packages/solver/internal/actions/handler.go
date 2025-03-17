@@ -8,64 +8,42 @@ import (
 	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
-	"strconv"
+
+	"slices"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
 )
 
-type HandlerParams struct {
-	Client  *client.Client
+type SchemaLookup struct {
 	ChainId uint64
+	Client  *client.Client
 	From    common.Address
+	Search  map[int]string
 }
 
-func (p *HandlerParams) New(chainId uint64, from common.Address) (HandlerParams, error) {
+func NewSchemaLookup(chainId uint64, from common.Address, search map[int]string) (*SchemaLookup, error) {
 	client, err := client.New(chainId)
 	if err != nil {
-		return HandlerParams{}, err
+		return nil, err
 	}
 
-	return HandlerParams{
+	return &SchemaLookup{
 		Client:  client,
 		ChainId: chainId,
 		From:    from,
+		Search:  search,
 	}, nil
 }
 
-type BaseProtocolHandler interface {
-	GetIcon() string
-	GetTags() []string
-	GetActions() []string
-	GetChains(chainId string) ([]*references.Network, error)
-	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
-	GetSchemas() map[string]ChainSchema
-	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
-}
-
-type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
-type OptionsHandler func(chainId uint64) (map[int]Options, error)
-
-type Protocol struct {
-	Name            string
-	Icon            string
-	Tags            []string
-	Chains          []*references.Network
-	OptionsProvider OptionsProvider
-	Schemas         map[string]ChainSchema
-	txHandlers      map[string]TransactionHandler
-	optHandlers     map[string]OptionsHandler
-}
-
-type BaseHandler struct {
-	protocol Protocol
-}
-
+type ActionFunc func(lookup *SchemaLookup, raw json.RawMessage) ([]signature.Plug, error)
+type OptionsFunc func(lookup *SchemaLookup) (map[int]Options, error)
 type ActionDefinition struct {
 	Type           string `default:"action,omitempty"`
 	Sentence       string
-	Handler        TransactionHandler
+	Handler        ActionFunc
+	Options        OptionsFunc
 	Metadata       *bind.MetaData
 	FunctionName   string
 	IsUserSpecific bool
@@ -77,7 +55,6 @@ func (a *ActionDefinition) GetCoils() ([]coil.Update, error) {
 		return []coil.Update{}, nil
 	}
 
-	// Try to get the ABI and find coils
 	abi, err := a.Metadata.GetAbi()
 	if err != nil {
 		return []coil.Update{}, fmt.Errorf("failed to get ABI: %w", err)
@@ -91,38 +68,20 @@ func (a *ActionDefinition) GetCoils() ([]coil.Update, error) {
 	return coils, nil
 }
 
-var (
-	errUnsupportedAction  = "unsupported action: %s"
-	errInvalidChainID     = "invalid chain id: %s"
-	errUnsupportedChainID = "unsupported chain id: %s"
-	errFailedOptions      = "failed to get options: %w"
-)
+type Protocol struct {
+	Name    string
+	Icon    string
+	Tags    []string
+	Chains  []*references.Network
+	Actions map[string]ActionDefinition
 
-func NewBaseHandler(
-	name string,
-	icon string,
-	tags []string,
-	chains []*references.Network,
-	actionDefinitions map[string]ActionDefinition,
-	optionsProvider OptionsProvider,
-) *BaseHandler {
-	sentences := make(map[string]string, len(actionDefinitions))
-	transactions := make(map[string]TransactionHandler, len(actionDefinitions))
-	for action, def := range actionDefinitions {
-		sentences[action] = def.Sentence
-		transactions[action] = def.Handler
-	}
-	getOptionsFor := func(action string) OptionsHandler {
-		return func(chainId uint64) (map[int]Options, error) {
-			return optionsProvider.GetOptions(chainId, common.Address(utils.ZeroAddress), map[int]string{}, action)
-		}
-	}
-	optHandlers := make(map[string]OptionsHandler, len(actionDefinitions))
-	for action := range actionDefinitions {
-		optHandlers[action] = getOptionsFor(action)
-	}
-	schemas := make(map[string]ChainSchema, len(actionDefinitions))
-	for action, def := range actionDefinitions {
+	// OptionsProvider OptionsProvider
+	Schemas map[string]ChainSchema
+}
+
+func New(p Protocol) Protocol {
+	schemas := make(map[string]ChainSchema, len(p.Actions))
+	for action, def := range p.Actions {
 		coils, err := def.GetCoils()
 		if err != nil {
 			log.Error("failed to get coils", "action", action, "error", err)
@@ -139,122 +98,54 @@ func NewBaseHandler(
 				IsUserSpecific: def.IsUserSpecific,
 				Coils:          coils,
 			},
-			LinkedInputs: coils, // Add coils directly at the schema level for linked inputs
-		}
-	}
-	cachedProvider := NewCachedOptionsProvider(optionsProvider)
-	handler := &BaseHandler{
-		protocol: Protocol{
-			Name:            name,
-			Icon:            icon,
-			Tags:            tags,
-			Chains:          chains,
-			Schemas:         schemas,
-			OptionsProvider: cachedProvider,
-			txHandlers:      transactions,
-			optHandlers:     optHandlers,
-		},
-	}
-
-	// Fix: create slice with 0 size and len(actionDefinitions) capacity
-	actions := make([]string, 0, len(actionDefinitions))
-	for action := range actionDefinitions {
-		actions = append(actions, action)
-	}
-	go func() {
-		for _, chain := range chains {
-			for _, chainId := range chain.ChainIds {
-				cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
-			}
-		}
-	}()
-
-	return handler
-}
-
-func (h *BaseHandler) GetName() string {
-	return h.protocol.Name
-}
-
-func (h *BaseHandler) GetIcon() string {
-	return h.protocol.Icon
-}
-
-func (h *BaseHandler) GetTags() []string {
-	return h.protocol.Tags
-}
-
-func (h *BaseHandler) GetChains(chainId string) ([]*references.Network, error) {
-	if chainId == "" {
-		return h.protocol.Chains, nil
-	}
-
-	chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf(errInvalidChainID, chainId)
-	}
-
-	for _, chain := range h.protocol.Chains {
-		for _, supportedChainId := range chain.ChainIds {
-			if chainIdInt == supportedChainId {
-				return []*references.Network{chain}, nil
-			}
+			LinkedInputs: coils,
 		}
 	}
 
-	return nil, fmt.Errorf(errUnsupportedChainID, chainId)
+	p.Schemas = schemas
+
+	return p
 }
 
-func (h *BaseHandler) GetActions() []string {
-	actions := make([]string, 0, len(h.protocol.Schemas))
-	for action := range h.protocol.Schemas {
-		actions = append(actions, action)
-	}
-	return actions
-}
-
-func (h *BaseHandler) GetSchemas() map[string]ChainSchema {
-	return h.protocol.Schemas
-}
-
-func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
-	chainSchema, exists := h.protocol.Schemas[action]
-	if !exists {
-		return nil, fmt.Errorf(errUnsupportedAction, action)
-	}
-
-	if h.protocol.OptionsProvider != nil {
-		chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
-		if err != nil {
-			return nil, fmt.Errorf(errInvalidChainID, chainId)
+func (p *Protocol) SupportsChain(chainId uint64) bool {
+	for _, chain := range p.Chains {
+		if slices.Contains(chain.ChainIds, chainId) {
+			return true
 		}
+	}
 
+	return false
+}
+
+func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
+	chainSchema, schemaExists := p.Schemas[action]
+	actionDefinition, actionExists := p.Actions[action]
+	if !schemaExists || !actionExists {
+		return nil, fmt.Errorf("unsupported action: %s", action)
+	}
+
+	if actionDefinition.Options != nil {
 		// NOTE: Override the address value so that we utilize the cache from the global state
 		//       instead of using the "from" parameter as a key lookup even when provided if
 		//       the action being queried against only supports global state.
-		if !h.protocol.Schemas[action].Schema.IsUserSpecific {
+		if !chainSchema.Schema.IsUserSpecific {
 			from = utils.ZeroAddress
 		}
 
-		inputs, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, search, action)
+		lookup, err := NewSchemaLookup(chainId, from, search)
 		if err != nil {
-			return nil, fmt.Errorf(errFailedOptions, err)
+			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
+		}
+
+		// TODO: The cache should be applied here instead of one level higher like it is now.
+
+		inputs, err := actionDefinition.Options(lookup)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get options: %w", err)
 		}
 
 		chainSchema.Schema.Options = inputs
 	}
 
 	return &chainSchema, nil
-}
-
-func (h *BaseHandler) GetTransaction(
-	action string,
-	rawInputs json.RawMessage,
-	params HandlerParams,
-) ([]signature.Plug, error) {
-	handler, exists := h.protocol.txHandlers[action]
-	if !exists {
-		return nil, fmt.Errorf(errUnsupportedAction, action)
-	}
-	return handler(rawInputs, params)
 }

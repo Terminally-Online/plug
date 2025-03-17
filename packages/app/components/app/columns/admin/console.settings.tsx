@@ -1,3 +1,5 @@
+import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { FC, HTMLAttributes } from "react"
 
 import { useChainId } from "wagmi"
@@ -8,6 +10,8 @@ import {
 	CalendarCheck,
 	CalendarClock,
 	Computer,
+	Copy,
+	ExternalLink,
 	Flower2,
 	Glasses,
 	Globe,
@@ -16,9 +20,7 @@ import {
 	MessageCircleIcon,
 	Puzzle,
 	User,
-	Waypoints,
-	Copy,
-	ExternalLink
+	Waypoints
 } from "lucide-react"
 
 import plugCore from "@terminallyonline/plug-core/package.json"
@@ -27,8 +29,6 @@ import { ChainId, formatAddress, getBlockExplorerAddress, getChainName } from "@
 import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
-import { useSession } from "next-auth/react"
-import Link from "next/link"
 
 export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
@@ -49,10 +49,19 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-1">
-					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(session?.address ?? "")}>
+					<span
+						className="cursor-pointer"
+						onClick={() => navigator.clipboard.writeText(session?.address ?? "")}
+					>
 						{formatAddress(session?.address ?? "")}
 					</span>
-					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, session?.address), "_blank")} />
+					<ExternalLink
+						size={14}
+						className="cursor-pointer opacity-20"
+						onClick={() =>
+							window.open(getBlockExplorerAddress(chainId as ChainId, session?.address), "_blank")
+						}
+					/>
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -71,10 +80,19 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-1">
-					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}>
+					<span
+						className="cursor-pointer"
+						onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
+					>
 						{formatAddress(socket?.socketAddress)}
 					</span>
-					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress), "_blank")} />
+					<ExternalLink
+						size={14}
+						className="cursor-pointer opacity-20"
+						onClick={() =>
+							window.open(getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress), "_blank")
+						}
+					/>
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -103,16 +121,16 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			</div>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<CalendarCheck size={14} className="opacity-20" />
-				<span className="opacity-40">Created</span>{" "}
+				<span className="opacity-40">Created</span>
 				<span className="group ml-auto flex flex-row items-center gap-4">
-					{socket?.createdAt.toLocaleDateString()}
+					{new Date(socket?.createdAt).toLocaleDateString()}
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<CalendarClock size={14} className="opacity-20" />
 				<span className="opacity-40">Updated</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-4">
-					{socket?.updatedAt.toLocaleDateString()}
+					{new Date(socket?.updatedAt).toLocaleDateString()}
 				</span>
 			</p>
 
@@ -173,6 +191,6 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<span className="opacity-40">Core</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-4">v{plugCore.version}</span>
 			</p>
-		</div >
+		</div>
 	)
 }

@@ -3,93 +3,57 @@ package api
 import (
 	"net/http"
 	"solver/internal/api/middleware"
-	"solver/internal/api/solver"
+	"solver/internal/api/routes/api_key"
+	"solver/internal/api/routes/health"
+	"solver/internal/api/routes/intent"
+	"solver/internal/api/routes/kill"
+	"solver/internal/api/routes/open_api"
+	"solver/internal/api/routes/save"
+	"solver/internal/solver"
 
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter(s solver.Handler) *mux.Router {
-	m := middleware.New(s.Solver)
+func SetupRouter(s *solver.Solver) *mux.Router {
+	m := middleware.New(*s)
 	r := mux.NewRouter()
+
 	r.Use(m.Json)
+	r.Use(m.Timeout)
 
-	// Create OpenAPI handler for health endpoint
-	r.Handle("/health", NewOpenAPIHandler(s.GetHealth, s.SetupOpenAPIForHealth)).Methods("GET")
+	r.Handle("/health", health.GetHealth()).Methods(http.MethodGet)
 
-	// Plug app only routes with OpenAPI documentation
 	admin := r.PathPrefix("").Subrouter()
 	admin.Use(m.AdminApiKey)
 
-	admin.Handle("/api-key", NewOpenAPIHandler(s.CreateApiKey, s.SetupOpenAPIForCreateApiKey)).Methods("POST")
-	admin.Handle("/api-key/{id}", NewOpenAPIHandler(s.ReadApiKey, s.SetupOpenAPIForReadApiKey)).Methods("GET")
-	admin.Handle("/api-key/{id}", NewOpenAPIHandler(s.UpdateApiKey, s.SetupOpenAPIForUpdateApiKey)).Methods("POST")
-	admin.Handle("/api-key/{id}", NewOpenAPIHandler(s.DeleteApiKey, s.SetupOpenAPIForDeleteApiKey)).Methods("DELETE")
+	admin.Handle("/api-key", api_key.Create()).Methods(http.MethodPost)
+	admin.Handle("/api-key/{id}", api_key.Read()).Methods(http.MethodGet)
+	admin.Handle("/api-key/{id}", api_key.Update()).Methods(http.MethodPost)
+	admin.Handle("/api-key/{id}", api_key.Delete()).Methods(http.MethodDelete)
 
-	// Kill switch endpoints with OpenAPI
-	admin.Handle("/solver/kill", NewOpenAPIHandler(s.GetKill, s.SetupOpenAPIForGetKill)).Methods("GET")
-	admin.Handle("/solver/kill", NewOpenAPIHandler(s.PostKill, s.SetupOpenAPIForPostKill)).Methods("POST")
+	admin.Handle("/solver/kill", kill.Get(s)).Methods(http.MethodGet)
+	admin.Handle("/solver/kill", kill.Post(s)).Methods(http.MethodPost)
 
-	// API key protected routes
 	protected := r.PathPrefix("").Subrouter()
 	protected.Use(m.ApiKey)
 
-	// Intent endpoints with OpenAPI
-	protected.Handle("/solver/save", NewOpenAPIHandler(s.CreateIntent, s.SetupOpenAPIForCreateIntent)).Methods("POST")
-	protected.Handle("/solver/save/{id}", NewOpenAPIHandler(s.ReadIntent, s.SetupOpenAPIForReadIntent)).Methods("GET")
-	protected.Handle("/solver/save/{id}", NewOpenAPIHandler(s.ToggleIntentSaved, s.SetupOpenAPIForToggleIntentSaved)).Methods("POST")
-	protected.Handle("/solver/save/{id}", NewOpenAPIHandler(s.DeleteIntent, s.SetupOpenAPIForDeleteIntent)).Methods("DELETE")
-	protected.Handle("/solver/save/{id}/status", NewOpenAPIHandler(s.ToggleIntentStatus, s.SetupOpenAPIForToggleIntentStatus)).Methods("POST")
+	protected.Handle("/solver/save", save.Create()).Methods(http.MethodPost)
+	// protected.Handle("/solver/save", NewOpenAPIHandler(s.ReadIntents, s.SetupOpenAPIForReadIntents)).Methods("GET")
+	protected.Handle("/solver/save/{id}", save.Read()).Methods(http.MethodGet)
+	protected.Handle("/solver/save/{id}", save.ToggleSaved()).Methods(http.MethodPost)
+	protected.Handle("/solver/save/{id}", save.Delete()).Methods(http.MethodDelete)
+	protected.Handle("/solver/save/{id}/status", save.ToggleStatus()).Methods(http.MethodPost)
 
-	// API key protected routes that can be killed
 	killable := protected.PathPrefix("").Subrouter()
 	killable.Use(m.KillSwitch)
-	
-	// Main solver endpoints with OpenAPI
-	killable.Handle("/solver", NewOpenAPIHandler(s.GetSchema, s.SetupOpenAPIForGetSchema)).Methods("GET")
-	killable.Handle("/solver", NewOpenAPIHandler(s.GetSolution, s.SetupOpenAPIForGetSolution)).Methods("POST")
 
-	// Setup OpenAPI routes
-	specHandler := SetupOpenAPIRoutes(r)
+	killable.Handle("/solver", intent.Get(s)).Methods(http.MethodGet)
+	killable.Handle("/solver", intent.Post(s)).Methods(http.MethodPost)
 
-	// Add OpenAPI specification endpoints (both JSON and YAML formats)
-	r.Handle("/openapi.json", specHandler).Methods("GET")
-	r.Handle("/openapi", specHandler).Methods("GET").Queries("format", "{format}")
-
-	// Add Swagger UI viewer endpoint
-	r.HandleFunc("/api-docs", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html")
-		html := `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Plug Solver API Documentation</title>
-  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css">
-  <style>
-    html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
-    *, *:before, *:after { box-sizing: inherit; }
-    body { margin: 0; background: #fafafa; }
-  </style>
-</head>
-<body>
-  <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
-  <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
-  <script>
-    window.onload = function() {
-      window.ui = SwaggerUIBundle({
-        url: "/openapi.json",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
-        layout: "StandaloneLayout"
-      });
-    };
-  </script>
-</body>
-</html>`
-		w.Write([]byte(html))
-	}).Methods("GET")
+	openapi := open_api.SetupOpenAPIRoutes(r)
+	r.Handle("/openapi.json", openapi).Methods(http.MethodGet)
+	r.Handle("/openapi", openapi).Methods(http.MethodGet).Queries("format", "{format}")
+	r.HandleFunc("/docs", open_api.DocsRequest).Methods(http.MethodGet)
 
 	return r
 }

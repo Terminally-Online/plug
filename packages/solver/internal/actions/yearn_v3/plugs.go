@@ -17,13 +17,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionDeposit(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Vault  string `json:"vault"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
@@ -37,7 +37,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults(params.ChainId)
+	vaults, err := GetVaults(lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -69,7 +69,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Pool")
 	}
-	depositCalldata, err := vaultAbi.Pack("deposit", amount, params.From)
+	depositCalldata, err := vaultAbi.Pack("deposit", amount, lookup.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -83,13 +83,13 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionWithdraw(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Vault  string `json:"vault"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
@@ -103,7 +103,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults(params.ChainId)
+	vaults, err := GetVaults(lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -125,7 +125,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Pool")
 	}
-	depositCalldata, err := vaultAbi.Pack("deposit", amount, params.From)
+	depositCalldata, err := vaultAbi.Pack("deposit", amount, lookup.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -136,12 +136,12 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	}}, nil
 }
 
-func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionStake(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal stake inputs: %v", err)
 	}
 
@@ -155,7 +155,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, fmt.Errorf("failed to convert stake amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults(params.ChainId)
+	vaults, err := GetVaults(lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -183,7 +183,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
-	stakeCalldata, err := gaugeAbi.Pack("deposit", amount, params.From)
+	stakeCalldata, err := gaugeAbi.Pack("deposit", amount, lookup.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -197,79 +197,12 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}}, nil
 }
 
-func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		TokenIn string `json:"token"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal stake max inputs: %v", err)
-	}
-
-	token, _, err := utils.ParseAddressAndDecimals(inputs.TokenIn)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
-	}
-
-	vaults, err := GetVaults(params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vaults: %v", err)
-	}
-
-	var targetVault *YearnVault
-	for _, vault := range vaults {
-		if strings.EqualFold(vault.Address, token.Hex()) {
-			targetVault = &vault
-			break
-		}
-	}
-
-	if targetVault == nil || !targetVault.Staking.Available {
-		return nil, fmt.Errorf("staking not available for vault: %s", token)
-	}
-
-	erc20Contract, err := erc_20.NewErc20(*token, params.Client)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
-	}
-
-	balance, err := erc20Contract.BalanceOf(params.Client.ReadOptions(params.From), params.From)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault token balance: %v", err)
-	}
-
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(targetVault.Staking.Address), balance)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("YearnV3Gauge")
-	}
-	stakeCalldata, err := gaugeAbi.Pack("deposit", balance, params.From)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
-	}, {
-		To:   common.HexToAddress(targetVault.Staking.Address),
-		Data: stakeCalldata,
-	}}, nil
-}
-
-func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionRedeem(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal redeem inputs: %v", err)
 	}
 
@@ -283,7 +216,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("failed to convert redeem amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults(params.ChainId)
+	vaults, err := GetVaults(lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -299,12 +232,12 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("redeem not available for vault: %s", token)
 	}
 
-	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), params.Client)
+	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), lookup.Client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}
 
-	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), params.From)
+	maxRedeem, err := gaugeContract.MaxRedeem(lookup.Client.ReadOptions(lookup.From), lookup.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max redeemable amount: %v", err)
 	}
@@ -318,7 +251,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
-	calldata, err := gaugeAbi.Pack("redeem", amount, params.From, params.From)
+	calldata, err := gaugeAbi.Pack("redeem", amount, lookup.From, lookup.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -329,72 +262,13 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 	}}, nil
 }
 
-func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		Token string `json:"token"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal redeem max inputs: %v", err)
-	}
-
-	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
-	}
-
-	vaults, err := GetVaults(params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vaults: %v", err)
-	}
-
-	var targetVault *YearnVault
-	for _, vault := range vaults {
-		if strings.EqualFold(vault.Address, token.Hex()) {
-			targetVault = &vault
-			break
-		}
-	}
-	if targetVault == nil {
-		return nil, fmt.Errorf("redeem not available for vault: %s", token)
-	}
-
-	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), params.Client)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
-	}
-
-	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), params.From)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get max redeemable amount: %v", err)
-	}
-
-	if maxRedeem.Sign() <= 0 {
-		return nil, fmt.Errorf("no staked tokens available to redeem")
-	}
-
-	gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("YearnV3Gauge")
-	}
-
-	calldata, err := gaugeAbi.Pack("redeem", maxRedeem, params.From, params.From)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	return []signature.Plug{{
-		To:   common.HexToAddress(targetVault.Staking.Address),
-		Data: calldata,
-	}}, nil
-}
-
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintAPY(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Vault     string `json:"token"`
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs")
 	}
 
@@ -403,7 +277,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to parse threshold float: %w", err)
 	}
 
-	vaults, err := GetVaults(params.ChainId)
+	vaults, err := GetVaults(lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}

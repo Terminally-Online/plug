@@ -51,7 +51,8 @@ lerna-debug.log*
 next-env.d.ts
 
 # Smart contract coverage
-cache
+core/cache
+.vitepress/
 artifacts
 create2crunch
 --branch-coverage

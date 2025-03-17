@@ -2,6 +2,7 @@ package zerion
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"solver/internal/utils"
 	"strings"
@@ -23,8 +24,10 @@ type ZerionToken struct {
 	Implementations []ZerionTokenImplementation `json:"implementations"`
 	Name            string                      `json:"name"`
 	Symbol          string                      `json:"symbol"`
-	Icon            *string                     `json:"icon,omitempty"`
-	Flags           struct {
+	Icon            *struct {
+		URL string `json:"url"`
+	} `json:"icon,omitempty"`
+	Flags struct {
 		Verified bool `json:"verified"`
 	} `json:"flags"`
 	MarketData struct {
@@ -79,7 +82,7 @@ type ZerionPosition struct {
 	} `json:"relationships"`
 }
 
-func GetFungiblePositions(chains []string, socketID, socketAddress common.Address) ([]ZerionPosition, error) {
+func GetFungiblePositions(chains []string, socketID common.Address, socketAddress common.Address, search string) ([]ZerionPosition, error) {
 	address := socketAddress
 	if address == common.HexToAddress("") {
 		address = socketID
@@ -109,6 +112,31 @@ func GetFungiblePositions(chains []string, socketID, socketAddress common.Addres
 		return nil, fmt.Errorf("failed to get zerion positions: %w", err)
 	}
 
+	// NOTE: You cannot search on this endpoint provided by Zerion so instead we need to do manual filtering
+	//       here based on the search query. It will not provide the same results as Zerion search, but it is
+	//       fine for now so we move forward.
+	if search != "" {
+		searchLower := strings.ToLower(search)
+		filtered := make([]ZerionPosition, 0)
+		for _, position := range response.Data {
+			symbol := strings.ToLower(position.Attributes.FungibleInfo.Symbol)
+			name := strings.ToLower(position.Attributes.FungibleInfo.Name)
+			var address string
+			for _, impl := range position.Attributes.FungibleInfo.Implementations {
+				if impl.Address != "" {
+					address = strings.ToLower(impl.Address)
+					break
+				}
+			}
+			if strings.Contains(symbol, searchLower) ||
+				strings.Contains(name, searchLower) ||
+				strings.Contains(address, searchLower) {
+				filtered = append(filtered, position)
+			}
+		}
+		response.Data = filtered
+	}
+
 	return response.Data, nil
 }
 
@@ -121,6 +149,7 @@ func GetFungibles(search string, chains []string) ([]ZerionToken, error) {
 		"https://api.zerion.io/v1/fungibles/?currency=usd&page[size]=100&filter[search_query]=%s&sort=-market_data.market_cap&filter[implementation_chain_id]=%s",
 		search, strings.Join(chains, ","),
 	)
+	log.Println(url)
 
 	response, err := utils.MakeHTTPRequest(
 		url,

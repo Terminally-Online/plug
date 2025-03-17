@@ -1,0 +1,85 @@
+[
+  {
+    "name": "Plug Transfer",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "plug",
+          "action": "transfer",
+          "amount": "0.01",
+          "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:6:20",
+          "recipient": "0x0000000000000000000000000000000000000001"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Plug Swap",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "plug",
+          "action": "swap",
+          "amount": "0.01",
+          "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:6:20",
+          "tokenIn": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Plug Price Constraint",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "plug",
+          "action": "price",
+          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18:20",
+          "operator": 1,
+          "threshold": "1500.00"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  },
+  {
+    "name": "Plug Read Balance",
+    "intent": {
+      "chainId": 8453,
+      "inputs": [
+        {
+          "protocol": "plug",
+          "action": "balance",
+          "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:6:20",
+          "address": "0x0000000000000000000000000000000000000001"
+        }
+      ],
+      "options": {
+        "isEOA": false,
+        "simulate": false,
+        "submit": false
+      }
+    },
+    "expectOk": true
+  }
+]
