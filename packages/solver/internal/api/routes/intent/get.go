@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
 	"solver/internal/solver"
 	"solver/internal/utils"
-	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/go-redis/redis/v8"
@@ -35,16 +33,6 @@ type SchemaQueryParams struct {
 	Protocol string             `schema:"protocol" query:"protocol" description:"Protocol name to filter schemas by"`
 	Action   string             `schema:"action" query:"action" description:"Action name to filter schemas by"`
 	Search   []SearchQueryParam `schema:"search" query:"search" description:"Search parameters to filter schemas by"`
-}
-
-func (p *SchemaQueryParams) Stringify() string {
-	queryParams := url.Values{}
-	queryParams.Set("chainId", strconv.FormatUint(p.ChainId, 10))
-	queryParams.Set("from", p.From)
-	queryParams.Set("protocol", p.Protocol)
-	queryParams.Set("action", p.Action)
-
-	return queryParams.Encode()
 }
 
 func GetContext(oc openapi.OperationContext) error {
