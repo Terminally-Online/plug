@@ -138,6 +138,7 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 		}
 
 		// TODO: The cache should be applied here instead of one level higher like it is now.
+		
 
 		inputs, err := actionDefinition.Options(lookup)
 		if err != nil {
