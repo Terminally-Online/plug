@@ -238,7 +238,7 @@ type Distribution struct {
 }
 
 type DistributionResponse struct {
-	Timestamp  int64 `json:"timestamp"`
+	Timestamp  string `json:"timestamp"`
 	Pagination struct {
 		PerPage    int    `json:"per_page"`
 		Page       int    `json:"page"`

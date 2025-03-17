@@ -53,6 +53,14 @@ func Simulations(s *solver.Solver) {
 			}).Error; err != nil {
 				log.Printf("failed to update intent simulation interval: %v", err)
 			}
+
+			intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
+			if err := database.DB.Model(&intent).Updates(map[string]any{
+				"period_end_at":      intent.PeriodEndAt,
+				"next_simulation_at": intent.NextSimulationAt,
+			}).Error; err != nil {
+				log.Printf("failed to update intent simulation interval: %v", err)
+			}
 		}
 
 		// TODO: Uncomment this to enable execution of plugs run through simulation.

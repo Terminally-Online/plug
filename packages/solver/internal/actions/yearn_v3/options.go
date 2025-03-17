@@ -107,6 +107,7 @@ func GetAvailableStakingGaugeOptions(chainId uint64) ([]actions.Option, error) {
 
 	var options []actions.Option
 	for _, vault := range vaults {
+		fmt.Printf("GetAvailableStakingGaugeOptions vault: %v, staking available %v, staking address %s\n\n", vault, vault.Staking.Available, vault.Staking.Address)
 		if !vault.Staking.Available || vault.Staking.Address == "" {
 			continue
 		}

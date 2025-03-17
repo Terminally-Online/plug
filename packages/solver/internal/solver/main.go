@@ -25,6 +25,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"gorm.io/gorm"
 )
 
 type Solver struct {
@@ -155,30 +156,31 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 }
 
 func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
-	var livePlugs signature.LivePlugs
-	if err := database.DB.Where("intent_id = ?", intent.Id).
+	if err := database.DB.Where("id = ?", intent.Id).
 		Order("created_at DESC").
-		First(&livePlugs).Error; err != nil {
+		Preload("Runs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("created_at DESC").Limit(1)
+		}).
+		Preload("LivePlugs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("created_at DESC").Limit(1)
+		}).
+		First(&intent).Error; err != nil {
 		return nil, fmt.Errorf("failed to find live plug: %v", err)
 	}
 
-	var run models.Run
-	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlugs.Id).
-		Order("created_at DESC").
-		First(&run).Error; err != nil {
-		return nil, fmt.Errorf("failed to find run: %v", err)
-	}
+	// If we're rebuilding from models, we want the most recent LivePlugs and Run
+	livePlug := intent.LivePlugs[0]
+	run := intent.Runs[0]
 
-	var plugs []signature.Plug
-	if err := database.DB.Where("bundle_id = ?", livePlugs.Id).
-		Find(&plugs).Error; err != nil {
-		return nil, fmt.Errorf("failed to find plugs: %v", err)
+	plugs := make([]*signature.MinimalPlug, len(livePlug.Plugs.Plugs))
+	for i, plug := range livePlug.Plugs.Plugs {
+		plugs[i] = plug.Minify()
 	}
-	livePlugs.Plugs.Plugs = plugs
 
 	return &Solution{
-		LivePlugs: &livePlugs,
-		Run:       &run,
+		LivePlugs:    &livePlug,
+		Transactions: plugs,
+		Run:          &run,
 	}, nil
 }
 
@@ -282,6 +284,15 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		if err != nil {
 			return nil, err
 		}
+
+		if run != nil {
+			run.IntentId = intent.Id
+			run.LivePlugsId = livePlugs.Id
+
+			if err := database.DB.Create(run).Error; err != nil {
+				return nil, fmt.Errorf("failed to save simulation run: %v", err)
+			}
+		}
 	}
 
 	if err := database.DB.Create(run).Error; err != nil {
@@ -289,7 +300,8 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 	}
 
 	result := &Solution{
-		Run: run,
+		Run:       run,
+		LivePlugs: livePlugs,
 	}
 
 	if livePlugs != nil {
@@ -332,6 +344,8 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 			return nil, solveErr
 		}
 	}
+
+	result.IntentId = intent.Id
 
 	if !live {
 		result.LivePlugs = nil

@@ -239,7 +239,7 @@ func HealthFactor(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signatur
 
 func APY(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
-		Action    int    `json:"action"`
+		Direction int    `json:"direction"`
 		Token     string `json:"token"`
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
@@ -275,13 +275,13 @@ func APY(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, e
 	}
 
 	var rate *big.Int
-	switch inputs.Action {
+	switch inputs.Direction {
 	case -1:
 		rate = targetReserve.VariableBorrowRate
 	case 1:
 		rate = targetReserve.LiquidityRate
 	default:
-		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Action)
+		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
 	}
 
 	switch inputs.Operator {
