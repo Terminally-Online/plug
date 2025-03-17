@@ -190,12 +190,12 @@ export const postAnimations = {
 						<motion.div
 							key={index}
 							className="flex-1 rounded-lg"
-							initial={{ backgroundColor: "rgb(200, 200, 200, 0.3)" }} // Light grey
+							initial={{ backgroundColor: "rgb(56, 88, 66, 0.3)" }} // plug-green with opacity
 							animate={{
 								backgroundColor: [
-									"rgb(200, 200, 200, 0.3)", // Light grey
-									"rgb(100, 100, 100, 0.3)", // Dark grey when pressed
-									"rgb(255, 255, 0, 0.3)" // plug-yellow when unified
+									"rgb(56, 88, 66, 0.3)", // plug-green with opacity
+									"rgb(56, 88, 66, 0.1)", // plug-green with lower opacity when pressed
+									"rgb(210, 243, 138, 0.7)" // plug-yellow with 70% opacity when unified
 								]
 							}}
 							transition={{
