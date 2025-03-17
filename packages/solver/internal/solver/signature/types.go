@@ -46,8 +46,6 @@ type Plug struct {
 	// Updates contains dynamic data modifications to be applied at execution time
 	Updates []coil.Update `json:"updates"`
 
-	// Exclusive indicates this plug must be executed alone, not in a batch
-	Exclusive bool `json:"exclusive,omitempty"`
 	// Meta contains additional protocol-specific data (not used for execution)
 	Meta any `json:"meta,omitempty"`
 }

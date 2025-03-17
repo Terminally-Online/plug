@@ -15,12 +15,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Deposit(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %w", err)
 	}
 
@@ -39,7 +39,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
 		amount,
 	)
 	if err != nil {
@@ -53,7 +53,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	depositCalldata, err := poolAbi.Pack("deposit",
 		token,
 		amount,
-		params.From,
+		lookup.From,
 		uint16(0),
 	)
 	if err != nil {
@@ -64,17 +64,17 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		To:   *token,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
 		Data: depositCalldata,
 	}}, nil
 }
 
-func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Borrow(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %w", err)
 	}
 
@@ -96,24 +96,24 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		amountOut,
 		interestRateMode,
 		uint16(0),
-		params.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Repay(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
 	}
 
@@ -132,7 +132,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
 		amountIn,
 	)
 	if err != nil {
@@ -147,7 +147,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		tokenIn,
 		amountIn,
 		interestRateMode,
-		params.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -157,18 +157,18 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		To:   *tokenIn,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
 		Data: repayCalldata,
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func Withdraw(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
 	}
 
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %w", err)
 	}
 
@@ -188,24 +188,24 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	calldata, err := poolAbi.Pack("withdraw",
 		tokenOut,
 		amountOut,
-		params.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave"]["pool"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave"]["pool"]),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HealthFactor(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal health factor inputs: %w", err)
 	}
 
@@ -216,7 +216,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
 	}
 
-	healthFactor, err := getHealthFactor(params.ChainId, params.From)
+	healthFactor, err := getHealthFactor(lookup.ChainId, lookup.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get health factor: %w", err)
 	}
@@ -237,14 +237,14 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func APY(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Direction int    `json:"direction"`
 		Token     string `json:"token"`
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs")
 	}
 
@@ -258,7 +258,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
-	reserves, err := getReserves(params.ChainId)
+	reserves, err := getReserves(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}

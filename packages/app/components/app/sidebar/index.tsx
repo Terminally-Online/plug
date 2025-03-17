@@ -25,7 +25,7 @@ const ConsoleSidebarAction: FC<
 > = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => (
 	<div
 		className={cn(
-			"group relative mr-auto flex h-10 w-10 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 py-2 transition-all duration-200 ease-in-out mx-auto",
+			"group relative mx-auto mr-auto flex h-10 w-10 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 py-2 transition-all duration-200 ease-in-out",
 			isActive && "bg-plug-green/10 hover:bg-white",
 			isPrimary
 				? "border-plug-yellow bg-plug-yellow text-plug-green hover:brightness-105"
@@ -50,8 +50,8 @@ const ConsoleSidebarAction: FC<
 export const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { account: { isAuthenticated, session } } = useConnect()
 	const { is, width, handleActivePane, resize } = useSidebar()
+	const { socket } = useSocket()
 
 	const [isResizing, setIsResizing] = useState(false)
 
@@ -81,7 +81,7 @@ export const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || !isAuthenticated || is.stats || is.companion || is.searching) && (
+			{(is.authenticating || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="relative mr-0 flex flex-col overflow-hidden"
@@ -96,7 +96,7 @@ export const ConsoleSidebarPane = () => {
 										? "Companion"
 										: is.stats
 											? "Stats"
-											: session?.user.id.startsWith("0x")
+											: socket.id.startsWith("0x")
 												? "Wallet"
 												: "Login"
 								}
@@ -107,7 +107,7 @@ export const ConsoleSidebarPane = () => {
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									) : session?.user.id.startsWith("0x") ? (
+									) : socket.id.startsWith("0x") ? (
 										<Wallet
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -121,7 +121,7 @@ export const ConsoleSidebarPane = () => {
 								}
 								nextPadded={false}
 								nextOnClick={() => handleActivePane(null)}
-								nextLabel={isAuthenticated ? <X size={14} /> : undefined}
+								nextLabel={socket.id.startsWith("0x") ? <X size={14} /> : undefined}
 							/>
 						</div>
 
@@ -130,9 +130,9 @@ export const ConsoleSidebarPane = () => {
 								<ColumnStats index={0} />
 							) : is.companion ? (
 								<ColumnCompanion index={0} />
-							) : session?.user.id.startsWith("0x") ? (
+							) : socket.id.startsWith("0x") ? (
 								<ColumnWallet index={0} />
-							) : session?.user.id.startsWith("0x") === false || !isAuthenticated ? (
+							) : socket.id.startsWith("0x") === false ? (
 								<ColumnAuthenticate index={0} />
 							) : (
 								<></>
@@ -142,7 +142,7 @@ export const ConsoleSidebarPane = () => {
 					<div className="relative h-full cursor-col-resize">
 						<div className="h-full w-[1px] bg-plug-green/10" />
 						<div
-							className="absolute top-0 bottom-0 -left-4 -right-4 z-[999]"
+							className="absolute -left-4 -right-4 bottom-0 top-0 z-[999]"
 							onMouseDown={e => {
 								e.preventDefault()
 								setIsResizing(true)
@@ -156,13 +156,15 @@ export const ConsoleSidebarPane = () => {
 }
 
 export const ConsoleSidebar = () => {
-	const { account: { address, isAuthenticated } } = useConnect()
+	const {
+		account: { address }
+	} = useConnect()
 	const { disconnect } = useDisconnect(true)
 	const { is, handleSidebar: sidebar } = useSidebar()
 	const { socket, avatar } = useSocket()
 	const { add } = usePlugActions()
 
-	const showRestrictedOptions = isAuthenticated && !!socket?.identity?.onboardingAt
+	const showRestrictedOptions = !!socket.id.startsWith("0x") && !!socket?.identity?.onboardingAt
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
@@ -230,7 +232,7 @@ export const ConsoleSidebar = () => {
 				</div>
 
 				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
-					{(socket || address || isAuthenticated) && (
+					{(socket || address) && (
 						<ConsoleSidebarAction
 							className={cn(is.expanded && "pr-16")}
 							icon={

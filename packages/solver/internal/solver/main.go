@@ -8,16 +8,15 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/assert"
+	"solver/internal/actions/basepaint"
 	"solver/internal/actions/boolean"
 	dbactions "solver/internal/actions/database"
-	"solver/internal/actions/ens"
 	"solver/internal/actions/euler"
 	"solver/internal/actions/math"
 	"solver/internal/actions/morpho"
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
-	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver/signature"
@@ -30,50 +29,49 @@ import (
 )
 
 type Solver struct {
-	Protocols map[string]actions.BaseProtocolHandler
+	Protocols map[string]actions.Protocol
 	IsKilled  bool
 }
 
-func New() Solver {
-	return Solver{
-		Protocols: map[string]actions.BaseProtocolHandler{
-			actions.Plug:     plug.New(),
-			actions.Boolean:  boolean.New(),
-			actions.AaveV3:   aave_v3.New(),
-			actions.YearnV3:  yearn_v3.New(),
-			actions.ENS:      ens.New(),
-			actions.Nouns:    nouns.New(),
-			actions.Morpho:   morpho.New(),
-			actions.Euler:    euler.New(),
-			actions.Math:     math.New(),
-			actions.Assert:   assert.New(),
-			actions.Database: dbactions.New(),
+func New() *Solver {
+	return &Solver{
+		Protocols: map[string]actions.Protocol{
+			actions.AaveV3:    aave_v3.New(),
+			actions.Assert:    assert.New(),
+			actions.BasePaint: basepaint.New(),
+			actions.Boolean:   boolean.New(),
+			actions.Euler:     euler.New(),
+			actions.Math:      math.New(),
+			actions.Morpho:    morpho.New(),
+			actions.Nouns:     nouns.New(),
+			actions.Plug:      plug.New(),
+			actions.Database:  dbactions.New(),
+			actions.YearnV3:   yearn_v3.New(),
 		},
 		IsKilled: false,
 	}
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
 	}
 
 	handler, exists := s.Protocols[inputs.Protocol]
-	if !exists {
+	if !exists || handler.Actions[inputs.Action].Handler == nil {
 		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
 
-	params := actions.HandlerParams{}
-	params, err := params.New(chainId, from)
+	lookup, err := actions.NewSchemaLookup(chainId, from, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := handler.GetTransaction(inputs.Action, rawInputs, params)
+	transactions, err := handler.Actions[inputs.Action].Handler(lookup, raw)
 	if err != nil {
 		return nil, err
 	}
@@ -87,29 +85,13 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	return transactions, nil
 }
 
-func (s *Solver) GetPlugsArray(
-	head []signature.Plug,
-	inputs []byte,
-	chainId uint64,
-	from common.Address,
-) (plugs []signature.Plug, exclusive bool, error error) {
+func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uint64, from common.Address) (plugs []signature.Plug, error error) {
 	plugs, err := s.GetTransaction(inputs, chainId, from)
 	if err != nil {
-		return nil, false, err
+		return nil, err
 	}
 
-	// NOTE: Some plug actions have exclusive transactions that need to be run alone
-	//       before the rest of the Plug can run. For this, we will just break out
-	//       of the loop and execute any solo transactions that are needed for
-	//       the rest of the batch to run in sequence.
-	for _, plug := range plugs {
-		if plug.Exclusive {
-			plug.Exclusive = false
-			return []signature.Plug{plug}, true, nil
-		}
-	}
-
-	return append(head, plugs...), false, nil
+	return append(head, plugs...), nil
 }
 
 func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
@@ -126,7 +108,7 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 		}
 
 		var exclusive bool
-		plugs, exclusive, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
+		plugs, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
 		}
@@ -370,55 +352,4 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 	}
 
 	return result, nil
-}
-
-// Submit executes multiple Intents on-chain through the Plug router contract.
-// For each Intent:
-// 1. It solves the Intent to generate the LivePlugs
-// 2. Filters out unsuccessful simulations
-// 3. Submits the valid LivePlugs to the blockchain with one transaction per Intent
-// This is typically used for cron-scheduled or batched transaction execution.
-func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
-	if len(intents) == 0 {
-		return nil, utils.ErrBuild("no plugs generated to execute")
-	}
-
-	chainId := intents[0].ChainId
-	errors := make([]error, len(intents))
-
-	var livePlugsList []*signature.LivePlugs
-	for i, intent := range intents {
-		if intent.ChainId != chainId {
-			errors[i] = utils.ErrChainId("chainId", intent.ChainId)
-			continue
-		}
-
-		solution, err := s.SolveAndSimulateSocket(&intent)
-		if err != nil {
-			errors[i] = err
-			continue
-		}
-
-		if submit, ok := intent.Options["submit"].(bool); ok && submit {
-			// Only include LivePlugs if the run was successful or doesn't exist
-			if solution.Run == nil || solution.Run.Status == "success" || solution.Run.Status == "pending" {
-				// We can get LivePlugs directly from the solution now
-				// if solution.LivePlugs != nil {
-				// 	livePlugsList = append(livePlugsList, solution.LivePlugs)
-				// }
-			}
-		}
-	}
-
-	provider, err := client.New(chainId)
-	if err != nil {
-		return nil, err
-	}
-
-	results, err := provider.Plug(livePlugsList)
-	if err != nil {
-		return nil, err
-	}
-
-	return results, nil
 }

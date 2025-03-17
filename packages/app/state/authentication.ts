@@ -5,6 +5,7 @@ import qrcode from "qrcode-generator"
 
 import { WalletConnectProvider } from "@/lib"
 import { RouterOutputs } from "@/server/client"
+
 import { atomWithStorage } from "jotai/utils"
 
 export const authenticationResponseAtom = atom<SignInResponse | undefined>(undefined)
@@ -37,11 +38,46 @@ export const walletConnectURIMatrixAtom = atom<
 	}
 })
 
-export const socketModelAtom = atomWithStorage<RouterOutputs["socket"]["get"] | undefined>("plug.socketModel", undefined)
+export const INITIAL_SOCKET: RouterOutputs["socket"]["get"] = {
+	id: "anonymous-static",
+	createdAt: new Date(),
+	updatedAt: new Date(),
+	implementation: null,
+	admin: false,
+	socketAddress: "",
+	salt: null,
+	identity: {
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		onboardingAt: null,
+		onboardingColor: null,
+		onboardingCount: 0,
+		socketId: "anonymous-static",
+		farcasterId: null,
+		companion: {
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			socketId: "anonymous-static",
+			lastFeedAt: null,
+			feedCount: 0,
+			treatsFed: 0,
+			streak: 0,
+			name: "New Companion"
+		},
+		ens: null,
+		farcaster: null,
+		referralCode: "",
+		requestedAt: null,
+		approvedAt: null,
+		onboardedAt: null,
+		referrerId: null
+	}
+}
+export const socketModelAtom = atomWithStorage<RouterOutputs["socket"]["get"]>("plug.socketModel", INITIAL_SOCKET)
 export const socketAtom = atom(get => {
 	const socket = get(socketModelAtom)
 
-	const isDemo = socket?.id.startsWith("demo") || false
+	const isDemo = socket.id.startsWith("demo") || false
 	const isAnonymous = socket === undefined || isDemo || socket?.id.startsWith("anonymous") || false
 	const isApproved = (socket && Boolean(socket.identity?.approvedAt)) || false
 

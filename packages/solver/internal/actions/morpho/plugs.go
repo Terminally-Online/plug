@@ -17,13 +17,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleEarn(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Vault  string `json:"vault"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal earn inputs: %w", err)
 	}
 
@@ -57,7 +57,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		params.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack deposit calldata: %w", err)
@@ -72,13 +72,13 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	}}, nil
 }
 
-func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSupplyCollateral(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Target string `json:"target"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal supply collateral inputs: %w", err)
 	}
 
@@ -92,7 +92,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		return nil, fmt.Errorf("failed to convert supply collateral amount to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target, params.ChainId)
+	market, err := GetMarket(inputs.Target, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -103,7 +103,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
+		common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
 		amount,
 	)
 	if err != nil {
@@ -118,7 +118,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		"supplyCollateral",
 		market.Params,
 		amount,
-		params.From,
+		lookup.From,
 		[]byte{},
 	)
 	if err != nil {
@@ -129,18 +129,18 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		To:   *token,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
 		Data: supplyCollateralCalldata,
 	}}, nil
 }
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleWithdraw(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Target string `json:"target"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
 	}
 
@@ -155,7 +155,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	if len(inputs.Target) == 42 {
-		_, err := GetVault(inputs.Target, params.ChainId)
+		_, err := GetVault(inputs.Target, lookup.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get vault: %w", err)
 		}
@@ -167,8 +167,8 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		withdrawCalldata, err := vaultAbi.Pack(
 			"withdraw",
 			amount,
-			params.From,
-			params.From,
+			lookup.From,
+			lookup.From,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
@@ -180,7 +180,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		}}, nil
 	}
 
-	market, err := GetMarket(inputs.Target, params.ChainId)
+	market, err := GetMarket(inputs.Target, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -194,112 +194,26 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		market.Params,
 		amount,
 		big.NewInt(0),
-		params.From,
-		params.From,
+		lookup.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
 
-func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		Token  string `json:"token"`
-		Target string `json:"target"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
-	}
-
-	if len(inputs.Target) == 42 {
-		_, err := GetVault(inputs.Target, params.ChainId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get vault: %w", err)
-		}
-
-		erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get erc20 abi: %w", err)
-		}
-		balance, err := erc20Abi.Pack("balanceOf", params.From)
-		if err != nil {
-			return nil, fmt.Errorf("failed to pack balance of calldata: %w", err)
-		}
-
-		vaultAbi, err := morpho_vault.MorphoVaultMetaData.GetAbi()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get vault abi: %w", err)
-		}
-		withdrawCalldata, err := vaultAbi.Pack(
-			"redeem",
-			balance,
-			params.From,
-			params.From,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
-		}
-
-		return []signature.Plug{{
-			To:   common.HexToAddress(inputs.Target),
-			Data: withdrawCalldata,
-		}}, nil
-	}
-
-	market, err := GetMarket(inputs.Target, params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get market: %w", err)
-	}
-	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		params.Client,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho router: %w", err)
-	}
-	position, err := morpho.Position(
-		params.Client.ReadOptions(params.From),
-		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
-		params.From,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get position: %w", err)
-	}
-
-	morphoAbi, err := morpho_router.MorphoRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho abi: %w", err)
-	}
-	withdrawCalldata, err := morphoAbi.Pack(
-		"withdraw",
-		market.Params,
-		big.NewInt(0),
-		position.SupplyShares,
-		params.From,
-		params.From,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
-	}
-
-	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		Data: withdrawCalldata,
-	}}, nil
-}
-
-func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleBorrow(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Target string `json:"target"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
 	}
 
@@ -313,7 +227,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target, params.ChainId)
+	market, err := GetMarket(inputs.Target, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -327,26 +241,26 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		market.Params,
 		amount,
 		big.NewInt(0),
-		params.From,
-		params.From,
+		lookup.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack borrow calldata: %w", err)
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
 		Data: borrowCalldata,
 	}}, nil
 }
 
-func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleRepay(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
 		Target string `json:"target"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
 	}
 
@@ -365,14 +279,14 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		references.Networks[params.ChainId].References["morpho"]["router"]),
+		references.Networks[lookup.ChainId].References["morpho"]["router"]),
 		amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	market, err := GetMarket(inputs.Target, params.ChainId)
+	market, err := GetMarket(inputs.Target, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -385,7 +299,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		market.Params,
 		amount,
 		big.NewInt(0),
-		params.From,
+		lookup.From,
 		[]byte{},
 	)
 	if err != nil {
@@ -396,97 +310,18 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		To:   *token,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
 		Data: repayCalldata,
 	}}, nil
 }
 
-func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		Token  string `json:"token"`
-		Target string `json:"target"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal repay max inputs: %w", err)
-	}
-
-	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
-	}
-
-	market, err := GetMarket(inputs.Target, params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get market: %w", err)
-	}
-	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		params.Client,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho router: %w", err)
-	}
-	position, err := morpho.Position(
-		params.Client.ReadOptions(params.From),
-		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
-		params.From,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get position: %w", err)
-	}
-
-	borrowAssets := mulDivUp(
-		position.BorrowShares,
-		new(big.Int).Add(market.State.BorrowAssets, VirtualAssets),
-		new(big.Int).Add(market.State.BorrowShares, VirtualShares),
-	)
-
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		references.Networks[params.ChainId].References["morpho"]["router"]),
-		borrowAssets,
-	)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	morphoAbi, err := morpho_router.MorphoRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho abi: %w", err)
-	}
-	// NOTE: Shares is set to zero because assets informs the amount of shares to burn while we
-	//       maintain the precise control over the amount of assets to approve.
-	repayCalldata, err := morphoAbi.Pack(
-		"repay",
-		market.Params,
-		borrowAssets,
-		big.NewInt(0),
-		params.From,
-		[]byte{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to pack repay calldata: %w", err)
-	}
-
-	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
-	}, {
-		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		Data: repayCalldata,
-	}}, nil
-}
-
-func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	distributions, err := GetDistributions(params.From, params.ChainId)
+func HandleClaimRewards(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
+	distributions, err := GetDistributions(lookup.From, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get distributions: %w", err)
 	}
 	if len(distributions) == 0 {
-		return nil, fmt.Errorf("no active distributions found for address: %s", params.From)
+		return nil, fmt.Errorf("no active distributions found for address: %s", lookup.From)
 	}
 
 	distributorAbi, err := morpho_distributor.MorphoDistributorMetaData.GetAbi()
@@ -506,7 +341,7 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 		}
 		claimCalldata, err := distributorAbi.Pack(
 			"claim",
-			params.From,
+			lookup.From,
 			common.HexToAddress(distribution.Asset.Address),
 			claimable,
 			proof,
@@ -523,13 +358,13 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 	return claims, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintHealthFactor(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Target    string `json:"target"`
 		Operator  int8   `json:"operator"`
 		Threshold string `json:"threshold"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal health factor constraint inputs: %w", err)
 	}
 
@@ -539,22 +374,22 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to convert health factor threshold to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target, params.ChainId)
+	market, err := GetMarket(inputs.Target, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		params.Client,
+		common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		lookup.Client,
 	)
 	if err != nil {
 		return nil, err
 	}
 	position, err := morpho.Position(
-		params.Client.ReadOptions(params.From),
+		lookup.Client.ReadOptions(lookup.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
-		params.From,
+		lookup.From,
 	)
 	if err != nil {
 		return nil, err
@@ -593,14 +428,14 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintAPY(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Direction int    `json:"direction"` // -1 for borrow, 1 for deposit
 		Target    string `json:"target"`    // Underlying market or vault
 		Operator  int    `json:"operator"`  // -1 for less than, 1 for greater than
 		Threshold string `json:"threshold"` // Percentage
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs: %w", err)
 	}
 
@@ -611,7 +446,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 	var currentRate float64
 	if len(inputs.Target) == 42 {
-		vault, err := GetVault(inputs.Target, params.ChainId)
+		vault, err := GetVault(inputs.Target, lookup.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch vault: %w", err)
 		}
@@ -622,7 +457,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 		currentRate = vault.DailyApys.NetApy * 100
 	} else {
-		market, err := GetMarket(inputs.Target, params.ChainId)
+		market, err := GetMarket(inputs.Target, lookup.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch market: %w", err)
 		}

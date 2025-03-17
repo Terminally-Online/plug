@@ -80,15 +80,12 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, error) {
+func (c *Client) Plug(livePlugs map[string]signature.LivePlugs) ([]signature.Result, error) {
 	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
-	lps := make([]plug_router.PlugTypesLibLivePlugs, len(livePlugs))
-	for i, livePlug := range livePlugs {
-		lps[i] = livePlug.Wrap()
+	var lps []plug_router.PlugTypesLibLivePlugs
+	for _, livePlug := range livePlugs {
+		lps = append(lps, livePlug.Wrap())
 	}
-
-	// TODO: We should simulate and confirm the function of each bundle for actually ripping the
-	//       transaction so that we can cull-out things that are failing.
 
 	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {
@@ -110,6 +107,9 @@ func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, err
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO: This seemingly isn't doing anything with results since the result isn't even
+	//       being added to the array of signature.Result?
 	var results []signature.Result
 	for _, event := range receipt.Logs {
 		if event.Address == routerAddress && event.Topics[0].Hex() == routerAbi.Events["PlugResult"].ID.Hex() {

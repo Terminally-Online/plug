@@ -3,12 +3,8 @@ package plug
 import (
 	"context"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"solver/bindings/erc_20"
-	"solver/internal/actions"
 	"solver/internal/client"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strings"
 
@@ -75,34 +71,4 @@ func getTokenType(chainId uint64, address string) (*int, error) {
 
 func getProxyTokenType(_ *client.Client, _ string) (*int, error) {
 	return nil, fmt.Errorf("proxies not supported at this time")
-}
-
-func HandleReadBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		Token   string `json:"token"`
-		Address string `json:"address"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
-	}
-
-	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
-	if err != nil {
-		return nil, err
-	}
-
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, err
-	}
-
-	balanceCalldata, err := erc20Abi.Pack("balanceOf", common.HexToAddress(inputs.Address))
-	if err != nil {
-		return nil, err
-	}
-
-	return []signature.Plug{{
-		To:   *token,
-		Data: balanceCalldata,
-	}}, nil
 }

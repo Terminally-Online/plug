@@ -3,8 +3,6 @@ package references
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"solver/internal/utils"
@@ -18,12 +16,14 @@ var (
 	terminateResults = []string{"Invalid API Key"}
 	sleepResults     = []string{"Rate limit"}
 
-	Referral = "0x62180042606624f02d8a130da8a3171e9b33894d"
+	MultichainEtherscan = "https://api.etherscan.io/v2/api?chainid=%d"
+
+	Referral = "0xE09C3f7a144D3b1Bef42499486cA5C36d20ec5d1"
 
 	Multicall = map[string]string{
 		"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 	}
-	// NOTE: We are not actively verifying our contracts when they are deployed 
+	// NOTE: We are not actively verifying our contracts when they are deployed
 	//       because we are still in development so to set the ABI you just toss it
 	//       into the abi directory above.
 	Plug = map[string]string{
@@ -44,16 +44,11 @@ var (
 			Default: "https://cdn.onplug.io/blockchain/ethereum.png",
 		},
 		ChainIds: []uint64{1, 31337},
-		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
 			"aave_v3": {
 				"pool":                     "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 				"ui_pool_data_provider":    "0x3F78BBD206e4D3c504Eb854232EdA7e47E9Fd8FC",
 				"ui_pool_address_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
-			},
-			"ens": {
-				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
-				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
 			},
 			"euler": {
 				"evault_implementation":     "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",
@@ -84,7 +79,6 @@ var (
 				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
-				"gauge":    "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
 			},
 		},
 	}
@@ -97,12 +91,14 @@ var (
 			Default: "https://cdn.onplug.io/blockchain/base.png",
 		},
 		ChainIds: []uint64{8453},
-		Explorer: "https://api.basescan.org/api",
 		References: map[string]map[string]string{
 			"aave_v3": {
 				"pool":                     "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
 				"ui_pool_data_provider":    "0x68100bD5345eA474D93577127C11F39FF8463e93",
 				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
+			},
+			"basepaint": {
+				"referral": "0xaff1A9E200000061fC3283455d8B0C7e3e728161",
 			},
 			"euler": {
 				"evault_implementation":     "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
@@ -128,12 +124,11 @@ var (
 				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
-				"gauge":    "", // Not available on Base?
 			},
 		},
 	}
 
-	Networks = map[uint64]*Network{1: Mainnet, 31337: Mainnet, 8453: Base}
+	Networks = map[uint64]*Network{1: Mainnet, 8453: Base}
 )
 
 func GenerateReference(explorer string, folderName string, contractName string, address string, retries int) error {
@@ -149,28 +144,25 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		return fmt.Errorf("failed to create directory: %v", err)
 	}
 
-	url := fmt.Sprintf("%s?module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY"))
-	resp, err := http.Get(url)
+	response, err := utils.MakeHTTPRequest(
+		fmt.Sprintf("%s&module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY")),
+		"GET",
+		map[string]string{
+			"accept":        "application/json",
+			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_KEY")),
+		},
+		nil,
+		nil,
+		struct {
+			Message string            `json:"message"`
+			Result  []json.RawMessage `json:"result"`
+		}{},
+	)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
 	fmt.Printf("Getting source for %s/%s\n", folderName, contractName)
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	var response struct {
-		Message string            `json:"message"`
-		Result  []json.RawMessage `json:"result"`
-	}
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return err
-	}
 
 	if response.Message == "NOTOK" {
 		fmt.Printf("Failed to get source for %s/%s: %s.\n", folderName, contractName, response.Result[0])
@@ -227,7 +219,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		return GenerateReference(explorer, folderName, contractName, explorerResponse.Implementation, retries)
 	}
 
-	var abiJSON interface{}
+	var abiJSON any
 	err = json.Unmarshal([]byte(explorerResponse.ABI), &abiJSON)
 	if err != nil {
 		return fmt.Errorf("failed to parse ABI JSON: %v", err)
@@ -252,19 +244,21 @@ func GenerateReferences() error {
 	processed := make(map[string]bool)
 
 	for _, network := range Networks {
+		explorer := fmt.Sprintf(MultichainEtherscan, network.ChainIds[0])
+
 		for folderName, contracts := range network.References {
 			for contractName, address := range contracts {
 				key := fmt.Sprintf("%s:%s", folderName, contractName)
 
-				fmt.Printf("Generating reference for %s/%s on %s\n", folderName, contractName, network.Explorer)
+				fmt.Printf("Generating reference for %s/%s on %s\n", folderName, contractName, explorer)
 
 				if processed[key] {
 					fmt.Printf("Skipping %s/%s on %s - already processed\n",
-						folderName, contractName, network.Explorer)
+						folderName, contractName, explorer)
 					continue
 				}
 
-				if err := GenerateReference(network.Explorer, folderName, contractName, address, retries); err != nil {
+				if err := GenerateReference(explorer, folderName, contractName, address, retries); err != nil {
 					return err
 				}
 

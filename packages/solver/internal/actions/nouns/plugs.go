@@ -16,11 +16,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionBid(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, err
 	}
 
@@ -29,7 +29,7 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to convert big amount to uint: %w", err)
 	}
 
-	client, err := client.New(params.ChainId)
+	client, err := client.New(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
+	auction, err := auctionHouse.Auction(client.ReadOptions(lookup.From))
 	if err != nil {
 		return nil, err
 	}
@@ -63,11 +63,11 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	}}, nil
 }
 
-func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionIncreaseBid(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Percent string `json:"percent"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +76,7 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to convert percent to uint: %w", err)
 	}
 
-	client, err := client.New(params.ChainId)
+	client, err := client.New(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
+	auction, err := auctionHouse.Auction(client.ReadOptions(lookup.From))
 	if err != nil {
 		return nil, err
 	}
@@ -118,12 +118,12 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 	}}, nil
 }
 
-func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintHasTrait(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		TraitType string `json:"traitType"`
 		Trait     string `json:"trait"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, err
 	}
 
@@ -131,7 +131,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, fmt.Errorf("trait type and trait must be provided")
 	}
 
-	client, err := client.New(params.ChainId)
+	client, err := client.New(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
+	auction, err := auctionHouse.Auction(client.ReadOptions(lookup.From))
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, err
 	}
 
-	seeds, err := nounsToken.Seeds(client.ReadOptions(params.From), auction.NounId)
+	seeds, err := nounsToken.Seeds(client.ReadOptions(lookup.From), auction.NounId)
 	if err != nil {
 		return nil, err
 	}
@@ -171,30 +171,30 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	var value string
 	switch inputs.TraitType {
 	case "background":
-		value, err = art.Backgrounds(client.ReadOptions(params.From), seeds.Background)
+		value, err = art.Backgrounds(client.ReadOptions(lookup.From), seeds.Background)
 		if err != nil {
 			return nil, err
 		}
 	case "body":
-		bodyValue, err := art.Bodies(client.ReadOptions(params.From), seeds.Body)
+		bodyValue, err := art.Bodies(client.ReadOptions(lookup.From), seeds.Body)
 		if err != nil {
 			return nil, err
 		}
 		value = string(bodyValue)
 	case "accessory":
-		accessoryValue, err := art.Accessories(client.ReadOptions(params.From), seeds.Accessory)
+		accessoryValue, err := art.Accessories(client.ReadOptions(lookup.From), seeds.Accessory)
 		if err != nil {
 			return nil, err
 		}
 		value = string(accessoryValue)
 	case "head":
-		headValue, err := art.Heads(client.ReadOptions(params.From), seeds.Head)
+		headValue, err := art.Heads(client.ReadOptions(lookup.From), seeds.Head)
 		if err != nil {
 			return nil, err
 		}
 		value = string(headValue)
 	case "glasses":
-		glassesValue, err := art.Glasses(client.ReadOptions(params.From), seeds.Glasses)
+		glassesValue, err := art.Glasses(client.ReadOptions(lookup.From), seeds.Glasses)
 		if err != nil {
 			return nil, err
 		}
@@ -210,23 +210,23 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	return nil, nil
 }
 
-func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintIsTokenId(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Id *big.Int `json:"id"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, err
 	}
 
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		params.Client,
+		lookup.Client,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(params.Client.ReadOptions(params.From))
+	auction, err := auctionHouse.Auction(lookup.Client.ReadOptions(lookup.From))
 	if err != nil {
 		return nil, err
 	}
@@ -238,12 +238,12 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 	return nil, nil
 }
 
-func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintCurrentBidWithinRange(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Plug, error) {
 	var inputs struct {
 		Min string `json:"min"`
 		Max string `json:"max"`
 	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+	if err := json.Unmarshal(raw, &inputs); err != nil {
 		return nil, err
 	}
 
@@ -260,7 +260,7 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 		return nil, fmt.Errorf("min must be less than max")
 	}
 
-	client, err := client.New(params.ChainId)
+	client, err := client.New(lookup.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -272,7 +272,7 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
+	auction, err := auctionHouse.Auction(client.ReadOptions(lookup.From))
 	if err != nil {
 		return nil, err
 	}

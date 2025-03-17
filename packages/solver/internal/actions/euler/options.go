@@ -16,89 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type EulerOptionsProvider struct{}
-
-func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaults(chainId)
-	if err != nil {
-		return nil, err
-	}
-
-	switch action {
-	case ActionEarn, ActionWithdraw:
-		supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: supplyTokenOptions},
-			2: {Complex: supplyTokenToVaultOptions},
-		}, nil
-	case ActionDepositCollateral, ActionWithdrawCollateral:
-		supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
-		addressPositions, err := GetAddressPositions(chainId, address)
-		if err != nil {
-			fmt.Printf("error getting address positions: %v\n", err)
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: supplyTokenOptions},
-			2: {Complex: supplyTokenToVaultOptions},
-			3: {Simple: addressPositions},
-		}, nil
-
-	case ActionBorrow, ActionRepay:
-		borrowTokenOptions, _, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
-		addressPositions, err := GetAddressPositions(chainId, address)
-		if err != nil {
-			fmt.Printf("error getting address positions: %v\n", err)
-			return nil, err
-		}
-		return map[int]actions.Options{
-			1: {Simple: borrowTokenOptions},
-			2: {Complex: borrowTokenToVaultOptions},
-			3: {Simple: addressPositions},
-		}, nil
-
-	case ConstraintHealthFactor, ConstraintTimeToLiq:
-		addressPositions, err := GetAddressPositions(chainId, address)
-		if err != nil {
-			fmt.Printf("error getting address positions: %v\n", err)
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: addressPositions},
-		}, nil
-
-	case ConstraintAPY:
-		_, supplyVaultOptions, _, err := GetSupplyTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
-		_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
-		return map[int]actions.Options{
-			0: {Simple: actions.BaseLendActionTypeFields},
-			1: {Complex: map[string][]actions.Option{
-				"-1": borrowVaultOptions,
-				"1":  supplyVaultOptions,
-			}},
-			2: {Simple: actions.BaseThresholdFields},
-		}, nil
-
-	default:
-		return nil, fmt.Errorf("unsupported action for options: %s", action)
-	}
-}
-
 func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
 	type result struct {
 		tokenOptions        []actions.Option
@@ -107,6 +24,9 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	}
 
 	cacheKey := fmt.Sprintf("euler:supplyTokens:%d", chainId)
+	// TODO: There is no reason to be doing a cache here as there are no calls made and it's just a loop.
+	//       We are used to memoizing things on the frontend, but you don't need to cache in-memory things
+	//       like this when you're working on a server.
 	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
@@ -120,7 +40,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 					Label: vault.AssetSymbol,
 					Name:  vault.AssetName,
 					Value: tokenAddress,
-					Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
+					Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
 				})
 				seenToken[tokenAddress] = true
 			}
@@ -137,11 +57,8 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 				Label: vault.VaultSymbol,
 				Name:  vault.VaultName,
 				Value: vault.Vault.String(),
-				Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				Info: actions.OptionInfo{
-					Label: "Supply APY",
-					Value: supplyApy,
-				},
+				Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
+				Info:  &actions.OptionInfo{Label: "Supply APY", Value: supplyApy},
 			}
 			vaultOptions = append(vaultOptions, vaultOption)
 			tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
@@ -161,66 +78,33 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
 }
 
-func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
-	type result struct {
-		tokenOptions        []actions.Option
-		vaultOptions        []actions.Option
-		tokenToVaultOptions map[string][]actions.Option
-	}
-
-	cacheKey := fmt.Sprintf("euler:borrowTokens:%d", chainId)
-	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
-		seenToken := make(map[string]bool)
-		tokenOptions := make([]actions.Option, 0)
-		vaultOptions := make([]actions.Option, 0)
-		tokenToVaultOptions := make(map[string][]actions.Option)
-
-		for _, vault := range vaults {
-			tokenAddress := fmt.Sprintf("%s:%d", vault.Asset, vault.AssetDecimals)
-			if !seenToken[tokenAddress] {
-				tokenOptions = append(tokenOptions, actions.Option{
-					Label: vault.AssetSymbol,
-					Name:  vault.AssetName,
-					Value: tokenAddress,
-					Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				})
-				seenToken[tokenAddress] = true
-			}
-
-			var borrowApy string
-			if len(vault.IrmInfo.InterestRateInfo) > 0 {
-				borrowApyFloat := utils.UintToFloat(vault.IrmInfo.InterestRateInfo[0].BorrowAPY, 25)
-				borrowApy = fmt.Sprintf("%.2f%%", borrowApyFloat)
-			} else {
-				borrowApy = "0.0%"
-			}
-
-			vaultOption := actions.Option{
-				Label: vault.VaultSymbol,
-				Name:  vault.VaultName,
-				Value: vault.Vault.String(),
-				Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				Info: actions.OptionInfo{
-					Label: "Borrow APY",
-					Value: borrowApy,
-				},
-			}
-			vaultOptions = append(vaultOptions, vaultOption)
-			tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
-		}
-
-		return result{
-			tokenOptions:        tokenOptions,
-			vaultOptions:        vaultOptions,
-			tokenToVaultOptions: tokenToVaultOptions,
-		}, nil
-	})
-
+func SupplyTokenToVaultOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
+	supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(lookup.ChainId, vaults)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: supplyTokenOptions},
+		2: {Complex: supplyTokenToVaultOptions},
+	}, nil
+}
+
+func createEmptyAccountOption(index int, chainId uint64, address common.Address) actions.Option {
+	collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "collateral")
+	debtIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "debt")
+
+	return actions.Option{
+		Label: fmt.Sprintf("Account #%d", index),
+		Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(index))),
+		Value: fmt.Sprintf("%d", index),
+		Info:  &actions.OptionInfo{Label: "Health Factor: -", Value: "$0.00"},
+		Icon:  &actions.OptionIcon{Default: fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)},
+	}
 }
 
 func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Option, error) {
@@ -239,7 +123,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		evcAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["evc"])
 
 		calls := make([]client.MulticallCalldata, 256)
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			subAccountAddress := GetSubAccountAddress(address, uint8(i))
 			calls[i] = client.MulticallCalldata{
 				Target: accountLensAddr,
@@ -268,7 +152,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		consecutiveEmptyAccounts := 0
 		maxIndex := -1
 
-		// First pass - collect and organize vault data by subaccount
 		for i, result := range results {
 			accountInfo := result.(*struct {
 				VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
@@ -285,7 +168,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			consecutiveEmptyAccounts = 0
 			maxIndex = i
 
-			// Process vaults for this subaccount
 			for _, vaultAccountInfo := range accountInfo.VaultAccountInfo {
 				if vaultAccountInfo.LiquidityInfo.QueryFailure {
 					// This is a collateral vault
@@ -304,21 +186,17 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		options := make([]actions.Option, 0)
 		optionsByIndex := make(map[int]actions.Option)
 
-		// Create options for active accounts
 		for i := 0; i <= maxIndex; i++ {
 			if accountVaults, exists := vaultsBySubaccount[i]; exists {
-				// These values will vary depending on whether we have a debt vault.
 				var debtIcon string
 				var netValue float64
 				var healthFactor string
 				var totalCollateralValue float64
 
-				// find the largest value collateral vault
 				var largestCollateralVault *struct {
 					vault euler_account_lens.VaultAccountInfo
 					value float64
 				}
-				// Find the largest collateral vault and collect total collateral value
 				for _, collateralVault := range accountVaults.collateralVaults {
 					vaultPrice, err := GetVaultPrice(collateralVault.Vault.String(), chainId)
 					if err != nil {
@@ -342,8 +220,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 				}
 
 				accountAddress := GetSubAccountAddress(address, uint8(i))
-
-				// set the option variables based on whether we have a debt vault
 				if accountVaults.debtVault != nil {
 					netValue = utils.UintToFloat(new(big.Int).Sub(accountVaults.debtVault.LiquidityInfo.CollateralValueRaw, accountVaults.debtVault.LiquidityInfo.LiabilityValue), 18)
 					debtIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(accountVaults.debtVault.Asset.Hex()))
@@ -369,11 +245,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					Label: fmt.Sprintf("Account #%d", i),
 					Name:  utils.FormatAddress(accountAddress),
 					Value: fmt.Sprintf("%d", i),
-					Info: actions.OptionInfo{
-						Label: healthFactor,
-						Value: fmt.Sprintf("$%.2f", netValue),
-					},
-					Icon: actions.OptionIcon{Default: allIcon},
+					Info:  &actions.OptionInfo{Label: healthFactor, Value: fmt.Sprintf("$%.2f", netValue)},
+					Icon:  &actions.OptionIcon{Default: allIcon},
 				}
 			} else {
 				option := createEmptyAccountOption(i, chainId, address)
@@ -381,14 +254,12 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			}
 		}
 
-		// Add options in order
 		for i := 0; i <= maxIndex; i++ {
 			if option, exists := optionsByIndex[i]; exists {
 				options = append(options, option)
 			}
 		}
 
-		// Add one more empty account at the end
 		nextIndex := maxIndex + 1
 		options = append(options, createEmptyAccountOption(nextIndex, chainId, address))
 
@@ -396,19 +267,140 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 	})
 }
 
-// Helper function to create an empty account option
-func createEmptyAccountOption(index int, chainId uint64, address common.Address) actions.Option {
-	collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "collateral")
-	debtIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "debt")
-
-	return actions.Option{
-		Label: fmt.Sprintf("Account #%d", index),
-		Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(index))),
-		Value: fmt.Sprintf("%d", index),
-		Info: actions.OptionInfo{
-			Label: "Health Factor: -",
-			Value: "$0.00",
-		},
-		Icon: actions.OptionIcon{Default: fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)},
+func PositionOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	addressPositions, err := GetAddressPositions(lookup.ChainId, lookup.From)
+	if err != nil {
+		fmt.Printf("error getting address positions: %v\n", err)
+		return nil, err
 	}
+	return map[int]actions.Options{
+		0: {Simple: addressPositions},
+	}, nil
+}
+
+func SupplyTokenToVaultToPositionsOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
+	supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(lookup.ChainId, vaults)
+	if err != nil {
+		return nil, err
+	}
+	addressPositions, err := GetAddressPositions(lookup.ChainId, lookup.From)
+	if err != nil {
+		fmt.Printf("error getting address positions: %v\n", err)
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: supplyTokenOptions},
+		2: {Complex: supplyTokenToVaultOptions},
+		3: {Simple: addressPositions},
+	}, nil
+}
+
+func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
+	type result struct {
+		tokenOptions        []actions.Option
+		vaultOptions        []actions.Option
+		tokenToVaultOptions map[string][]actions.Option
+	}
+
+	cacheKey := fmt.Sprintf("euler:borrowTokens:%d", chainId)
+	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
+		seenToken := make(map[string]bool)
+		tokenOptions := make([]actions.Option, 0)
+		vaultOptions := make([]actions.Option, 0)
+		tokenToVaultOptions := make(map[string][]actions.Option)
+
+		for _, vault := range vaults {
+			tokenAddress := fmt.Sprintf("%s:%d", vault.Asset, vault.AssetDecimals)
+			if !seenToken[tokenAddress] {
+				tokenOptions = append(tokenOptions, actions.Option{
+					Label: vault.AssetSymbol,
+					Name:  vault.AssetName,
+					Value: tokenAddress,
+					Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
+				})
+				seenToken[tokenAddress] = true
+			}
+
+			var borrowApy string
+			if len(vault.IrmInfo.InterestRateInfo) > 0 {
+				borrowApyFloat := utils.UintToFloat(vault.IrmInfo.InterestRateInfo[0].BorrowAPY, 25)
+				borrowApy = fmt.Sprintf("%.2f%%", borrowApyFloat)
+			} else {
+				borrowApy = "0.0%"
+			}
+
+			vaultOption := actions.Option{
+				Label: vault.VaultSymbol,
+				Name:  vault.VaultName,
+				Value: vault.Vault.String(),
+				Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
+				Info:  &actions.OptionInfo{Label: "Borrow APY", Value: borrowApy},
+			}
+			vaultOptions = append(vaultOptions, vaultOption)
+			tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
+		}
+
+		return result{
+			tokenOptions:        tokenOptions,
+			vaultOptions:        vaultOptions,
+			tokenToVaultOptions: tokenToVaultOptions,
+		}, nil
+	})
+
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
+}
+
+func BorrowTokenToVaultOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
+	borrowTokenOptions, _, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(lookup.ChainId, vaults)
+	if err != nil {
+		return nil, err
+	}
+	addressPositions, err := GetAddressPositions(lookup.ChainId, lookup.From)
+	if err != nil {
+		fmt.Printf("error getting address positions: %v\n", err)
+		return nil, err
+	}
+	return map[int]actions.Options{
+		1: {Simple: borrowTokenOptions},
+		2: {Complex: borrowTokenToVaultOptions},
+		3: {Simple: addressPositions},
+	}, nil
+}
+
+func TokenOptions(lookup *actions.SchemaLookup) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(lookup.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
+	_, supplyVaultOptions, _, err := GetSupplyTokenToVaultOptions(lookup.ChainId, vaults)
+	if err != nil {
+		return nil, err
+	}
+	_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(lookup.ChainId, vaults)
+	if err != nil {
+		return nil, err
+	}
+	return map[int]actions.Options{
+		0: {Simple: actions.BaseLendActionTypeFields},
+		1: {Complex: map[string][]actions.Option{
+			"-1": borrowVaultOptions,
+			"1":  supplyVaultOptions,
+		}},
+		2: {Simple: actions.BaseThresholdFields},
+	}, nil
 }
