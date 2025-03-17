@@ -178,5 +178,38 @@ export const postAnimations = {
 				})}
 			</div>
 		))}
-	</div>)
+	</div>),
+	"abstraction-fixes-fragmentation": (
+		<div className="w-full h-full flex items-center justify-center">
+			<div className="flex gap-1 w-[80%] h-[80%]">
+				{Array.from({ length: 16 }).map((_, index) => {
+					// Calculate random delay for each key
+					const randomDelay = Math.random() * 2
+					
+					return (
+						<motion.div
+							key={index}
+							className="flex-1 rounded-lg"
+							initial={{ backgroundColor: "rgb(200, 200, 200, 0.3)" }} // Light grey
+							animate={{
+								backgroundColor: [
+									"rgb(200, 200, 200, 0.3)", // Light grey
+									"rgb(100, 100, 100, 0.3)", // Dark grey when pressed
+									"rgb(255, 255, 0, 0.3)" // plug-yellow when unified
+								]
+							}}
+							transition={{
+								duration: 8,
+								repeat: Infinity,
+								repeatType: "reverse",
+								delay: randomDelay,
+								ease: "easeInOut",
+								times: [0, 0.3, 1] // Spend more time in unified state
+							}}
+						/>
+					)
+				})}
+			</div>
+		</div>
+	)
 }
