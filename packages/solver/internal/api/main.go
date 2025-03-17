@@ -38,7 +38,7 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 	protected.Use(m.ApiKey)
 
 	protected.Handle("/solver/save", save.Create()).Methods(http.MethodPost)
-	protected.Handle("/solver/save", NewOpenAPIHandler(s.ReadIntents, s.SetupOpenAPIForReadIntents)).Methods("GET")
+	// protected.Handle("/solver/save", NewOpenAPIHandler(s.ReadIntents, s.SetupOpenAPIForReadIntents)).Methods("GET")
 	protected.Handle("/solver/save/{id}", save.Read()).Methods(http.MethodGet)
 	protected.Handle("/solver/save/{id}", save.ToggleSaved()).Methods(http.MethodPost)
 	protected.Handle("/solver/save/{id}", save.Delete()).Methods(http.MethodDelete)

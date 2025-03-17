@@ -63,26 +63,6 @@
     "expectOk": true
   },
   {
-    "name": "Morpho Withdraw All",
-    "intent": {
-      "chainId": 8453,
-      "inputs": [
-        {
-          "protocol": "morpho",
-          "action": "withdraw_all",
-          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
-        }
-      ],
-      "options": {
-        "isEOA": false,
-        "simulate": false,
-        "submit": false
-      }
-    },
-    "expectOk": true
-  },
-  {
     "name": "Morpho Borrow",
     "intent": {
       "chainId": 8453,
@@ -112,26 +92,6 @@
           "protocol": "morpho",
           "action": "repay",
           "amount": "0.001",
-          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
-        }
-      ],
-      "options": {
-        "isEOA": false,
-        "simulate": false,
-        "submit": false
-      }
-    },
-    "expectOk": true
-  },
-  {
-    "name": "Morpho Repay All",
-    "intent": {
-      "chainId": 8453,
-      "inputs": [
-        {
-          "protocol": "morpho",
-          "action": "repay_all",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
           "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }

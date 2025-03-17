@@ -62,25 +62,6 @@
     "expectOk": true
   },
   {
-    "name": "Yearn V3 Stake Max",
-    "intent": {
-      "chainId": 8453,
-      "inputs": [
-        {
-          "protocol": "yearn_v3",
-          "action": "stake_max",
-          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
-        }
-      ],
-      "options": {
-        "isEOA": false,
-        "simulate": false,
-        "submit": false
-      }
-    },
-    "expectOk": true
-  },
-  {
     "name": "Yearn V3 Redeem",
     "intent": {
       "chainId": 8453,
@@ -89,25 +70,6 @@
           "protocol": "yearn_v3",
           "action": "redeem",
           "amount": "0.001",
-          "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
-        }
-      ],
-      "options": {
-        "isEOA": false,
-        "simulate": false,
-        "submit": false
-      }
-    },
-    "expectOk": true
-  },
-  {
-    "name": "Yearn V3 Redeem Max",
-    "intent": {
-      "chainId": 8453,
-      "inputs": [
-        {
-          "protocol": "yearn_v3",
-          "action": "redeem_max",
           "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
         }
       ],

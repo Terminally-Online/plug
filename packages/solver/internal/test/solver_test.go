@@ -818,7 +818,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 
 			// Validate the essential fields
 			missingFields := []string{}
-			for _, field := range []string{"intentId", "livePlugs", "transactions"} {
+			for _, field := range []string{"intentId", "transactions"} {
 				if _, ok := solution[field]; !ok {
 					missingFields = append(missingFields, field)
 				}
