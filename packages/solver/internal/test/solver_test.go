@@ -101,7 +101,7 @@ func isDatabaseAvailable() bool {
 	}
 
 	// Try to connect to the database server without actually connecting to a specific database
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", host, port), 1*time.Second)
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), 1*time.Second)
 	if err != nil {
 		fmt.Printf("Database connection check failed: %v\n", err)
 		return false
@@ -176,7 +176,6 @@ func setupEnvironment() {
 
 		// API keys and authentication
 		"ADMIN_API_KEY": "test-admin-key",
-		"API_KEY":       "test-api-key",
 		"TEST_API_KEY":  "testing", // Special testing API key that doesn't get rate limited
 
 		// Encryption (without actually decrypting anything)

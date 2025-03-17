@@ -99,7 +99,6 @@ export GO_TEST_MODE=true
 export ALLOW_TEST_DB_FALLBACK=true
 
 # Set API keys for testing
-export ADMIN_API_KEY=${ADMIN_API_KEY:-bingbopboombam}
 export TEST_API_KEY=${TEST_API_KEY:-testing}  # Special test key that doesn't get rate limited
 
 # Set chain ID if provided
