@@ -46,28 +46,4 @@ To add test cases for a new protocol:
 
 ## Running Tests
 
-Tests can be run using the `test_api.sh` script in the root of the solver package:
-
-```bash
-./test_api.sh
-```
-
-Options:
-- `--skip-db-check`: Skip database connection check
-- `--test-mode=MODE`: Set test mode (all, basic, minimal)
-- `--help`: Show help message
-
-## Test Structure
-
-Each test case will verify:
-1. The API returns the expected HTTP status code
-2. The response format is valid
-3. The required fields are present
-4. If `expectOk` is `true`, the test will fail if the response status is not 200
-
-## Troubleshooting
-
-If tests are failing:
-1. Ensure the solver API server is running on localhost:8080
-2. Check database connectivity
-3. Verify the test case parameters are valid for the current state of the system
+Tests can be run using ```go test -v ./internal/test/solver_test.go``` from the root of the repository.

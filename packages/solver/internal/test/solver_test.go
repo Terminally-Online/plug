@@ -9,7 +9,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -110,7 +112,7 @@ func isDatabaseAvailable() bool {
 	return true
 }
 
-// TestMain sets up common test environment
+// TestMain sets up common test environment and provides a test summary at the end
 func TestMain(m *testing.M) {
 	// Load environment from .env file if available and set testing defaults
 	setupEnvironment()
@@ -138,11 +140,38 @@ func TestMain(m *testing.M) {
 		successPrint("✓ Database is available")
 	}
 
+	// Check for specific chain ID filter
+	chainID := os.Getenv("TEST_CHAIN_ID")
+
+	if chainID != "" {
+		infoPrint("Focusing tests on chain ID: %s", chainID)
+	}
+
 	// Mark that we're in test mode
 	os.Setenv("GO_TEST_MODE", "true")
 
+	// Track test statistics
+	var testStats testStatistics
+
+	// Create a buffer to capture test output
+	var buf bytes.Buffer
+	writer := io.MultiWriter(os.Stdout, &buf)
+
+	// Redirect test output
+	origStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
 	// Run tests
 	code := m.Run()
+
+	// Close pipe and restore stdout
+	w.Close()
+	io.Copy(writer, r)
+	os.Stdout = origStdout
+
+	// Generate and print test summary
+	printTestSummary(&buf, &testStats)
 
 	// Exit with test status code
 	os.Exit(code)
@@ -601,6 +630,166 @@ func TestGetSchemaForActions(t *testing.T) {
 	}
 }
 
+// Test statistics structure to collect result metrics
+type testStatistics struct {
+	TotalTests     int
+	PassedTests    int
+	FailedTests    int
+	SkippedTests   int
+	Protocols      map[string]bool
+	Actions        map[string]map[string]bool
+	ChainTests     map[uint64]int
+	ChainPassed    map[uint64]int
+	ErrorsByType   map[string]int
+	PanicsDetected int
+}
+
+// Prints a summarized test report similar to the bash script
+func printTestSummary(buf *bytes.Buffer, stats *testStatistics) {
+	output := buf.String()
+
+	// Print header
+	fmt.Printf("\n%s╔════════════════════════════════════════╗%s\n", colorBlue, colorReset)
+	fmt.Printf("%s║              Test Summary              ║%s\n", colorBlue, colorReset)
+	fmt.Printf("%s╚════════════════════════════════════════╝%s\n\n", colorBlue, colorReset)
+
+	// Extract tested protocols
+	protocols := extractProtocolsTested(output)
+	fmt.Printf("%sProtocols tested:%s\n", colorBlue, colorReset)
+	if len(protocols) == 0 {
+		fmt.Println("    None detected")
+	} else {
+		for _, p := range protocols {
+			fmt.Printf("    ✓ %s\n", p)
+		}
+	}
+
+	// Extract actions tested
+	actions := extractActionsTested(output)
+	fmt.Printf("\n%sActions tested:%s\n", colorBlue, colorReset)
+	if len(actions) == 0 {
+		fmt.Println("    None detected")
+	} else {
+		for _, a := range actions {
+			fmt.Printf("    ✓ %s\n", a)
+		}
+	}
+
+	// Extract chain-specific statistics
+	baseTests, basePassed := countChainTests(output, 8453)
+	mainnetTests, mainnetPassed := countChainTests(output, 1)
+
+	fmt.Printf("\n%sChain-specific test statistics:%s\n", colorBlue, colorReset)
+	if baseTests == 0 && mainnetTests == 0 {
+		fmt.Println("    No chain-specific tests detected")
+	} else {
+		if baseTests > 0 {
+			fmt.Printf("    Base (Chain 8453): Ran %d tests, %s%d passed%s\n",
+				baseTests, colorGreen, basePassed, colorReset)
+		}
+		if mainnetTests > 0 {
+			fmt.Printf("    Ethereum (Chain 1): Ran %d tests, %s%d passed%s\n",
+				mainnetTests, colorGreen, mainnetPassed, colorReset)
+		}
+	}
+
+	// Count test results
+	passes := countMatches(output, "--- PASS:")
+	failures := countMatches(output, "--- FAIL:")
+	skips := countMatches(output, "--- SKIP:")
+
+	// Check for panics
+	panics := countMatches(output, "panic: ")
+	if panics > 0 {
+		fmt.Printf("\n%s⚠️  Test execution had %d panic(s). Check the test output for details.%s\n",
+			colorRed, panics, colorReset)
+	}
+
+	// Check for rate limits
+	rateLimits := countMatches(output, "rate limit exceeded")
+	if rateLimits > 0 {
+		fmt.Printf("\n%s⚠️  Warning: %d rate limit exceeded errors detected.%s\n",
+			colorYellow, rateLimits, colorReset)
+		fmt.Println("The test may be hitting the API too frequently. Consider:")
+		fmt.Println("  1. Increasing the rate limit in the database for the test API key")
+		fmt.Println("  2. Adding delays between API calls")
+		fmt.Println("  3. Running fewer tests in parallel")
+	}
+
+	// Print test result summary
+	fmt.Printf("\n📊 %sPassed: %d%s | %sFailed: %d%s | %sSkipped: %d%s\n",
+		colorGreen, passes, colorReset,
+		colorRed, failures, colorReset,
+		colorYellow, skips, colorReset)
+}
+
+// Helper to count occurrences of a pattern in text
+func countMatches(text, pattern string) int {
+	return strings.Count(text, pattern)
+}
+
+// Extract protocols tested from output
+func extractProtocolsTested(output string) []string {
+	var protocols []string
+	matches := make(map[string]bool)
+
+	// Match protocol names that follow a specific pattern
+	r := regexp.MustCompile(`Protocol_([a-z0-9_]+)`)
+	for _, match := range r.FindAllStringSubmatch(output, -1) {
+		if len(match) > 1 {
+			matches[match[1]] = true
+		}
+	}
+
+	for protocol := range matches {
+		protocols = append(protocols, protocol)
+	}
+
+	sort.Strings(protocols)
+	return protocols
+}
+
+// Extract actions tested from output
+func extractActionsTested(output string) []string {
+	var actions []string
+	matches := make(map[string]bool)
+
+	// Match action patterns like "Testing protocol=x action=y"
+	r := regexp.MustCompile(`Testing protocol=([a-z0-9_]+) action=([a-z0-9_]+)`)
+	for _, match := range r.FindAllStringSubmatch(output, -1) {
+		if len(match) > 2 {
+			actionKey := fmt.Sprintf("%s: %s", match[1], match[2])
+			matches[actionKey] = true
+		}
+	}
+
+	for action := range matches {
+		actions = append(actions, action)
+	}
+
+	sort.Strings(actions)
+	return actions
+}
+
+// Count tests for a specific chain
+func countChainTests(output string, chainID uint64) (tests int, passed int) {
+	// Count test runs
+	runPattern := fmt.Sprintf("RUN.*chain_%d", chainID)
+	tests = countMatches(output, runPattern)
+
+	// Count passed tests
+	passPatterns := []string{
+		fmt.Sprintf("PASS:.*chain_%d", chainID),
+		fmt.Sprintf("--- PASS: .*chain_%d", chainID),
+	}
+
+	for _, pattern := range passPatterns {
+		passed += countMatches(output, pattern)
+	}
+
+	return tests, passed
+}
+
 // TestGetSolution tests the POST /solver endpoint with various protocol/action combinations
 func TestGetSolution(t *testing.T) {
 	// This test is especially important as it tests the core functionality with real inputs
@@ -918,13 +1107,4 @@ func loadTestCasesForProtocol(protocol string) ([]TestCase, error) {
 	}
 
 	return testCases, nil
-}
-
-// Helper function to get map keys as a slice
-func getMapKeys(m map[string]bool) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }
