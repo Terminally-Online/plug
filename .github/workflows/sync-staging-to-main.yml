@@ -1,4 +1,4 @@
-name: Auto-merge Main to Staging
+name: Sync Staging to Main
 
 on:
     push:
