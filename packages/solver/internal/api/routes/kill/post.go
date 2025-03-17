@@ -6,6 +6,7 @@ import (
 	"solver/internal/api/routes"
 	"solver/internal/solver"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/swaggest/openapi-go"
 )
 
@@ -24,7 +25,7 @@ func PostContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func PostRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
+func PostRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	s.IsKilled = !s.IsKilled
 
 	response := KillResponse{Killed: s.IsKilled}
@@ -36,5 +37,5 @@ func PostRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 }
 
 func Post(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(PostRequest, PostContext, s)
+	return routes.NewRouteHandler(PostRequest, PostContext, nil, s)
 }

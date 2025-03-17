@@ -40,14 +40,12 @@ func NewSchemaLookup(chainId uint64, from common.Address, search map[int]string)
 type ActionFunc func(lookup *SchemaLookup, raw json.RawMessage) ([]signature.Plug, error)
 type OptionsFunc func(lookup *SchemaLookup) (map[int]Options, error)
 type ActionDefinition struct {
-	Type     string `default:"action,omitempty"`
-	Sentence string
-	Handler  ActionFunc
-	Options  OptionsFunc
-
-	Metadata     *bind.MetaData
-	FunctionName string
-
+	Type           string `default:"action,omitempty"`
+	Sentence       string
+	Handler        ActionFunc
+	Options        OptionsFunc
+	Metadata       *bind.MetaData
+	FunctionName   string
 	IsUserSpecific bool
 	IsSearchable   bool
 }
@@ -77,8 +75,8 @@ type Protocol struct {
 	Chains  []*references.Network
 	Actions map[string]ActionDefinition
 
-	OptionsProvider OptionsProvider
-	Schemas         map[string]ChainSchema
+	// OptionsProvider OptionsProvider
+	Schemas map[string]ChainSchema
 }
 
 func New(p Protocol) Protocol {
@@ -139,6 +137,8 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
 		}
 
+		// TODO: The cache should be applied here instead of one level higher like it is now.
+
 		inputs, err := actionDefinition.Options(lookup)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get options: %w", err)
@@ -149,11 +149,3 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 
 	return &chainSchema, nil
 }
-
-// func (h *BaseHandler) GetTransaction(
-// 	action string,
-// 	rawInputs json.RawMessage,
-// 	params HandlerParams,
-// ) ([]signature.Plug, error) {
-// 	return h.Protocol.Actions[action].Handler(rawInputs, params)
-// }

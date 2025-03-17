@@ -9,6 +9,7 @@ import (
 	"solver/internal/solver"
 	"solver/internal/utils"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/swaggest/openapi-go"
 )
@@ -37,7 +38,7 @@ func ToggleStatusContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func ToggleStatusRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
+func ToggleStatusRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -65,5 +66,5 @@ func ToggleStatusRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solve
 }
 
 func ToggleStatus() *routes.RouteHandler {
-	return routes.NewRouteHandler(ToggleStatusRequest, ToggleStatusContext, nil)
+	return routes.NewRouteHandler(ToggleStatusRequest, ToggleStatusContext, nil, nil)
 }

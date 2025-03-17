@@ -1,10 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
-	"solver/internal/actions"
 	"solver/internal/api"
+	"solver/internal/cache"
 	"solver/internal/cron"
 	"solver/internal/solver"
 	"solver/internal/utils"
@@ -14,37 +15,39 @@ import (
 	scheduler "github.com/robfig/cron"
 )
 
+var (
+	Solver   = solver.New()
+	Schedule = scheduler.New()
+	CronJobs = []struct {
+		Schedule string
+		Job      func()
+	}{
+		{"0 */1 * * * *", func() { cron.Simulations(Solver) }},
+		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }},
+	}
+)
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
 	}
 
-	s := solver.New()
-
-	provider := actions.NewCachedOptionsProvider(&actions.DefaultOptionsProvider{})
-	actions.SetCachedOptionsProvider(provider)
-
-	var CronJobs = []struct {
-		Schedule string
-		Job      func()
-	}{
-		{"0 */1 * * * *", func() { cron.Simulations(s) }},
-		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }},
+	if _, err := cache.Redis.Ping(context.Background()).Result(); err != nil {
+		log.Fatal(err)
 	}
 
-	schedule := scheduler.New()
 	for _, job := range CronJobs {
-		err = schedule.AddFunc(job.Schedule, job.Job)
+		err = Schedule.AddFunc(job.Schedule, job.Job)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	go schedule.Start()
+	go Schedule.Start()
 	log.Printf("Started %d cron jobs...", len(CronJobs))
 
-	router := api.SetupRouter(s)
+	router := api.SetupRouter(Solver)
 
 	log.Println("Started server on http://localhost:8080")
 	log.Println("OpenAPI specification available at: http://localhost:8080/openapi.json")

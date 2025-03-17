@@ -1,6 +1,50 @@
 package open_api
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/swaggest/openapi-go/openapi3"
+	"github.com/swaggest/rest/gorillamux"
+)
+
+func SetupOpenAPIRoutes(r *mux.Router) http.Handler {
+	refl := openapi3.NewReflector()
+
+	refl.SpecSchema().SetTitle("Plug Solver API")
+	refl.SpecSchema().SetVersion("v1.0.0")
+	refl.SpecSchema().SetDescription("API for Plug Solver to build Ethereum transactions.")
+
+	collector := gorillamux.NewOpenAPICollector(refl)
+
+	if err := r.Walk(collector.Walker); err != nil {
+		panic(err)
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		format := r.URL.Query().Get("format")
+		if format == "yaml" {
+			data, err := refl.Spec.MarshalYAML()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "text/yaml")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Write(data)
+			return
+		}
+
+		data, err := refl.Spec.MarshalJSON()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Write(data)
+	})
+}
 
 func DocsRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")

@@ -1,11 +1,8 @@
 package actions
 
 import (
-	"solver/internal/utils"
-
-	"strings"
-	"sync"
-	"time"
+	"encoding/json"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -34,226 +31,250 @@ type Option struct {
 	Info  *OptionInfo `json:"info,omitempty"`
 }
 
+var (
+	BaseLendActionTypeFields = []Option{
+		{Label: "Borrow", Name: "Borrow", Value: "-1"},
+		{Label: "Deposit", Name: "Deposit", Value: "1"},
+	}
+
+	BaseThresholdFields = []Option{
+		{Label: "less than", Name: "Less Than", Value: "-1"},
+		{Label: "greater than", Name: "Greater Than", Value: "1"},
+	}
+)
+
 type Options struct {
 	Simple  []Option            `json:"simple,omitempty"`
 	Complex map[string][]Option `json:"complex,omitempty"`
 }
 
-type OptionCacheKey struct {
-	chainId uint64
-	from    common.Address
-	action  string
+func (o Options) MarshalJSON() ([]byte, error) {
+	if o.Simple != nil {
+		return json.Marshal(o.Simple)
+	}
+	return json.Marshal(o.Complex)
 }
 
-type CachedOptions struct {
-	options     map[int]Options
-	lastUpdated time.Time
-	refreshing  bool
+func (o *Options) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &o.Simple); err == nil {
+		return nil
+	}
+
+	if err := json.Unmarshal(data, &o.Complex); err == nil {
+		return nil
+	}
+
+	return fmt.Errorf("invalid options format")
 }
 
-const cacheDuration = 5 * time.Minute
+// type OptionCacheKey struct {
+// 	chainId uint64
+// 	from    common.Address
+// 	action  string
+// }
 
-type OptionsProvider interface {
-	GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error)
-}
+// type CachedOptions struct {
+// 	options     map[int]Options
+// 	lastUpdated time.Time
+// 	refreshing  bool
+// }
 
-type CachedOptionsProvider struct {
-	provider OptionsProvider
-	cache    map[OptionCacheKey]CachedOptions
-	mu       sync.RWMutex
-}
+// const cacheDuration = 5 * time.Minute
 
-var (
-	defaultProvider *CachedOptionsProvider
-	providerMu      sync.RWMutex
-)
+// type OptionsProvider interface {
+// 	GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error)
+// }
 
-func GetCachedOptionsProvider() *CachedOptionsProvider {
-	providerMu.RLock()
-	defer providerMu.RUnlock()
-	return defaultProvider
-}
+// type CachedOptionsProvider struct {
+// 	provider OptionsProvider
+// 	cache    map[OptionCacheKey]CachedOptions
+// 	mu       sync.RWMutex
+// }
 
-func SetCachedOptionsProvider(provider *CachedOptionsProvider) {
-	providerMu.Lock()
-	defaultProvider = provider
-	providerMu.Unlock()
-}
+// var (
+// 	defaultProvider *CachedOptionsProvider
+// 	providerMu      sync.RWMutex
+// )
 
-func GetSupportedActions() []string {
-	return []string{
-		ActionDeposit,
-		ActionWithdraw,
-		ActionBorrow,
-		ActionRepay,
-		ActionSwap,
-		ActionStake,
-		ActionUnstake,
-		ActionClaim,
-		ActionRenew,
-		ActionBridge,
-	}
-}
+// func GetCachedOptionsProvider() *CachedOptionsProvider {
+// 	providerMu.RLock()
+// 	defer providerMu.RUnlock()
+// 	return defaultProvider
+// }
 
-func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
-	return &CachedOptionsProvider{
-		provider: provider,
-		cache:    make(map[OptionCacheKey]CachedOptions, 32),
-	}
-}
+// func SetCachedOptionsProvider(provider *CachedOptionsProvider) {
+// 	providerMu.Lock()
+// 	defaultProvider = provider
+// 	providerMu.Unlock()
+// }
 
-func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error) {
-	if (from == common.Address{}) {
-		from = utils.ZeroAddress
-	}
+// func GetSupportedActions() []string {
+// 	return []string{
+// 		ActionDeposit,
+// 		ActionWithdraw,
+// 		ActionBorrow,
+// 		ActionRepay,
+// 		ActionSwap,
+// 		ActionStake,
+// 		ActionUnstake,
+// 		ActionClaim,
+// 		ActionRenew,
+// 		ActionBridge,
+// 	}
+// }
 
-	key := OptionCacheKey{
-		chainId: chainId,
-		from:    from,
-		action:  action,
-	}
+// func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error) {
+// 	if (from == common.Address{}) {
+// 		from = utils.ZeroAddress
+// 	}
 
-	options, err := c.GetOrCreateCachedOptions(key)
-	if err != nil {
-		return nil, err
-	}
+// 	key := OptionCacheKey{
+// 		chainId: chainId,
+// 		from:    from,
+// 		action:  action,
+// 	}
 
-	if len(search) == 0 {
-		return options, nil
-	}
+// 	options, err := c.GetOrCreateCachedOptions(key)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return c.FilterOptions(options, search), nil
-}
+// 	if len(search) == 0 {
+// 		return options, nil
+// 	}
 
-func (c *CachedOptionsProvider) GetOrCreateCachedOptions(key OptionCacheKey) (map[int]Options, error) {
-	// Check cache first with read lock
-	c.mu.RLock()
-	cached, exists := c.cache[key]
-	if exists {
-		isStale := time.Since(cached.lastUpdated) >= cacheDuration
-		c.mu.RUnlock()
+// 	return c.FilterOptions(options, search), nil
+// }
 
-		if isStale {
-			go c.RefreshCache(key)
-		}
-		return cached.options, nil
-	}
-	c.mu.RUnlock()
+// func (c *CachedOptionsProvider) GetOrCreateCachedOptions(key OptionCacheKey) (map[int]Options, error) {
+// 	// Check cache first with read lock
+// 	c.mu.RLock()
+// 	cached, exists := c.cache[key]
+// 	if exists {
+// 		isStale := time.Since(cached.lastUpdated) >= cacheDuration
+// 		c.mu.RUnlock()
 
-	// No cached data exists, need to get fresh options
-	c.mu.Lock()
-	defer c.mu.Unlock()
+// 		if isStale {
+// 			go c.RefreshCache(key)
+// 		}
+// 		return cached.options, nil
+// 	}
+// 	c.mu.RUnlock()
 
-	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
-	if err != nil {
-		return nil, utils.ErrOptions(err.Error())
-	}
+// 	// No cached data exists, need to get fresh options
+// 	c.mu.Lock()
+// 	defer c.mu.Unlock()
 
-	if options == nil {
-		options = make(map[int]Options)
-	}
+// 	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
+// 	if err != nil {
+// 		return nil, utils.ErrOptions(err.Error())
+// 	}
 
-	c.cache[key] = CachedOptions{
-		options:     options,
-		lastUpdated: time.Now(),
-		refreshing:  false,
-	}
+// 	if options == nil {
+// 		options = make(map[int]Options)
+// 	}
 
-	return options, nil
-}
+// 	c.cache[key] = CachedOptions{
+// 		options:     options,
+// 		lastUpdated: time.Now(),
+// 		refreshing:  false,
+// 	}
 
-func (c *CachedOptionsProvider) RefreshCache(key OptionCacheKey) {
-	c.mu.Lock()
-	cached, exists := c.cache[key]
-	if !exists || cached.refreshing || time.Since(cached.lastUpdated) < cacheDuration {
-		c.mu.Unlock()
-		return
-	}
+// 	return options, nil
+// }
 
-	c.cache[key] = CachedOptions{
-		options:     cached.options,
-		lastUpdated: cached.lastUpdated,
-		refreshing:  true,
-	}
-	c.mu.Unlock()
+// func (c *CachedOptionsProvider) RefreshCache(key OptionCacheKey) {
+// 	c.mu.Lock()
+// 	cached, exists := c.cache[key]
+// 	if !exists || cached.refreshing || time.Since(cached.lastUpdated) < cacheDuration {
+// 		c.mu.Unlock()
+// 		return
+// 	}
 
-	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
+// 	c.cache[key] = CachedOptions{
+// 		options:     cached.options,
+// 		lastUpdated: cached.lastUpdated,
+// 		refreshing:  true,
+// 	}
+// 	c.mu.Unlock()
 
-	c.mu.Lock()
-	defer c.mu.Unlock()
+// 	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
 
-	if err != nil {
-		c.cache[key] = CachedOptions{
-			options:     cached.options,
-			lastUpdated: cached.lastUpdated,
-			refreshing:  false,
-		}
-		return
-	}
+// 	c.mu.Lock()
+// 	defer c.mu.Unlock()
 
-	if options == nil {
-		options = make(map[int]Options)
-	}
+// 	if err != nil {
+// 		c.cache[key] = CachedOptions{
+// 			options:     cached.options,
+// 			lastUpdated: cached.lastUpdated,
+// 			refreshing:  false,
+// 		}
+// 		return
+// 	}
 
-	c.cache[key] = CachedOptions{
-		options:     options,
-		lastUpdated: time.Now(),
-		refreshing:  false,
-	}
-}
+// 	if options == nil {
+// 		options = make(map[int]Options)
+// 	}
 
-func (c *CachedOptionsProvider) FilterOptions(options map[int]Options, search map[int]string) map[int]Options {
-	filtered := make(map[int]Options, len(options))
-	for k, v := range options {
-		filtered[k] = v
-		if search[k] != "" {
-			var matchedOpts []Option
-			searchTerm := strings.ToLower(search[k])
+// 	c.cache[key] = CachedOptions{
+// 		options:     options,
+// 		lastUpdated: time.Now(),
+// 		refreshing:  false,
+// 	}
+// }
 
-			for _, opt := range v.Simple {
-				if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
-					strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
-					strings.Contains(strings.ToLower(opt.Value), searchTerm) {
-					matchedOpts = append(matchedOpts, opt)
-				}
-			}
+// func (c *CachedOptionsProvider) FilterOptions(options map[int]Options, search map[int]string) map[int]Options {
+// 	filtered := make(map[int]Options, len(options))
+// 	for k, v := range options {
+// 		filtered[k] = v
+// 		if search[k] != "" {
+// 			var matchedOpts []Option
+// 			searchTerm := strings.ToLower(search[k])
 
-			filtered[k] = Options{Simple: matchedOpts}
-		}
-	}
-	return filtered
-}
+// 			for _, opt := range v.Simple {
+// 				if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
+// 					strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
+// 					strings.Contains(strings.ToLower(opt.Value), searchTerm) {
+// 					matchedOpts = append(matchedOpts, opt)
+// 				}
+// 			}
 
-func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address, actions []string) {
-	if (from == common.Address{}) {
-		from = utils.ZeroAddress
-	}
+// 			filtered[k] = Options{Simple: matchedOpts}
+// 		}
+// 	}
+// 	return filtered
+// }
 
-	const maxWorkers = 8
-	sem := make(chan struct{}, maxWorkers)
+// func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address, actions []string) {
+// 	if (from == common.Address{}) {
+// 		from = utils.ZeroAddress
+// 	}
 
-	completed := 0
-	var mu sync.Mutex
+// 	const maxWorkers = 8
+// 	sem := make(chan struct{}, maxWorkers)
 
-	for _, action := range actions {
-		sem <- struct{}{}
-		go func(action string) {
-			defer func() {
-				<-sem
-				mu.Lock()
-				completed++
-				mu.Unlock()
-			}()
-			if _, err := c.GetOptions(chainId, from, map[int]string{}, action); err != nil {
-				// Silently continue on error
-			}
-		}(action)
-	}
+// 	completed := 0
+// 	var mu sync.Mutex
 
-	for i := 0; i < maxWorkers; i++ {
-		sem <- struct{}{}
-	}
-}
+// 	for _, action := range actions {
+// 		sem <- struct{}{}
+// 		go func(action string) {
+// 			defer func() {
+// 				<-sem
+// 				mu.Lock()
+// 				completed++
+// 				mu.Unlock()
+// 			}()
+// 			if _, err := c.GetOptions(chainId, from, map[int]string{}, action); err != nil {
+// 				// Silently continue on error
+// 			}
+// 		}(action)
+// 	}
+
+// 	for i := 0; i < maxWorkers; i++ {
+// 		sem <- struct{}{}
+// 	}
+// }
 
 type DefaultOptionsProvider struct{}
 

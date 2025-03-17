@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"solver/internal/api/routes"
+	"solver/internal/cache"
 	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver"
 	"solver/internal/utils"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/swaggest/openapi-go"
 )
 
@@ -39,7 +41,7 @@ func PostContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func PostRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
+func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
 	var intent *models.Intent
 	if err := json.NewDecoder(r.Body).Decode(&intent); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -65,5 +67,5 @@ func PostRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 }
 
 func Post(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(PostRequest, PostContext, s)
+	return routes.NewRouteHandler(PostRequest, PostContext, cache.Redis, s)
 }

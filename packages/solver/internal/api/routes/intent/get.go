@@ -4,23 +4,47 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
-	"solver/internal/bindings/references"
+	"solver/internal/cache"
 	"solver/internal/solver"
 	"solver/internal/utils"
 	"strconv"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/schema"
 	"github.com/swaggest/openapi-go"
 )
 
+var Decoder = func() *schema.Decoder {
+	d := schema.NewDecoder()
+	d.IgnoreUnknownKeys(true)
+	d.SetAliasTag("query")
+	return d
+}()
+
+type SearchQueryParam struct {
+	Index int    `schema:"index" query:"index" description:"Index of the search parameter"`
+	Value string `schema:"value" query:"value" description:"Value of the search parameter"`
+}
 type SchemaQueryParams struct {
-	ChainID  string `query:"chainId" description:"Chain ID to filter schemas by"`
-	Protocol string `query:"protocol" description:"Protocol name to filter schemas by"`
-	Action   string `query:"action" description:"Action name to filter schemas by"`
-	From     string `query:"from" description:"Wallet address to generate schemas for"`
+	ChainId  uint64             `schema:"chainId" query:"chainId" description:"Chain ID to filter schemas by"`
+	From     string             `schema:"from" query:"from" description:"Wallet address to generate schemas for"`
+	Protocol string             `schema:"protocol" query:"protocol" description:"Protocol name to filter schemas by"`
+	Action   string             `schema:"action" query:"action" description:"Action name to filter schemas by"`
+	Search   []SearchQueryParam `schema:"search" query:"search" description:"Search parameters to filter schemas by"`
+}
+
+func (p *SchemaQueryParams) Stringify() string {
+	queryParams := url.Values{}
+	queryParams.Set("chainId", strconv.FormatUint(p.ChainId, 10))
+	queryParams.Set("from", p.From)
+	queryParams.Set("protocol", p.Protocol)
+	queryParams.Set("action", p.Action)
+
+	return queryParams.Encode()
 }
 
 func GetContext(oc openapi.OperationContext) error {
@@ -44,104 +68,21 @@ func GetContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
-	chainIdQueryParam := r.URL.Query().Get("chainId")
-	protocol := r.URL.Query().Get("protocol")
-	action := r.URL.Query().Get("action")
-	from := r.URL.Query().Get("from")
-
-	chainId, err := strconv.ParseUint(chainIdQueryParam, 10, 64)
-	if err != nil {
-		utils.MakeHttpError(w, fmt.Sprintf("invalid chain ID: %s", chainId), http.StatusBadRequest)
-		return
-	}
-
-	searchParams := make(map[int]string)
-	for key, values := range r.URL.Query() {
-		if strings.HasPrefix(key, "search[") && strings.HasSuffix(key, "]") {
-			index := strings.TrimPrefix(strings.TrimSuffix(key, "]"), "search[")
-			if len(values) > 0 {
-				indexInt, err := strconv.Atoi(index)
-				if err != nil {
-					continue
-				}
-				searchParams[indexInt] = values[0]
-			}
-		}
-	}
-
-	if protocol == "" {
-		allSchemas := make(map[string]actions.ProtocolSchema)
-
-		for protocol, handler := range s.Protocols {
-			protocolChains := handler.Chains
-			// TODO: Only show matching chain ids. I removed this when refactoring.
-			chains := make([]*references.Network, len(protocolChains))
-			for i, chain := range protocolChains {
-				chainCopy := *chain
-				chainCopy.References = nil
-				chains[i] = &chainCopy
-			}
-
-			protocolSchema := actions.ProtocolSchema{
-				Metadata: actions.ProtocolMetadata{
-					Icon:   handler.Icon,
-					Tags:   handler.Tags,
-					Chains: chains,
-				},
-				Schema: make(map[string]actions.Schema),
-			}
-
-			schemas := handler.Schemas
-			for supportedAction, _ := range handler.Actions {
-				if chainSchema, ok := schemas[supportedAction]; ok {
-					protocolSchema.Schema[supportedAction] = actions.Schema{
-						Type:     chainSchema.Schema.Type,
-						Sentence: chainSchema.Schema.Sentence,
-						Coils:    chainSchema.Schema.Coils,
-					}
-				}
-			}
-
-			allSchemas[protocol] = protocolSchema
-		}
-
-		if len(allSchemas) == 0 {
-			utils.MakeHttpError(w, fmt.Sprintf("no protocols found on chainId %s", chainId), http.StatusNotFound)
-			return
-		}
-
-		if err := json.NewEncoder(w).Encode(allSchemas); err != nil {
-			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-
-	handler, exists := s.Protocols[protocol]
-	if !exists {
-		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
-		return
-	}
-
-	chains := make([]*references.Network, len(handler.Chains))
-	for i, chain := range handler.Chains {
-		chainCopy := *chain
-		chainCopy.References = nil
-		chains[i] = &chainCopy
-	}
-
-	if action == "" {
+func GetAllSchemas(s *solver.Solver) (map[string]actions.ProtocolSchema, error) {
+	all := make(map[string]actions.ProtocolSchema)
+	for protocol, handler := range s.Protocols {
+		// TODO: Only show matching chain ids. I removed this when refactoring.
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.Icon,
 				Tags:   handler.Tags,
-				Chains: chains,
+				Chains: handler.Chains,
 			},
 			Schema: make(map[string]actions.Schema),
 		}
 
 		schemas := handler.Schemas
-		for supportedAction, _ := range handler.Actions {
+		for supportedAction := range handler.Actions {
 			if chainSchema, ok := schemas[supportedAction]; ok {
 				protocolSchema.Schema[supportedAction] = actions.Schema{
 					Type:     chainSchema.Schema.Type,
@@ -151,42 +92,103 @@ func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 			}
 		}
 
-		response := map[string]actions.ProtocolSchema{
-			protocol: protocolSchema,
-		}
-
-		if err := json.NewEncoder(w).Encode(response); err != nil {
-			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
-		}
-		return
+		all[protocol] = protocolSchema
 	}
 
-	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), searchParams, action)
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-		return
+	if len(all) == 0 {
+		return nil, fmt.Errorf("no protocols found")
 	}
 
+	return all, nil
+}
+
+func GetProtocolSchema(handler *actions.Protocol, protocol string) (map[string]actions.ProtocolSchema, error) {
 	protocolSchema := actions.ProtocolSchema{
 		Metadata: actions.ProtocolMetadata{
 			Icon:   handler.Icon,
 			Tags:   handler.Tags,
-			Chains: chains,
+			Chains: handler.Chains,
 		},
-		Schema: map[string]actions.Schema{
-			action: chainSchema.Schema,
-		},
+		Schema: make(map[string]actions.Schema),
+	}
+
+	schemas := handler.Schemas
+	for supportedAction := range handler.Actions {
+		if chainSchema, ok := schemas[supportedAction]; ok {
+			protocolSchema.Schema[supportedAction] = actions.Schema{
+				Type:     chainSchema.Schema.Type,
+				Sentence: chainSchema.Schema.Sentence,
+				Coils:    chainSchema.Schema.Coils,
+			}
+		}
 	}
 
 	response := map[string]actions.ProtocolSchema{
 		protocol: protocolSchema,
 	}
 
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	return response, nil
+}
+
+func GetActionSchema(handler *actions.Protocol, protocol string, action string, chainId uint64, from string, searchParams []SearchQueryParam) (map[string]actions.ProtocolSchema, error) {
+	response, err := GetProtocolSchema(handler, protocol)
+	if err != nil {
+		return nil, err
+	}
+
+	searchMap := make(map[int]string)
+	for _, param := range searchParams {
+		searchMap[param.Index] = param.Value
+	}
+
+	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), searchMap, action)
+	if err != nil {
+		return nil, err
+	}
+
+	response[protocol] = actions.ProtocolSchema{
+		Metadata: response[protocol].Metadata,
+		Schema: map[string]actions.Schema{
+			action: chainSchema.Schema,
+		},
+	}
+
+	return response, nil
+}
+
+func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
+	var params SchemaQueryParams
+	if err := Decoder.Decode(&params, r.URL.Query()); err != nil {
+		utils.MakeHttpError(w, fmt.Sprintf("invalid parameters: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	protocol, exists := s.Protocols[params.Protocol]
+
+	var result map[string]actions.ProtocolSchema
+	var err error
+	switch {
+	case params.Protocol == "":
+		result, err = GetAllSchemas(s)
+	case exists && params.Action == "":
+		result, err = GetProtocolSchema(&protocol, params.Protocol)
+	case exists && params.Action != "":
+		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
+	default:
+		utils.MakeHttpError(w, "invalid protocol", http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(result); err != nil {
 		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
 func Get(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(GetRequest, GetContext, s)
+	return routes.NewRouteHandler(GetRequest, GetContext, cache.Redis, s)
 }

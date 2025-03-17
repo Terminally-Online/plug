@@ -9,6 +9,7 @@ import (
 	"solver/internal/solver"
 	"solver/internal/utils"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/swaggest/openapi-go"
 )
@@ -37,7 +38,7 @@ func ToggleSavedContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func ToggleSavedRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
+func ToggleSavedRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -61,5 +62,5 @@ func ToggleSavedRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver
 }
 
 func ToggleSaved() *routes.RouteHandler {
-	return routes.NewRouteHandler(ToggleSavedRequest, ToggleSavedContext, nil)
+	return routes.NewRouteHandler(ToggleSavedRequest, ToggleSavedContext, nil, nil)
 }

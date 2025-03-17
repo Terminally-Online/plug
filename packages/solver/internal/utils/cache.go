@@ -10,14 +10,11 @@ type cacheEntry struct {
 	Expiry time.Time
 }
 
-// Note that sync.Map is thread safe and does not require a mutex as it's handled internally via atomic operations
 var (
 	cache              sync.Map
 	defaultCachePeriod = 5 * time.Minute
 )
 
-// WithCache is a generic caching function that caches the result of fn
-// If useStale is true, it will return stale data (if available) and update the cache in the background
 func WithCache[T any](key string, duration []time.Duration, useStale bool, fn func() (T, error)) (T, error) {
 	cachePeriod := defaultCachePeriod
 	if len(duration) > 0 {
