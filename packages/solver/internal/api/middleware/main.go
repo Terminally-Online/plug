@@ -2,11 +2,6 @@ package middleware
 
 import (
 	"solver/internal/solver"
-	"time"
-)
-
-const (
-	DefaultTimeout = 5 * time.Second
 )
 
 type Middleware struct {

@@ -9,6 +9,7 @@ import (
 	"solver/internal/solver"
 	"solver/internal/utils"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/swaggest/openapi-go"
 )
@@ -40,7 +41,7 @@ func ReadContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func ReadRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
+func ReadRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -57,5 +58,5 @@ func ReadRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
 }
 
 func Read() *routes.RouteHandler {
-	return routes.NewRouteHandler(ReadRequest, ReadContext, nil)
+	return routes.NewRouteHandler(ReadRequest, ReadContext, nil, nil)
 }

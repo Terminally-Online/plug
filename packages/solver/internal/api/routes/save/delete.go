@@ -8,6 +8,7 @@ import (
 	"solver/internal/solver"
 	"solver/internal/utils"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/swaggest/openapi-go"
 )
@@ -36,7 +37,7 @@ func DeleteContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func DeleteRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
+func DeleteRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -55,5 +56,5 @@ func DeleteRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
 }
 
 func Delete() *routes.RouteHandler {
-	return routes.NewRouteHandler(DeleteRequest, DeleteContext, nil)
+	return routes.NewRouteHandler(DeleteRequest, DeleteContext, nil, nil)
 }

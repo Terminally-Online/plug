@@ -9,6 +9,7 @@ import (
 	"solver/internal/solver"
 	"solver/internal/utils"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/swaggest/openapi-go"
 )
 
@@ -39,7 +40,7 @@ func CreateContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func CreateRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
+func CreateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	var inputs models.Intent
 	if err := json.NewDecoder(r.Body).Decode(&inputs); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -65,5 +66,5 @@ func CreateRequest(w http.ResponseWriter, r *http.Request, _ *solver.Solver) {
 }
 
 func Create() *routes.RouteHandler {
-	return routes.NewRouteHandler(CreateRequest, CreateContext, nil)
+	return routes.NewRouteHandler(CreateRequest, CreateContext, nil, nil)
 }

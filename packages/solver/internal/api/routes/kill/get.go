@@ -6,6 +6,7 @@ import (
 	"solver/internal/api/routes"
 	"solver/internal/solver"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/swaggest/openapi-go"
 )
 
@@ -28,7 +29,7 @@ func GetContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
+func GetRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	response := KillResponse{Killed: s.IsKilled}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -38,5 +39,5 @@ func GetRequest(w http.ResponseWriter, r *http.Request, s *solver.Solver) {
 }
 
 func Get(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(GetRequest, GetContext, s)
+	return routes.NewRouteHandler(GetRequest, GetContext, nil, s)
 }
