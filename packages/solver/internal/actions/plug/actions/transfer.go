@@ -23,7 +23,6 @@ var TransferFunc = actions.ActionOnchainFunctionResponse{
 	FunctionName: "transfer",
 }
 
-
 func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, error) {
 	parts := strings.Split(lookup.Inputs.Token, ":")
 	token := common.HexToAddress(parts[0])

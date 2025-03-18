@@ -20,6 +20,11 @@ type Protocol struct {
 func NewProtocol(p Protocol) Protocol {
 	schemas := make(map[string]ChainSchema, len(p.Actions))
 	for action, definition := range p.Actions {
+		coilKeys, err := definition.GetCoilKeys()
+		if err != nil {
+			continue
+		}
+
 		schemas[action] = ChainSchema{
 			Schema: Schema{
 				Type: func() string {
@@ -30,6 +35,7 @@ func NewProtocol(p Protocol) Protocol {
 				}(),
 				Sentence:       definition.GetSentence(),
 				IsUserSpecific: definition.GetIsUserSpecific(),
+				Coils:          coilKeys,
 			},
 		}
 	}

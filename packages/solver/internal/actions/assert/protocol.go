@@ -25,6 +25,7 @@ func New() actions.Protocol {
 					assert_options.AssertOptions,
 					actions.IsStatic,
 					actions.IsGlobal,
+					actions.IsEmptyOnchainFunc,
 				),
 			},
 		},

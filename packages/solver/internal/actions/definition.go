@@ -3,6 +3,7 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
+	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -37,6 +38,8 @@ type ActionDefinitionInterface interface {
 	GetIsUserSpecific() bool
 	GetHandler() ActionFunc[any]
 	GetOptions() ActionOptionsFunc[any]
+	GetCoils() ([]coil.Update, error)
+	GetCoilKeys() (map[string]string, error)
 }
 
 type ActionDefinition[T any] struct {
@@ -45,9 +48,9 @@ type ActionDefinition[T any] struct {
 	Sentence       string
 	Handler        ActionFunc[T]
 	Options        ActionOptionsFunc[T]
-	Response       ActionOnchainFunctionResponse
 	IsUserSpecific bool
 	IsSearchable   bool
+	Response       *ActionOnchainFunctionResponse
 }
 
 func NewActionDefinition[T any](
@@ -56,6 +59,7 @@ func NewActionDefinition[T any](
 	options ActionOptionsFunc[T],
 	isUserSpecific bool,
 	isSearchable bool,
+	response *ActionOnchainFunctionResponse,
 ) ActionDefinitionInterface {
 	return &ActionDefinition[T]{
 		Sentence:       sentence,
@@ -63,27 +67,9 @@ func NewActionDefinition[T any](
 		Options:        options,
 		IsUserSpecific: isUserSpecific,
 		IsSearchable:   isSearchable,
+		Response:       response,
 	}
 }
-
-// func (a *ActionDefinition[T]) GetCoils() ([]coil.Update, error) {
-// 	return nil, nil
-// if a.Metadata == nil || a.FunctionName == "" {
-// 	return []coil.Update{}, nil
-// }
-
-// abi, err := a.Metadata.GetAbi()
-// if err != nil {
-// 	return []coil.Update{}, fmt.Errorf("failed to get ABI: %w", err)
-// }
-
-// coils, err := coil.FindCoils(abi, a.FunctionName, nil, nil)
-// if err != nil {
-// 	return []coil.Update{}, fmt.Errorf("failed to find coils: %w", err)
-// }
-
-// return coils, nil
-// }
 
 func (d *ActionDefinition[T]) GetType() string {
 	return d.Type
@@ -130,4 +116,61 @@ func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
 			Search:  lookup.Search,
 		})
 	}
+}
+
+// TODO: Although we are going to want all of this data to properly build
+//       the transaction we should minify the return data to only the name
+//       and type because the solver will have the positions when the
+//       transactions is actually being built. Example:
+//       .
+//		 "coils": [
+// 		     {
+// 		         "start": 0,
+// 		         "slice": {
+// 		             "name": "balance",
+// 		             "index": 0,
+// 		             "start": 0,
+// 		             "length": 32,
+// 		             "type": "uint256",
+// 		             "typeId": 0
+// 		         }
+// 		     }
+// 		 ]
+//       .
+// 		 "coils": {
+// 		     "balance": "uint256",
+// 		 }
+//       - CHANCE
+
+func (d *ActionDefinition[T]) GetCoils() ([]coil.Update, error) {
+	if d.Response == nil || d.Response.Metadata == nil || d.Response.FunctionName == "" {
+		return nil, nil
+	}
+
+	abi, err := d.Response.Metadata.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ABI: %w", err)
+	}
+
+	coils, err := coil.FindCoils(abi, d.Response.FunctionName, nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
+	return coils, nil
+}
+
+func (d *ActionDefinition[T]) GetCoilKeys() (map[string]string, error) {
+	coils, err := d.GetCoils()
+	if err != nil {
+		return nil, err
+	}
+
+	coilKeys := make(map[string]string)
+	for _, coil := range coils {
+		name := *coil.Slice.Name
+		coilKeys[name] = coil.Slice.Type
+	}
+
+	return coilKeys, nil
 }

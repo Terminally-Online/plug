@@ -14,12 +14,13 @@ func New() actions.Protocol {
 		Tags:   []string{"lending", "defi"},
 		Chains: []*references.Network{references.Mainnet, references.Base},
 		Actions: map[string]actions.ActionDefinitionInterface{
-			actions.ActionDeposit: actions.NewActionDefinition(
-				"Deposit {0<amount:float>} {1<token:address:uint8>}",
-				aave_actions.Deposit,
-				aave_options.CollateralOptions,
+			actions.ReadAPY: actions.NewActionDefinition(
+				"{0<action:int8>} APY of {1<token:address:uint8>} is {2<operator:int8>} than {3<threshold:float>}%",
+				aave_actions.APY,
+				aave_options.APYOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
 			),
 			actions.ActionBorrow: actions.NewActionDefinition(
 				"Borrow {0<amount:float>} {1<token:address:uint8>}",
@@ -27,20 +28,15 @@ func New() actions.Protocol {
 				aave_options.BorrowOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
 			),
-			actions.ActionRepay: actions.NewActionDefinition(
-				"Repay {0<amount:float>} {1<token:address:uint8>}",
-				aave_actions.Repay,
-				aave_options.BorrowOptions,
-				actions.IsStatic,
-				actions.IsGlobal,
-			),
-			actions.ActionWithdraw: actions.NewActionDefinition(
-				"Withdraw {0<amount:float>} {1<token:address:uint8>}",
-				aave_actions.Withdraw,
+			actions.ActionDeposit: actions.NewActionDefinition(
+				"Deposit {0<amount:float>} {1<token:address:uint8>}",
+				aave_actions.Deposit,
 				aave_options.CollateralOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
 			),
 			actions.ReadHealthFactor: actions.NewActionDefinition(
 				"Get health factor",
@@ -48,13 +44,23 @@ func New() actions.Protocol {
 				aave_options.HealthFactorOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
 			),
-			actions.ReadAPY: actions.NewActionDefinition(
-				"{0<action:int8>} APY of {1<token:address:uint8>} is {2<operator:int8>} than {3<threshold:float>}%",
-				aave_actions.APY,
-				aave_options.APYOptions,
+			actions.ActionRepay: actions.NewActionDefinition(
+				"Repay {0<amount:float>} {1<token:address:uint8>}",
+				aave_actions.Repay,
+				aave_options.BorrowOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
+			),
+			actions.ActionWithdraw: actions.NewActionDefinition(
+				"Withdraw {0<amount:float>} {1<token:address:uint8>}",
+				aave_actions.Withdraw,
+				aave_options.CollateralOptions,
+				actions.IsStatic,
+				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
 			),
 		},
 	})

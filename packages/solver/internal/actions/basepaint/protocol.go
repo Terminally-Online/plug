@@ -20,6 +20,7 @@ func New() actions.Protocol {
 				basepaint_options.MintLatestOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
+				actions.IsEmptyOnchainFunc,
 			),
 		},
 	})

@@ -44,9 +44,15 @@ const (
 	ReadAPY                string = "apy"
 	ReadHealthFactor       string = "health_factor"
 	ReadTimeToLiquidiation string = "time_to_liquidation"
+	ReadCurrentAuction     string = "current_auction"
+	ReadHasTrait           string = "has_trait"
 
 	IsGlobal  = false
 	IsUser    = true
 	IsStatic  = false
 	IsDynamic = true
+)
+
+var (
+	IsEmptyOnchainFunc *ActionOnchainFunctionResponse = nil
 )
