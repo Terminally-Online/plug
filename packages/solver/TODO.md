@@ -1,12 +1,12 @@
 ## 03/18/2025:
 
 - [x] Get coils rendering in the app properly
-- [ ] Get chain filtering functioning again
+- [x] Get chain filtering functioning again
+- [ ] Make sure the app supports having multiple types defined for user
+   inputs and then values that will come from coils
 - [ ] Remove the value validation from inside plug handlers
 - [ ] Wrap the handlers with consumption of coils
 - [ ] Refactor the actions directory into protocols
-- [ ] Make sure the app supports having multiple types defined for user
-   inputs and then values that will come from coils
 - [ ] Balance function call for native assets
 - [ ] Append the coil definitions to a submit intent
 - [ ] Build the proper coils for the onchain transaction

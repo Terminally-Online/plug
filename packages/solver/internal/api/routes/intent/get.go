@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
@@ -14,7 +15,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/schema"
 	"github.com/swaggest/openapi-go"
-	"slices"
 )
 
 var Decoder = func() *schema.Decoder {
@@ -64,10 +64,11 @@ func GetAllSchemas(s *solver.Solver, chainId uint64) (map[string]actions.Protoco
 		for _, chain := range handler.Chains {
 			if slices.Contains(chain.ChainIds, chainId) {
 				supportsChain = true
+				break
 			}
 		}
 		if !supportsChain {
-			break
+			continue
 		}
 
 		protocolSchema := actions.ProtocolSchema{
