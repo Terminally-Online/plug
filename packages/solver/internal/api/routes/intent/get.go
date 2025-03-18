@@ -3,7 +3,6 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
