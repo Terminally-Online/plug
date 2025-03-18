@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/internal/bindings/references"
+	"solver/internal/cache"
 	"solver/internal/client"
 	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
@@ -137,15 +138,20 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
 		}
 
-		// TODO: The cache should be applied here instead of one level higher like it is now.
-		
+		cacheKey := fmt.Sprintf("schema:%d:%s:%s:%v", chainId, from, action, search)
+		options, err := cache.WithCache(cacheKey, cache.WithOptions(cache.WithStaleData(true)), func() (map[int]Options, error) {
+			inputs, err := actionDefinition.Options(lookup)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get options: %w", err)
+			}
 
-		inputs, err := actionDefinition.Options(lookup)
+			return inputs, nil
+		})
 		if err != nil {
-			return nil, fmt.Errorf("failed to get options: %w", err)
+			return nil, fmt.Errorf("failed to get options from cache: %w", err)
 		}
 
-		chainSchema.Schema.Options = inputs
+		chainSchema.Schema.Options = options
 	}
 
 	return &chainSchema, nil
