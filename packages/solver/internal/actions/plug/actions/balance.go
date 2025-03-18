@@ -3,7 +3,6 @@ package actions
 import (
 	"solver/bindings/erc_20"
 	"solver/internal/actions"
-	"solver/internal/actions/options"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -20,25 +19,6 @@ var BalanaceFunc = actions.ActionOnchainFunctionResponse{
 	FunctionName: "balanceOf",
 }
 
-func BalanceOptions(lookup *actions.SchemaLookup[BalanceRequest]) (map[int]actions.Options, error) {
-	fungiblesIndex := 0
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	addressIndex := 1
-	addressOptions, err := options.GetAddressOptions(lookup, addressIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	return map[int]actions.Options{
-		fungiblesIndex: {Simple: fungiblesOptions},
-		addressIndex:   {Simple: addressOptions},
-		2:              {Simple: actions.BaseThresholdFields},
-	}, nil
-}
 
 func Balance(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug, error) {
 	token, _, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)

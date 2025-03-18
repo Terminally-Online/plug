@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"solver/bindings/erc_20"
 	"solver/internal/actions"
-	"solver/internal/actions/options"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -24,24 +23,6 @@ var TransferFunc = actions.ActionOnchainFunctionResponse{
 	FunctionName: "transfer",
 }
 
-func TransferOptions(lookup *actions.SchemaLookup[TransferRequest]) (map[int]actions.Options, error) {
-	fungiblesIndex := 1
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	recipientIndex := 2
-	recipientOptions, err := options.GetAddressOptions(lookup, recipientIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	return map[int]actions.Options{
-		fungiblesIndex: {Simple: fungiblesOptions},
-		recipientIndex: {Simple: recipientOptions},
-	}, nil
-}
 
 func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, error) {
 	parts := strings.Split(lookup.Inputs.Token, ":")

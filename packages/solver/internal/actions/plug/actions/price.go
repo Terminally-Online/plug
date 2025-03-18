@@ -3,25 +3,12 @@ package actions
 import (
 	"fmt"
 	"solver/internal/actions"
-	"solver/internal/actions/options"
 	"solver/internal/helpers/llama"
 	"solver/internal/solver/signature"
 )
 
 type PriceRequest struct {
 	Token string `json:"token"`
-}
-
-func PriceOptions(lookup *actions.SchemaLookup[PriceRequest]) (map[int]actions.Options, error) {
-	fungiblesIndex := 0
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
-	if err != nil {
-		return nil, err
-	}
-	return map[int]actions.Options{
-		fungiblesIndex: {Simple: fungiblesOptions},
-		1:              {Simple: actions.BaseThresholdFields},
-	}, nil
 }
 
 func Price(lookup *actions.SchemaLookup[PriceRequest]) ([]signature.Plug, error) {

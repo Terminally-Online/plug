@@ -6,7 +6,6 @@ import (
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
 	"solver/internal/actions"
-	"solver/internal/actions/options"
 	"solver/internal/bindings/references"
 	"solver/internal/helpers/llama"
 	"solver/internal/solver/signature"
@@ -117,23 +116,6 @@ type BebopQuoteResponse struct {
 	PartialFillOffset int    `json:"partialFillOffset"`
 }
 
-func SwapOptions(lookup *actions.SchemaLookup[SwapRequest]) (map[int]actions.Options, error) {
-	fungiblesOutIndex := 1
-	fungiblesOutOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesOutIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	fungiblesInIndex := 2
-	fungiblesInOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesInIndex)
-	if err != nil {
-		return nil, err
-	}
-	return map[int]actions.Options{
-		fungiblesOutIndex: {Simple: fungiblesOutOptions},
-		fungiblesInIndex:  {Simple: fungiblesInOptions},
-	}, nil
-}
 
 func handleWrap(lookup *actions.SchemaLookup[SwapRequest], wethAddress string) ([]signature.Plug, error) {
 	isEthToWeth := common.HexToAddress(lookup.Inputs.TokenIn) == utils.NativeTokenAddress &&
