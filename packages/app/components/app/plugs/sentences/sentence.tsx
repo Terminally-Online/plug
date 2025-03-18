@@ -137,7 +137,7 @@ export const Sentence: FC<SentenceProps> = memo(
 									...action.values,
 									[index]: {
 										...rest,
-										value: isNumber ? parseFloat(value) : value
+										value: value ? isNumber ? parseFloat(value) : value : undefined
 									}
 								}
 								: action.values
