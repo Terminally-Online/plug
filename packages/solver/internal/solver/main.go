@@ -10,7 +10,7 @@ import (
 	"solver/internal/actions/assert"
 	"solver/internal/actions/basepaint"
 	"solver/internal/actions/boolean"
-	dbactions "solver/internal/actions/database"
+	// dbactions "solver/internal/actions/database"
 	"solver/internal/actions/euler"
 	"solver/internal/actions/math"
 	"solver/internal/actions/morpho"
@@ -45,8 +45,8 @@ func New() *Solver {
 			actions.Morpho:    morpho.New(),
 			actions.Nouns:     nouns.New(),
 			actions.Plug:      plug.New(),
-			actions.Database:  dbactions.New(),
-			actions.YearnV3:   yearn_v3.New(),
+			// actions.Database:  dbactions.New(),
+			actions.YearnV3: yearn_v3.New(),
 		},
 		IsKilled: false,
 	}
@@ -62,16 +62,21 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 	}
 
 	handler, exists := s.Protocols[inputs.Protocol]
-	if !exists || handler.Actions[inputs.Action].Handler == nil {
+	if !exists {
 		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
 
-	lookup, err := actions.NewSchemaLookup(chainId, from, nil)
+	action, ok := handler.Actions[inputs.Action].(actions.ActionDefinition[any])
+	if !ok || action.Handler == nil {
+		return nil, fmt.Errorf("unsupported action: %s for protocol: %s", inputs.Action, inputs.Protocol)
+	}
+
+	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw)
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := handler.Actions[inputs.Action].Handler(lookup, raw)
+	transactions, err := action.Handler(lookup)
 	if err != nil {
 		return nil, err
 	}
@@ -107,13 +112,9 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 			return nil, utils.ErrBuild(err.Error())
 		}
 
-		var exclusive bool
 		plugs, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
-		}
-		if exclusive {
-			break
 		}
 	}
 

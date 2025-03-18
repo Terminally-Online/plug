@@ -43,4 +43,9 @@ const (
 	ConstraintTimeLeft           string = "time_left"
 	ConstraintPrice              string = "price"
 	ConstraintBalance            string = "balance"
+
+	ReadBalance      string = "balance"
+	ReadPrice        string = "price"
+	ReadAPY          string = "apy"
+	ReadHealthFactor string = "health_factor"
 )
