@@ -7,9 +7,9 @@ import (
 	"solver/bindings/euler_utils_lens"
 	"solver/bindings/euler_vault_lens"
 	"solver/internal/bindings/references"
+	"solver/internal/cache"
 	"solver/internal/helpers/zerion"
 	"solver/internal/utils"
-	"time"
 
 	"solver/internal/client"
 
@@ -25,60 +25,51 @@ type VaultPriceInfo struct {
 }
 
 func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error) {
-	cacheKey := fmt.Sprintf("euler:verifiedVaults:%d", chainId)
-	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() ([]euler_vault_lens.VaultInfoFull, error) {
-		provider, err := client.New(chainId)
-		if err != nil {
-			return nil, err
-		}
-
-		governedPerspective, err := euler_governed_perspective.NewEulerGovernedPerspective(
-			common.HexToAddress(references.Networks[chainId].References["euler"]["governed_perspective"]),
-			provider,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		vaultAddresses, err := governedPerspective.EulerGovernedPerspectiveCaller.VerifiedArray(nil)
-		if err != nil {
-			return nil, err
-		}
-
-		vaultLensAbi, err := euler_vault_lens.EulerVaultLensMetaData.GetAbi()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get vault lens ABI: %w", err)
-		}
-
-		vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
-		calls := make([]client.MulticallCalldata, len(vaultAddresses))
-		for i, vaultAddr := range vaultAddresses {
-			calls[i] = client.MulticallCalldata{
-				Target:     vaultLensAddr,
-				Method:     "getVaultInfoFull",
-				Args:       []interface{}{vaultAddr},
-				ABI:        vaultLensAbi,
-				OutputType: &euler_vault_lens.VaultInfoFull{},
-			}
-		}
-		results, err := provider.Multicall(calls)
-		if err != nil {
-			return nil, fmt.Errorf("multicall failed: %w", err)
-		}
-
-		vaultInfos := make([]euler_vault_lens.VaultInfoFull, len(results))
-		for i, result := range results {
-			vaultInfos[i] = *result.(*euler_vault_lens.VaultInfoFull)
-		}
-
-		return vaultInfos, nil
-	})
-
+	provider, err := client.New(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	governedPerspective, err := euler_governed_perspective.NewEulerGovernedPerspective(
+		common.HexToAddress(references.Networks[chainId].References["euler"]["governed_perspective"]),
+		provider,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	vaultAddresses, err := governedPerspective.EulerGovernedPerspectiveCaller.VerifiedArray(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	vaultLensAbi, err := euler_vault_lens.EulerVaultLensMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault lens ABI: %w", err)
+	}
+
+	vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
+	calls := make([]client.MulticallCalldata, len(vaultAddresses))
+	for i, vaultAddr := range vaultAddresses {
+		calls[i] = client.MulticallCalldata{
+			Target:     vaultLensAddr,
+			Method:     "getVaultInfoFull",
+			Args:       []interface{}{vaultAddr},
+			ABI:        vaultLensAbi,
+			OutputType: &euler_vault_lens.VaultInfoFull{},
+		}
+	}
+	results, err := provider.Multicall(calls)
+	if err != nil {
+		return nil, fmt.Errorf("multicall failed: %w", err)
+	}
+
+	vaultInfos := make([]euler_vault_lens.VaultInfoFull, len(results))
+	for i, result := range results {
+		vaultInfos[i] = *result.(*euler_vault_lens.VaultInfoFull)
+	}
+
+	return vaultInfos, nil
 }
 
 func GetVault(address string, chainId uint64) (euler_vault_lens.VaultInfoFull, error) {
@@ -134,7 +125,7 @@ func GetVaultPrices(chainId uint64) (map[string]VaultPriceInfo, error) {
 	}
 
 	cacheKey := fmt.Sprintf("euler:verifiedVaultPrices:%d", chainId)
-	prices, err := utils.WithCache(cacheKey, []time.Duration{10 * time.Minute}, true, func() (map[string]VaultPriceInfo, error) {
+	prices, err := cache.WithCache(cacheKey, cache.WithOptions(cache.WithStaleData(true)), func() (map[string]VaultPriceInfo, error) {
 		utilLensAbi, err := euler_utils_lens.EulerUtilsLensMetaData.GetAbi()
 		if err != nil {
 			return nil, utils.ErrABI("EulerUtilsLens")
@@ -208,7 +199,7 @@ func GetVaultPrice(vault string, chainId uint64) (VaultPriceInfo, error) {
 
 func GetMainAddressVaultHoldings(address common.Address, chainId uint64) ([]zerion.ZerionPosition, error) {
 	cacheKey := fmt.Sprintf("euler:mainPositions:%s:%d", address, chainId)
-	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() ([]zerion.ZerionPosition, error) {
+	res, err := cache.WithCache(cacheKey, cache.WithOptions(cache.WithStaleData(true)), func() ([]zerion.ZerionPosition, error) {
 		vaults, err := GetVerifiedVaults(chainId)
 		if err != nil {
 			return nil, err
