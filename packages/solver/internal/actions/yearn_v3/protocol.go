@@ -22,7 +22,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/yearn.png",
 			Tags:   []string{"yield", "defi"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				actions.ActionDeposit: actions.NewActionDefinition(
 					"Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}",
 					yearn_actions.Deposit,

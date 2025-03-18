@@ -30,7 +30,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/math.png",
 			Tags:   []string{"scripting"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				Calculate: actions.NewActionDefinition(
 					"Calculate {0<x:uint256>} {1<operation:string>} {2<y:uint256>}",
 					math_actions.Calculate,

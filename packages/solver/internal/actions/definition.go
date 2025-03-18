@@ -28,6 +28,14 @@ func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, erro
 	return calldata, nil
 }
 
+// ActionInterface is used for type assertions in Protocol
+type ActionDefinitionInterface interface {
+	GetType() string
+	GetSentence() string
+	GetIsUserSpecific() bool
+	GetOptions() ActionOptionsFunc[any]
+}
+
 type ActionDefinition[T any] struct {
 	Type           string `default:"action,omitempty"`
 	Sentence       string
@@ -44,8 +52,8 @@ func NewActionDefinition[T any](
 	options ActionOptionsFunc[T],
 	isUserSpecific bool,
 	isSearchable bool,
-) ActionDefinition[T] {
-	return ActionDefinition[T]{
+) ActionDefinitionInterface {
+	return &ActionDefinition[T]{
 		Sentence:       sentence,
 		Handler:        handler,
 		Options:        options,
@@ -95,3 +103,4 @@ func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
 		})
 	}
 }
+

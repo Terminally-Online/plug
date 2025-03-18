@@ -34,7 +34,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/euler.png",
 			Tags:   []string{"lending", "defi"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				ActionEarn: actions.NewActionDefinition(
 					"Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.",
 					euler_actions.Earn,

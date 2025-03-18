@@ -10,7 +10,6 @@ import (
 	"solver/internal/actions/assert"
 	"solver/internal/actions/basepaint"
 	"solver/internal/actions/boolean"
-	// dbactions "solver/internal/actions/database"
 	"solver/internal/actions/euler"
 	"solver/internal/actions/math"
 	"solver/internal/actions/morpho"
@@ -45,7 +44,6 @@ func New() *Solver {
 			actions.Morpho:    morpho.New(),
 			actions.Nouns:     nouns.New(),
 			actions.Plug:      plug.New(),
-			// actions.Database:  dbactions.New(),
 			actions.YearnV3: yearn_v3.New(),
 		},
 		IsKilled: false,
@@ -53,41 +51,43 @@ func New() *Solver {
 }
 
 func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
-	var inputs struct {
-		Protocol string `json:"protocol"`
-		Action   string `json:"action"`
-	}
-	if err := json.Unmarshal(raw, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
-	}
-
-	handler, exists := s.Protocols[inputs.Protocol]
-	if !exists {
-		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
-	}
-
-	action, ok := handler.Actions[inputs.Action].(actions.ActionDefinition[any])
-	if !ok || action.Handler == nil {
-		return nil, fmt.Errorf("unsupported action: %s for protocol: %s", inputs.Action, inputs.Protocol)
-	}
-
-	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw)
-	if err != nil {
-		return nil, err
-	}
-
-	transactions, err := action.Handler(lookup)
-	if err != nil {
-		return nil, err
-	}
-
-	for i := range transactions {
-		if transactions[i].Value == nil {
-			transactions[i].Value = big.NewInt(0)
-		}
-	}
-
-	return transactions, nil
+	// TODO: Uncomment this and get it working again.
+	return nil, nil
+	// var inputs struct {
+	// 	Protocol string `json:"protocol"`
+	// 	Action   string `json:"action"`
+	// }
+	// if err := json.Unmarshal(raw, &inputs); err != nil {
+	// 	return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
+	// }
+	//
+	// handler, exists := s.Protocols[inputs.Protocol]
+	// if !exists {
+	// 	return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
+	// }
+	//
+	// action, ok := handler.Actions[inputs.Action].(actions.ActionDefinition[any])
+	// if !ok || action.Handler == nil {
+	// 	return nil, fmt.Errorf("unsupported action: %s for protocol: %s", inputs.Action, inputs.Protocol)
+	// }
+	//
+	// lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// transactions, err := action.Handler(lookup)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// for i := range transactions {
+	// 	if transactions[i].Value == nil {
+	// 		transactions[i].Value = big.NewInt(0)
+	// 	}
+	// }
+	//
+	// return transactions, nil
 }
 
 func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uint64, from common.Address) (plugs []signature.Plug, error error) {

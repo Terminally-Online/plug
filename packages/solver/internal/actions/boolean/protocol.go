@@ -19,7 +19,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/boolean.png",
 			Tags:   []string{"logic", "condition", "comparison"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				LogicOperation: actions.NewActionDefinition(
 					"Check if {0<a:boolean>} {1<operation:string>} {2<b:boolean>}",
 					boolean_actions.LogicOperation,

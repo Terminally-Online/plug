@@ -14,7 +14,7 @@ func New() actions.Protocol {
 		Icon:   "https://cdn.onplug.io/protocols/aave.png",
 		Tags:   []string{"lending", "defi"},
 		Chains: []*references.Network{references.Mainnet, references.Base},
-		Actions: map[string]any{
+		Actions: map[string]actions.ActionDefinitionInterface{
 			actions.ActionDeposit: actions.NewActionDefinition(
 				"Deposit {0<amount:float>} {1<token:address:uint8>}",
 				aave_actions.Deposit,

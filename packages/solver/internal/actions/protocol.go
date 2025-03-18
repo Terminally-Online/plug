@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"log"
 	"solver/internal/bindings/references"
 	"solver/internal/utils"
 
@@ -13,30 +14,26 @@ type Protocol struct {
 	Icon    string
 	Tags    []string
 	Chains  []*references.Network
-	Actions map[string]any
+	Actions map[string]ActionDefinitionInterface
 	Schemas map[string]ChainSchema
 }
 
 func NewProtocol(p Protocol) Protocol {
 	schemas := make(map[string]ChainSchema, len(p.Actions))
-	for action, def := range p.Actions {
-		// Type assert to get the common fields
-		actionDef := def.(interface {
-			GetType() string
-			GetSentence() string
-			IsUserSpecific() bool
-		})
+	for action, definition := range p.Actions {
+		log.Println(action)
+		log.Println(definition)
 
 		schemas[action] = ChainSchema{
 			Schema: Schema{
 				Type: func() string {
-					if actionDef.GetType() == "" {
+					if definition.GetType() == "" {
 						return TypeAction
 					}
-					return actionDef.GetType()
+					return definition.GetType()
 				}(),
-				Sentence:       actionDef.GetSentence(),
-				IsUserSpecific: actionDef.IsUserSpecific(),
+				Sentence:       definition.GetSentence(),
+				IsUserSpecific: definition.GetIsUserSpecific(),
 			},
 		}
 	}
@@ -53,10 +50,7 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
 
-	if optionsDef, ok := actionDef.(interface {
-		GetOptions() ActionOptionsFunc[any]
-		GetIsUserSpecific() bool
-	}); ok && optionsDef.GetOptions() != nil {
+	if actionDef.GetOptions() != nil {
 		if !chainSchema.Schema.IsUserSpecific {
 			from = utils.ZeroAddress
 		}
@@ -66,7 +60,7 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
 		}
 
-		inputs, err := optionsDef.GetOptions()(lookup)
+		inputs, err := actionDef.GetOptions()(lookup)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get options: %w", err)
 		}

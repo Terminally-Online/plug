@@ -18,7 +18,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/assert.png",
 			Tags:   []string{"validation", "assert", "condition"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				Assert: actions.NewActionDefinition(
 					"Assert that {0<condition:bool>} is {1<assertion:bool>}",
 					assert_actions.HandleAssert,

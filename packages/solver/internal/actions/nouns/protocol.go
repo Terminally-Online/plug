@@ -29,7 +29,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/nouns.png",
 			Tags:   []string{"nft"},
 			Chains: []*references.Network{references.Mainnet},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				actions.ActionBid: actions.NewActionDefinition(
 					"Bid on noun with {0<amount:string>} ETH",
 					nouns_actions.Bid,

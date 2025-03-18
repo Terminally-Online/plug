@@ -13,7 +13,7 @@ func New() actions.Protocol {
 		Icon:   "https://cdn.onplug.io/protocols/basepaint.png",
 		Tags:   []string{"lending", "defi"},
 		Chains: []*references.Network{references.Base},
-		Actions: map[string]any{
+		Actions: map[string]actions.ActionDefinitionInterface{
 			actions.ActionMint: actions.NewActionDefinition(
 				"Mint {0<count:uint64>} of the latest canvas to {1<recipient:address>}",
 				basepaint_actions.MintLatest,

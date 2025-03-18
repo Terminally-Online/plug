@@ -21,7 +21,7 @@ func New() actions.Protocol {
 			Icon:   "https://cdn.onplug.io/protocols/plug.png",
 			Tags:   []string{"defi"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
-			Actions: map[string]any{
+			Actions: map[string]actions.ActionDefinitionInterface{
 				actions.ActionTransfer: actions.NewActionDefinition(
 					"Transfer {0<amount:float>} {1<token:address:uint256:uint256>} to {2<recipient:string>}",
 					plug_actions.Transfer,
