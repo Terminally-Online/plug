@@ -18,8 +18,8 @@ func New() actions.Protocol {
 				"Mint {0<count:uint64>} of the latest canvas to {1<recipient:address>}",
 				basepaint_actions.MintLatest,
 				basepaint_options.MintLatestOptions,
-				false,
-				false,
+				actions.IsStatic,
+				actions.IsGlobal,
 			),
 		},
 	})

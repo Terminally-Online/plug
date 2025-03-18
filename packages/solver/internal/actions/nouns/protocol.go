@@ -8,14 +8,6 @@ import (
 )
 
 var (
-	IS_GLOBAL = false
-	IS_USER   = true
-
-	IS_STATIC  = false
-	IS_DYNAMIC = true
-)
-
-var (
 	IncreaseBid    = "increase_bid"
 	HasTrait       = "has_trait"
 	IsTokenId      = "is_token_id"
@@ -34,36 +26,36 @@ func New() actions.Protocol {
 					"Bid on noun with {0<amount:string>} ETH",
 					nouns_actions.Bid,
 					nil,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				IncreaseBid: actions.NewActionDefinition(
 					"Outbid the current bid by {0<percent:string>} %",
 					nouns_actions.IncreaseBid,
 					nil,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				HasTrait: actions.NewActionDefinition(
 					"Noun that has a {0<traitType:string>} of {0=>1<trait:string>}",
 					nouns_actions.HasTrait,
 					nouns_options.HasTraitOptions,
-					IS_GLOBAL,
-					IS_DYNAMIC,
+					actions.IsGlobal,
+					actions.IsDynamic,
 				),
 				IsTokenId: actions.NewActionDefinition(
 					"Current Noun action is for token id {0<id:uint256>}",
 					nouns_actions.IsTokenId,
 					nil,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				CurrentAuction: actions.NewActionDefinition(
 					"Get current auction",
 					nouns_actions.CurrentAuction,
 					nil,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 			},
 		},

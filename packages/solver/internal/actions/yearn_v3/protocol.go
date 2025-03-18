@@ -7,14 +7,6 @@ import (
 	"solver/internal/bindings/references"
 )
 
-var (
-	IS_GLOBAL = false
-	IS_USER   = true
-
-	IS_STATIC     = false
-	IS_SEARCHABLE = true
-)
-
 func New() actions.Protocol {
 	return actions.NewProtocol(
 		actions.Protocol{
@@ -27,36 +19,36 @@ func New() actions.Protocol {
 					"Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}",
 					yearn_actions.Deposit,
 					yearn_options.UnderlyingAssetToVaultOptions,
-					IS_GLOBAL,
-					IS_SEARCHABLE,
+					actions.IsGlobal,
+					actions.IsDynamic,
 				),
 				actions.ActionWithdraw: actions.NewActionDefinition(
 					"Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}",
 					yearn_actions.Withdraw,
 					yearn_options.UnderlyingAssetToVaultOptions,
-					IS_GLOBAL,
-					IS_SEARCHABLE,
+					actions.IsGlobal,
+					actions.IsDynamic,
 				),
 				actions.ActionStake: actions.NewActionDefinition(
 					"Stake {0<amount:float>} {1<token:address:uint8>}",
 					yearn_actions.Stake,
 					yearn_options.AvailableStakingGaugeOptions,
-					IS_GLOBAL,
-					IS_SEARCHABLE,
+					actions.IsGlobal,
+					actions.IsDynamic,
 				),
 				actions.ActionRedeem: actions.NewActionDefinition(
 					"Redeem {0<amount:float>} {1<vault:address:uint8>}",
 					yearn_actions.Redeem,
 					yearn_options.AvailableStakingGaugeOptions,
-					IS_GLOBAL,
-					IS_SEARCHABLE,
+					actions.IsGlobal,
+					actions.IsDynamic,
 				),
-				actions.ConstraintAPY: actions.NewActionDefinition(
+				actions.ReadAPY: actions.NewActionDefinition(
 					"APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:float>} %",
 					yearn_actions.APY,
 					yearn_options.APYOptions,
-					IS_GLOBAL,
-					IS_SEARCHABLE,
+					actions.IsGlobal,
+					actions.IsDynamic,
 				),
 			},
 		},

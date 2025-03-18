@@ -18,14 +18,6 @@ var (
 	ConstraintAPY          = "apy"
 )
 
-var (
-	IS_GLOBAL = false
-	IS_USER   = true
-
-	IS_STATIC     = false
-	IS_SEARCHABLE = true
-)
-
 func New() actions.Protocol {
 	return actions.NewProtocol(
 		actions.Protocol{
@@ -38,57 +30,57 @@ func New() actions.Protocol {
 					"Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:string>}",
 					morpho_actions.Earn,
 					morpho_options.SupplyTokenToVaultOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				ActionSupplyCollateral: actions.NewActionDefinition(
 					"Supply {0<amount:float>} {1<token:address:uint8>} as collateral to {1=>2<market:string>}",
 					morpho_actions.SupplyCollateral,
 					morpho_options.CollateralTokenToMarketOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				ActionWithdraw: actions.NewActionDefinition(
 					"Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<target:string>}",
 					morpho_actions.Withdraw,
 					morpho_options.SupplyAndCollateralTokenToMarketOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				ActionBorrow: actions.NewActionDefinition(
 					"Borrow {0<amount:float>} {1<token:address:uint8>} from {1=>2<market:string>}",
 					morpho_actions.Borrow,
 					morpho_options.BorrowTokenToMarketOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				ActionRepay: actions.NewActionDefinition(
 					"Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<market:string>}",
 					morpho_actions.Repay,
 					morpho_options.BorrowTokenToMarketOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				ActionClaimRewards: actions.NewActionDefinition(
 					"Claim all reward distributions",
 					morpho_actions.ClaimRewards,
 					nil,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				actions.ReadHealthFactor: actions.NewActionDefinition(
 					"Get health factor in {0<market:string>}",
 					morpho_actions.HealthFactor,
 					morpho_options.HealthFactorOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 				actions.ReadAPY: actions.NewActionDefinition(
 					"Get {0<action:int8>} APY in {1<target:string>}",
 					morpho_actions.APY,
 					morpho_options.APYOptions,
-					IS_GLOBAL,
-					IS_STATIC,
+					actions.IsGlobal,
+					actions.IsStatic,
 				),
 			},
 		},

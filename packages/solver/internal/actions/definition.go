@@ -52,14 +52,14 @@ type ActionDefinition[T any] struct {
 
 func NewActionDefinition[T any](
 	sentence string,
-	handler ActionFunc[T],
+	action ActionFunc[T],
 	options ActionOptionsFunc[T],
 	isUserSpecific bool,
 	isSearchable bool,
 ) ActionDefinitionInterface {
 	return &ActionDefinition[T]{
 		Sentence:       sentence,
-		Handler:        handler,
+		Handler:        action,
 		Options:        options,
 		IsUserSpecific: isUserSpecific,
 		IsSearchable:   isSearchable,
