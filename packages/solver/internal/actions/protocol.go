@@ -2,7 +2,6 @@ package actions
 
 import (
 	"fmt"
-	"log"
 	"solver/internal/bindings/references"
 	"solver/internal/utils"
 
@@ -21,9 +20,6 @@ type Protocol struct {
 func NewProtocol(p Protocol) Protocol {
 	schemas := make(map[string]ChainSchema, len(p.Actions))
 	for action, definition := range p.Actions {
-		log.Println(action)
-		log.Println(definition)
-
 		schemas[action] = ChainSchema{
 			Schema: Schema{
 				Type: func() string {
@@ -44,14 +40,14 @@ func NewProtocol(p Protocol) Protocol {
 }
 
 func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
-	chainSchema, schemaExists := p.Schemas[action]
-	actionDef, actionExists := p.Actions[action]
-	if !schemaExists || !actionExists {
+	schema, schemaExists := p.Schemas[action]
+	definition, definitionExists := p.Actions[action]
+	if !schemaExists || !definitionExists {
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
 
-	if actionDef.GetOptions() != nil {
-		if !chainSchema.Schema.IsUserSpecific {
+	if definition.GetOptions() != nil {
+		if !definition.GetIsUserSpecific() {
 			from = utils.ZeroAddress
 		}
 
@@ -60,13 +56,13 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
 		}
 
-		inputs, err := actionDef.GetOptions()(lookup)
+		inputs, err := definition.GetOptions()(lookup)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get options: %w", err)
 		}
 
-		chainSchema.Schema.Options = inputs
+		schema.Schema.Options = inputs
 	}
 
-	return &chainSchema, nil
+	return &schema, nil
 }

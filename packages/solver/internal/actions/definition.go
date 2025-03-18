@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"encoding/json"
+	"fmt"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -33,10 +35,12 @@ type ActionDefinitionInterface interface {
 	GetType() string
 	GetSentence() string
 	GetIsUserSpecific() bool
+	GetHandler() ActionFunc[any]
 	GetOptions() ActionOptionsFunc[any]
 }
 
 type ActionDefinition[T any] struct {
+	ActionDefinitionInterface
 	Type           string `default:"action,omitempty"`
 	Sentence       string
 	Handler        ActionFunc[T]
@@ -93,6 +97,30 @@ func (d *ActionDefinition[T]) GetIsUserSpecific() bool {
 	return d.IsUserSpecific
 }
 
+func (d *ActionDefinition[T]) GetHandler() ActionFunc[any] {
+	return func(lookup *SchemaLookup[any]) ([]signature.Plug, error) {
+		typedLookup := &SchemaLookup[T]{
+			ChainId: lookup.ChainId,
+			Client:  lookup.Client,
+			From:    lookup.From,
+			Search:  lookup.Search,
+		}
+
+		inputsJSON, err := json.Marshal(lookup.Inputs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal inputs: %w", err)
+		}
+
+		var typedInputs T
+		if err := json.Unmarshal(inputsJSON, &typedInputs); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal inputs to target type: %w", err)
+		}
+
+		typedLookup.Inputs = &typedInputs
+		return d.Handler(typedLookup)
+	}
+}
+
 func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
 	return func(lookup *SchemaLookup[any]) (map[int]Options, error) {
 		return d.Options(&SchemaLookup[T]{
@@ -103,4 +131,3 @@ func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
 		})
 	}
 }
-

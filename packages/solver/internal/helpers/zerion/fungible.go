@@ -2,7 +2,6 @@ package zerion
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"solver/internal/utils"
 	"strings"
@@ -149,7 +148,6 @@ func GetFungibles(search string, chains []string) ([]ZerionToken, error) {
 		"https://api.zerion.io/v1/fungibles/?currency=usd&page[size]=100&filter[search_query]=%s&sort=-market_data.market_cap&filter[implementation_chain_id]=%s",
 		search, strings.Join(chains, ","),
 	)
-	log.Println(url)
 
 	response, err := utils.MakeHTTPRequest(
 		url,

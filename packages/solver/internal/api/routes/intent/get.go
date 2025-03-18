@@ -3,6 +3,7 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
@@ -29,9 +30,9 @@ type SearchQueryParam struct {
 }
 type SchemaQueryParams struct {
 	ChainId  uint64             `schema:"chainId" query:"chainId" description:"Chain ID to filter schemas by"`
-	From     string             `schema:"from" query:"from" description:"Wallet address to generate schemas for"`
 	Protocol string             `schema:"protocol" query:"protocol" description:"Protocol name to filter schemas by"`
 	Action   string             `schema:"action" query:"action" description:"Action name to filter schemas by"`
+	From     common.Address     `schema:"from" query:"from" description:"Wallet address to generate schemas for"`
 	Search   []SearchQueryParam `schema:"search" query:"search" description:"Search parameters to filter schemas by"`
 }
 
@@ -118,7 +119,7 @@ func GetProtocolSchema(handler *actions.Protocol, protocol string) (map[string]a
 	return response, nil
 }
 
-func GetActionSchema(handler *actions.Protocol, protocol string, action string, chainId uint64, from string, searchParams []SearchQueryParam) (map[string]actions.ProtocolSchema, error) {
+func GetActionSchema(handler *actions.Protocol, protocol string, action string, chainId uint64, from common.Address, searchParams []SearchQueryParam) (map[string]actions.ProtocolSchema, error) {
 	response, err := GetProtocolSchema(handler, protocol)
 	if err != nil {
 		return nil, err
@@ -129,7 +130,7 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 		searchMap[param.Index] = param.Value
 	}
 
-	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), searchMap, action)
+	chainSchema, err := handler.GetSchema(chainId, from, searchMap, action)
 	if err != nil {
 		return nil, err
 	}
