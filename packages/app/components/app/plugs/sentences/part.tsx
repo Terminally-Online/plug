@@ -43,7 +43,7 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 export type HandleValueProps = {
 	index: number
 	key: string
-	value: string
+	value?: string
 	name: string
 	isNumber?: boolean
 } & Partial<SchemasRequestValues[number]>
@@ -118,12 +118,11 @@ export const Part: FC<PartProps> = memo(
 		}, [coils, input, validateLinkedInput])
 
 		const isLinked = value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
-		const isValidLink = isLinked && validateLinkedInput(value?.value as string, input.type?.toString())
 		const isCompatibleCoil = useMemo(() =>
-			typeof value?.value === "string" && isLinked && Object.keys(validCoils).includes(value?.value),
+			typeof value?.value === "string" && isLinked && Object.keys(validCoils).includes(value?.value.replace("<-{", "").replace("}", "")),
 			[isLinked, value, validCoils]
 		)
-		const isEmpty = !value?.value || (isLinked && !isValidLink) || (isLinked && !isCompatibleCoil)
+		const isEmpty = !value?.value || (isLinked && !isCompatibleCoil)
 		const isValid = !isEmpty && !inputError && !error
 
 		// NOTE: These are using saved option data from the database when it exists. For example,
@@ -136,8 +135,8 @@ export const Part: FC<PartProps> = memo(
 		const icon = action.values?.[input.index]?.icon?.default || (option && option?.icon?.default)
 		const label =
 			(option && option.label) ||
-			((isValid || isCompatibleCoil) && value?.value) ||
-			action.values?.[input.index]?.label ||
+			((isValid || (isLinked && isCompatibleCoil)) && value?.value) ||
+			(!isLinked && (isLinked && isCompatibleCoil) && action.values?.[input.index]?.label) ||
 			input.name
 				?.replaceAll("_", " ")
 				.replace(/([A-Z])/g, " $1")
@@ -159,7 +158,7 @@ export const Part: FC<PartProps> = memo(
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
-						background: isValidLink
+						background: isLinked && isCompatibleCoil
 							? "bg-orange-300/60"
 							: !isValid ? "bg-plug-red" : "bg-plug-yellow"
 					}}
@@ -182,7 +181,7 @@ export const Part: FC<PartProps> = memo(
 						</div>
 					)}
 					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">
-						{isValidLink && label.startsWith("<-")
+						{isLinked && isCompatibleCoil && label.startsWith("<-{")
 							? label.replace("<-{", "").replace("}", "")
 							: label}
 					</span>
@@ -233,11 +232,11 @@ export const Part: FC<PartProps> = memo(
 									</div>
 								)}
 
-								{isReady && !isOptionBased && (
+								{isReady && !isOptionBased && Object.keys(validCoils).length > 0 && (
 									<>
 										<div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
 											{Object.keys(validCoils).map((coil, index) => {
-												if (value?.value === coil) return null
+												if (value?.value === `<-{${coil}}`) return null
 
 												return (
 													<Button
@@ -250,41 +249,41 @@ export const Part: FC<PartProps> = memo(
 																key: input?.name ?? "",
 																name: input?.name ?? "",
 																label: label,
-																value: coil,
+																value: `<-{${coil}}`,
 																isNumber: input.type?.toString().includes("int")
 															})
 														}
 														className="group/coil flex flex-row gap-2 px-2 pr-3"
 													>
-														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-500 transition-all duration-200 ease-in-out flex items-center justify-center">
+														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-400 transition-all duration-200 ease-in-out flex items-center justify-center">
 															<p className="text-xs font-bold text-plug-white">#</p>
 														</div>
 
-														{formatTitle(coil.replace("<-{", "").replace("}", ""))}
+														{coil}
 													</Button>
 												)
 											})}
 										</div>
 
-										{isCompatibleCoil ? (
+										{isLinked ? (
 											<>
 												<button
-													className={`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out ${isValidLink
-														? "border-plug-green/10"
-														: "border-red-400/30 bg-red-100/10"
-														}`}
+													className={cn(
+														`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out`,
+														isCompatibleCoil ? "border-plug-green/10" : "border-plug-red/10"
+													)}
 													onClick={() =>
 														handleValue({
 															index: input?.index ?? "",
 															key: input?.name ?? "",
 															name: input?.name ?? "",
 															label: label,
-															value: "",
+															value: undefined,
 															isNumber: input.type?.toString().includes("int")
 														})
 													}
 												>
-													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-500" : "bg-red-500"
+													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
 														}`}>
 														<p className="text-xs font-bold text-plug-white">
 															{isCompatibleCoil ? "#" : "!"}
