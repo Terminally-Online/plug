@@ -14,6 +14,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/schema"
 	"github.com/swaggest/openapi-go"
+	"slices"
 )
 
 var Decoder = func() *schema.Decoder {
@@ -56,10 +57,19 @@ func GetContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func GetAllSchemas(s *solver.Solver) (map[string]actions.ProtocolSchema, error) {
+func GetAllSchemas(s *solver.Solver, chainId uint64) (map[string]actions.ProtocolSchema, error) {
 	all := make(map[string]actions.ProtocolSchema)
 	for protocol, handler := range s.Protocols {
-		// TODO: Only show matching chain ids. I removed this when refactoring.
+		var supportsChain bool
+		for _, chain := range handler.Chains {
+			if slices.Contains(chain.ChainIds, chainId) {
+				supportsChain = true
+			}
+		}
+		if !supportsChain {
+			break
+		}
+
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.Icon,
@@ -90,7 +100,7 @@ func GetAllSchemas(s *solver.Solver) (map[string]actions.ProtocolSchema, error) 
 	return all, nil
 }
 
-func GetProtocolSchema(handler *actions.Protocol, protocol string) (map[string]actions.ProtocolSchema, error) {
+func GetProtocolSchema(handler *actions.Protocol, protocol string, chainId uint64) (map[string]actions.ProtocolSchema, error) {
 	protocolSchema := actions.ProtocolSchema{
 		Metadata: actions.ProtocolMetadata{
 			Icon:   handler.Icon,
@@ -119,7 +129,7 @@ func GetProtocolSchema(handler *actions.Protocol, protocol string) (map[string]a
 }
 
 func GetActionSchema(handler *actions.Protocol, protocol string, action string, chainId uint64, from common.Address, searchParams []SearchQueryParam) (map[string]actions.ProtocolSchema, error) {
-	response, err := GetProtocolSchema(handler, protocol)
+	response, err := GetProtocolSchema(handler, protocol, chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -157,9 +167,9 @@ func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solv
 	var err error
 	switch {
 	case params.Protocol == "":
-		result, err = GetAllSchemas(s)
+		result, err = GetAllSchemas(s, params.ChainId)
 	case exists && params.Action == "":
-		result, err = GetProtocolSchema(&protocol, params.Protocol)
+		result, err = GetProtocolSchema(&protocol, params.Protocol, params.ChainId)
 	case exists && params.Action != "":
 		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
 	default:
