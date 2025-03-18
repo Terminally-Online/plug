@@ -37,7 +37,7 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	handleSearch: (search: string, index: number) => void
 	handleValue: (args: HandleValueProps) => void
 	validateType?: (coilName: string, expectedType: string) => boolean
-	availableCoils?: Record<string, { type: string, actionIndex: number, coil: any }>
+	availableCoils?: Record<string, { type: string, actionIndex: number }>
 }
 
 export type HandleValueProps = {
@@ -83,11 +83,9 @@ export const Part: FC<PartProps> = memo(
 		const dependentOnValue =
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
 
-		// Function to validate linked inputs for type compatibility
 		const validateLinkedInput = useCallback((linkedValue: string | undefined, expectedType: string | undefined): boolean => {
 			if (!linkedValue || !validateType || !availableCoils || !expectedType) return false
 
-			// Extract coil name from the linked value
 			const match = linkedValue.match(/^<-\{(.+)\}$/)
 			if (!match) return false
 
@@ -112,17 +110,19 @@ export const Part: FC<PartProps> = memo(
 			input.dependentOn === undefined
 
 		const validCoils = useMemo(() => {
-			return coils?.filter((coil) => {
-				const coilValue = `<-{${coil.slice.name}}`
+			if (!coils) return {}
 
-				return validateLinkedInput(coilValue, input.type?.toString())
-			}) ?? [] as SchemasResponseCoils
+			return Object.fromEntries(Object.keys(coils).filter(name =>
+				validateLinkedInput(`<-{${name}}`, coils[name])).map(key => [key, coils[key]])
+			)
 		}, [coils, input, validateLinkedInput])
-		const validCoilNames = useMemo(() => validCoils.map(coil => `<-{${coil.slice.name}}`), [validCoils])
 
 		const isLinked = value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
-		const isCompatibleCoil = useMemo(() => typeof value?.value === "string" && isLinked && validCoilNames.includes(value?.value), [isLinked, value, validCoilNames])
 		const isValidLink = isLinked && validateLinkedInput(value?.value as string, input.type?.toString())
+		const isCompatibleCoil = useMemo(() =>
+			typeof value?.value === "string" && isLinked && Object.keys(validCoils).includes(value?.value),
+			[isLinked, value, validCoils]
+		)
 		const isEmpty = !value?.value || (isLinked && !isValidLink) || (isLinked && !isCompatibleCoil)
 		const isValid = !isEmpty && !inputError && !error
 
@@ -236,7 +236,7 @@ export const Part: FC<PartProps> = memo(
 								{isReady && !isOptionBased && (
 									<>
 										<div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
-											{validCoilNames.map((coil, index) => {
+											{Object.keys(validCoils).map((coil, index) => {
 												if (value?.value === coil) return null
 
 												return (

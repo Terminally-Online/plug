@@ -27,7 +27,7 @@ type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	handleValueChange?: (inputIndex: string, value: string, additionalData?: any) => void
 	handleRemoveAction?: () => void
 	validateType?: (coilName: string, expectedType: string) => boolean
-	availableCoils?: Record<string, { type: string, actionIndex: number, coil: any }>
+	availableCoils?: Record<string, { type: string, actionIndex: number }>
 }
 
 export const Sentence: FC<SentenceProps> = memo(
@@ -39,7 +39,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		preview = false,
 		error = false,
 		linked = [],
-		prevCoils = [],
+		prevCoils = {},
 		dragging = false,
 		handleValueChange,
 		handleRemoveAction,
@@ -97,7 +97,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
-		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? [] : []
+		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? {} : {}
 
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
@@ -272,13 +272,15 @@ export const Sentence: FC<SentenceProps> = memo(
 						)}
 					</div>
 
-					{coils.length > 0 && <div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
-						{coils.map((coil, coilIndex) => (<p key={coilIndex} className="font-bold w-full flex flex-row gap-2 items-center">
-							<Hash size={14} className="opacity-20" />
-							{coil.slice.name}
-							<span className="ml-auto opacity-40">{coil.slice.type}</span>
+					{coils && Object.keys(coils).length > 0 && <div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
+						{Object.keys(coils).map((name, coilIndex) => (
+							<p key={coilIndex} className="font-bold w-full flex flex-row gap-2 items-center">
+								<Hash size={14} className="opacity-20" />
+								{name}
+								<span className="ml-auto opacity-40">{coils[name]}</span>
 
-						</p>))}
+							</p>
+						))}
 					</div>}
 				</Accordion>
 

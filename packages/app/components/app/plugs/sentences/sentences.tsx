@@ -32,21 +32,31 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 	const availableCoils = useMemo(() => {
 		if (!plug || !solverActions) return {}
 
-		const coils: Record<string, { type: string, actionIndex: number, coil: any }> = {}
+		const coils: Record<string, { type: string, actionIndex: number }> = {}
 
 		plug.actions.forEach((action, actionIndex) => {
 			const actionSchema = solverActions[action.protocol]?.schema[action.action]
+
 			if (!actionSchema || !actionSchema.coils) return
 
-			actionSchema.coils.forEach(coil => {
-				if (coil.slice?.name) {
-					coils[coil.slice.name] = {
-						type: coil.slice.type,
-						actionIndex,
-						coil
-					}
+			Object.keys(actionSchema.coils).forEach(name => {
+				if (!actionSchema?.coils?.[name]) return
+
+				coils[name] = {
+					type: actionSchema.coils[name] ,
+					actionIndex,
 				}
 			})
+
+			// actionSchema.coils.forEach(coil => {
+			// 	if (coil.slice?.name) {
+			// 		coils[coil.slice.name] = {
+			// 			type: coil.slice.type,
+			// 			actionIndex,
+			// 			coil
+			// 		}
+			// 	}
+			// })
 		})
 
 		return coils
@@ -57,7 +67,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 
 		const isLinked = value.startsWith("<-{") && value.endsWith("}")
 		const newActions = [...plug.actions]
-		const action = newActions[actionIndex] 
+		const action = newActions[actionIndex]
 		const isNumber = additionalData.isNumber || false
 
 		// @ts-ignore
@@ -87,27 +97,27 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 
 	const handleDragEnd = (result: DropResult) => {
 		if (!result.destination || !plug || !own) return
-		
+
 		if (result.source.index === result.destination.index) return
-		
+
 		const newActions = [...plug.actions]
 		const [removed] = newActions.splice(result.source.index, 1)
 		newActions.splice(result.destination.index, 0, removed)
 		const actions = JSON.stringify(newActions)
-		
+
 		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
 		edit({
 			id: plug.id,
 			actions
 		})
 	}
-	
+
 	const handleRemoveAction = (actionIndex: number) => {
 		if (!plug) return
-		
+
 		const newActions = plug.actions.filter((_, i) => i !== actionIndex)
 		const actions = JSON.stringify(newActions)
-		
+
 		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
 		edit({
 			id: plug.id,
@@ -126,10 +136,10 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 							const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
 							const linked = values.filter(val => val?.value && val?.value?.startsWith("<-{"))
 
-							let prevCoils: SchemasResponseCoils | undefined = []
+							let prevCoils: SchemasResponseCoils | undefined = {}
 							if (actionIndex > 0) {
 								const prevAction = plug.actions[actionIndex - 1]
-								prevCoils = solverActions[prevAction.protocol]?.schema[prevAction.action]?.coils || []
+								prevCoils = solverActions[prevAction.protocol]?.schema[prevAction.action]?.coils || {}
 							}
 
 							return <Draggable
