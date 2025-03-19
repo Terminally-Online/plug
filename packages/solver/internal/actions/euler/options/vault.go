@@ -7,69 +7,45 @@ import (
 	"solver/internal/actions/euler/reads"
 	"solver/internal/utils"
 	"strings"
-	"time"
 )
 
 func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
-	type result struct {
-		tokenOptions        []actions.Option
-		vaultOptions        []actions.Option
-		tokenToVaultOptions map[string][]actions.Option
-	}
-
-	cacheKey := fmt.Sprintf("euler:supplyTokens:%d", chainId)
-	// TODO: There is no reason to be doing a cache here as there are no calls made and it's just a loop.
-	//       We are used to memoizing things on the frontend, but you don't need to cache in-memory things
-	//       like this when you're working on a server.
-	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
-		seenToken := make(map[string]bool)
-		tokenOptions := make([]actions.Option, 0)
-		vaultOptions := make([]actions.Option, 0)
-		tokenToVaultOptions := make(map[string][]actions.Option)
-
-		for _, vault := range vaults {
-			tokenAddress := fmt.Sprintf("%s:%d", vault.Asset, vault.AssetDecimals)
-			if !seenToken[tokenAddress] {
-				tokenOptions = append(tokenOptions, actions.Option{
-					Label: vault.AssetSymbol,
-					Name:  vault.AssetName,
-					Value: tokenAddress,
-					Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				})
-				seenToken[tokenAddress] = true
-			}
-
-			var supplyApy string
-			if len(vault.IrmInfo.InterestRateInfo) > 0 {
-				supplyApyFloat := utils.UintToFloat(vault.IrmInfo.InterestRateInfo[0].SupplyAPY, 25)
-				supplyApy = fmt.Sprintf("%.2f%%", supplyApyFloat)
-			} else {
-				supplyApy = "0.0%"
-			}
-
-			vaultOption := actions.Option{
-				Label: vault.VaultSymbol,
-				Name:  vault.VaultName,
-				Value: vault.Vault.String(),
+	tokenOptions = make([]actions.Option, 0)
+	vaultOptions = make([]actions.Option, 0)
+	tokenToVaultOptions = make(map[string][]actions.Option)
+	seenToken := make(map[string]bool)
+	for _, vault := range vaults {
+		tokenAddress := fmt.Sprintf("%s:%d", vault.Asset, vault.AssetDecimals)
+		if !seenToken[tokenAddress] {
+			tokenOptions = append(tokenOptions, actions.Option{
+				Label: vault.AssetSymbol,
+				Name:  vault.AssetName,
+				Value: tokenAddress,
 				Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				Info:  &actions.OptionInfo{Label: "Supply APY", Value: supplyApy},
-			}
-			vaultOptions = append(vaultOptions, vaultOption)
-			tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
+			})
+			seenToken[tokenAddress] = true
 		}
 
-		return result{
-			tokenOptions:        tokenOptions,
-			vaultOptions:        vaultOptions,
-			tokenToVaultOptions: tokenToVaultOptions,
-		}, nil
-	})
+		var supplyApy string
+		if len(vault.IrmInfo.InterestRateInfo) > 0 {
+			supplyApyFloat := utils.UintToFloat(vault.IrmInfo.InterestRateInfo[0].SupplyAPY, 25)
+			supplyApy = fmt.Sprintf("%.2f%%", supplyApyFloat)
+		} else {
+			supplyApy = "0.0%"
+		}
 
-	if err != nil {
-		return nil, nil, nil, err
+		vaultOption := actions.Option{
+			Label: vault.VaultSymbol,
+			Name:  vault.VaultName,
+			Value: vault.Vault.String(),
+			Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
+			Info:  &actions.OptionInfo{Label: "Supply APY", Value: supplyApy},
+		}
+		vaultOptions = append(vaultOptions, vaultOption)
+		tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
 	}
 
-	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
+	return tokenOptions, vaultOptions, tokenToVaultOptions, nil
 }
 
 func SupplyTokenToVaultOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
@@ -88,64 +64,43 @@ func SupplyTokenToVaultOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]
 	}, nil
 }
 
-
 func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
-	type result struct {
-		tokenOptions        []actions.Option
-		vaultOptions        []actions.Option
-		tokenToVaultOptions map[string][]actions.Option
-	}
-
-	cacheKey := fmt.Sprintf("euler:borrowTokens:%d", chainId)
-	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
-		seenToken := make(map[string]bool)
-		tokenOptions := make([]actions.Option, 0)
-		vaultOptions := make([]actions.Option, 0)
-		tokenToVaultOptions := make(map[string][]actions.Option)
-
-		for _, vault := range vaults {
-			tokenAddress := fmt.Sprintf("%s:%d", vault.Asset, vault.AssetDecimals)
-			if !seenToken[tokenAddress] {
-				tokenOptions = append(tokenOptions, actions.Option{
-					Label: vault.AssetSymbol,
-					Name:  vault.AssetName,
-					Value: tokenAddress,
-					Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				})
-				seenToken[tokenAddress] = true
-			}
-
-			var borrowApy string
-			if len(vault.IrmInfo.InterestRateInfo) > 0 {
-				borrowApyFloat := utils.UintToFloat(vault.IrmInfo.InterestRateInfo[0].BorrowAPY, 25)
-				borrowApy = fmt.Sprintf("%.2f%%", borrowApyFloat)
-			} else {
-				borrowApy = "0.0%"
-			}
-
-			vaultOption := actions.Option{
-				Label: vault.VaultSymbol,
-				Name:  vault.VaultName,
-				Value: vault.Vault.String(),
+	tokenOptions = make([]actions.Option, 0)
+	vaultOptions = make([]actions.Option, 0)
+	tokenToVaultOptions = make(map[string][]actions.Option)
+	seenToken := make(map[string]bool)
+	for _, vault := range vaults {
+		tokenAddress := fmt.Sprintf("%s:%d", vault.Asset, vault.AssetDecimals)
+		if !seenToken[tokenAddress] {
+			tokenOptions = append(tokenOptions, actions.Option{
+				Label: vault.AssetSymbol,
+				Name:  vault.AssetName,
+				Value: tokenAddress,
 				Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
-				Info:  &actions.OptionInfo{Label: "Borrow APY", Value: borrowApy},
-			}
-			vaultOptions = append(vaultOptions, vaultOption)
-			tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
+			})
+			seenToken[tokenAddress] = true
 		}
 
-		return result{
-			tokenOptions:        tokenOptions,
-			vaultOptions:        vaultOptions,
-			tokenToVaultOptions: tokenToVaultOptions,
-		}, nil
-	})
+		var borrowApy string
+		if len(vault.IrmInfo.InterestRateInfo) > 0 {
+			borrowApyFloat := utils.UintToFloat(vault.IrmInfo.InterestRateInfo[0].BorrowAPY, 25)
+			borrowApy = fmt.Sprintf("%.2f%%", borrowApyFloat)
+		} else {
+			borrowApy = "0.0%"
+		}
 
-	if err != nil {
-		return nil, nil, nil, err
+		vaultOption := actions.Option{
+			Label: vault.VaultSymbol,
+			Name:  vault.VaultName,
+			Value: vault.Vault.String(),
+			Icon:  &actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
+			Info:  &actions.OptionInfo{Label: "Borrow APY", Value: borrowApy},
+		}
+		vaultOptions = append(vaultOptions, vaultOption)
+		tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
 	}
 
-	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
+	return tokenOptions, vaultOptions, tokenToVaultOptions, nil
 }
 
 func BorrowTokenToVaultOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
