@@ -178,5 +178,132 @@ export const postAnimations = {
 				})}
 			</div>
 		))}
-	</div>)
+	</div>),
+	"abstraction-fixes-fragmentation": (
+		<div className="w-full h-full flex items-center justify-center overflow-hidden">
+			<svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+				<defs>
+					<filter id="gooey-fragmentation">
+						<feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
+						<feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -8" result="goo" />
+					</filter>
+				</defs>
+				<g filter="url(#gooey-fragmentation)">
+					{/* Main central blob that breaks apart */}
+					<motion.circle
+						cx="200"
+						cy="200"
+						r="80"
+						fill="rgba(210, 243, 138, 0.8)" // plug-yellow
+						animate={{
+							r: [80, 10, 10, 80],
+							opacity: [1, 0, 0, 1],
+						}}
+						transition={{
+							duration: 6,
+							times: [0, 0.2, 0.7, 1],
+							repeat: Infinity,
+							ease: "easeInOut",
+						}}
+					/>
+					
+					{/* Fragment pieces that scatter and come back */}
+					{Array.from({ length: 8 }).map((_, index) => {
+						// Calculate angle for this fragment
+						const angle = (index / 8) * Math.PI * 2;
+						
+						// Scatter distance (how far it goes during fragmentation)
+						const distance = 80 + Math.random() * 40;
+						
+						// Fragment position during scattered phase
+						const fragmentX = 200 + Math.cos(angle) * distance;
+						const fragmentY = 200 + Math.sin(angle) * distance;
+						
+						// Size of fragment (varies)
+						const size = 15 + Math.random() * 15;
+						
+						return (
+							<motion.circle
+								key={index}
+								cx="200"
+								cy="200"
+								r={size}
+								fill="rgba(56, 88, 66, 0.7)" // plug-green
+								animate={{
+									cx: [200, fragmentX, fragmentX, 200],
+									cy: [200, fragmentY, fragmentY, 200],
+									r: [0, size, size, 0],
+									scale: [0.5, 1, 1, 0.5],
+									fill: ["rgba(210, 243, 138, 0.8)", "rgba(56, 88, 66, 0.7)", "rgba(56, 88, 66, 0.7)", "rgba(210, 243, 138, 0.8)"]
+								}}
+								transition={{
+									duration: 6,
+									times: [0, 0.2, 0.7, 1],
+									repeat: Infinity,
+									ease: index % 2 === 0 ? "backOut" : "easeOut", // Mix of bounce effects
+									delay: Math.random() * 0.2,
+								}}
+							/>
+						);
+					})}
+					
+					{/* Smaller slime pieces for additional effect */}
+					{Array.from({ length: 12 }).map((_, index) => {
+						const angle = (index / 12) * Math.PI * 2 + (Math.random() * 0.5);
+						const innerDistance = 40 + Math.random() * 20;
+						const outerDistance = 100 + Math.random() * 60;
+						
+						const innerX = 200 + Math.cos(angle) * innerDistance;
+						const innerY = 200 + Math.sin(angle) * innerDistance;
+						
+						const outerX = 200 + Math.cos(angle) * outerDistance;
+						const outerY = 200 + Math.sin(angle) * outerDistance;
+						
+						const size = 5 + Math.random() * 10;
+						
+						return (
+							<motion.circle
+								key={`small-${index}`}
+								cx="200"
+								cy="200"
+								r={size}
+								fill="rgba(210, 243, 138, 0.7)"
+								animate={{
+									cx: [200, outerX, outerX, innerX, 200],
+									cy: [200, outerY, outerY, innerY, 200],
+									r: [0, size, size, size/2, 0],
+									fill: ["rgba(210, 243, 138, 0.7)", "rgba(56, 88, 66, 0.6)", "rgba(56, 88, 66, 0.6)", "rgba(210, 243, 138, 0.7)", "rgba(210, 243, 138, 0.7)"]
+								}}
+								transition={{
+									duration: 6,
+									times: [0, 0.2, 0.6, 0.8, 1],
+									repeat: Infinity,
+									ease: "easeInOut",
+									delay: Math.random() * 0.3,
+								}}
+							/>
+						);
+					})}
+					
+					{/* Central glow effect during unification */}
+					<motion.circle
+						cx="200"
+						cy="200"
+						r="85"
+						fill="rgba(210, 243, 138, 0)"
+						animate={{
+							r: [0, 0, 85, 95, 85, 0],
+							fill: ["rgba(210, 243, 138, 0)", "rgba(210, 243, 138, 0)", "rgba(210, 243, 138, 0.3)", "rgba(210, 243, 138, 0.5)", "rgba(210, 243, 138, 0.3)", "rgba(210, 243, 138, 0)"]
+						}}
+						transition={{
+							duration: 6,
+							times: [0, 0.7, 0.8, 0.9, 0.95, 1],
+							repeat: Infinity,
+							ease: "easeInOut",
+						}}
+					/>
+				</g>
+			</svg>
+		</div>
+	)
 }

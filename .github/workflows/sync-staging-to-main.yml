@@ -1,0 +1,62 @@
+name: Sync Staging to Main
+
+on:
+    push:
+        branches:
+            - main
+
+permissions:
+    contents: write
+
+jobs:
+    merge-main-to-staging:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Configure Git
+              run: |
+                  git config --global user.name 'github-actions[bot]'
+                  git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+            - name: Check if staging is behind main
+              id: check-branches
+              run: |
+                  # Fetch all branches
+                  git fetch origin
+
+                  # Check if staging exists
+                  if git show-ref --verify --quiet refs/remotes/origin/staging; then
+                    # Check if staging is behind main (needs updates from main)
+                    if git rev-list --count origin/staging..origin/main > 0; then
+                      echo "Staging is behind main, merge needed"
+                      echo "needs_merge=true" >> $GITHUB_OUTPUT
+                    else
+                      echo "Staging is up-to-date with main or ahead, no merge needed"
+                      echo "needs_merge=false" >> $GITHUB_OUTPUT
+                    fi
+                  else
+                    echo "Staging branch doesn't exist, creating it from main"
+                    echo "needs_merge=true" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Merge main into staging
+              if: steps.check-branches.outputs.needs_merge == 'true'
+              run: |
+                  # Check if staging branch exists
+                  if git show-ref --verify --quiet refs/remotes/origin/staging; then
+                    git checkout staging
+                  else
+                    # Create staging branch if it doesn't exist
+                    git checkout -b staging
+                  fi
+
+                  git merge --no-ff origin/main -m "Auto-merge main into staging" || {
+                      echo "Merge conflict occurred. Manual intervention required."
+                      exit 1
+                  }                  
+                  git push origin staging
