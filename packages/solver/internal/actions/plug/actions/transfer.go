@@ -60,9 +60,9 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 	}
 
 	var updates []coil.Update
-	recipient, updates, err := lookup.Inputs.Recipient.GetAndUpdate(func() (common.Address, error) {
-		return lookup.Inputs.Recipient.GetValue(), nil
-	}, &TransferFunc, "_to", updates)
+	recipient, updates, err := lookup.Inputs.Recipient.GetAndUpdate(
+		lookup.Inputs.Recipient.GetValueWithError, &TransferFunc, "_to", updates,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +80,9 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 
 	if token == utils.NativeTokenAddress {
 		return []signature.Plug{{
-			To:    recipient,
-			Value: amount,
+			To:      recipient,
+			Value:   amount,
+			Updates: updates,
 		}}, nil
 	}
 

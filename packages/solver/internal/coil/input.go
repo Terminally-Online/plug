@@ -38,6 +38,10 @@ func (c *CoilInput[T, R]) GetValue() T {
 	return c.decoded
 }
 
+func (c *CoilInput[T, R]) GetValueWithError() (T, error) {
+	return c.decoded, nil
+}
+
 func (c *CoilInput[T, R]) Get(valueFunc func() (R, error)) (R, error) {
 	response, err := valueFunc()
 

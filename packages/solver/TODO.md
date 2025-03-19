@@ -12,18 +12,27 @@
           before implementing it because this will require an update of some kind
           to cord due to the way we are handling validation right now
 - [x] Confirm the data is actually in the intent being saved
-- [ ] Wrap the handlers with consumption of coils
-- [ ] Remove the value validation from inside plug handlers
+- [x] Wrap the handlers with consumption of coils
+- [x] Remove the value validation from inside plug handlers
    NOTES: This was not actuallly implemented in many of the integrations except for the original
       ones because after a couple I realized that validation was a bad pattern anyways since it
       is all going to go to simulation anyways meaning the only other case is to hit a 400 error.
-- [ ] Refactor the actions directory into protocols
-- [ ] Balance function call for native assets
-- [ ] Append the coil definitions to a submit intent
-- [ ] Build the proper coils for the onchain transaction
+- [x] Balance function call for native assets
+
+## 03/19/2025
+
+- [x] Figure out why the readme of core does not include Plug.EVM.sol
+- [ ] Fix the release action so that I do not have to keep doing manual releases
+- [ ] Release the latest version of core
 - [ ] Update plugs to be defined with the type of call to be made
    - [ ] When one is not explicitly set we should default solve for
       call or call with value.
-- [ ] Fix the signatures to support the new shape
-- [ ] Handle any other regressions we have created in the process of this update
+- [?] Build the proper coils for the onchain transaction
+- [?] Append the coil definitions to a submit intent
+   NOTES: This may already be done because I skipped to focusing on getting plugs e2e instead of 
+          focusing on the other things I wanted to take care of right now.
+- [ ] Refactor the actions directory into protocols
 - [ ] Clear any linked inputs if the parent output is removed -- Automatic reconnection here would be nice
+
+## 03/20/2025
+- [ ] Fix the signatures to support the new shape

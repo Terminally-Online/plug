@@ -2,7 +2,10 @@ package actions
 
 import (
 	"solver/bindings/erc_20"
+	"solver/bindings/plug_evm"
 	"solver/internal/actions"
+	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -10,8 +13,13 @@ import (
 )
 
 type BalanceRequest struct {
-	Token  string         `json:"token"`
-	Holder common.Address `json:"holder"`
+	Token  string                                         `json:"token"`
+	Holder coil.CoilInput[common.Address, common.Address] `json:"holder"`
+}
+
+var NativeBalanceFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     plug_evm.PlugEvmMetaData,
+	FunctionName: "balanceOf",
 }
 
 var BalanceFunc = actions.ActionOnchainFunctionResponse{
@@ -25,13 +33,35 @@ func Balance(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug, er
 		return nil, err
 	}
 
-	balanceCalldata, err := BalanceFunc.GetCalldata(lookup.Inputs.Holder)
+	var updates []coil.Update
+	holder, updates, err := lookup.Inputs.Holder.GetAndUpdate(
+		lookup.Inputs.Holder.GetValueWithError, &BalanceFunc, "_owner", updates,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if *token == utils.NativeTokenAddress {
+		balanceCalldata, err := NativeBalanceFunc.GetCalldata(holder)
+		if err != nil {
+			return nil, err
+		}
+
+		return []signature.Plug{{
+			To:      common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["evm"]),
+			Data:    balanceCalldata,
+			Updates: updates,
+		}}, nil
+	}
+
+	balanceCalldata, err := BalanceFunc.GetCalldata(holder)
 	if err != nil {
 		return nil, err
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: balanceCalldata,
+		To:      *token,
+		Data:    balanceCalldata,
+		Updates: updates,
 	}}, nil
 }
