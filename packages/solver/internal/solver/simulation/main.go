@@ -195,14 +195,17 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	}
 
 	run := &models.Run{
-		LivePlugsId: *livePlugsId,
-		From:        tx.From.Hex(),
-		To:          tx.To.Hex(),
-		Value:       tx.Value,
-		Status:      status,
+		From:   tx.From.Hex(),
+		To:     tx.To.Hex(),
+		Value:  tx.Value,
+		Status: status,
 		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},
+	}
+
+	if livePlugsId != nil {
+		run.LivePlugsId = *livePlugsId
 	}
 
 	if trace.GasUsed != "" {
