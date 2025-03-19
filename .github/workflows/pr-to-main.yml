@@ -1,7 +1,6 @@
 name: PR from Staging to Main
 
 on:
-  # Run on push to staging branch
   push:
     branches:
       - staging
@@ -18,21 +17,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Git
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Check if staging is ahead of main
         id: check-branches
         run: |
           # Fetch all branches
-          git fetch origin
-
+          git fetch origin main
+          
           # Check if staging is ahead of main (has changes not in main)
-          if [ $(git rev-list --count origin/main..origin/staging) -gt 0 ]; then
+          COMMITS_AHEAD=$(git rev-list --count origin/main..HEAD)
+          echo "Commits ahead of main: $COMMITS_AHEAD"
+          if [ $COMMITS_AHEAD -gt 0 ]; then
             echo "Staging is ahead of main, PR creation needed"
             echo "needs_pr=true" >> $GITHUB_OUTPUT
           else
@@ -40,17 +35,33 @@ jobs:
             echo "needs_pr=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Pull Request
+      - name: Check for existing PR
         if: steps.check-branches.outputs.needs_pr == 'true'
-        uses: peter-evans/create-pull-request@v5
+        id: check_pr
+        uses: actions/github-script@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Merge staging into main"
-          title: "Sync: Merge staging into main"
-          body: |
-            This PR was automatically created to merge changes from staging into main.
-            
-            These changes have already been deployed to staging and are ready for production.
-          branch: staging
-          base: main
-          draft: false 
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: 'staging',
+              base: 'main'
+            });
+            return { exists: pulls.length > 0, number: pulls.length > 0 ? pulls[0].number : null };
+
+      - name: Create PR
+        if: steps.check-branches.outputs.needs_pr == 'true' && steps.check_pr.outputs.result.exists == 'false'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Sync: Merge staging into main',
+              body: 'This PR was automatically created to merge changes from staging into main.\n\nThese changes have already been deployed to staging and are ready for production.',
+              head: 'staging',
+              base: 'main'
+            });
+            console.log(`PR created: ${pr.html_url}`);
