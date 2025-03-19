@@ -1,0 +1,56 @@
+name: PR from Staging to Main
+
+on:
+  # Run on push to staging branch
+  push:
+    branches:
+      - staging
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-and-create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Check if staging is ahead of main
+        id: check-branches
+        run: |
+          # Fetch all branches
+          git fetch origin
+
+          # Check if staging is ahead of main (has changes not in main)
+          if [ $(git rev-list --count origin/main..origin/staging) -gt 0 ]; then
+            echo "Staging is ahead of main, PR creation needed"
+            echo "needs_pr=true" >> $GITHUB_OUTPUT
+          else
+            echo "Staging is not ahead of main, no PR needed"
+            echo "needs_pr=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check-branches.outputs.needs_pr == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Merge staging into main"
+          title: "Sync: Merge staging into main"
+          body: |
+            This PR was automatically created to merge changes from staging into main.
+            
+            These changes have already been deployed to staging and are ready for production.
+          branch: staging
+          base: main
+          draft: false 
