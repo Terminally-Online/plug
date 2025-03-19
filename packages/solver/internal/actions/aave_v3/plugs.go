@@ -195,7 +195,7 @@ func Withdraw(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signature.Pl
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave"]["pool"]),
+		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
 		Data: calldata,
 	}}, nil
 }

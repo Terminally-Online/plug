@@ -39,7 +39,7 @@ type MinimalPlug struct {
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
 	// Selector determines call type: 0x00 for standard call, 0x01 for delegatecall
-	Selector uint8          `json:"selector"`
+	Selector uint8          `json:"selector" gorm:"default:0x00"`
 	To       common.Address `json:"to"`
 	Data     []byte         `json:"data"`
 	Value    *big.Int       `json:"value"`

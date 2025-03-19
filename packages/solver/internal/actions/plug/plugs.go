@@ -69,8 +69,9 @@ func HandleTransfer(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signat
 		)
 
 		return []signature.Plug{{
-			To:    inputs.Recipient,
-			Value: transaction.Value(),
+			Selector: signature.SELECTOR_CALL_WITH_VALUE,
+			To:       inputs.Recipient,
+			Value:    transaction.Value(),
 		}}, nil
 	}
 
@@ -140,9 +141,10 @@ func handleWrap(_ *actions.SchemaLookup, inputs SwapInputs, wethAddress string) 
 			return nil, utils.ErrTransaction(err.Error())
 		}
 		tx = signature.Plug{
-			To:    common.HexToAddress(wethAddress),
-			Data:  calldata,
-			Value: amountOut,
+			Selector: signature.SELECTOR_CALL_WITH_VALUE,
+			To:       common.HexToAddress(wethAddress),
+			Data:     calldata,
+			Value:    amountOut,
 		}
 	} else {
 		calldata, err := wethAbi.Pack("withdraw", amountOut)
@@ -173,9 +175,10 @@ func handleWrap(_ *actions.SchemaLookup, inputs SwapInputs, wethAddress string) 
 	}
 
 	return []signature.Plug{{
-		To:    tx.To,
-		Data:  tx.Data,
-		Value: tx.Value,
+		Selector: tx.Selector,
+		To:       tx.To,
+		Data:     tx.Data,
+		Value:    tx.Value,
 		Meta: BebopTransactionMeta{
 			Expiry:      0,
 			Slippage:    0.0,
@@ -247,9 +250,10 @@ func handleSwap(lookup *actions.SchemaLookup, inputs SwapInputs) ([]signature.Pl
 	}
 
 	transactions := []signature.Plug{{
-		To:    common.HexToAddress(quoteResponse.Tx.To),
-		Data:  common.FromHex(quoteResponse.Tx.Data),
-		Value: value,
+		Selector: signature.SELECTOR_CALL_WITH_VALUE,
+		To:       common.HexToAddress(quoteResponse.Tx.To),
+		Data:     common.FromHex(quoteResponse.Tx.Data),
+		Value:    value,
 		Meta: BebopTransactionMeta{
 			Expiry:             quoteResponse.Expiry,
 			Slippage:           quoteResponse.Slippage,
