@@ -48,8 +48,8 @@ jobs:
                   continue
                 fi
                 
-                # Extract the action reference
-                action_ref=$(echo "$line" | sed 's/.*uses: \(.*\)/\1/' | xargs)
+                # Extract the action reference - handle quotes safely
+                action_ref=$(echo "$line" | sed -E 's/.*uses:[[:space:]]*([^[:space:]#]+).*/\1/' | tr -d "'\"")
                 
                 # Skip local actions
                 if [[ "$action_ref" == "./"* ]] || [[ "$action_ref" == ".github/"* ]]; then
