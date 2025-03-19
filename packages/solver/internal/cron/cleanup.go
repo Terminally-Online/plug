@@ -28,22 +28,24 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 	deletedCount := 0
 	for _, intent := range intents {
 		err := db.Transaction(func(tx *gorm.DB) error {
-			// First find all LivePlugs associated with this intent
+			// First, delete ALL runs associated with this intent
+			// This ensures no runs will reference any live_plugs we try to delete later
+			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
+				return err
+			}
+
+			// Then, delete all runs that might be associated with any live_plugs from this intent
+			// (even if they don't have the intent_id set directly)
 			var livePlugs []signature.LivePlugs
 			if err := tx.Where("intent_id = ?", intent.Id).Find(&livePlugs).Error; err != nil {
 				return err
 			}
 
-			// For each LivePlugs, first delete any Runs that reference it
 			for _, livePlug := range livePlugs {
+				// Double-check that all runs with this live_plugs_id are deleted
 				if err := tx.Where("live_plugs_id = ?", livePlug.Id).Delete(&models.Run{}).Error; err != nil {
 					return err
 				}
-			}
-
-			// Then delete any remaining Runs associated with the intent
-			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
-				return err
 			}
 
 			// Now it's safe to delete the LivePlugs
