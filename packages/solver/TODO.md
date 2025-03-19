@@ -23,15 +23,15 @@
 
 - [x] Figure out why the readme of core does not include Plug.EVM.sol
 - [x] Fix the release action so that I do not have to keep doing manual releases
-- [ ] Update plugs to be defined with the type of call to be made
-   - [ ] When one is not explicitly set we should default solve for
+- [-] Update plugs to be defined with the type of call to be made
+   - [-] When one is not explicitly set we should default solve for
       call or call with value.
-- [?] Build the proper coils for the onchain transaction
-- [?] Append the coil definitions to a submit intent
+- [x] Build the proper coils for the onchain transaction
+- [x] Append the coil definitions to a submit intent
    NOTES: This may already be done because I skipped to focusing on getting plugs e2e instead of 
           focusing on the other things I wanted to take care of right now.
+- [x] Clear any linked inputs if the parent output is removed -- Automatic reconnection here would be nice
 - [ ] Refactor the actions directory into protocols
-- [ ] Clear any linked inputs if the parent output is removed -- Automatic reconnection here would be nice
 
 ## 03/20/2025
 
