@@ -23,44 +23,65 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       
-      - name: Set up Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5
-        with:
-          python-version: '3.10'
-      
       - name: Check for unpinned GitHub Actions
         id: audit
         run: |
           echo "Scanning workflow files for unpinned GitHub Actions..."
           
-          # Create output file for unpinned actions
-          echo "UNPINNED_ACTIONS<<EOF" >> $GITHUB_ENV
+          # Create a temporary file to hold results
+          TEMP_FILE=$(mktemp)
+          FOUND_UNPINNED=false
           
-          find .github/workflows -name "*.yml" -o -name "*.yaml" | while read file; do
+          # Find all workflow files
+          find .github/workflows \( -name "*.yml" -o -name "*.yaml" \) | while read -r file; do
             echo "Checking $file"
             
-            # Look for 'uses:' lines that don't have a commit hash
-            unpinned=$(grep -n "uses:" "$file" | grep -v -E '@[0-9a-f]{40}' | grep -v "# No pin needed")
-            
-            if [ ! -z "$unpinned" ]; then
-              echo "⚠️ Found unpinned actions in $file:" >> $GITHUB_ENV
-              echo "$unpinned" | while read -r line; do
-                line_number=$(echo "$line" | cut -d ':' -f 1)
-                action_ref=$(echo "$line" | sed 's/.*uses: \(.*\)/\1/')
-                echo "  - Line $line_number: $action_ref" >> $GITHUB_ENV
-              done
-              echo "" >> $GITHUB_ENV
-            fi
+            # Process the file line by line to properly handle multiline expressions
+            line_number=0
+            while IFS= read -r line; do
+              line_number=$((line_number + 1))
+              
+              # Check if line contains a 'uses:' directive
+              if echo "$line" | grep -q "uses:"; then
+                # Skip if it has a SHA hash or is explicitly marked as not needing a pin
+                if echo "$line" | grep -q -E '@[0-9a-f]{40}' || echo "$line" | grep -q "# No pin needed"; then
+                  continue
+                fi
+                
+                # Extract the action reference
+                action_ref=$(echo "$line" | sed 's/.*uses: \(.*\)/\1/' | xargs)
+                
+                # Skip local actions
+                if [[ "$action_ref" == "./"* ]] || [[ "$action_ref" == ".github/"* ]]; then
+                  continue
+                fi
+                
+                # Record the unpinned action
+                echo "⚠️ Found unpinned action in $file:" >> $TEMP_FILE
+                echo "  - Line $line_number: $action_ref" >> $TEMP_FILE
+                echo "" >> $TEMP_FILE
+                FOUND_UNPINNED=true
+              fi
+            done < "$file"
           done
           
-          echo "EOF" >> $GITHUB_ENV
-          
-          # Set output variable to indicate if any unpinned actions were found
-          if grep -q "Found unpinned actions" <<< "$UNPINNED_ACTIONS"; then
+          # Set the environment variable for the next step
+          if [ "$FOUND_UNPINNED" = true ]; then
+            echo "UNPINNED_ACTIONS<<EOF" >> $GITHUB_ENV
+            cat $TEMP_FILE >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
             echo "has_unpinned=true" >> $GITHUB_OUTPUT
+            
+            echo "Unpinned actions found:"
+            cat $TEMP_FILE
           else
+            echo "UNPINNED_ACTIONS=No unpinned actions found." >> $GITHUB_ENV
             echo "has_unpinned=false" >> $GITHUB_OUTPUT
+            echo "✅ All GitHub Actions are properly pinned."
           fi
+          
+          # Clean up
+          rm $TEMP_FILE
       
       - name: Create Issue for Unpinned Actions
         if: steps.audit.outputs.has_unpinned == 'true'
@@ -113,7 +134,7 @@ jobs:
                 repo: context.repo.repo,
                 title: '🔒 Security: Unpinned GitHub Actions detected',
                 body: body,
-                labels: ['security', 'unpinned-actions']
+                labels: ['critical', 'github_actions', 'devops']
               });
               console.log('Created new issue for unpinned actions');
             } else {
