@@ -24,51 +24,60 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 		return nil
 	}
 
-	// For each intent, delete its related records and then the intent itself
-	deletedCount := 0
-	for _, intent := range intents {
-		err := db.Transaction(func(tx *gorm.DB) error {
-			// First, delete ALL runs associated with this intent
-			// This ensures no runs will reference any live_plugs we try to delete later
-			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
-				return err
-			}
-
-			// Then, delete all runs that might be associated with any live_plugs from this intent
-			// (even if they don't have the intent_id set directly)
-			var livePlugs []signature.LivePlugs
-			if err := tx.Where("intent_id = ?", intent.Id).Find(&livePlugs).Error; err != nil {
-				return err
-			}
-
-			for _, livePlug := range livePlugs {
-				// Double-check that all runs with this live_plugs_id are deleted
-				if err := tx.Where("live_plugs_id = ?", livePlug.Id).Delete(&models.Run{}).Error; err != nil {
-					return err
-				}
-			}
-
-			// Now it's safe to delete the LivePlugs
-			if err := tx.Where("intent_id = ?", intent.Id).Delete(&signature.LivePlugs{}).Error; err != nil {
-				return err
-			}
-
-			// Finally, delete the Intent
-			if err := tx.Delete(&intent).Error; err != nil {
-				return err
-			}
-			log.Printf("Successfully deleted intent %s", intent.Id)
-
-			return nil
-		})
-
-		if err != nil {
-			log.Printf("Error cleaning up intent %s: %v", intent.Id, err)
-			continue
-		}
-		deletedCount++
+	intentIds := make([]string, len(intents))
+	for i, intent := range intents {
+		intentIds[i] = intent.Id
 	}
 
+	// Process all intents in a single transaction
+	err := db.Transaction(func(tx *gorm.DB) error {
+		// First, find all LivePlugs IDs for these intents in one query
+		var livePlugsIds []string
+		if err := tx.Model(&signature.LivePlugs{}).
+			Where("intent_id IN ?", intentIds).
+			Pluck("id", &livePlugsIds).Error; err != nil {
+			return err
+		}
+
+		// Delete runs in a single operation - delete all that reference these liveplugs
+		if len(livePlugsIds) > 0 {
+			if err := tx.Unscoped().
+				Where("live_plugs_id IN ?", livePlugsIds).
+				Delete(&models.Run{}).Error; err != nil {
+				return err
+			}
+		}
+
+		// Delete all runs associated with these intents in one operation
+		if err := tx.Unscoped().
+			Where("intent_id IN ?", intentIds).
+			Delete(&models.Run{}).Error; err != nil {
+			return err
+		}
+
+		// Delete all LivePlugs for these intents in one operation
+		if err := tx.Unscoped().
+			Where("intent_id IN ?", intentIds).
+			Delete(&signature.LivePlugs{}).Error; err != nil {
+			return err
+		}
+
+		// Finally, delete the intents themselves
+		if err := tx.Unscoped().
+			Where("id IN ?", intentIds).
+			Delete(&models.Intent{}).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("Error cleaning up intents: %v", err)
+		return err
+	}
+
+	log.Printf("Cleanup complete: deleted %d unsaved intents", len(intentIds))
 	return nil
 }
 
