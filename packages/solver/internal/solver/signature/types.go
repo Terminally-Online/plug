@@ -38,8 +38,8 @@ type MinimalPlug struct {
 // Plug represents a single transaction to be executed as part of a bundle.
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
-	// Selector determines call type: 0x00 for standard call, 0x01 for delegatecall
-	Selector uint8          `json:"selector" gorm:"default:0x00"`
+	// Selector determines call type: 0 for standard call, 1 for delegatecall, 2 call with value, 3 static call
+	Selector uint8          `json:"selector"`
 	To       common.Address `json:"to"`
 	Data     []byte         `json:"data"`
 	Value    *big.Int       `json:"value"`
