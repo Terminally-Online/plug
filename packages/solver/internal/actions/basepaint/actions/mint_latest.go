@@ -34,9 +34,9 @@ func MintLatest(lookup *actions.SchemaLookup[MintLatestRequest]) ([]signature.Pl
 
 	return []signature.Plug{
 		{
-			To:    common.HexToAddress(references.Base.References["basepaint"]["referral"]),
-			Data:  mintLatestCalldata,
-			Value: value,
+			To:       common.HexToAddress(references.Base.References["basepaint"]["referral"]),
+			Data:     mintLatestCalldata,
+			Value:    value,
 		},
 	}, nil
 }
