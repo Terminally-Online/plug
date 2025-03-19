@@ -51,8 +51,8 @@ func Connect(config *Config) (*gorm.DB, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
-			SlowThreshold:             time.Second,
-			LogLevel:                  logger.Info,
+			SlowThreshold:             500 * time.Millisecond,
+			LogLevel:                  logger.Error,
 			IgnoreRecordNotFoundError: true,
 			Colorful:                  true,
 		},

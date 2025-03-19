@@ -15,17 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🛒 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ⚙️  Setup Action
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
 
       - name: 📚 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
           node-version: 18
           cache: "pnpm"
@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v 4.2.2
         name: 🫙 Setup pnpm cache
         with:
           path: ${{ env.STORE_PATH }}
@@ -44,19 +44,19 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: ✨ Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@de808b1eea699e761c404bda44ba8f21aba30b2c # v1.3.1
         with:
           version: nightly
 
       - name: 📦 Install dependencies
-        run: pnpm install
+        run: pnpm install --filter=@terminallyonline/plug-core...
 
       - name: 📦 Build Packages
-        run: pnpm build
+        run: pnpm build --filter=@terminallyonline/plug-core
 
       - name: 🚀 Create Release Pull Request or Publish
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@06245a4e0a36c064a573d4150030f5ec548e4fcc # v1.4.10
         with:
           publish: pnpm changeset publish
           commit: "chore: release package"

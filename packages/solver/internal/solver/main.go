@@ -10,7 +10,6 @@ import (
 	"solver/internal/actions/assert"
 	"solver/internal/actions/basepaint"
 	"solver/internal/actions/boolean"
-	dbactions "solver/internal/actions/database"
 	"solver/internal/actions/euler"
 	"solver/internal/actions/math"
 	"solver/internal/actions/morpho"
@@ -45,8 +44,7 @@ func New() *Solver {
 			actions.Morpho:    morpho.New(),
 			actions.Nouns:     nouns.New(),
 			actions.Plug:      plug.New(),
-			actions.Database:  dbactions.New(),
-			actions.YearnV3:   yearn_v3.New(),
+			actions.YearnV3: yearn_v3.New(),
 		},
 		IsKilled: false,
 	}
@@ -61,17 +59,19 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
 	}
 
-	handler, exists := s.Protocols[inputs.Protocol]
-	if !exists || handler.Actions[inputs.Action].Handler == nil {
-		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
+	protocol, protocolExists := s.Protocols[inputs.Protocol]
+	action, actionExists := protocol.Actions[inputs.Action]
+	if !protocolExists || !actionExists {
+		return nil, fmt.Errorf("unsupported schema lookup: %s-%s", inputs.Protocol, inputs.Action)
 	}
 
-	lookup, err := actions.NewSchemaLookup(chainId, from, nil)
+	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw)
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := handler.Actions[inputs.Action].Handler(lookup, raw)
+	handler := action.GetHandler()
+	transactions, err := handler(lookup)
 	if err != nil {
 		return nil, err
 	}
@@ -79,6 +79,8 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 	for i := range transactions {
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
+		} else {
+			transactions[i].Selector = signature.SELECTOR_CALL_WITH_VALUE
 		}
 	}
 
@@ -107,13 +109,9 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 			return nil, utils.ErrBuild(err.Error())
 		}
 
-		var exclusive bool
 		plugs, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
-		}
-		if exclusive {
-			break
 		}
 	}
 

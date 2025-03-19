@@ -16,7 +16,7 @@ contract PlugEVM {
      * @param account The address to check balance for
      * @return result The native token balance in wei
      */
-    function getBalance(address account) public view returns (uint256 result) {
+    function balanceOf(address account) public view returns (uint256 result) {
         return account.balance;
     }
 

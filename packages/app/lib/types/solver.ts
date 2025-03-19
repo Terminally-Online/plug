@@ -70,20 +70,7 @@ const SchemasResponseOptionsSetSchema: z.ZodType<Record<string, z.infer<typeof S
   ]));
 export type SchemasResponseOptionsSet = z.infer<typeof SchemasResponseOptionsSetSchema>;
 
-const SchemasResponseCoilSchema = z.object({
-  start: z.number(),
-  slice: z.object({
-    name: z.string(),
-    index: z.number(),
-    start: z.number(),
-    length: z.number(),
-    type: z.string(),
-    typeId: z.number()
-  })
-});
-export type SchemasResponseCoil = z.infer<typeof SchemasResponseCoilSchema>;
-
-const SchemasResponseCoilsSchema = z.array(SchemasResponseCoilSchema);
+const SchemasResponseCoilsSchema = z.record(z.string(), z.string());
 export type SchemasResponseCoils = z.infer<typeof SchemasResponseCoilsSchema>;
 
 const SchemasResponseSchemaSchema = z.object({
@@ -191,7 +178,6 @@ export const Schemas = {
     Option: SchemasResponseOptionSchema,
     Options: SchemasResponseOptionsSchema,
     OptionsSet: SchemasResponseOptionsSetSchema,
-    Coil: SchemasResponseCoilSchema,
     Coils: SchemasResponseCoilsSchema,
     Schema: SchemasResponseSchemaSchema,
     Response: SchemasResponseSchema,

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
@@ -29,9 +30,9 @@ type SearchQueryParam struct {
 }
 type SchemaQueryParams struct {
 	ChainId  uint64             `schema:"chainId" query:"chainId" description:"Chain ID to filter schemas by"`
-	From     string             `schema:"from" query:"from" description:"Wallet address to generate schemas for"`
 	Protocol string             `schema:"protocol" query:"protocol" description:"Protocol name to filter schemas by"`
 	Action   string             `schema:"action" query:"action" description:"Action name to filter schemas by"`
+	From     common.Address     `schema:"from" query:"from" description:"Wallet address to generate schemas for"`
 	Search   []SearchQueryParam `schema:"search" query:"search" description:"Search parameters to filter schemas by"`
 }
 
@@ -56,10 +57,20 @@ func GetContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func GetAllSchemas(s *solver.Solver) (map[string]actions.ProtocolSchema, error) {
+func GetAllSchemas(s *solver.Solver, chainId uint64) (map[string]actions.ProtocolSchema, error) {
 	all := make(map[string]actions.ProtocolSchema)
 	for protocol, handler := range s.Protocols {
-		// TODO: Only show matching chain ids. I removed this when refactoring.
+		var supportsChain bool
+		for _, chain := range handler.Chains {
+			if slices.Contains(chain.ChainIds, chainId) {
+				supportsChain = true
+				break
+			}
+		}
+		if !supportsChain {
+			continue
+		}
+
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.Icon,
@@ -90,7 +101,7 @@ func GetAllSchemas(s *solver.Solver) (map[string]actions.ProtocolSchema, error) 
 	return all, nil
 }
 
-func GetProtocolSchema(handler *actions.Protocol, protocol string) (map[string]actions.ProtocolSchema, error) {
+func GetProtocolSchema(handler *actions.Protocol, protocol string, chainId uint64) (map[string]actions.ProtocolSchema, error) {
 	protocolSchema := actions.ProtocolSchema{
 		Metadata: actions.ProtocolMetadata{
 			Icon:   handler.Icon,
@@ -118,8 +129,8 @@ func GetProtocolSchema(handler *actions.Protocol, protocol string) (map[string]a
 	return response, nil
 }
 
-func GetActionSchema(handler *actions.Protocol, protocol string, action string, chainId uint64, from string, searchParams []SearchQueryParam) (map[string]actions.ProtocolSchema, error) {
-	response, err := GetProtocolSchema(handler, protocol)
+func GetActionSchema(handler *actions.Protocol, protocol string, action string, chainId uint64, from common.Address, searchParams []SearchQueryParam) (map[string]actions.ProtocolSchema, error) {
+	response, err := GetProtocolSchema(handler, protocol, chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +140,7 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 		searchMap[param.Index] = param.Value
 	}
 
-	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), searchMap, action)
+	chainSchema, err := handler.GetSchema(chainId, from, searchMap, action)
 	if err != nil {
 		return nil, err
 	}
@@ -157,9 +168,9 @@ func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solv
 	var err error
 	switch {
 	case params.Protocol == "":
-		result, err = GetAllSchemas(s)
+		result, err = GetAllSchemas(s, params.ChainId)
 	case exists && params.Action == "":
-		result, err = GetProtocolSchema(&protocol, params.Protocol)
+		result, err = GetProtocolSchema(&protocol, params.Protocol, params.ChainId)
 	case exists && params.Action != "":
 		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
 	default:

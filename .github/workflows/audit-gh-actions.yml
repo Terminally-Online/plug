@@ -1,0 +1,165 @@
+name: Audit GitHub Actions
+
+on:
+  # Run on demand
+  workflow_dispatch:
+  # Run on pull requests that modify workflow files
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+
+jobs:
+  audit:
+    name: Audit Actions for Pin Compliance
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write  # To create issues for unpinned actions
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      
+      - name: Check for unpinned GitHub Actions
+        id: audit
+        run: |
+          echo "Scanning workflow files for unpinned GitHub Actions..."
+          
+          # Use a simpler and more direct approach
+          # Create a flag file to track if we found any unpinned actions
+          touch /tmp/found_unpinned
+          > /tmp/found_unpinned
+          
+          # Create a file to collect results
+          > /tmp/unpinned_actions.txt
+          
+          # Process each workflow file
+          for file in $(find .github/workflows -name "*.yml" -o -name "*.yaml"); do
+            echo "Checking $file"
+            
+            # Extract lines with 'uses:' directives
+            grep -n "uses:" "$file" | while read -r match; do
+              line_num=$(echo "$match" | cut -d: -f1)
+              line_content=$(echo "$match" | cut -d: -f2-)
+              
+              # Skip if line contains a SHA hash or "No pin needed"
+              if echo "$line_content" | grep -q -E '@[0-9a-f]{40}' || echo "$line_content" | grep -q "# No pin needed"; then
+                continue
+              fi
+              
+              # Extract the action reference (more robust regex)
+              # This handles various formats and quotation styles
+              action_ref=$(echo "$line_content" | grep -o -E 'uses:[ ]*['\''"]?[a-zA-Z0-9_\-\.\/]+(@[a-zA-Z0-9\.\-]+)?['\''"]?' | sed 's/uses:[ ]*//g' | sed 's/['\''"]//g')
+              
+              # Skip empty matches or local actions
+              if [ -z "$action_ref" ] || [[ "$action_ref" == "./"* ]] || [[ "$action_ref" == ".github/"* ]]; then
+                continue
+              fi
+              
+              # Debug output
+              echo "DEBUG: Found unpinned action at line $line_num: $action_ref" >&2
+              
+              # Record the unpinned action
+              echo "⚠️ Found unpinned action in $file:" >> /tmp/unpinned_actions.txt
+              echo "  - Line $line_num: $action_ref" >> /tmp/unpinned_actions.txt
+              echo "" >> /tmp/unpinned_actions.txt
+              
+              # Mark that we found an unpinned action
+              echo "true" > /tmp/found_unpinned
+            done
+          done
+          
+          # Check if we found any unpinned actions
+          FOUND_UNPINNED=$(cat /tmp/found_unpinned)
+          
+          # Debug output
+          echo "DEBUG: FOUND_UNPINNED = $FOUND_UNPINNED" >&2
+          echo "DEBUG: Content of unpinned_actions.txt:" >&2
+          cat /tmp/unpinned_actions.txt >&2
+          
+          # Set outputs based on whether we found unpinned actions
+          if [ "$FOUND_UNPINNED" = "true" ]; then
+            echo "UNPINNED_ACTIONS<<EOF" >> $GITHUB_ENV
+            cat /tmp/unpinned_actions.txt >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+            echo "has_unpinned=true" >> $GITHUB_OUTPUT
+            
+            echo "Unpinned actions found:"
+            cat /tmp/unpinned_actions.txt
+          else
+            echo "UNPINNED_ACTIONS=No unpinned actions found." >> $GITHUB_ENV
+            echo "has_unpinned=false" >> $GITHUB_OUTPUT
+            echo "✅ All GitHub Actions are properly pinned."
+          fi
+      
+      - name: Create Issue for Unpinned Actions
+        if: steps.audit.outputs.has_unpinned == 'true'
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const unpinnedActions = process.env.UNPINNED_ACTIONS;
+            
+            // Check if there's an open issue about unpinned actions
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['critical', 'github_actions', 'devops']
+            });
+            
+            // Format the issue body
+            const body = `## Security Alert: Unpinned GitHub Actions
+            
+            The following GitHub Actions are not pinned to specific commit hashes in your workflows:
+            
+            ${unpinnedActions}
+            
+            ### Why is this important?
+            
+            Using version tags like \`@v3\` instead of commit SHAs makes your workflows vulnerable to supply chain attacks. If the action repository is compromised, malicious code could be executed in your CI/CD pipeline.
+            
+            ### How to fix:
+            
+            1. Find the full commit SHA for the version you're using
+            2. Replace the version tag with the commit SHA
+            3. Add a comment with the version for readability
+            
+            This issue was automatically generated by the GitHub Actions audit workflow.`;
+            
+            if (issues.length === 0) {
+              // Create a new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🔒 Security: Unpinned GitHub Actions detected',
+                body: body,
+                labels: ['critical', 'github_actions', 'devops']
+              });
+              console.log('Created new issue for unpinned actions');
+            } else {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: body
+              });
+              console.log(`Updated existing issue #${issues[0].number}`);
+            }
+      
+      - name: Report Audit Status
+        run: |
+          if [ "${{ steps.audit.outputs.has_unpinned }}" == "true" ]; then
+            echo "⚠️ WARNING: Unpinned GitHub Actions found!"
+            echo "$UNPINNED_ACTIONS"
+            echo ""
+            echo "Please pin these actions to specific commit hashes to improve security."
+            
+            # For pull requests, we might want to fail the check
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              exit 1
+            fi
+          else
+            echo "✅ All GitHub Actions are properly pinned to commit hashes. Good job!"
+          fi

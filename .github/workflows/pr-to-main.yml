@@ -1,0 +1,67 @@
+name: PR from Staging to Main
+
+on:
+  push:
+    branches:
+      - staging
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-and-create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Check if staging is ahead of main
+        id: check-branches
+        run: |
+          # Fetch all branches
+          git fetch origin main
+          
+          # Check if staging is ahead of main (has changes not in main)
+          COMMITS_AHEAD=$(git rev-list --count origin/main..HEAD)
+          echo "Commits ahead of main: $COMMITS_AHEAD"
+          if [ $COMMITS_AHEAD -gt 0 ]; then
+            echo "Staging is ahead of main, PR creation needed"
+            echo "needs_pr=true" >> $GITHUB_OUTPUT
+          else
+            echo "Staging is not ahead of main, no PR needed"
+            echo "needs_pr=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for existing PR
+        if: steps.check-branches.outputs.needs_pr == 'true'
+        id: check_pr
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        with:
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: 'staging',
+              base: 'main'
+            });
+            return { exists: pulls.length > 0, number: pulls.length > 0 ? pulls[0].number : null };
+
+      - name: Create PR
+        if: steps.check-branches.outputs.needs_pr == 'true' && steps.check_pr.outputs.result.exists == 'false'
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Sync: Merge staging into main',
+              body: 'This PR was automatically created to merge changes from staging into main.\n\nThese changes have already been deployed to staging and are ready for production.',
+              head: 'staging',
+              base: 'main'
+            });
+            console.log(`PR created: ${pr.html_url}`);
