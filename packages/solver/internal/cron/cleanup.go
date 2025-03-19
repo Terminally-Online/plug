@@ -42,7 +42,7 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 			}
 
 			// Then delete any remaining Runs associated with the intent
-			if err := tx.Where("intent_id = ? AND live_plugs_id IS NULL", intent.Id).Delete(&models.Run{}).Error; err != nil {
+			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
 				return err
 			}
 
