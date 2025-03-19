@@ -34,5 +34,8 @@
 - [ ] Clear any linked inputs if the parent output is removed -- Automatic reconnection here would be nice
 
 ## 03/20/2025
+
 - [ ] Scout out the final form of data that we need and the expected shape of the signature
 - [ ] Fix the signatures to support the new shape
+- [ ] Do a proper review of the Euler integration
+   - [ ] Touch base with their team and confirm existing uncertainties

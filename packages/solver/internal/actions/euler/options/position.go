@@ -38,7 +38,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			calls[i] = client.MulticallCalldata{
 				Target: accountLensAddr,
 				Method: "getAccountEnabledVaultsInfo",
-				Args:   []interface{}{evcAddr, subAccountAddress},
+				Args:   []any{evcAddr, subAccountAddress},
 				ABI:    accountLensAbi,
 				OutputType: &struct {
 					VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
@@ -77,19 +77,14 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			consecutiveEmptyAccounts = 0
 			maxIndex = i
-
 			for _, vaultAccountInfo := range accountInfo.VaultAccountInfo {
-				if vaultAccountInfo.LiquidityInfo.QueryFailure {
-					// This is a collateral vault
-					temp := vaultsBySubaccount[i]
+				temp := vaultsBySubaccount[i]
+				if vaultAccountInfo.Borrowed.Sign() == 0 {
 					temp.collateralVaults = append(temp.collateralVaults, vaultAccountInfo)
-					vaultsBySubaccount[i] = temp
 				} else {
-					// This is a debt vault
-					temp := vaultsBySubaccount[i]
 					temp.debtVault = &vaultAccountInfo
-					vaultsBySubaccount[i] = temp
 				}
+				vaultsBySubaccount[i] = temp
 			}
 		}
 
