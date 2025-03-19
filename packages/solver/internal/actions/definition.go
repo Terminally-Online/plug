@@ -3,35 +3,14 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
-	"solver/internal/solver/coil"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
-
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
 
 type ActionFunc[T any] func(lookup *SchemaLookup[T]) ([]signature.Plug, error)
 type ActionOptionsFunc[T any] func(lookup *SchemaLookup[T]) (map[int]Options, error)
 
-type ActionOnchainFunctionResponse struct {
-	Metadata     *bind.MetaData
-	FunctionName string
-}
 
-func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, error) {
-	abi, err := r.Metadata.GetAbi()
-	if err != nil {
-		return nil, err
-	}
-
-	calldata, err := abi.Pack(r.FunctionName, inputs...)
-	if err != nil {
-		return nil, err
-	}
-
-	return calldata, nil
-}
-
-// ActionInterface is used for type assertions in Protocol
 type ActionDefinitionInterface interface {
 	GetType() string
 	GetSentence() string
@@ -117,30 +96,6 @@ func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
 		})
 	}
 }
-
-// TODO: Although we are going to want all of this data to properly build
-//       the transaction we should minify the return data to only the name
-//       and type because the solver will have the positions when the
-//       transactions is actually being built. Example:
-//       .
-//		 "coils": [
-// 		     {
-// 		         "start": 0,
-// 		         "slice": {
-// 		             "name": "balance",
-// 		             "index": 0,
-// 		             "start": 0,
-// 		             "length": 32,
-// 		             "type": "uint256",
-// 		             "typeId": 0
-// 		         }
-// 		     }
-// 		 ]
-//       .
-// 		 "coils": {
-// 		     "balance": "uint256",
-// 		 }
-//       - CHANCE
 
 func (d *ActionDefinition[T]) GetCoils() ([]coil.Update, error) {
 	if d.Response == nil || d.Response.Metadata == nil || d.Response.FunctionName == "" {

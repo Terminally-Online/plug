@@ -2,7 +2,7 @@ package actions
 
 import (
 	"solver/internal/bindings/references"
-	"solver/internal/solver/coil"
+	"solver/internal/coil"
 )
 
 type Chain struct {

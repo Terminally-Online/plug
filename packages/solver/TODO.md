@@ -2,17 +2,21 @@
 
 - [x] Get coils rendering in the app properly
 - [x] Get chain filtering functioning again
-- [ ] Make sure the app supports having multiple types defined for user
+- [x] Make sure the app supports having multiple types defined for user
    inputs and then values that will come from coils
    NOTES: For this, there are certain sentences where we need the original union 
           functionality that we already implemented. In this case though what we 
           really want is a pipe denoting the definition of a coil type instead of
-          a union that allows the user to input multiple types.
+          a union that allows the user to input multiple types
    NOTES: Need to make sure that there are no sentences that break this convention
           before implementing it because this will require an update of some kind
-          to cord due to the way we are handling validation right now.
-- [ ] Remove the value validation from inside plug handlers
+          to cord due to the way we are handling validation right now
+- [x] Confirm the data is actually in the intent being saved
 - [ ] Wrap the handlers with consumption of coils
+- [ ] Remove the value validation from inside plug handlers
+   NOTES: This was not actuallly implemented in many of the integrations except for the original
+      ones because after a couple I realized that validation was a bad pattern anyways since it
+      is all going to go to simulation anyways meaning the only other case is to hit a 400 error.
 - [ ] Refactor the actions directory into protocols
 - [ ] Balance function call for native assets
 - [ ] Append the coil definitions to a submit intent

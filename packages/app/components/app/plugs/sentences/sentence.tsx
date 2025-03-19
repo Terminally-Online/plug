@@ -117,15 +117,6 @@ export const Sentence: FC<SentenceProps> = memo(
 
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
 			setValue(index, value)
-
-			// // If we're using the new linked inputs system with parent-managed state
-			// if (handleValueChange) {
-			// 	// Convert index to string since handleValueChange expects a string
-			// 	handleValueChange(String(index), value, { isNumber, ...rest });
-			// 	return;
-			// }
-			//
-			// // Legacy approach (direct edit)
 			edit({
 				id: item,
 				actions: JSON.stringify(
@@ -145,6 +136,11 @@ export const Sentence: FC<SentenceProps> = memo(
 				)
 			})
 		}
+
+		// TODO: Need to make sure that we can properly evaluate a sentence when it is using a coil.
+		//       Right now when we select a coil value the sentence is marked as invalid even though
+		//       on refersh it is somehow now marked as valid and complete. Doesn't really make
+		//       any sense to me how they work differently, but we need to find out.
 
 		if (!column) return null
 

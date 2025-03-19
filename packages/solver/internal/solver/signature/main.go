@@ -3,7 +3,7 @@ package signature
 import (
 	"math/big"
 	"os"
-	"solver/internal/solver/coil"
+	"solver/internal/coil"
 	"solver/internal/utils"
 	"time"
 

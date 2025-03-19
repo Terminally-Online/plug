@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/euler_evc"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/coil"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
