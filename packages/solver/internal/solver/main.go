@@ -79,6 +79,8 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 	for i := range transactions {
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
+		} else {
+			transactions[i].Selector = signature.SELECTOR_CALL_WITH_VALUE
 		}
 	}
 

@@ -57,7 +57,6 @@ func HandleActionBid(lookup *actions.SchemaLookup, raw json.RawMessage) ([]signa
 	}
 
 	return []signature.Plug{{
-		Selector: signature.SELECTOR_CALL_WITH_VALUE,
 		To:       common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
 		Data:     bidCalldata,
 		Value:    new(big.Int).Mul(amount, big.NewInt(1e18)),
