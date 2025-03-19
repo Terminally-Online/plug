@@ -1,14 +1,14 @@
 package actions
 
 import (
+	"fmt"
 	"solver/internal/coil"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
 
-
 type ActionOnchainFunctionInterface interface {
-	GetUpdate(string) (*coil.Update, error)
+	GetCoilUpdate(string) (*coil.Update, error)
 }
 
 type ActionOnchainFunctionResponse struct {
@@ -31,7 +31,24 @@ func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, erro
 	return calldata, nil
 }
 
-func (r *ActionOnchainFunctionResponse) GetUpdate(param string) (*coil.Update, error) {
-	// TODO: Need to implement this for real
-	return nil, nil
+func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string) (*coil.Update, error) {
+	abi, err := r.Metadata.GetAbi()
+	if err != nil {
+		return nil, err
+	}
+
+	slices, err := coil.GetCoilSlices(abi, r.FunctionName, nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
+	position, err := coil.GetCoilPosition(abi, r.FunctionName, &param, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
+	return &coil.Update{
+		Start: position,
+		Slice: slices[0],
+	}, nil
 }

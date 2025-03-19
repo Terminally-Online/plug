@@ -19,7 +19,7 @@ func GetTypeInfo(typ abi.Type) TypeInfo {
 	case abi.StringTy, abi.BytesTy:
 		return TypeInfo{WordSize, TypeIDString}
 	case abi.TupleTy:
-		if hasDynamicFields(typ) {
+		if HasDynamicFields(typ) {
 			return TypeInfo{WordSize, TypeIDStruct}
 		}
 

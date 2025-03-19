@@ -46,18 +46,17 @@ func (c *CoilInput[T, R]) Get(valueFunc func() (R, error)) (R, error) {
 
 type ValueFunc[R any] func() (R, error)
 
-type FunctionResponseInterface interface { 
-    GetUpdate(string) (*Update, error) 
+type FunctionResponseInterface interface {
+	GetCoilUpdate(string) (*Update, error)
 }
 
 func (c *CoilInput[T, R]) GetAndUpdate(valueFunc ValueFunc[R], coilFunc FunctionResponseInterface, param string, updates []Update) (R, []Update, error) {
 	response, err := valueFunc()
 	if err != nil {
 		return response, nil, err
-
 	}
 
-	if update, err := coilFunc.GetUpdate(param); update != nil {
+	if update, err := coilFunc.GetCoilUpdate(param); update != nil {
 		updates = append(updates, *update)
 		return response, updates, err
 	} else if err != nil {

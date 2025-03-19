@@ -97,7 +97,7 @@ func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
 	}
 }
 
-func (d *ActionDefinition[T]) GetCoils() ([]coil.Update, error) {
+func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 	if d.Response == nil || d.Response.Metadata == nil || d.Response.FunctionName == "" {
 		return nil, nil
 	}
@@ -107,24 +107,24 @@ func (d *ActionDefinition[T]) GetCoils() ([]coil.Update, error) {
 		return nil, fmt.Errorf("failed to get ABI: %w", err)
 	}
 
-	coils, err := coil.FindCoils(abi, d.Response.FunctionName, nil, nil)
+	slices, err := coil.GetCoilSlices(abi, d.Response.FunctionName, nil, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find coils: %w", err)
 	}
 
-	return coils, nil
+	return slices, nil
 }
 
 func (d *ActionDefinition[T]) GetCoilKeys() (map[string]string, error) {
-	coils, err := d.GetCoils()
+	slices, err := d.GetCoilSlices()
 	if err != nil {
 		return nil, err
 	}
 
 	coilKeys := make(map[string]string)
-	for _, coil := range coils {
-		name := *coil.Slice.Name
-		coilKeys[name] = coil.Slice.Type
+	for _, slice := range slices {
+		name := *slice.Name
+		coilKeys[name] = slice.Type
 	}
 
 	return coilKeys, nil
