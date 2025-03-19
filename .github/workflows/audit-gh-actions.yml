@@ -28,60 +28,72 @@ jobs:
         run: |
           echo "Scanning workflow files for unpinned GitHub Actions..."
           
-          # Create a temporary file to hold results
-          TEMP_FILE=$(mktemp)
-          FOUND_UNPINNED=false
+          # Use a simpler and more direct approach
+          # Create a flag file to track if we found any unpinned actions
+          touch /tmp/found_unpinned
+          > /tmp/found_unpinned
           
-          # Find all workflow files
-          find .github/workflows \( -name "*.yml" -o -name "*.yaml" \) | while read -r file; do
+          # Create a file to collect results
+          > /tmp/unpinned_actions.txt
+          
+          # Process each workflow file
+          for file in $(find .github/workflows -name "*.yml" -o -name "*.yaml"); do
             echo "Checking $file"
             
-            # Process the file line by line to properly handle multiline expressions
-            line_number=0
-            while IFS= read -r line; do
-              line_number=$((line_number + 1))
+            # Extract lines with 'uses:' directives
+            grep -n "uses:" "$file" | while read -r match; do
+              line_num=$(echo "$match" | cut -d: -f1)
+              line_content=$(echo "$match" | cut -d: -f2-)
               
-              # Check if line contains a 'uses:' directive
-              if echo "$line" | grep -q "uses:"; then
-                # Skip if it has a SHA hash or is explicitly marked as not needing a pin
-                if echo "$line" | grep -q -E '@[0-9a-f]{40}' || echo "$line" | grep -q "# No pin needed"; then
-                  continue
-                fi
-                
-                # Extract the action reference - handle quotes safely
-                action_ref=$(echo "$line" | sed -E 's/.*uses:[[:space:]]*([^[:space:]#]+).*/\1/' | tr -d "'\"")
-                
-                # Skip local actions
-                if [[ "$action_ref" == "./"* ]] || [[ "$action_ref" == ".github/"* ]]; then
-                  continue
-                fi
-                
-                # Record the unpinned action
-                echo "⚠️ Found unpinned action in $file:" >> $TEMP_FILE
-                echo "  - Line $line_number: $action_ref" >> $TEMP_FILE
-                echo "" >> $TEMP_FILE
-                FOUND_UNPINNED=true
+              # Skip if line contains a SHA hash or "No pin needed"
+              if echo "$line_content" | grep -q -E '@[0-9a-f]{40}' || echo "$line_content" | grep -q "# No pin needed"; then
+                continue
               fi
-            done < "$file"
+              
+              # Extract the action reference (more robust regex)
+              # This handles various formats and quotation styles
+              action_ref=$(echo "$line_content" | grep -o -E 'uses:[ ]*['\''"]?[a-zA-Z0-9_\-\.\/]+(@[a-zA-Z0-9\.\-]+)?['\''"]?' | sed 's/uses:[ ]*//g' | sed 's/['\''"]//g')
+              
+              # Skip empty matches or local actions
+              if [ -z "$action_ref" ] || [[ "$action_ref" == "./"* ]] || [[ "$action_ref" == ".github/"* ]]; then
+                continue
+              fi
+              
+              # Debug output
+              echo "DEBUG: Found unpinned action at line $line_num: $action_ref" >&2
+              
+              # Record the unpinned action
+              echo "⚠️ Found unpinned action in $file:" >> /tmp/unpinned_actions.txt
+              echo "  - Line $line_num: $action_ref" >> /tmp/unpinned_actions.txt
+              echo "" >> /tmp/unpinned_actions.txt
+              
+              # Mark that we found an unpinned action
+              echo "true" > /tmp/found_unpinned
+            done
           done
           
-          # Set the environment variable for the next step
-          if [ "$FOUND_UNPINNED" = true ]; then
+          # Check if we found any unpinned actions
+          FOUND_UNPINNED=$(cat /tmp/found_unpinned)
+          
+          # Debug output
+          echo "DEBUG: FOUND_UNPINNED = $FOUND_UNPINNED" >&2
+          echo "DEBUG: Content of unpinned_actions.txt:" >&2
+          cat /tmp/unpinned_actions.txt >&2
+          
+          # Set outputs based on whether we found unpinned actions
+          if [ "$FOUND_UNPINNED" = "true" ]; then
             echo "UNPINNED_ACTIONS<<EOF" >> $GITHUB_ENV
-            cat $TEMP_FILE >> $GITHUB_ENV
+            cat /tmp/unpinned_actions.txt >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
             echo "has_unpinned=true" >> $GITHUB_OUTPUT
             
             echo "Unpinned actions found:"
-            cat $TEMP_FILE
+            cat /tmp/unpinned_actions.txt
           else
             echo "UNPINNED_ACTIONS=No unpinned actions found." >> $GITHUB_ENV
             echo "has_unpinned=false" >> $GITHUB_OUTPUT
             echo "✅ All GitHub Actions are properly pinned."
           fi
-          
-          # Clean up
-          rm $TEMP_FILE
       
       - name: Create Issue for Unpinned Actions
         if: steps.audit.outputs.has_unpinned == 'true'
