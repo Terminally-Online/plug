@@ -93,10 +93,6 @@ func GetPrices(queries []string) (map[string]LlamaPriceData, error) {
 
 // calculateTWAP calculates the time-weighted average price for the given duration in hours
 func calculateTWAP(prices []LlamaPricePoint, durationMinutes int) float64 {
-	if len(prices) == 0 {
-		return 0
-	}
-
 	// Get the current timestamp (last price point)
 	currentTime := prices[len(prices)-1].Timestamp
 
