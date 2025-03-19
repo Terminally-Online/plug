@@ -22,8 +22,7 @@
 ## 03/19/2025
 
 - [x] Figure out why the readme of core does not include Plug.EVM.sol
-- [ ] Fix the release action so that I do not have to keep doing manual releases
-- [ ] Release the latest version of core
+- [x] Fix the release action so that I do not have to keep doing manual releases
 - [ ] Update plugs to be defined with the type of call to be made
    - [ ] When one is not explicitly set we should default solve for
       call or call with value.
