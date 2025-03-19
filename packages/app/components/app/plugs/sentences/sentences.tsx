@@ -146,6 +146,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 								key={String(action.id)}
 								draggableId={String(action.id)}
 								index={actionIndex}
+								isDragDisabled={column?.frame !== undefined}
 							>
 								{(provided, snapshot) => (
 									<div
