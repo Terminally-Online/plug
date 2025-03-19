@@ -34,6 +34,7 @@ var (
 		"boolean":  "0x00000000410986831F18E06d908bE25e5Fb949A0",
 		"database": "0x0000000006d777c8390a5E84Ecb88A6556A1d3B5",
 		"math":     "0x000000000c0352950e3aa28973824f4d01ccec4f",
+		"evm":      "0x000000005DAf9C20a195d6f895c96A226e52Ed98",
 	}
 
 	Mainnet = &Network{

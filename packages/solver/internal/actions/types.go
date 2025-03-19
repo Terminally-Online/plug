@@ -19,28 +19,40 @@ const (
 	Scripting string = "scripting"
 	YearnV3   string = "yearn_v3"
 
-	ActionDeposit      string = "deposit"
-	ActionBorrow       string = "borrow"
-	ActionRedeem       string = "redeem"
-	ActionWithdraw     string = "withdraw"
-	ActionRepay        string = "repay"
-	ActionHarvest      string = "harvest"
-	ActionTransfer     string = "transfer"
-	ActionTransferFrom string = "transfer_from"
-	ActionApprove      string = "approve"
-	ActionSwap         string = "swap"
-	ActionRoute        string = "route"
-	ActionStake        string = "stake"
-	ActionBuy          string = "buy"
-	ActionBid          string = "bid"
-	ActionRenew        string = "renew"
-	ActionMint         string = "mint"
+	ActionEarn               string = "earn"
+	ActionDeposit            string = "deposit"
+	ActionDepositCollateral  string = "deposit_collateral"
+	ActionBorrow             string = "borrow"
+	ActionRedeem             string = "redeem"
+	ActionWithdraw           string = "withdraw"
+	ActionWithdrawCollateral string = "withdraw_collateral"
+	ActionRepay              string = "repay"
+	ActionHarvest            string = "harvest"
+	ActionTransfer           string = "transfer"
+	ActionTransferFrom       string = "transfer_from"
+	ActionApprove            string = "approve"
+	ActionSwap               string = "swap"
+	ActionRoute              string = "route"
+	ActionStake              string = "stake"
+	ActionBuy                string = "buy"
+	ActionBid                string = "bid"
+	ActionRenew              string = "renew"
+	ActionMint               string = "mint"
 
-	ConstraintHealthFactor       string = "health_factor"
-	ConstraintAPY                string = "apy"
-	ConstraintAPYDifferential    string = "apy_differential"
-	ConstraintAvailableLiquidity string = "available_liquidity"
-	ConstraintTimeLeft           string = "time_left"
-	ConstraintPrice              string = "price"
-	ConstraintBalance            string = "balance"
+	ReadBalance            string = "balance"
+	ReadPrice              string = "price"
+	ReadAPY                string = "apy"
+	ReadHealthFactor       string = "health_factor"
+	ReadTimeToLiquidiation string = "time_to_liquidation"
+	ReadCurrentAuction     string = "current_auction"
+	ReadHasTrait           string = "has_trait"
+
+	IsGlobal  = false
+	IsUser    = true
+	IsStatic  = false
+	IsDynamic = true
+)
+
+var (
+	IsEmptyOnchainFunc *ActionOnchainFunctionResponse = nil
 )

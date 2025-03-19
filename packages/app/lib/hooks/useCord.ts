@@ -92,14 +92,14 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 
 	const actions = {
 		setValue: useCallback(
-			(index: number, value: string) => {
+			(index: number, value: string | undefined) => {
 				if (!parsed) return
 
 				const result = setValue({
 					parsedSentence: parsed,
 					currentValues: state.values,
 					index,
-					value
+					value: value ?? ""
 				})
 
 				const dependentInputs = parsed.inputs.filter(input => input.dependentOn === index)

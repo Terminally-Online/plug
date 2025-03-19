@@ -49,10 +49,10 @@ jobs:
           version: nightly
 
       - name: 📦 Install dependencies
-        run: pnpm install
+        run: pnpm install --filter=@terminallyonline/plug-core...
 
       - name: 📦 Build Packages
-        run: pnpm build
+        run: pnpm build --filter=@terminallyonline/plug-core
 
       - name: 🚀 Create Release Pull Request or Publish
         id: changesets

@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/coil"
+	"solver/internal/coil"
 	"solver/internal/utils"
 	"time"
 

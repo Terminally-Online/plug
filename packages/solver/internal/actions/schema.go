@@ -2,7 +2,7 @@ package actions
 
 import (
 	"solver/internal/bindings/references"
-	"solver/internal/solver/coil"
+	"solver/internal/coil"
 )
 
 type Chain struct {
@@ -30,9 +30,9 @@ type ChainSchema struct {
 }
 
 type Schema struct {
-	Type           string          `default:"action" json:"type"`
-	Sentence       string          `json:"sentence"`
-	Options        map[int]Options `json:"options,omitempty"`
-	Coils          []coil.Update   `json:"coils,omitempty"`
-	IsUserSpecific bool            `json:"-"`
+	Type           string            `default:"action" json:"type"`
+	Sentence       string            `json:"sentence"`
+	Options        map[int]Options   `json:"options,omitempty"`
+	Coils          map[string]string `json:"coils,omitempty"`
+	IsUserSpecific bool              `json:"-"`
 }
