@@ -1,4 +1,4 @@
-import { SentenceService, ParsedSentence } from '../services/sentence';
+import { SentenceService, ParsedSentence, SentenceInput } from '../services/sentence';
 import { CoilService } from '../services/coil';
 
 // Core types
@@ -240,14 +240,11 @@ export class RopeStateManager {
     });
   }
   
-  // Set a value for an input in a specific knot
+  // Set a value for an input in a specific knot with incremental updates
   setValue(knotId: KnotId, inputIndex: number, value: string | undefined): void {
     this.setState(state => {
       const knot = state.knots[knotId];
       if (!knot || !knot.parsed) return state;
-      
-      // Create updated knot
-      const knots = { ...state.knots };
       
       // Update the value
       const result = this.sentenceService.setValue(
@@ -257,38 +254,239 @@ export class RopeStateManager {
         value ?? ''
       );
       
-      // Process the updated knot
-      const updatedKnot = {
-        ...knot,
-        values: result.values
-      };
+      // Handle validation failures
+      if (!result.success) {
+        return {
+          ...state,
+          lastUpdated: knotId,
+          error: {
+            type: 'validation',
+            message: result.error || 'Validation error'
+          }
+        };
+      }
       
-      // Apply the initial update
-      knots[knotId] = updatedKnot;
-      
-      // Recalculate coils
-      const allCoils = this.calculateCoils(knots, state.knotIds);
-      
-      // Reprocess all knots with the updated coils
-      const processedKnots = this.processAllKnots(knots, state.knotIds, allCoils);
-      
-      // Recalculate overall state
-      const isComplete = Object.values(processedKnots).every(k => k.isComplete);
-      const isValid = Object.values(processedKnots).every(k => k.isValid);
-      
-      return {
-        ...state,
-        knots: processedKnots,
-        allCoils,
-        isComplete,
-        isValid,
-        lastUpdated: knotId,
-        error: null
-      };
+      // Create a selective update strategy
+      return this.performIncrementalUpdate({
+        state,
+        updatedKnotId: knotId,
+        knotUpdater: (knot) => ({
+          ...knot,
+          values: result.value
+        })
+      });
     });
   }
   
-  // Update a knot's sentence
+  /**
+   * Perform an incremental update on the state, optimizing recalculations
+   * @param options Update options including state, the knot to update, and a updater function
+   * @returns Updated state
+   */
+  private performIncrementalUpdate(options: {
+    state: RopeState;
+    updatedKnotId: KnotId;
+    knotUpdater: (knot: ProcessedKnot) => ProcessedKnot;
+  }): RopeState {
+    const { state, updatedKnotId, knotUpdater } = options;
+    
+    // Get the original knot and apply the update
+    const originalKnot = state.knots[updatedKnotId];
+    if (!originalKnot) return state;
+    
+    // Create shallow copy of knots for the update
+    const knots = { ...state.knots };
+    
+    // Update the initial knot with the updater function
+    const updatedKnot = knotUpdater(originalKnot);
+    knots[updatedKnotId] = updatedKnot;
+    
+    // Identify which knots need to be reprocessed
+    const affectedKnotIds = this.findAffectedKnots(state, updatedKnotId);
+    
+    // Calculate new coils - optimization: only if the knot's values have changed
+    const valuesChanged = !this.areValuesEqual(originalKnot.values, updatedKnot.values);
+    const allCoils = valuesChanged ? 
+      this.calculateCoils(knots, state.knotIds) : 
+      state.allCoils;
+    
+    // Process only the affected knots with the updated coils
+    const processedKnots = this.processSelectedKnots(
+      knots,
+      affectedKnotIds,
+      allCoils
+    );
+    
+    // Only recalculate global state flags if needed
+    let isComplete = state.isComplete;
+    let isValid = state.isValid;
+    
+    // If the affected knot's completion status changed, we need to recalculate
+    const completionStatusChanged = affectedKnotIds.some(id => {
+      const original = state.knots[id]?.isComplete;
+      const updated = processedKnots[id]?.isComplete;
+      return original !== updated;
+    });
+    
+    // If the affected knot's validity status changed, we need to recalculate
+    const validityStatusChanged = affectedKnotIds.some(id => {
+      const original = state.knots[id]?.isValid;
+      const updated = processedKnots[id]?.isValid;
+      return original !== updated;
+    });
+    
+    // Recalculate only if needed
+    if (completionStatusChanged) {
+      isComplete = Object.values(processedKnots).every(k => k.isComplete);
+    }
+    
+    if (validityStatusChanged) {
+      isValid = Object.values(processedKnots).every(k => k.isValid);
+    }
+    
+    // Return the updated state
+    return {
+      ...state,
+      knots: processedKnots,
+      allCoils,
+      isComplete,
+      isValid,
+      lastUpdated: updatedKnotId,
+      error: null
+    };
+  }
+  
+  /**
+   * Find all knots that would be affected by updates to a specific knot
+   * This includes:
+   * 1. The knot itself
+   * 2. Any knots that depend on coils this knot might provide
+   * 
+   * @param state Current state
+   * @param knotId ID of the knot being updated
+   * @returns Array of knot IDs that need reprocessing
+   */
+  private findAffectedKnots(state: RopeState, knotId: KnotId): KnotId[] {
+    const affectedKnots = new Set<KnotId>([knotId]);
+    
+    // Find the index of this knot in the linked list order
+    const knotOrder = this.getKnotsArray().map(k => k.id);
+    const knotIndex = knotOrder.indexOf(knotId);
+    
+    if (knotIndex === -1) return Array.from(affectedKnots);
+    
+    // In the worst case, all knots after this knot could be affected
+    // But we'll be smarter and only include those that use coils this knot might provide
+    
+    // Get potential coil names this knot might provide
+    const knot = state.knots[knotId];
+    if (!knot) return Array.from(affectedKnots);
+    
+    const potentialCoilPrefixes = [
+      `amount_${knot.protocol}`,
+      `token_${knot.action}`,
+      `address_${knot.id}`,
+      `knot_${knotIndex}`,
+      `knot_${knot.id}`
+    ];
+    
+    // Check all knots after this one to see if they reference any of these coils
+    for (let i = knotIndex + 1; i < knotOrder.length; i++) {
+      const laterKnotId = knotOrder[i];
+      const laterKnot = state.knots[laterKnotId];
+      
+      if (!laterKnot || !laterKnot.parsed) continue;
+      
+      // Check if this knot has any values that are coil references
+      const hasCoilDependency = this.knotHasCoilDependency(
+        laterKnot, 
+        potentialCoilPrefixes
+      );
+      
+      if (hasCoilDependency) {
+        affectedKnots.add(laterKnotId);
+      }
+    }
+    
+    return Array.from(affectedKnots);
+  }
+  
+  /**
+   * Check if a knot has any values that reference coils with given prefixes
+   * @param knot The knot to check
+   * @param coilPrefixes Array of coil name prefixes to check for
+   * @returns Whether the knot depends on any of these coil prefixes
+   */
+  private knotHasCoilDependency(knot: ProcessedKnot, coilPrefixes: string[]): boolean {
+    // Extract all values that are string-type coil references
+    for (const [_, valueObj] of knot.values) {
+      const value = valueObj.value;
+      
+      if (typeof value === 'string' && this.coilService.isCoilReference(value)) {
+        const coilRef = this.coilService.parseCoilReference(value);
+        
+        if (coilRef) {
+          // Check if this coil reference matches any of our prefixes
+          if (coilPrefixes.some(prefix => coilRef.name.startsWith(prefix))) {
+            return true;
+          }
+        }
+      }
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Process only selected knots instead of all knots
+   * @param knots All knots (some updated, some original)
+   * @param knotIds IDs of the knots to process
+   * @param coils The coils to use for processing
+   * @returns Updated knots with only the selected ones processed
+   */
+  private processSelectedKnots(
+    knots: Record<KnotId, ProcessedKnot>,
+    knotIds: KnotId[],
+    coils: Record<string, string>
+  ): Record<KnotId, ProcessedKnot> {
+    const result = { ...knots };
+    
+    // Process each of the selected knots
+    for (const knotId of knotIds) {
+      const knot = result[knotId];
+      if (!knot) continue;
+      
+      // Process this knot
+      result[knotId] = this.processExistingKnot(knot, coils);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Compare two value maps to see if they're equal
+   * @param a First value map
+   * @param b Second value map
+   * @returns Whether the maps have the same keys and values
+   */
+  private areValuesEqual(
+    a: Map<number, { value: string }>,
+    b: Map<number, { value: string }>
+  ): boolean {
+    if (a.size !== b.size) return false;
+    
+    for (const [key, valueObj] of a) {
+      const bValueObj = b.get(key);
+      
+      if (!bValueObj || bValueObj.value !== valueObj.value) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+  
+  // Update a knot's sentence with incremental updates
   updateKnotSentence(knotId: KnotId, sentence: string): void {
     this.setState(state => {
       const knot = state.knots[knotId];
@@ -303,37 +501,18 @@ export class RopeStateManager {
         // Parse the new sentence
         const parsed = this.sentenceService.parseSentence(sentence);
         
-        // Create updated knots
-        const knots = { ...state.knots };
-        
-        // Update the knot with the new sentence and parsed result
-        knots[knotId] = {
-          ...knot,
-          sentence,
-          parsed,
-          resolvedSentence: null,
-          validationErrors: new Map()
-        };
-        
-        // Recalculate coils
-        const allCoils = this.calculateCoils(knots, state.knotIds);
-        
-        // Reprocess all knots with the updated coils
-        const processedKnots = this.processAllKnots(knots, state.knotIds, allCoils);
-        
-        // Recalculate overall state
-        const isComplete = Object.values(processedKnots).every(k => k.isComplete);
-        const isValid = Object.values(processedKnots).every(k => k.isValid);
-        
-        return {
-          ...state,
-          knots: processedKnots,
-          allCoils,
-          isComplete,
-          isValid,
-          lastUpdated: knotId,
-          error: null
-        };
+        // Use our incremental update approach
+        return this.performIncrementalUpdate({
+          state,
+          updatedKnotId: knotId,
+          knotUpdater: (knot) => ({
+            ...knot,
+            sentence,
+            parsed,
+            resolvedSentence: null,
+            validationErrors: new Map()
+          })
+        });
       } catch (error) {
         return {
           ...state,
@@ -530,47 +709,91 @@ export class RopeStateManager {
     }));
   }
   
-  // Reset a knot to its initial state
+  // Reset a knot to its initial state with incremental updates
   resetKnot(knotId: KnotId): void {
     this.setState(state => {
       const knot = state.knots[knotId];
       if (!knot) return state;
       
-      // Create updated knots
-      const knots = { ...state.knots };
-      
-      // Reset the knot values and errors
-      knots[knotId] = {
-        ...knot,
-        values: new Map(),
-        validationErrors: new Map(),
-        resolvedSentence: null,
-        isComplete: false,
-        isValid: false
-      };
-      
-      // Recalculate coils
-      const allCoils = this.calculateCoils(knots, state.knotIds);
-      
-      // Reprocess all knots with the updated coils
-      const processedKnots = this.processAllKnots(knots, state.knotIds, allCoils);
-      
-      // Recalculate overall state
-      const isComplete = Object.values(processedKnots).every(k => k.isComplete);
-      const isValid = Object.values(processedKnots).every(k => k.isValid);
-      
-      return {
-        ...state,
-        knots: processedKnots,
-        allCoils,
-        isComplete,
-        isValid,
-        lastUpdated: knotId,
-        error: null
-      };
+      // Use our incremental update approach
+      return this.performIncrementalUpdate({
+        state,
+        updatedKnotId: knotId,
+        knotUpdater: (knot) => ({
+          ...knot,
+          values: new Map(),
+          validationErrors: new Map(),
+          resolvedSentence: null,
+          isComplete: false,
+          isValid: false
+        })
+      });
     });
   }
   
+  // Utility function to filter inputs based on dependencies
+  private filterInputsByDependencies(
+    inputs: Array<SentenceInput>,
+    getValueFn: (index: number) => { value: string } | undefined
+  ) {
+    return inputs.filter(input =>
+      this.sentenceService.shouldRenderInput(
+        input.type || 'string',
+        inputs,
+        getValueFn
+      )
+    );
+  }
+
+  // Utility function to split parts for rendering
+  private splitPartsForRendering(parts: string[]): string[] {
+    return parts.map(part => {
+      if (part.match(/\{[^}]+\}/)) return [part];
+      return part.split(/(\s+)/g);
+    }).flat();
+  }
+
+  // Utility function to validate inputs and collect errors
+  private validateInputs(
+    inputs: Array<SentenceInput>,
+    getValueFn: (index: number) => { value: string } | undefined
+  ): Map<number, { type: string, message: string }> {
+    const validationErrors = new Map<number, { type: string, message: string }>();
+    
+    inputs.forEach(input => {
+      const value = getValueFn(input.index)?.value;
+      if (value !== undefined) {
+        const result = this.sentenceService.validateInput(value, input.type);
+        if (!result.success) {
+          validationErrors.set(input.index, {
+            type: 'validation',
+            message: result.error
+          });
+        }
+      } else if (input.required) {
+        validationErrors.set(input.index, {
+          type: 'required',
+          message: 'This field is required'
+        });
+      }
+    });
+    
+    return validationErrors;
+  }
+
+  // Utility function to check if inputs are complete
+  private areInputsComplete(
+    inputs: Array<SentenceInput>,
+    getValueFn: (index: number) => { value: string } | undefined
+  ): boolean {
+    return inputs
+      .filter(input => input.required)
+      .every(input => {
+        const value = getValueFn(input.index);
+        return value !== undefined && value.value !== '';
+      });
+  }
+
   // Process a knot from scratch
   private processKnot(knotData: KnotData): Omit<ProcessedKnot, 'next' | 'prev'> {
     try {
@@ -588,12 +811,9 @@ export class RopeStateManager {
       }
       
       // Filter inputs based on dependencies
-      const filteredInputs = parsed.inputs.filter(input =>
-        this.sentenceService.shouldRenderInput(
-          input.type || 'string',
-          parsed.inputs,
-          index => values.get(index)
-        )
+      const filteredInputs = this.filterInputsByDependencies(
+        parsed.inputs,
+        index => values.get(index)
       );
       
       // Create parsed with filtered inputs
@@ -603,38 +823,13 @@ export class RopeStateManager {
       };
       
       // Split template into parts for rendering
-      const parts = parsedWithFilteredInputs.parts.map(part => {
-        if (part.match(/\{[^}]+\}/)) return [part];
-        return part.split(/(\s+)/g);
-      }).flat();
+      const parts = this.splitPartsForRendering(parsedWithFilteredInputs.parts);
       
       // Check if all required inputs have values
-      const isComplete = filteredInputs
-        .filter(input => input.required)
-        .every(input => {
-          const value = values.get(input.index);
-          return value !== undefined && value.value !== '';
-        });
+      const isComplete = this.areInputsComplete(filteredInputs, index => values.get(index));
       
       // Validate all inputs
-      const validationErrors = new Map<number, { type: string, message: string }>();
-      filteredInputs.forEach(input => {
-        const value = values.get(input.index)?.value;
-        if (value !== undefined) {
-          const result = this.sentenceService.validateInput(value, input.type);
-          if (!result.success) {
-            validationErrors.set(input.index, {
-              type: 'validation',
-              message: result.error || 'Invalid value'
-            });
-          }
-        } else if (input.required) {
-          validationErrors.set(input.index, {
-            type: 'required',
-            message: 'This field is required'
-          });
-        }
-      });
+      const validationErrors = this.validateInputs(filteredInputs, index => values.get(index));
       
       return {
         id: knotData.id,
@@ -695,12 +890,9 @@ export class RopeStateManager {
     if (!knot.parsed) return knot;
     
     // Filter inputs based on dependencies
-    const filteredInputs = knot.parsed.inputs.filter(input =>
-      this.sentenceService.shouldRenderInput(
-        input.type || 'string',
-        knot.parsed?.inputs || [],
-        index => knot.values.get(index)
-      )
+    const filteredInputs = this.filterInputsByDependencies(
+      knot.parsed.inputs,
+      index => knot.values.get(index)
     );
     
     // Create parsed with filtered inputs
@@ -710,38 +902,13 @@ export class RopeStateManager {
     };
     
     // Split template into parts for rendering
-    const parts = parsedWithFilteredInputs.parts.map(part => {
-      if (part.match(/\{[^}]+\}/)) return [part];
-      return part.split(/(\s+)/g);
-    }).flat();
+    const parts = this.splitPartsForRendering(parsedWithFilteredInputs.parts);
     
     // Check if all required inputs have values
-    const isComplete = filteredInputs
-      .filter(input => input.required)
-      .every(input => {
-        const value = knot.values.get(input.index);
-        return value !== undefined && value.value !== '';
-      });
+    const isComplete = this.areInputsComplete(filteredInputs, index => knot.values.get(index));
     
     // Validate all inputs
-    const validationErrors = new Map<number, { type: string, message: string }>();
-    filteredInputs.forEach(input => {
-      const value = knot.values.get(input.index)?.value;
-      if (value !== undefined) {
-        const result = this.sentenceService.validateInput(value, input.type);
-        if (!result.success) {
-          validationErrors.set(input.index, {
-            type: 'validation',
-            message: result.error || 'Invalid value'
-          });
-        }
-      } else if (input.required) {
-        validationErrors.set(input.index, {
-          type: 'required',
-          message: 'This field is required'
-        });
-      }
-    });
+    const validationErrors = this.validateInputs(filteredInputs, index => knot.values.get(index));
     
     // Resolve sentence with coils if complete
     let resolvedSentence: string | null = null;

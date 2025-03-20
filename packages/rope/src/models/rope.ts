@@ -562,7 +562,8 @@ export class Rope {
    */
   public getCompatibleCoils(inputType: string, upToIndex?: number): Record<string, string> {
     const allCoils = this.getAvailableCoils(upToIndex);
-    return this.coilService.getCompatibleCoils(allCoils, inputType);
+    // Cast to InputType since we're using enhanced types now
+    return this.coilService.getCompatibleCoils(allCoils, inputType as any);
   }
 
   /**

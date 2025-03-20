@@ -110,7 +110,7 @@ export function resolveSentence(
  * @returns Appropriate placeholder text
  */
 export function getInputPlaceholder(type?: string): string {
-  return _sentenceService.getPlaceholder(type);
+  return _sentenceService.getPlaceholder(type as any);
 }
 
 /**
@@ -125,7 +125,7 @@ export function shouldRenderInput(
   allInputs: SentenceInput[],
   getValueFn: (index: number) => { value: string } | undefined
 ): boolean {
-  return _sentenceService.shouldRenderInput(inputType, allInputs, getValueFn);
+  return _sentenceService.shouldRenderInput(inputType as any, allInputs, getValueFn);
 }
 
 /**
@@ -146,12 +146,19 @@ export function setValue(params: {
     params.value
   );
   
-  // Convert keys to match exported function's return type
-  return {
-    success: result.success,
-    value: result.values,
-    error: result.error
-  };
+  // Convert Result pattern to the expected return type
+  if (result.success) {
+    return {
+      success: true,
+      value: result.value
+    };
+  } else {
+    return {
+      success: false,
+      value: params.currentValues,
+      error: result.error
+    };
+  }
 }
 
 /**
@@ -240,7 +247,13 @@ export function validateCoilReferences(
   requiredTypes: Record<string, string>,
   availableCoils: Record<string, string>
 ): { valid: boolean; errors: Record<string, string> } {
-  return _coilService.validateCoilReferences(coilReferences, requiredTypes, availableCoils);
+  const result = _coilService.validateCoilReferences(coilReferences, requiredTypes, availableCoils);
+  
+  // Convert Result pattern to the expected return type
+  return {
+    valid: result.success,
+    errors: result.success ? {} : result.error
+  };
 }
 
 /**

@@ -1,6 +1,8 @@
 import * as Types from '../types/generated';
 import { CoilCompatibilityError } from './errors';
 import { ParsedSentence } from './sentence';
+import { Result, LRUCache } from '../utils';
+import { InputType } from '../types/rope';
 
 /**
  * Coil reference format (used to link values between knots)
@@ -14,10 +16,7 @@ export interface CoilReference {
 /**
  * Result of coil validation
  */
-export interface CoilValidationResult {
-  valid: boolean;
-  errors: Record<string, string>;
-}
+export type CoilValidationResult = Result<void, Record<string, string>>;
 
 /**
  * Options for creating a coil proxy
@@ -42,6 +41,8 @@ export interface CoilProxyOptions {
   placeholderFormat?: string;
 }
 
+// LRUCache is imported from ../utils
+
 /**
  * Service for handling coil operations and compatibility
  */
@@ -49,8 +50,11 @@ export class CoilService {
   // Regular expression to match coil references
   private static readonly COIL_REGEX = /^<-\{([^@}]+)(?:@(\d+))?\}$/;
   
-  // Cache for parsed coil references
-  private static readonly referenceCache = new Map<string, CoilReference | null>();
+  // Cache for parsed coil references with a max size of 300 and 1-hour TTL
+  private static readonly referenceCache = new LRUCache<string, CoilReference | null>({
+    maxSize: 300,
+    ttl: 60 * 60 * 1000 // 1 hour
+  });
   
   /**
    * Parse a coil reference from a string value
@@ -63,9 +67,9 @@ export class CoilService {
     }
     
     // Check cache first
-    if (CoilService.referenceCache.has(value)) {
-      const cached = CoilService.referenceCache.get(value);
-      return cached !== undefined ? cached : null;
+    const cached = CoilService.referenceCache.get(value);
+    if (cached !== undefined) {
+      return cached;
     }
     
     // Extract the coil name and optional knot index
@@ -89,6 +93,14 @@ export class CoilService {
    */
   public clearReferenceCache(): void {
     CoilService.referenceCache.clear();
+  }
+  
+  /**
+   * Get the current size of the reference cache
+   * @returns Number of cached parsed coil references
+   */
+  public getReferenceCacheSize(): number {
+    return CoilService.referenceCache.size;
   }
 
   /**
@@ -252,20 +264,19 @@ export class CoilService {
   }
   
   /**
-   * Validate coil compatibility and throw an error if incompatible
+   * Validate coil compatibility
    * @param coilType Type of the coil
    * @param inputType Type expected by the input
    * @param coilName Name of the coil (for error reporting)
+   * @returns Result indicating compatibility
    */
-  public validateCoilCompatibility(coilType: string, inputType: string, coilName: string): void {
+  public validateCoilCompatibility(coilType: string, inputType: string, coilName: string): Result<void> {
     if (!this.isCoilCompatible(coilType, inputType)) {
-      throw new CoilCompatibilityError(
-        `Coil "${coilName}" of type "${coilType}" is not compatible with input of type "${inputType}"`,
-        coilName,
-        inputType,
-        coilType
+      return Result.failure(
+        `Coil "${coilName}" of type "${coilType}" is not compatible with input of type "${inputType}"`
       );
     }
+    return Result.success(undefined);
   }
   
   /**
@@ -276,14 +287,53 @@ export class CoilService {
    */
   public getCompatibleCoils(
     availableCoils: Record<string, string>,
-    requiredType: string
+    requiredType: InputType
   ): Record<string, string> {
+    // For object types, we need to extract the base type
+    const typeToCheck = this.extractBaseType(requiredType);
+    
     return Object.entries(availableCoils)
-      .filter(([_, type]) => this.isCoilCompatible(type, requiredType))
+      .filter(([_, type]) => this.isCoilCompatible(type, typeToCheck))
       .reduce((acc, [name, type]) => {
         acc[name] = type;
         return acc;
       }, {} as Record<string, string>);
+  }
+  
+  /**
+   * Extract the base type from an InputType for compatibility checking
+   * @param type The InputType to extract from
+   * @returns A string representation of the base type
+   */
+  private extractBaseType(type: InputType): string {
+    // If it's a string, use it directly
+    if (typeof type === 'string') {
+      return type;
+    }
+    
+    // If it's a constant type, we use the type "constant"
+    if ('constant' in type) {
+      return 'string';
+    }
+    
+    // For compound types, use the base type
+    if ('baseType' in type) {
+      return this.extractBaseType(type.baseType);
+    }
+    
+    // For union types, use the first type
+    if ('types' in type && type.types.length > 0) {
+      return this.extractBaseType(type.types[0]);
+    }
+    
+    // For conditional types, we don't know which branch will be taken,
+    // so default to string for maximum compatibility
+    if ('left' in type) {
+      return 'string';
+    }
+    
+    // Default to string for unknown types
+    return 'string';
   }
   
   /**
@@ -428,10 +478,9 @@ export class CoilService {
       }
     });
     
-    return {
-      valid: Object.keys(errors).length === 0,
-      errors
-    };
+    return Object.keys(errors).length === 0
+      ? Result.success(undefined)
+      : Result.failure(errors);
   }
   
   /**
@@ -470,10 +519,9 @@ export class CoilService {
       }
     });
     
-    return {
-      valid: Object.keys(errors).length === 0,
-      errors
-    };
+    return Object.keys(errors).length === 0
+      ? Result.success(undefined)
+      : Result.failure(errors);
   }
   
   /**
