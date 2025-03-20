@@ -1,0 +1,1302 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Plug Solver API",
+        "description": "API for Plug Solver to build Ethereum transactions.",
+        "version": "v1.0.0"
+    },
+    "paths": {
+        "/api-key": {
+            "post": {
+                "tags": [
+                    "API Keys"
+                ],
+                "summary": "Create API Key",
+                "description": "Creates a new API key with the specified parameters. Requires admin privileges.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiKeyApiKeyCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModelsApiKey"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api-key/{id}": {
+            "delete": {
+                "tags": [
+                    "API Keys"
+                ],
+                "summary": "Delete API Key",
+                "description": "Deletes an API key by ID. Requires admin privileges.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "API key ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "API key ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModelsApiKey"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "API Keys"
+                ],
+                "summary": "Get API Key",
+                "description": "Retrieves an API key by ID. Requires admin privileges.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "API key ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "API key ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModelsApiKey"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "API Keys"
+                ],
+                "summary": "Update API Key",
+                "description": "Updates an existing API key with the provided parameters. Requires admin privileges.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "API key ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "API key ID"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiKeyApiKeyCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Health Check",
+                "description": "Returns the health status of the API",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HealthHealthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/solver": {
+            "get": {
+                "tags": [
+                    "Solver"
+                ],
+                "summary": "Get Schema",
+                "description": "Retrieves available action schemas for protocols based on query parameters. Requires API key.",
+                "parameters": [
+                    {
+                        "name": "chainId",
+                        "in": "query",
+                        "description": "Chain ID to filter schemas by",
+                        "schema": {
+                            "minimum": 0,
+                            "type": "integer",
+                            "description": "Chain ID to filter schemas by"
+                        }
+                    },
+                    {
+                        "name": "protocol",
+                        "in": "query",
+                        "description": "Protocol name to filter schemas by",
+                        "schema": {
+                            "type": "string",
+                            "description": "Protocol name to filter schemas by"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "description": "Action name to filter schemas by",
+                        "schema": {
+                            "type": "string",
+                            "description": "Action name to filter schemas by"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Wallet address to generate schemas for",
+                        "schema": {
+                            "type": "string",
+                            "description": "Wallet address to generate schemas for"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search parameters to filter schemas by",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/IntentSearchQueryParam"
+                            },
+                            "description": "Search parameters to filter schemas by"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/components/schemas/ActionsProtocolSchema"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Solver"
+                ],
+                "summary": "Solve Intent",
+                "description": "Processes an intent and returns a solution (transaction data). Requires API key.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ModelsIntent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/solver/kill": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Kill Switch Status",
+                "description": "Returns the current status of the kill switch, which controls whether new solver operations are allowed",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/KillKillResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Toggle Kill Switch",
+                "description": "Toggles the state of the kill switch that controls whether new solver operations are allowed",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/KillKillResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/solver/save": {
+            "post": {
+                "tags": [
+                    "Intents"
+                ],
+                "summary": "Create Intent",
+                "description": "Creates a new intent with the provided parameters",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ModelsIntent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModelsIntent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/solver/save/{id}": {
+            "delete": {
+                "tags": [
+                    "Intents"
+                ],
+                "summary": "Delete Intent",
+                "description": "Deletes an intent by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Intent ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Intent ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Intents"
+                ],
+                "summary": "Get Intent",
+                "description": "Retrieves an intent or list of intents by ID or address",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Intent ID, address, or comma-separated list of addresses",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Intent ID, address, or comma-separated list of addresses"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SaveIntentListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Intents"
+                ],
+                "summary": "Toggle Intent Saved",
+                "description": "Toggles the saved status of an intent",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Intent ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Intent ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModelsIntent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/solver/save/{id}/status": {
+            "post": {
+                "tags": [
+                    "Intents"
+                ],
+                "summary": "Toggle Intent Status",
+                "description": "Toggles the status of an intent between 'active' and 'paused'",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Intent ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Intent ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModelsIntent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ActionsOption": {
+                "type": "object",
+                "properties": {
+                    "icon": {
+                        "$ref": "#/components/schemas/ActionsOptionIcon"
+                    },
+                    "info": {
+                        "$ref": "#/components/schemas/ActionsOptionInfo"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ActionsOptionIcon": {
+                "type": "object",
+                "properties": {
+                    "default": {
+                        "type": "string"
+                    },
+                    "secondary": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ActionsOptionInfo": {
+                "type": "object",
+                "properties": {
+                    "label": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ActionsOptions": {
+                "type": "object",
+                "properties": {
+                    "complex": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/ActionsOption"
+                            }
+                        }
+                    },
+                    "simple": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ActionsOption"
+                        }
+                    }
+                }
+            },
+            "ActionsProtocolMetadata": {
+                "type": "object",
+                "properties": {
+                    "chains": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReferencesNetwork"
+                        },
+                        "nullable": true
+                    },
+                    "icon": {
+                        "type": "string"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true
+                    }
+                }
+            },
+            "ActionsProtocolSchema": {
+                "type": "object",
+                "properties": {
+                    "metadata": {
+                        "$ref": "#/components/schemas/ActionsProtocolMetadata"
+                    },
+                    "schema": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/ActionsSchema"
+                        },
+                        "nullable": true
+                    }
+                }
+            },
+            "ActionsSchema": {
+                "type": "object",
+                "properties": {
+                    "coils": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "options": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/ActionsOptions"
+                        }
+                    },
+                    "sentence": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "default": "action"
+                    }
+                }
+            },
+            "ApiKeyApiKeyCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "rateLimit": {
+                        "type": "integer",
+                        "description": "Rate limit for this API key"
+                    },
+                    "role": {
+                        "type": "string",
+                        "description": "Role for this API key (user or admin)"
+                    },
+                    "socketId": {
+                        "type": "string",
+                        "description": "ID of the socket to associate with this key",
+                        "nullable": true
+                    }
+                }
+            },
+            "CoilSlice": {
+                "type": "object",
+                "properties": {
+                    "index": {
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "length": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "start": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "typeId": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "nullable": true
+                    }
+                }
+            },
+            "CoilUpdate": {
+                "type": "object",
+                "properties": {
+                    "slice": {
+                        "$ref": "#/components/schemas/CoilSlice"
+                    },
+                    "start": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "HealthHealthResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "description": "The health status of the API"
+                    }
+                }
+            },
+            "IntentSearchQueryParam": {
+                "type": "object",
+                "properties": {
+                    "index": {
+                        "type": "integer",
+                        "description": "Index of the search parameter"
+                    },
+                    "value": {
+                        "type": "string",
+                        "description": "Value of the search parameter"
+                    }
+                }
+            },
+            "KillKillResponse": {
+                "type": "object",
+                "properties": {
+                    "killed": {
+                        "type": "boolean",
+                        "description": "Whether the kill switch is active"
+                    }
+                }
+            },
+            "ModelsApiKey": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "key": {
+                        "type": "string"
+                    },
+                    "rateLimit": {
+                        "type": "integer"
+                    },
+                    "role": {
+                        "type": "string"
+                    },
+                    "socketId": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "ModelsIntent": {
+                "type": "object",
+                "properties": {
+                    "accessList": {
+                        "$ref": "#/components/schemas/TypesAccessList"
+                    },
+                    "chainId": {
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "frequency": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "string"
+                    },
+                    "gasLimit": {
+                        "minimum": 0,
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "inputs": {
+                        "$ref": "#/components/schemas/TypesInputs"
+                    },
+                    "locked": {
+                        "type": "boolean"
+                    },
+                    "nextSimulationAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "options": {
+                        "$ref": "#/components/schemas/TypesOptions"
+                    },
+                    "periodEndAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "runs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ModelsRun"
+                        },
+                        "nullable": true
+                    },
+                    "saved": {
+                        "type": "boolean"
+                    },
+                    "startAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "ModelsRun": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/ModelsRunOutputData"
+                    },
+                    "error": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "from": {
+                        "type": "string"
+                    },
+                    "gasEstimate": {
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "intentId": {
+                        "type": "string"
+                    },
+                    "livePlugs": {
+                        "$ref": "#/components/schemas/SignatureLivePlugs"
+                    },
+                    "livePlugsId": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "to": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "ModelsRunOutputData": {
+                "type": "object",
+                "properties": {
+                    "decoded": {},
+                    "raw": {
+                        "type": "string",
+                        "format": "base64"
+                    }
+                }
+            },
+            "ReferencesNetwork": {
+                "type": "object",
+                "properties": {
+                    "chainIds": {
+                        "type": "array",
+                        "items": {
+                            "minimum": 0,
+                            "type": "integer"
+                        },
+                        "nullable": true
+                    },
+                    "icon": {
+                        "type": "object",
+                        "properties": {
+                            "default": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SaveIntentListResponse": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/ModelsIntent"
+                }
+            },
+            "SignatureLivePlugs": {
+                "type": "object",
+                "properties": {
+                    "chainId": {
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "data": {
+                        "type": "string"
+                    },
+                    "deletedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "from": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "intentId": {
+                        "type": "string"
+                    },
+                    "plugs": {
+                        "$ref": "#/components/schemas/SignaturePlugs"
+                    },
+                    "signature": {
+                        "type": "string",
+                        "format": "base64"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "SignaturePlug": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string",
+                        "format": "base64"
+                    },
+                    "meta": {},
+                    "selector": {
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "to": {
+                        "type": "string"
+                    },
+                    "updates": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CoilUpdate"
+                        },
+                        "nullable": true
+                    },
+                    "value": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "SignaturePlugs": {
+                "type": "object",
+                "properties": {
+                    "plugs": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SignaturePlug"
+                        },
+                        "nullable": true
+                    },
+                    "salt": {
+                        "type": "string",
+                        "format": "base64"
+                    },
+                    "socket": {
+                        "type": "string"
+                    },
+                    "solver": {
+                        "type": "string",
+                        "format": "base64"
+                    }
+                }
+            },
+            "TypesAccessList": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/TypesAccessTuple"
+                }
+            },
+            "TypesAccessTuple": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": "string"
+                    },
+                    "storageKeys": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true
+                    }
+                }
+            },
+            "TypesInputs": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "TypesOptions": {
+                "type": "object",
+                "additionalProperties": {}
+            }
+        }
+    }
+}
