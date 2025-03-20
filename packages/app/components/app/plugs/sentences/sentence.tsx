@@ -3,16 +3,17 @@ import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
 import { motion } from "framer-motion"
 import { Hash, X } from "lucide-react"
 
+import { useAtom, useSetAtom } from "jotai"
+
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { SchemasRequestAction, SchemasResponseCoils, cn, SchemasRequestValue, useConnect, useCord } from "@/lib"
+import { cn, SchemasRequestAction, SchemasRequestValue, SchemasResponseCoils, useConnect, useCord } from "@/lib"
+import { api } from "@/server/client"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
 import { HandleValueProps, Part } from "./part"
-import { useAtom, useSetAtom } from "jotai"
-import { api } from "@/server/client"
 
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
@@ -27,7 +28,7 @@ type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	handleValueChange?: (inputIndex: string, value: string, additionalData?: any) => void
 	handleRemoveAction?: () => void
 	validateType?: (coilName: string, expectedType: string) => boolean
-	availableCoils?: Record<string, { type: string, actionIndex: number }>
+	availableCoils?: Record<string, { type: string; actionIndex: number }>
 }
 
 export const Sentence: FC<SentenceProps> = memo(
@@ -48,13 +49,15 @@ export const Sentence: FC<SentenceProps> = memo(
 		className,
 		...props
 	}) => {
-		const { account: { session } } = useConnect()
+		const {
+			account: { session }
+		} = useConnect()
 
 		const [column] = useAtom(columnByIndexAtom(index))
 		const { frame } = useColumnActions(index)
 
 		const [plug] = useAtom(plugByIdAtom(item))
-		const own = plug && session && session.address === plug.socketId || false
+		const own = (plug && session && session.address === plug.socketId) || false
 
 		const editPlug = useSetAtom(editPlugAtom)
 		const actionMutation = api.plugs.action.edit.useMutation({
@@ -71,16 +74,24 @@ export const Sentence: FC<SentenceProps> = memo(
 			const parsedIndex = parseInt(String(index))
 			const newValue = s ?? undefined
 
-			setSearch(prev => prev[parsedIndex] === newValue ? prev : {
-				...prev,
-				[parsedIndex]: newValue
-			})
+			setSearch(prev =>
+				prev[parsedIndex] === newValue
+					? prev
+					: {
+							...prev,
+							[parsedIndex]: newValue
+						}
+			)
 
 			const timeoutId = setTimeout(() => {
-				setDebouncedSearch(prev => prev[parsedIndex] === newValue ? prev : {
-					...prev,
-					[parsedIndex]: newValue
-				})
+				setDebouncedSearch(prev =>
+					prev[parsedIndex] === newValue
+						? prev
+						: {
+								...prev,
+								[parsedIndex]: newValue
+							}
+				)
 			}, 300)
 
 			return () => clearTimeout(timeoutId)
@@ -97,7 +108,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
-		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? {} : {}
+		const coils = actionSchema ? (actionSchema.schema[action.action].coils ?? {}) : {}
 
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
@@ -125,12 +136,12 @@ export const Sentence: FC<SentenceProps> = memo(
 						values:
 							nestedActionIndex === actionIndex
 								? {
-									...action.values,
-									[index]: {
-										...rest,
-										value: value ? isNumber ? parseFloat(value) : value : undefined
+										...action.values,
+										[index]: {
+											...rest,
+											value: value ? (isNumber ? parseFloat(value) : value) : undefined
+										}
 									}
-								}
 								: action.values
 					}))
 				)
@@ -147,7 +158,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		if (!solverActions || !actionSchema)
 			return (
 				<motion.div
-					className="bg-[length:200%_200%] w-full mb-2 h-16 animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated p-4"
+					className="mb-2 h-16 w-full animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated bg-[length:200%_200%] p-4"
 					initial={{ y: 20 }}
 					animate={{ y: 0 }}
 				>
@@ -185,7 +196,7 @@ export const Sentence: FC<SentenceProps> = memo(
 					data-action-preview={item}
 					{...props}
 				>
-					<div className={cn("flex flex-row items-center font-bold p-4")}>
+					<div className={cn("flex flex-row items-center p-4 font-bold")}>
 						<div className="flex w-full flex-wrap items-center gap-[4px]">
 							<div className="flex flex-row items-start gap-[4px]">
 								<div className="relative mt-1 h-6 w-10 flex-shrink-0">
@@ -267,16 +278,17 @@ export const Sentence: FC<SentenceProps> = memo(
 						)}
 					</div>
 
-					{coils && Object.keys(coils).length > 0 && <div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
-						{Object.keys(coils).map((name, coilIndex) => (
-							<p key={coilIndex} className="font-bold w-full flex flex-row gap-2 items-center">
-								<Hash size={14} className="opacity-20" />
-								{name}
-								<span className="ml-auto opacity-40">{coils[name]}</span>
-
-							</p>
-						))}
-					</div>}
+					{coils && Object.keys(coils).length > 0 && (
+						<div className="border-t-[1px] border-plug-green/10 px-4 pb-2 pt-2 text-sm">
+							{Object.keys(coils).map((name, coilIndex) => (
+								<p key={coilIndex} className="flex w-full flex-row items-center gap-2 font-bold">
+									<Hash size={14} className="opacity-20" />
+									{name}
+									<span className="ml-auto opacity-40">{coils[name]}</span>
+								</p>
+							))}
+						</div>
+					)}
 				</Accordion>
 
 				<div

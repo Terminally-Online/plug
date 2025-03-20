@@ -47,16 +47,6 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 					actionIndex,
 				}
 			})
-
-			// actionSchema.coils.forEach(coil => {
-			// 	if (coil.slice?.name) {
-			// 		coils[coil.slice.name] = {
-			// 			type: coil.slice.type,
-			// 			actionIndex,
-			// 			coil
-			// 		}
-			// 	}
-			// })
 		})
 
 		return coils
