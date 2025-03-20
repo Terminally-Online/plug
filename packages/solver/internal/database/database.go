@@ -29,12 +29,12 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
-		Host:     GetEnvOrDefault("DATABASE_HOST", "localhost"),
-		User:     GetEnvOrDefault("DATABASE_USER", "plug"),
-		Password: GetEnvOrDefault("DATABASE_PASSWORD", "plugdev"),
-		DBName:   GetEnvOrDefault("DATABASE_NAME", "plug_solver"),
-		Port:     GetEnvOrDefault("DATABASE_PORT", "6432"),
-		SSLMode:  GetEnvOrDefault("DATABASE_SSLMODE", "disable"),
+		Host:     utils.GetEnvOrDefault("DATABASE_HOST", "localhost"),
+		User:     utils.GetEnvOrDefault("DATABASE_USER", "plug"),
+		Password: utils.GetEnvOrDefault("DATABASE_PASSWORD", "plugdev"),
+		DBName:   utils.GetEnvOrDefault("DATABASE_NAME", "plug_solver"),
+		Port:     utils.GetEnvOrDefault("DATABASE_PORT", "6432"),
+		SSLMode:  utils.GetEnvOrDefault("DATABASE_SSLMODE", "disable"),
 	}
 }
 
@@ -76,13 +76,6 @@ func Connect(config *Config) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	return db, nil
-}
-
-func GetEnvOrDefault(key, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultValue
 }
 
 func init() {
