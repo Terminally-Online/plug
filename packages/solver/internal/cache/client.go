@@ -6,16 +6,20 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"os"
+	"solver/internal/utils"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 )
 
-// Redis client configuration
 var (
+	RedisHost = utils.GetEnvOrDefault("REDIS_HOST", "localhost")
+	RedisPort = utils.GetEnvOrDefault("REDIS_POST", "6379")
+	RedisAddress = fmt.Sprintf("%s:%s", RedisHost, RedisPort)
 	Redis = redis.NewClient(&redis.Options{
-		Addr:        "localhost:6379",
-		Password:    "",
+		Addr:        RedisAddress,
+		Password:    os.Getenv("REDIS_PASSWORD"),
 		DB:          0,
 		DialTimeout: 100 * time.Millisecond,
 		ReadTimeout: 100 * time.Millisecond,
@@ -29,7 +33,7 @@ type cacheData struct {
 }
 
 // GenerateCacheKey creates a cache key from various data types
-func GenerateCacheKey(v interface{}) (string, error) {
+func GenerateCacheKey(v any) (string, error) {
 	switch v := v.(type) {
 	case string:
 		return v, nil
