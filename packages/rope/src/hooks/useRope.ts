@@ -680,4 +680,4 @@ export function useSingleKnot(params: {
 }
 
 // Re-export types from rope-state-manager for better DX
-export { RopeState, KnotData, ProcessedKnot } from '../models/rope-state-manager';
+export type { RopeState, KnotData, ProcessedKnot } from '../models/rope-state-manager';

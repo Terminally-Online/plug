@@ -133,6 +133,21 @@ pnpm lint
 pnpm lint:fix
 ```
 
+### Playground
+
+The package includes a node-based visual editor playground to test and demonstrate Rope functionality.
+
+```bash
+# Start the playground
+pnpm playground
+```
+
+The playground allows you to:
+- Create and connect knots visually
+- Edit sentence templates and their input values
+- Visualize the validation state of each knot
+- Test the Rope API in a visual environment
+
 ## License
 
 MIT

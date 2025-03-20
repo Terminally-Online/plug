@@ -15,7 +15,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "prepare": "npm run build",
-    "generate-api": "tsx src/lib/generate-api.ts"
+    "generate-api": "tsx src/lib/generate-api.ts",
+    "playground": "cd playground && npx vite"
   },
   "dependencies": {
     "axios": "^1.6.7",
