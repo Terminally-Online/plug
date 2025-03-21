@@ -14,6 +14,7 @@ import {
 	Send,
 	Waypoints
 } from "lucide-react"
+import { areAllSentencesValidAtom } from "@/state/sentences"
 
 import { Frame } from "@/components/app/frames/base"
 import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
@@ -87,14 +88,16 @@ export const RunFrame: FC<{
 		return plug.actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
 	}, [plug, solverActions])
 
+	// Using our atom to check if all sentences are valid
+	const checkAllSentencesValid = useAtomValue(areAllSentencesValidAtom)
+	
 	const isReady = useMemo(() => {
 		if (!plug || plug.actions.length === 0) return false
 		if (!isActionful) return false
 
-		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
-
-		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
-	}, [isActionful, plug, item])
+		// Use our atom instead of DOM queries
+		return checkAllSentencesValid(item)
+	}, [isActionful, plug, item, checkAllSentencesValid])
 
 	const handleRun = useCallback(() => {
 		if (!column || !column.item || !chain) return
@@ -212,7 +215,7 @@ export const RunFrame: FC<{
 							</p>
 						)}
 
-						<p className="flex flex-row justify-between font-bold">
+						{/* <p className="flex flex-row justify-between font-bold">
 							<span className="flex w-full flex-row items-center gap-4">
 								<Hash size={18} className="opacity-20" />
 								<span className="opacity-40">Actions</span>
@@ -222,7 +225,7 @@ export const RunFrame: FC<{
 							</span>
 						</p>
 
-						{/* supportedChains.length !== 1 && (
+						supportedChains.length !== 1 && (
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Globe size={18} className="opacity-20" />
@@ -259,10 +262,10 @@ export const RunFrame: FC<{
 								</span>{" "}
 								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
 									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-										<Counter count={0.00011} /> ETH
+										<Counter count={0.0} /> ETH
 									</span>
 									<span className="ml-2 flex flex-row items-center">
-										$<Counter count={0.049} />
+										Free
 									</span>
 								</span>
 							</p>

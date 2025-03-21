@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
+import { FC, HTMLAttributes, memo, useCallback, useEffect, useState } from "react"
 
 import { motion } from "framer-motion"
 import { Hash, X } from "lucide-react"
@@ -9,6 +9,7 @@ import { Accordion } from "@/components/shared/utils/accordion"
 import { SchemasRequestAction, SchemasResponseCoils, cn, SchemasRequestValue, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
+import { sentenceValidStateAtom } from "@/state/sentences"
 
 import { HandleValueProps, Part } from "./part"
 import { useAtom, useSetAtom } from "jotai"
@@ -64,6 +65,9 @@ export const Sentence: FC<SentenceProps> = memo(
 			(...params: Parameters<typeof actionMutation.mutate>) => actionMutation.mutate(...params),
 			[actionMutation]
 		)
+		
+		// Use atom for sentence validation state
+		const setSentenceValidState = useSetAtom(sentenceValidStateAtom)
 
 		const [search, setSearch] = useState<Record<number, string | undefined>>({})
 		const [debouncedSearch, setDebouncedSearch] = useState<typeof search>({})
@@ -114,6 +118,21 @@ export const Sentence: FC<SentenceProps> = memo(
 			actions: { setValue },
 			helpers: { getInputValue, getInputError, isValid, isComplete }
 		} = useCord(sentence, values)
+		
+		// Update the global validation state whenever isValid or isComplete change
+		useEffect(() => {
+			if (actionSchema?.metadata?.chains) {
+				setSentenceValidState(prev => ({
+					...prev,
+					[`${item}-${actionIndex}`]: { 
+						isValid, 
+						isComplete, 
+						chains: actionSchema.metadata.chains.join(",") ?? "",
+						actionPreview: item 
+					}
+				}))
+			}
+		}, [isValid, isComplete, actionSchema, actionIndex, item, setSentenceValidState])
 
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
 			setValue(index, value)
@@ -182,7 +201,6 @@ export const Sentence: FC<SentenceProps> = memo(
 					noPadding
 					data-sentence
 					data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
-					data-valid={isValid && isComplete}
 					data-action-preview={item}
 					{...props}
 				>
