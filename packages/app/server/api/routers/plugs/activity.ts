@@ -36,38 +36,40 @@ export const activity = createTRPCRouter({
 				chainId: z.number(),
 				frequency: z.number(),
 				startAt: z.coerce.date(),
-				endAt: z.coerce.date().optional()
+				endAt: z.coerce.date().optional(),
+				socket: z.boolean()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
 			const plug = await ctx.db.plug.findUniqueOrThrow({
 				where: {
 					id: input.plugId
-				}
+				},
+				include: { socket: true }
 			})
 			const intent = await createIntent({
-				chainId: input.chainId,
-				from: ctx.session.address,
-				status: "active",
-				inputs: JSON.parse(plug.actions),
-				frequency: input.frequency,
-				startAt: input.startAt.toISOString(),
-				endAt: input.endAt?.toISOString()
-			})
+					chainId: input.chainId,
+					from: input.socket ? plug.socket.socketAddress : ctx.session.address,
+					status: "active",
+					inputs: JSON.parse(plug.actions),
+					frequency: input.frequency,
+					startAt: input.startAt.toISOString(),
+					endAt: input.endAt?.toISOString()
+				})
 			const updated = await ctx.db.plug.update({
-				where: { id: input.plugId, socketId: ctx.session.address },
-				data: {
-					intentIds: {
-						push: intent.id
+					where: { id: input.plugId, socketId: ctx.session.address },
+					data: {
+						intentIds: {
+							push: intent.id
+						}
 					}
-				}
-			})
+				})
 			const spread = { ...intent, plug: updated }
 
 			ctx.emitter.emit(subscriptions.execution.update, spread)
 
 			return spread
-		}),
+}),
 
 	toggleSaved: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const plug = await ctx.db.plug.findFirstOrThrow({
@@ -87,31 +89,31 @@ export const activity = createTRPCRouter({
 		return intent
 	}),
 
-	toggleStatus: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const plug = await ctx.db.plug.findFirstOrThrow({
-			where: {
-				socketId: ctx.session.address,
-				intentIds: { has: input.id }
-			}
-		})
+		toggleStatus: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+			const plug = await ctx.db.plug.findFirstOrThrow({
+				where: {
+					socketId: ctx.session.address,
+					intentIds: { has: input.id }
+				}
+			})
 
-		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
+			if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
-		const intent = { ...(await toggleIntentStatus(input)), plug }
+			const intent = { ...(await toggleIntentStatus(input)), plug }
 
-		ctx.emitter.emit(subscriptions.execution.update, intent)
+			ctx.emitter.emit(subscriptions.execution.update, intent)
 
-		return intent
-	}),
+			return intent
+		}),
 
-	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const intent = await deleteIntent(input)
+			delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+				const intent = await deleteIntent(input)
 
-		ctx.emitter.emit(subscriptions.execution.delete, intent)
+				ctx.emitter.emit(subscriptions.execution.delete, intent)
 
-		return intent
-	}),
+				return intent
+			}),
 
-	onActivity: subscription<IntentWithPlug>("protected", subscriptions.execution.update),
-	onDelete: subscription<IntentWithPlug>("protected", subscriptions.execution.delete)
+				onActivity: subscription<IntentWithPlug>("protected", subscriptions.execution.update),
+					onDelete: subscription<IntentWithPlug>("protected", subscriptions.execution.delete)
 })
