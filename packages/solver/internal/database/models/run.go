@@ -18,7 +18,7 @@ type Run struct {
 	Status          string        `json:"status" gorm:"type:text"`
 	Error           *string       `json:"error,omitempty" gorm:"type:text"`
 	Errors          []string      `json:"errors,omitempty" gorm:"type:text[]"`
-	GasUsed         uint64        `json:"gasEstimate,omitempty" gorm:"type:bigint"`
+	GasUsed         uint64        `json:"gasUsed,omitempty" gorm:"type:bigint"`
 	GasPrice        *uint64       `json:"gasPrice,omitempty" gorm:"type:bigint"`
 	From            string        `json:"from,omitempty" gorm:"type:text"`
 	To              string        `json:"to,omitempty" gorm:"type:text"`
