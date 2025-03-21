@@ -85,8 +85,6 @@ const ProfileStats = () => {
 	// Construct stats array with real data
 	const stats: number[][] =
 		statsData?.periods.map((_, index) => [
-			0,
-			0,
 			// statsData.counts.users[index] ?? 0,
 			// statsData.counts.runs[index] ?? 0,
 			statsData.counts.views[index] ?? 0,
@@ -224,6 +222,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 
 			<div className="flex flex-col gap-2">
 				<Search
+					className="select-none pointer-events-none"
 					icon={<Clipboard size={14} className="opacity-60" />}
 					placeholder="Copy Referral Link"
 					search={socket?.identity?.referralCode ?? ""}
