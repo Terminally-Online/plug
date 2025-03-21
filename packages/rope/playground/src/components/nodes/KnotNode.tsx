@@ -1,10 +1,23 @@
-import { memo, useState } from 'react';
+import { memo, useState, useMemo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { useRopeContext } from '../../context/RopeContext';
 
 const KnotNode = ({ data }: NodeProps) => {
-  const { updateKnotValue } = useRopeContext();
+  const { updateKnotValue, protocolsWithMetadata } = useRopeContext();
   const { knot } = data;
+  
+  // Get protocol metadata if available
+  const protocolMetadata = useMemo(() => {
+    if (knot?.protocol) {
+      return protocolsWithMetadata[knot.protocol];
+    }
+    return null;
+  }, [knot?.protocol, protocolsWithMetadata]);
+  
+  // Get protocol icon if available
+  const protocolIcon = useMemo(() => {
+    return protocolMetadata?.icon || null;
+  }, [protocolMetadata]);
   
   // Extract information about inputs from the parsed sentence
   const inputs = knot.parsed?.inputs || [];
@@ -59,8 +72,15 @@ const KnotNode = ({ data }: NodeProps) => {
     return reservedTopPercentage + (step * (index + 1));
   };
   
+  // Prevent scroll events from propagating to the ReactFlow pane
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className={`p-3 rounded-lg shadow-md bg-gradient-to-br from-white to-blue-50 border ${getBorderColor()} max-w-md`}>
+    <div 
+      className={`p-3 rounded-lg shadow-md bg-gradient-to-br from-white to-blue-50 border ${getBorderColor()} max-w-md`}
+      onWheel={handleWheel}>
       {/* Continuity handle on the left - for connecting from previous knots */}
       <Handle
         type="target"
@@ -94,10 +114,58 @@ const KnotNode = ({ data }: NodeProps) => {
         title="Drag to create a new knot"
       />
       
-      <div className="mb-2">
-        <div className="font-medium text-gray-800">{knot.sentence || 'No sentence'}</div>
-        {knot.protocol && <div className="text-xs text-gray-500">Protocol: {knot.protocol}</div>}
-        {knot.action && <div className="text-xs text-gray-500">Action: {knot.action}</div>}
+      <div className="mb-3">
+        {/* Protocol and action header */}
+        <div className="flex items-center mb-2">
+          {protocolIcon && (
+            <img 
+              src={protocolIcon} 
+              alt={knot.protocol} 
+              className="w-5 h-5 rounded-full mr-2"
+            />
+          )}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-sm text-gray-700">{knot.protocol}</span>
+              <span className="text-gray-400 text-xs">/</span>
+              <span className="font-medium text-sm text-gray-700">{knot.action}</span>
+            </div>
+            {/* Show available chains if metadata exists */}
+            {protocolMetadata?.chains && protocolMetadata.chains.length > 0 && (
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="text-xs text-gray-500">Chains:</span>
+                <div className="flex -space-x-1">
+                  {protocolMetadata.chains.slice(0, 3).map((chain, idx) => (
+                    <div 
+                      key={idx} 
+                      className="w-4 h-4 rounded-full border border-white bg-gray-100 flex items-center justify-center overflow-hidden"
+                      title={chain.name}
+                    >
+                      {chain.icon?.default ? (
+                        <img src={chain.icon.default} alt={chain.name || 'Chain'} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[8px] text-gray-600">{chain.chainIds?.[0].toString().substring(0, 2) || '?'}</span>
+                      )}
+                    </div>
+                  ))}
+                  {protocolMetadata.chains.length > 3 && (
+                    <div 
+                      className="w-4 h-4 rounded-full border border-white bg-gray-200 flex items-center justify-center"
+                      title={`${protocolMetadata.chains.length - 3} more chains`}
+                    >
+                      <span className="text-[8px] text-gray-600">+{protocolMetadata.chains.length - 3}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Sentence display */}
+        <div className="font-medium text-gray-800 border-l-2 border-blue-300 pl-2 py-1">
+          {knot.sentence || 'No sentence'}
+        </div>
       </div>
       
       {inputs.length > 0 && (

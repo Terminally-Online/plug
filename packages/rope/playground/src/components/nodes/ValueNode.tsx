@@ -57,8 +57,15 @@ const ValueNode = ({ data, id }: NodeProps<ValueNodeData>) => {
     });
   };
   
+  // Prevent scroll events from propagating to the ReactFlow pane
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="p-3 rounded-lg shadow-md bg-white border border-green-400 max-w-[200px] bg-gradient-to-br from-white to-green-50">
+    <div 
+      className="p-3 rounded-lg shadow-md bg-white border border-green-400 max-w-[200px] bg-gradient-to-br from-white to-green-50"
+      onWheel={handleWheel}>
       {/* Output handle on the right */}
       <Handle
         type="source"

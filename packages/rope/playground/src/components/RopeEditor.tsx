@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls as FlowControls,
@@ -19,15 +19,18 @@ import 'reactflow/dist/style.css';
 import { useRopeContext } from '../context/RopeContext';
 import KnotNode from './nodes/KnotNode';
 import ValueNode, { ValueNodeData } from './nodes/ValueNode';
+import Controls from './Controls';
+import ActionSelectorNode from './nodes/ActionSelectorNode';
 
 // Define node types
 const nodeTypes = {
   knotNode: KnotNode,
   valueNode: ValueNode,
+  actionSelectorNode: ActionSelectorNode,
 };
 
 const RopeEditor = () => {
-  const { knots, nodePositions, setNodePosition, updateKnotValue, addKnot } = useRopeContext();
+  const { knots, nodePositions, setNodePosition, updateKnotValue, addKnot, getPersistentKnotIds } = useRopeContext();
   const reactFlowInstance = useReactFlow();
   
   // Track the connection start parameters
@@ -39,6 +42,8 @@ const RopeEditor = () => {
   const [valueNodePositions, setValueNodePositions] = useState<Record<string, { x: number, y: number }>>({});
   // Track value edges separately
   const [valueEdges, setValueEdges] = useState<Edge[]>([]);
+  // Track action selector nodes
+  const [actionSelectorNodes, setActionSelectorNodes] = useState<Node[]>([]);
   
   // Initialize nodes from knots
   const initialKnotNodes: Node[] = knots.map((knot) => ({
@@ -59,10 +64,58 @@ const RopeEditor = () => {
     animated: true,
   })) : [];
 
+  // Track action selector nodes that have been transformed to knots
+  const [transformedActionSelectors, setTransformedActionSelectors] = useState<string[]>([]);
+  
+  // Track nodes that should persist as knots
+  // This is used to ensure transformed selectors stay as knots
+  const persistentKnotIds = useRef<Set<string>>(new Set());
+  
   // Initialize nodes and edges state
-  const [nodes, setNodes, onNodesChange] = useNodesState([...initialKnotNodes, ...valueNodes]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([...initialKnotNodes, ...valueNodes, ...actionSelectorNodes]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([...initialSequenceEdges, ...valueEdges]);
   
+  // Function to check for and remove any invalid edges
+  const cleanupInvalidEdges = useCallback(() => {
+    console.log('Cleaning up invalid edges...');
+
+    // Get current nodes and edges
+    const currentNodes = reactFlowInstance.getNodes();
+    const currentEdges = reactFlowInstance.getEdges();
+
+    // Get all valid node IDs
+    const nodeIds = new Set(currentNodes.map(node => node.id));
+    
+    // Filter edges to keep only valid ones (both source and target exist)
+    const validEdges = currentEdges.filter(edge => {
+      const sourceExists = nodeIds.has(edge.source);
+      const targetExists = nodeIds.has(edge.target);
+      
+      // Keep the edge only if both source and target exist
+      const isValid = sourceExists && targetExists;
+      
+      if (!isValid) {
+        console.log('Found invalid edge to remove:', edge);
+        return false;
+      }
+      
+      return true;
+    });
+    
+    // If we found invalid edges, update the edges
+    if (validEdges.length < currentEdges.length) {
+      console.log(`Removing ${currentEdges.length - validEdges.length} invalid edges`);
+      reactFlowInstance.setEdges(validEdges);
+      
+      // Also update our tracked value edges
+      setValueEdges(prev => 
+        prev.filter(edge => 
+          nodeIds.has(edge.source) && nodeIds.has(edge.target)
+        )
+      );
+    }
+  }, [reactFlowInstance, setValueEdges]);
+
   // Custom edge change handler to handle connection removals
   const handleEdgesChange = useCallback((changes) => {
     // Process the changes to detect edge removals
@@ -123,6 +176,7 @@ const RopeEditor = () => {
     changes.forEach(change => {
       if (change.type === 'remove') {
         const nodeId = change.id;
+        console.log('Node removal detected:', nodeId);
         
         // Check if it's a value node being removed
         const isValueNode = valueNodes.some(vn => vn.id === nodeId);
@@ -153,15 +207,29 @@ const RopeEditor = () => {
             edge.source !== nodeId && edge.target !== nodeId
           ));
         }
+        
+        // Clean up any edges connected to this node, regardless of node type
+        setEdges(eds => eds.filter(edge => 
+          edge.source !== nodeId && edge.target !== nodeId
+        ));
       }
     });
     
     // Apply the changes
     onNodesChange(changes);
-  }, [valueNodes, onNodesChange, updateKnotValue]);
+    
+    // Immediately clean up any invalid edges
+    cleanupInvalidEdges();
+  }, [valueNodes, onNodesChange, updateKnotValue, setEdges, cleanupInvalidEdges]);
 
-  // Update nodes when knots change
+  // Update nodes when knots or action selectors change
   useEffect(() => {
+    console.log("Effect triggered - updating nodes from state:", {
+      knots: knots.length,
+      valueNodes: valueNodes.length,
+      actionSelectors: actionSelectorNodes.length
+    });
+    
     const updatedKnotNodes = knots.map((knot) => ({
       id: knot.id,
       type: 'knotNode',
@@ -176,30 +244,391 @@ const RopeEditor = () => {
       position: valueNodePositions[vNode.id] || vNode.position
     }));
     
-    // Combine with value nodes
-    setNodes([...updatedKnotNodes, ...updatedValueNodes]);
+    // Get the list of persistent knot IDs
+    const persistentKnots = getPersistentKnotIds();
+    console.log('Persistent knot IDs to preserve:', persistentKnots);
     
-    // Update sequence edges
-    const updatedSequenceEdges = knots.length > 1 ? knots.slice(0, -1).map((knot, index) => ({
-      id: `e${knot.id}-${knots[index + 1].id}`,
-      source: knot.id,
-      sourceHandle: 'output',
-      target: knots[index + 1].id,
-      targetHandle: 'continuity', // Connect to the continuity handle
-      type: 'default', // Use default edge type for cleaner lines
-      animated: true,
-      style: { strokeWidth: 2, stroke: '#3b82f6' }, // Slightly thicker blue lines
-    })) : [];
+    // Filter out action selectors that have been transformed to knots or are registered as persistent
+    const filteredActionSelectors = actionSelectorNodes.filter(node => {
+      // Keep the node only if it's not transformed and not registered as persistent
+      const shouldKeepAsSelector = 
+        !transformedActionSelectors.includes(node.id) && 
+        !persistentKnots.includes(node.id);
+      
+      if (!shouldKeepAsSelector) {
+        console.log(`Node ${node.id} is registered as a knot, filtering out from action selectors`);
+      }
+      
+      return shouldKeepAsSelector;
+    });
     
-    // Combine with value edges
-    setEdges([...updatedSequenceEdges, ...valueEdges]);
-  }, [knots, nodePositions, valueNodes, valueEdges, valueNodePositions, setNodes, setEdges]);
+    // Combine with value nodes and action selector nodes
+    console.log("Updating ReactFlow nodes:", {
+      knots: updatedKnotNodes.length,
+      valueNodes: updatedValueNodes.length,
+      actionSelectors: filteredActionSelectors.length,
+      actionSelectorIds: filteredActionSelectors.map(n => n.id)
+    });
+    
+    const allNodes = [...updatedKnotNodes, ...updatedValueNodes, ...filteredActionSelectors];
+    console.log("Total nodes to render:", allNodes.length);
+    
+    // Set the nodes with all three types
+    setNodes(allNodes);
+    
+    // Clean up any invalid edges before we create new ones
+    cleanupInvalidEdges();
+    
+    // We no longer automatically create sequence edges
+    // Each connection should be created manually by the user
+    const updatedSequenceEdges = [];
+    
+    // Create edges involving action selector nodes
+    // Get existing edges from ReactFlow
+    const currentEdges = reactFlowInstance.getEdges();
+    
+    // Filter out edges involving action selectors
+    const actionSelectorEdges = currentEdges.filter(edge => {
+      const isActionSelectorSource = actionSelectorNodes.some(node => node.id === edge.source);
+      const isActionSelectorTarget = actionSelectorNodes.some(node => node.id === edge.target);
+      return isActionSelectorSource || isActionSelectorTarget;
+    });
+    
+    console.log("Action selector edges:", actionSelectorEdges);
+    
+    // Combine all edge types
+    const allEdges = [...updatedSequenceEdges, ...valueEdges, ...actionSelectorEdges];
+    console.log("Total edges to render:", allEdges.length);
+    
+    // Preserve existing edges and add our new ones
+    setEdges(eds => {
+      // Filter out any edges we're explicitly managing
+      const otherEdges = eds.filter(edge => {
+        // Check if this is a sequence edge (has format e{knotId}-{nextKnotId})
+        const isSequenceEdge = edge.id && edge.id.match(/^e(knot-\d+)-(knot-\d+)$/);
+        
+        // Check if this is a value edge (from value node to knot)
+        const isValueEdge = edge.id && edge.id.startsWith('e-value-') && edge.id.includes('-to-');
+        
+        // Keep edges that are not sequence edges or value edges
+        return !isSequenceEdge && !isValueEdge;
+      });
+      
+      // Create a new set of deduplicated edges by using a Map with edge IDs as keys
+      const edgeMap = new Map();
+      
+      // Add other edges to the map
+      otherEdges.forEach(edge => {
+        edgeMap.set(edge.id, edge);
+      });
+      
+      // Add our managed edges to the map (will overwrite any duplicates by ID)
+      allEdges.forEach(edge => {
+        edgeMap.set(edge.id, edge);
+      });
+      
+      // Convert the map back to an array
+      return Array.from(edgeMap.values());
+    });
+  }, [knots, nodePositions, valueNodes, valueEdges, valueNodePositions, actionSelectorNodes, transformedActionSelectors, setNodes, setEdges, reactFlowInstance, getPersistentKnotIds, cleanupInvalidEdges]);
 
   // Handle connection start
   const onConnectStart = useCallback((_, params) => {
     setConnectStart(params);
   }, []);
 
+  // Standard connection handler
+  const onConnect = useCallback(
+    (params: Edge | Connection) => {
+      // Check if trying to connect to an input handle
+      if (params.targetHandle && params.targetHandle.startsWith('input-')) {
+        const inputIndex = parseInt(params.targetHandle.replace('input-', ''), 10);
+        const targetKnotId = params.target as string;
+        
+        // Check if the source is a value node
+        const sourceNode = [...nodes].find(n => n.id === params.source);
+        if (sourceNode && sourceNode.type === 'valueNode') {
+          // First, check if there's already an edge connected to this input
+          const existingEdge = edges.find(edge => 
+            edge.target === targetKnotId && 
+            edge.targetHandle === params.targetHandle
+          );
+          
+          // If there's an existing edge, remove it first
+          if (existingEdge) {
+            setEdges(edges => edges.filter(e => e.id !== existingEdge.id));
+          }
+          
+          // Create a custom ID for the edge to make it identifiable
+          const edgeId = `e-${params.source}-to-${targetKnotId}-${params.targetHandle}`;
+          
+          // Create the edge with customized properties
+          const newEdge: Edge = {
+            ...params,
+            id: edgeId,
+            type: 'default',
+            animated: true,
+            style: { strokeWidth: 2, stroke: '#22c55e' }, // Green lines for value connections
+          };
+          
+          // Add the new edge
+          setEdges((eds) => [...eds, newEdge]);
+          
+          // Update the knot with the value from the value node
+          const valueNode = sourceNode as Node<ValueNodeData>;
+          if (valueNode.data.value) {
+            updateKnotValue(targetKnotId, inputIndex, valueNode.data.value);
+          }
+          
+          // Update the value node to track which inputs it's connected to
+          // This is useful for propagating value changes
+          const valueNodeData = valueNode.data;
+          
+          // Update the value node's connections list if it doesn't already include this connection
+          setValueNodes(vnodes => 
+            vnodes.map(vn => {
+              if (vn.id === valueNode.id) {
+                // Create a new connections array if it doesn't exist
+                const connections = vn.data.connections || [];
+                
+                // Add the new connection if it doesn't exist
+                const newConnection = { targetId: targetKnotId, inputIndex };
+                const connectionExists = connections.some(
+                  c => c.targetId === targetKnotId && c.inputIndex === inputIndex
+                );
+                
+                if (!connectionExists) {
+                  return {
+                    ...vn,
+                    data: {
+                      ...vn.data,
+                      connections: [...connections, newConnection]
+                    }
+                  };
+                }
+              }
+              return vn;
+            })
+          );
+        }
+      } else {
+        // Standard edge (for continuity connections)
+        setEdges((eds) => addEdge({
+          ...params,
+          type: 'default',
+          animated: true,
+          style: { strokeWidth: 2, stroke: '#3b82f6' }, // Blue lines for continuity
+        }, eds));
+      }
+    },
+    [nodes, edges, setEdges, setValueNodes, updateKnotValue]
+  );
+
+  // Placeholder comment - we removed the duplicate cleanupInvalidEdges function
+  // The first declaration is at the top of the file
+
+  const onNodeDragStop = useCallback(
+    (_: any, node: Node) => {
+      // Get persistent knot IDs
+      const persistentKnots = getPersistentKnotIds();
+      
+      // Update positions based on node type
+      if (node.type === 'knotNode' || persistentKnots.includes(node.id)) {
+        // Update knot positions in the context - include persistent knots even if they're a different type
+        console.log('Saving knot position for:', node.id);
+        setNodePosition(node.id, node.position);
+        
+        // We no longer need to refresh sequence edges, as they're no longer automatically created
+        // Just make sure to clean up any invalid edges
+        cleanupInvalidEdges();
+      } else if (node.type === 'valueNode') {
+        // Update value node positions in our local state
+        setValueNodePositions(prev => ({
+          ...prev,
+          [node.id]: node.position
+        }));
+      } else {
+        // For other node types, at least log the position update
+        console.log('Node drag stop for:', node.id, node.type, node.position);
+      }
+      
+      // Clean up any invalid edges after dragging
+      cleanupInvalidEdges();
+    },
+    [setNodePosition, getPersistentKnotIds, cleanupInvalidEdges, knots, setEdges]
+  );
+  
+  // Get the resolved sentence for the entire rope
+  const getResolvedRope = useCallback(() => {
+    // Get all knots in order and extract their resolved sentences
+    const resolvedSentences = knots
+      .filter(knot => knot.resolvedSentence)
+      .map(knot => knot.resolvedSentence);
+    
+    return resolvedSentences.join(' → ');
+  }, [knots]);
+  
+  // Track whether we should show the resolved rope
+  const [showResolvedRope, setShowResolvedRope] = useState(false);
+
+  // Function to add a new knot node for the onAddNode prop
+  const handleAddDefaultNode = useCallback(() => {
+    // Create a new knot at a random position
+    const id = `knot-${Date.now()}`;
+    const position = { 
+      x: 100 + Math.random() * 200, 
+      y: 100 + Math.random() * 100 
+    };
+    setNodePosition(id, position);
+    
+    // Use a default protocol action when adding a new knot
+    const defaultAction = {
+      protocol: 'default',
+      action: 'default',
+      sentence: 'New sentence with {0} and {1}'
+    };
+    addKnot(defaultAction, id);
+  }, [setNodePosition, addKnot]);
+
+  // Track action selector nodes that are currently being transformed
+  // This prevents automatic creation of new action selectors during transformation
+  const [transformingSelectors, setTransformingSelectors] = useState<string[]>([]);
+
+  // Handle selecting an action from an action selector node
+  const handleSelectAction = useCallback((actionSelectorId: string, action: ProtocolAction) => {
+    console.log('handleSelectAction called with ID:', actionSelectorId);
+    console.log('Action to create:', action);
+    
+    // Mark this selector as being transformed to prevent auto-creation of new selectors
+    setTransformingSelectors(prev => [...prev, actionSelectorId]);
+    
+    // First, search in the latest ReactFlow nodes since they're the actual rendered elements
+    const currentNodes = reactFlowInstance.getNodes();
+    console.log('Current ReactFlow nodes:', currentNodes.map(n => ({ id: n.id, type: n.type })));
+    
+    // Find the action selector node from the current ReactFlow nodes
+    let actionSelectorNode = currentNodes.find(node => node.id === actionSelectorId);
+    
+    if (!actionSelectorNode) {
+      console.error('Action selector node not found in ReactFlow nodes for ID:', actionSelectorId);
+      
+      // As a fallback, try using our tracked state
+      const fallbackNode = actionSelectorNodes.find(node => node.id === actionSelectorId);
+      if (!fallbackNode) {
+        console.error('Action selector node also not found in tracked state');
+        return;
+      }
+      console.log('Using fallback node from tracked state:', fallbackNode);
+      
+      // Continue with the fallback node
+      actionSelectorNode = fallbackNode as any;
+    }
+    
+    console.log('Found action selector node:', actionSelectorNode);
+    
+    const position = actionSelectorNode.position;
+    const isFromConnection = actionSelectorNode.data?.isFromConnection || false;
+    
+    // Create a new knot ID with the current timestamp to ensure uniqueness
+    const newKnotId = `knot-${Date.now()}`;
+    
+    // Set the position for the new knot in our tracker
+    setNodePosition(newKnotId, position);
+    
+    // Add the knot to the rope context
+    addKnot(action, newKnotId);
+    
+    // Create the knot node for ReactFlow
+    const newKnotNode = {
+      id: newKnotId,
+      type: 'knotNode',
+      position,
+      data: { 
+        knot: {
+          id: newKnotId,
+          sentence: action.sentence,
+          protocol: action.protocol,
+          action: action.action,
+        }
+      },
+    };
+    
+    // Update connections if needed
+    if (isFromConnection) {
+      setEdges(eds => {
+        // Find edges targeting the action selector
+        const edgesToUpdate = eds.filter(edge => edge.target === actionSelectorId);
+        
+        // Create new edges pointing to the new knot
+        const newEdges = edgesToUpdate.map(edge => ({
+          ...edge,
+          id: `${edge.id}-updated`,
+          target: newKnotId,
+          targetHandle: edge.targetHandle === 'continuity' ? 'continuity' : edge.targetHandle
+        }));
+        
+        // Return updated edges
+        return [...eds.filter(edge => edge.target !== actionSelectorId), ...newEdges];
+      });
+    }
+    
+    // Directly update ReactFlow nodes for immediate UI update
+    reactFlowInstance.setNodes(nodes => {
+      console.log('Directly updating ReactFlow nodes, removing:', actionSelectorId, 'adding:', newKnotId);
+      return [
+        ...nodes.filter(node => node.id !== actionSelectorId),
+        newKnotNode
+      ];
+    });
+    
+    // Mark this action selector as transformed to prevent it from reappearing
+    setTransformedActionSelectors(prev => [...prev, actionSelectorId]);
+    
+    // Update our tracked action selector nodes
+    setActionSelectorNodes(nodes => 
+      nodes.filter(node => node.id !== actionSelectorId)
+    );
+    
+  }, [reactFlowInstance, actionSelectorNodes, setNodePosition, addKnot, setEdges, setActionSelectorNodes, setTransformedActionSelectors]);
+  
+  // Handle double-click on the pane to add a new action selector node
+  const onPaneDoubleClick = useCallback((event: React.MouseEvent) => {
+    // Get the click position in flow coordinates
+    const position = reactFlowInstance.screenToFlowPosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
+    
+    // Create a unique ID for the action selector node
+    const id = `action-selector-${Date.now()}`;
+    
+    // Create the new action selector node
+    const newNode: Node = {
+      id,
+      type: 'actionSelectorNode',
+      position,
+      data: { 
+        id,
+        onSelectAction: handleSelectAction,
+        isFromConnection: false
+      },
+    };
+    
+    // First update the ReactFlow nodes directly
+    setNodes(currentNodes => {
+      const updatedNodes = [...currentNodes, newNode];
+      console.log('Updating ReactFlow nodes with new action selector:', updatedNodes);
+      return updatedNodes;
+    });
+    
+    // Then update our action selector tracking
+    setActionSelectorNodes(prev => {
+      const updatedSelectorNodes = [...prev, newNode];
+      console.log('Adding to actionSelectorNodes:', updatedSelectorNodes);
+      return updatedSelectorNodes;
+    });
+  }, [reactFlowInstance, handleSelectAction, setNodes, setActionSelectorNodes]);
+  
   // Handle connection end
   const onConnectEnd = useCallback(
     (event) => {
@@ -441,249 +870,171 @@ const RopeEditor = () => {
         }));
       } 
       else if (isFromOutputHandle) {
-        // Create a new knot node when dragging from the output handle
+        // Check if the source node is currently being transformed
+        // If it is, we don't want to create a new action selector
+        const sourceNodeId = connectStart.nodeId as string;
+        const isSourceNodeBeingTransformed = transformingSelectors.includes(sourceNodeId);
         
-        // Create a new template with a timestamp ID to ensure uniqueness
-        const timestamp = Date.now();
-        const newKnotId = `knot-${timestamp}`;
-        const defaultTemplate = 'New action with {0} and {1}';
+        // If the source node is being transformed, bail out early
+        if (isSourceNodeBeingTransformed) {
+          console.log('Source node is being transformed, skipping auto-creation of action selector');
+          return;
+        }
         
-        // First, set the position in nodePositions for the new knot 
-        // This needs to happen before adding the knot
-        setNodePosition(newKnotId, position);
+        // Create a unique ID for the action selector node
+        const id = `action-selector-${Date.now()}`;
         
-        // Add the new knot to the system
-        // We use setTimeout with 0ms delay to ensure the position is set in the state
-        // before the knot is added, so that the useEffect picks up the position
-        setTimeout(() => {
-          addKnot(defaultTemplate, newKnotId);
-        }, 0);
+        // Create the new action selector node with connection info
+        const newNode: Node = {
+          id,
+          type: 'actionSelectorNode',
+          position,
+          data: { 
+            id,
+            onSelectAction: handleSelectAction,
+            isFromConnection: true
+          },
+        };
+        
+        // First update the ReactFlow nodes directly
+        setNodes(currentNodes => {
+          const updatedNodes = [...currentNodes, newNode];
+          console.log('Drag-create: Updating ReactFlow nodes with new action selector:', updatedNodes);
+          return updatedNodes;
+        });
+        
+        // Then update our action selector tracking
+        setActionSelectorNodes(prev => {
+          const updatedSelectorNodes = [...prev, newNode];
+          console.log('Drag-create: Adding to actionSelectorNodes:', updatedSelectorNodes);
+          return updatedSelectorNodes;
+        });
+        
+        // Create an edge from the source node to this action selector
+        if (connectStart.nodeId) {
+          const newEdge: Edge = {
+            id: `e${connectStart.nodeId}-${id}`,
+            source: connectStart.nodeId as string,
+            sourceHandle: 'output',
+            target: id,
+            targetHandle: 'continuity',
+            type: 'default',
+            animated: true,
+            style: { strokeWidth: 2, stroke: '#3b82f6' },
+          };
+          
+          // Add the edge with both ReactFlow and our state
+          console.log('Creating connection edge from source:', connectStart.nodeId, 'to action selector:', id);
+          
+          // First directly update ReactFlow for immediate visual feedback
+          reactFlowInstance.addEdges([newEdge]);
+          
+          // Then update our tracked state
+          setEdges(eds => {
+            // Remove any duplicate edges between the same nodes
+            const filteredEdges = eds.filter(e => 
+              !(e.source === connectStart.nodeId && e.target === id)
+            );
+            return [...filteredEdges, newEdge];
+          });
+          
+          // No need to update the view - we want to maintain the user's current view
+        }
       }
       
       // Clear the connection start
       setConnectStart(null);
     },
-    [connectStart, reactFlowInstance, knots, updateKnotValue, setValueNodePositions, setNodePosition, addKnot, nodes, valueNodes, setValueNodes, setValueEdges]
+    [connectStart, reactFlowInstance, knots, updateKnotValue, setValueNodePositions, nodes, valueNodes, setValueNodes, setValueEdges, edges, setEdges, transformingSelectors]
   );
-
-  // Standard connection handler
-  const onConnect = useCallback(
-    (params: Edge | Connection) => {
-      // Check if trying to connect to an input handle
-      if (params.targetHandle && params.targetHandle.startsWith('input-')) {
-        const inputIndex = parseInt(params.targetHandle.replace('input-', ''), 10);
-        const targetKnotId = params.target as string;
-        
-        // Check if the source is a value node
-        const sourceNode = [...nodes].find(n => n.id === params.source);
-        if (sourceNode && sourceNode.type === 'valueNode') {
-          // First, check if there's already an edge connected to this input
-          const existingEdge = edges.find(edge => 
-            edge.target === targetKnotId && 
-            edge.targetHandle === params.targetHandle
-          );
-          
-          // If there's an existing edge, remove it first
-          if (existingEdge) {
-            setEdges(edges => edges.filter(e => e.id !== existingEdge.id));
-          }
-          
-          // Create a custom ID for the edge to make it identifiable
-          const edgeId = `e-${params.source}-to-${targetKnotId}-${params.targetHandle}`;
-          
-          // Create the edge with customized properties
-          const newEdge: Edge = {
-            ...params,
-            id: edgeId,
-            type: 'default',
-            animated: true,
-            style: { strokeWidth: 2, stroke: '#22c55e' }, // Green lines for value connections
-          };
-          
-          // Add the new edge
-          setEdges((eds) => [...eds, newEdge]);
-          
-          // Update the knot with the value from the value node
-          const valueNode = sourceNode as Node<ValueNodeData>;
-          if (valueNode.data.value) {
-            updateKnotValue(targetKnotId, inputIndex, valueNode.data.value);
-          }
-          
-          // Update the value node to track which inputs it's connected to
-          // This is useful for propagating value changes
-          const valueNodeData = valueNode.data;
-          
-          // Update the value node's connections list if it doesn't already include this connection
-          setValueNodes(vnodes => 
-            vnodes.map(vn => {
-              if (vn.id === valueNode.id) {
-                // Create a new connections array if it doesn't exist
-                const connections = vn.data.connections || [];
-                
-                // Add the new connection if it doesn't exist
-                const newConnection = { targetId: targetKnotId, inputIndex };
-                const connectionExists = connections.some(
-                  c => c.targetId === targetKnotId && c.inputIndex === inputIndex
-                );
-                
-                if (!connectionExists) {
-                  return {
-                    ...vn,
-                    data: {
-                      ...vn.data,
-                      connections: [...connections, newConnection]
-                    }
-                  };
-                }
-              }
-              return vn;
-            })
-          );
-        }
-      } else {
-        // Standard edge (for continuity connections)
-        setEdges((eds) => addEdge({
-          ...params,
-          type: 'default',
-          animated: true,
-          style: { strokeWidth: 2, stroke: '#3b82f6' }, // Blue lines for continuity
-        }, eds));
-      }
-    },
-    [nodes, edges, setEdges, setValueNodes, updateKnotValue]
-  );
-
-  const onNodeDragStop = useCallback(
-    (_: any, node: Node) => {
-      // Update positions based on node type
-      if (node.type === 'knotNode') {
-        // Update knot positions in the context
-        setNodePosition(node.id, node.position);
-      } else if (node.type === 'valueNode') {
-        // Update value node positions in our local state
-        setValueNodePositions(prev => ({
-          ...prev,
-          [node.id]: node.position
-        }));
-      }
-    },
-    [setNodePosition]
-  );
-
-  // Get the resolved sentence for the entire rope
-  const getResolvedRope = useCallback(() => {
-    // Get all knots in order and extract their resolved sentences
-    const resolvedSentences = knots
-      .filter(knot => knot.resolvedSentence)
-      .map(knot => knot.resolvedSentence);
-    
-    return resolvedSentences.join(' → ');
-  }, [knots]);
-  
-  // Track whether we should show the resolved rope
-  const [showResolvedRope, setShowResolvedRope] = useState(false);
 
   return (
-    <div className="flex-grow h-full relative">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={handleEdgesChange}
-        onConnect={onConnect}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        onNodeDragStop={onNodeDragStop}
-        nodeTypes={nodeTypes}
-        fitView
-        deleteKeyCode="Delete"
-        nodesFocusable={true}
-        selectNodesOnDrag={false}
-      >
-        <Background variant="dots" gap={12} size={1} />
-        <MiniMap nodeStrokeWidth={3} zoomable pannable />
-        <FlowControls />
-        
-        {/* Floating control panel */}
-        <div className="absolute top-4 left-4 z-10 bg-white bg-opacity-80 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
-          <h3 className="text-md font-semibold mb-2">Rope Editor</h3>
-          <div className="flex space-x-2 mb-3">
-            <button 
-              className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded"
-              onClick={() => {
-                // Create a new knot at a random position
-                const id = `knot-${Date.now()}`;
-                const position = { 
-                  x: 100 + Math.random() * 200, 
-                  y: 100 + Math.random() * 100 
-                };
-                setNodePosition(id, position);
-                setTimeout(() => {
-                  addKnot('New sentence with {0} and {1}', id);
-                }, 0);
-              }}
-            >
-              Add Knot
-            </button>
-            <button 
-              className="bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded"
-              onClick={() => {
-                // Fit the view to see all nodes
-                reactFlowInstance.fitView({ padding: 0.2 });
-              }}
-            >
-              Fit View
-            </button>
-          </div>
+    <div className="flex-grow h-full relative flex">
+      <div className="flex-grow h-full">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={handleEdgesChange}
+          onConnect={onConnect}
+          onConnectStart={onConnectStart}
+          onConnectEnd={onConnectEnd}
+          onNodeDragStop={onNodeDragStop}
+          onPaneDoubleClick={onPaneDoubleClick}
+          nodeTypes={nodeTypes}
+          // Removed fitView to prevent automatic zooming when nodes are added
+          deleteKeyCode="Delete"
+          nodesFocusable={true}
+          selectNodesOnDrag={false}
+          proOptions={{ hideAttribution: true }}
+          zoomOnScroll={false}
+          zoomOnPinch={true}
+          panOnScroll={true}
+          zoomOnDoubleClick={false}
+          zoomActivationKeyCode="Meta"
+        >
+          <Background variant="dots" gap={12} size={1} />
           
-          <div className="flex items-center mb-2">
-            <label className="inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox"
-                className="sr-only peer"
-                checked={showResolvedRope}
-                onChange={() => setShowResolvedRope(!showResolvedRope)}
-              />
-              <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-              <span className="ms-2 text-xs font-medium text-gray-700">Show Resolved Rope</span>
-            </label>
-          </div>
-          
-          <div className="text-xs text-gray-600 space-y-1">
-            <p><span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span> Drag from left handles for value nodes</p>
-            <p><span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-1"></span> Drag from top-right handle for new knots</p>
-            <p>Press <kbd className="bg-gray-200 px-1 rounded">Delete</kbd> to remove nodes</p>
-          </div>
-        </div>
-        
-        {/* Resolved rope panel */}
-        {showResolvedRope && (
-          <div className="absolute bottom-4 left-4 right-4 z-10 bg-white bg-opacity-95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-blue-100 max-h-36 overflow-auto">
-            <div className="flex items-center mb-2">
-              <svg className="w-4 h-4 text-blue-500 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-              <h4 className="text-sm font-semibold text-blue-900">Resolved Rope</h4>
-            </div>
-            <div className="text-sm font-mono p-2 bg-blue-50 rounded-md border border-blue-100 break-all">
-              {getResolvedRope() || (
-                <span className="text-gray-500 italic">Complete all required inputs to see the resolved rope</span>
-              )}
+          {/* Floating control panel */}
+          <div className="absolute top-4 left-4 z-10 bg-white bg-opacity-80 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
+            <h3 className="text-md font-semibold mb-2">Rope Editor</h3>
+            <div className="flex space-x-2 mb-3">
+              <button 
+                className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded"
+                onClick={() => {
+                  // Create an action selector in the center of the current view
+                  const { x, y } = reactFlowInstance.getViewport();
+                  const centerPosition = reactFlowInstance.project({
+                    x: window.innerWidth / 2 - x,
+                    y: window.innerHeight / 2 - y,
+                  });
+                  
+                  // Create a unique ID for the action selector node
+                  const id = `action-selector-${Date.now()}`;
+                  
+                  // Create the new action selector node
+                  const newNode: Node = {
+                    id,
+                    type: 'actionSelectorNode',
+                    position: centerPosition,
+                    data: { 
+                      id,
+                      onSelectAction: handleSelectAction,
+                      isFromConnection: false
+                    },
+                  };
+                  
+                  // First update the ReactFlow nodes directly
+                  setNodes(currentNodes => {
+                    const updatedNodes = [...currentNodes, newNode];
+                    console.log('Button-click: Updating ReactFlow nodes with new action selector:', updatedNodes);
+                    return updatedNodes;
+                  });
+                  
+                  // Then update our action selector tracking
+                  setActionSelectorNodes(prev => {
+                    const updatedSelectorNodes = [...prev, newNode];
+                    console.log('Button-click: Adding to actionSelectorNodes:', updatedSelectorNodes);
+                    return updatedSelectorNodes;
+                  });
+                }}
+              >
+                Add Action
+              </button>
             </div>
           </div>
-        )}
-      </ReactFlow>
+        
+        </ReactFlow>
+      </div>
     </div>
   );
 };
 
 // Wrapper component to provide ReactFlow context
-const RopeEditorWithProvider = () => {
-  return (
-    <ReactFlowProvider>
-      <RopeEditor />
-    </ReactFlowProvider>
-  );
-};
+const RopeEditorWithProvider = () => (
+  <ReactFlowProvider>
+    <RopeEditor />
+  </ReactFlowProvider>
+);
 
 export default RopeEditorWithProvider;

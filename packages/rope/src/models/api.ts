@@ -11,7 +11,7 @@ import { ApiError, RopeError } from '../services/errors';
 export class PlugAPI {
   private apiKey: string;
   private client: AxiosInstance;
-  private baseURL = 'https://api.onplug.io';
+  private baseURL = 'http://localhost:8080';
   private cache: SchemaCache;
 
   /**

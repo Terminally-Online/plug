@@ -18,5 +18,12 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
+    proxy: {
+      '/solver': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
 })
