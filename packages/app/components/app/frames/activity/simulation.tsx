@@ -26,16 +26,15 @@ export const SimulationFrame: FC<{
 	const actions = activity?.inputs
 
 	const handleShare = useCallback(() => {
-		if (!activity) return
+		if (!activity || !activity.plug) return
 
 		try {
 			const cleanedActions = activity.inputs.map(action => ({
 				protocol: action.protocol?.toLowerCase?.(),
 				sentence: solverActions[action.protocol]["schema"][action.action].sentence
 			}))
-			console.log("cleanedActions", cleanedActions)
 			const params = new URLSearchParams({
-				name: activity.plug.name.slice(0, 100), // Reasonable name length
+				name: activity.plug?.name.slice(0, 100), // Reasonable name length
 				protocols: cleanedActions.map(a => a.protocol).join(","),
 				sentences: cleanedActions.map(a => a.sentence).join(",")
 			})
@@ -45,7 +44,7 @@ export const SimulationFrame: FC<{
 			window.open(url, "_blank")
 		} catch (e) {
 			console.error("Share generation failed:", e, {
-				plugId: activity.plug.id,
+				plugId: activity.plug?.id,
 				actions: activity.inputs
 			})
 		}
@@ -62,7 +61,7 @@ export const SimulationFrame: FC<{
 			handleBack={() => frame()}
 			hasOverlay={true}
 		>
-			<ActionPreview index={index} item={activity.plug.id} actions={actions} errors={simulation.errors ?? []} />
+			<ActionPreview index={index} item={activity.plug?.id} actions={actions} errors={simulation.errors ?? []} />
 
 			{simulation.error && (
 				<p className="mx-auto mt-4 px-8 text-center text-sm font-bold text-plug-red">
@@ -70,7 +69,7 @@ export const SimulationFrame: FC<{
 				</p>
 			)}
 
-			{simulation.status === "success" ? (
+			{activity.plug && simulation.status === "success" ? (
 				<Button
 					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
 					onClick={handleShare}
@@ -78,11 +77,11 @@ export const SimulationFrame: FC<{
 					<Share size={18} className="opacity-60" />
 					Share
 				</Button>
-			) : (
+			) : simulation.status !== "success" && (
 				<Button
 					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
 					onClick={() => {
-						const message = [`Socket: ${activity.plug.socketId}`, `Simulation ${simulation.id}`].join(" - ")
+						const message = [`Socket: ${activity.plug?.socketId ?? "EOA"}`, `Simulation ${simulation.id}`].join(" - ")
 
 						const encodedMessage = encodeURIComponent(message)
 						window.open(`https://t.me/evmchance?text=${encodedMessage}`, "_blank")
