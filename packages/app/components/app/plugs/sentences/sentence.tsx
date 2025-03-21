@@ -337,7 +337,6 @@ export const Sentence: FC<SentenceProps> = memo(
 						isValid && isComplete && !error
 							? "bg-plug-yellow hover:border-plug-yellow"
 							: "bg-plug-red hover:border-plug-red",
-						linked && linked.length > 0 && "bg-orange-300 hover:border-orange:300",
 						!(!dragging && plug?.actions && actionIndex < plug?.actions.length - 1) && "bg-plug-white"
 					)}
 				/>
