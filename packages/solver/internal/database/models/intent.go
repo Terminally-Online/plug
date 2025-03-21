@@ -14,22 +14,23 @@ import (
 )
 
 type Intent struct {
-	Id               string              `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status           string              `json:"status,omitempty" gorm:"type:text;default:'active'"`
-	ChainId          uint64              `json:"chainId" gorm:"type:int"`
-	From             string              `json:"from,omitempty" gorm:"type:text"`
-	Value            *types.BigInt       `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
-	GasLimit         *uint64             `json:"gasLimit,omitempty" gorm:"type:int"`
-	Inputs           types.Inputs        `json:"inputs,omitempty" gorm:"type:jsonb"`
-	Options          types.Options       `json:"options,omitempty" gorm:"type:jsonb"`
-	Frequency        int                 `json:"frequency,omitempty" gorm:"type:int"`
-	AccessList       ethTypes.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
-	StartAt          *time.Time          `json:"startAt,omitempty" gorm:"type:timestamp"`
-	EndAt            *time.Time          `json:"endAt,omitempty" gorm:"type:timestamp"`
-	PeriodEndAt      *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
-	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
-	Saved            bool                `json:"saved,omitempty" gorm:"type:boolean"`
-	Locked           bool                `json:"locked,omitempty" gorm:"type:boolean"`
+	Id                         string              `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Status                     string              `json:"status,omitempty" gorm:"type:text;default:'active'"`
+	ChainId                    uint64              `json:"chainId" gorm:"type:int"`
+	From                       string              `json:"from,omitempty" gorm:"type:text"`
+	Value                      *types.BigInt       `json:"value,omitempty" gorm:"type:bigint"`
+	GasLimit                   *uint64             `json:"gasLimit,omitempty" gorm:"type:int"`
+	Inputs                     types.Inputs        `json:"inputs,omitempty" gorm:"type:jsonb"`
+	Options                    types.Options       `json:"options,omitempty" gorm:"type:jsonb"`
+	Frequency                  int                 `json:"frequency,omitempty" gorm:"type:int"`
+	AccessList                 ethTypes.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
+	StartAt                    *time.Time          `json:"startAt,omitempty" gorm:"type:timestamp"`
+	EndAt                      *time.Time          `json:"endAt,omitempty" gorm:"type:timestamp"`
+	PeriodEndAt                *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
+	NextSimulationAt           *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
+	Saved                      bool                `json:"saved,omitempty" gorm:"type:boolean"`
+	Locked                     bool                `json:"locked,omitempty" gorm:"type:boolean"`
+	SignatureExpirationMinutes int                 `json:"signatureExpirationMinutes,omitempty" gorm:"type:int;default:5"`
 
 	Runs      []Run                 `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
 	LivePlugs []signature.LivePlugs `json:"-" gorm:"foreignKey:IntentId;references:Id"`
