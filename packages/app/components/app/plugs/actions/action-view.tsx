@@ -2,8 +2,7 @@ import { FC, useCallback, useMemo } from "react"
 
 import { useAtom, useSetAtom } from "jotai"
 
-import { DropResult } from "@hello-pangea/dnd"
-
+import { Sentences } from "@/components/app/plugs/sentences/sentences"
 import { Callout } from "@/components/app/utils/callout"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
@@ -11,9 +10,7 @@ import { formatTitle, getValues, SchemasRequestAction, useConnect } from "@/lib"
 import { api } from "@/server/client"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
-import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
-
-import { Sentences } from "../sentences/sentences"
+import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
 const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
@@ -31,7 +28,6 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
-	const setPlugs = useSetAtom(plugsAtom)
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
 	const own = (plug && session && session.address === plug.socketId) || false
 	const editPlug = useSetAtom(editPlugAtom)
@@ -46,9 +42,6 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 	const baseSuggestions = useMemo(
 		() =>
 			Object.entries(solverActions).flatMap(([protocol, actions]) => {
-				// const chains = actions.metadata.chains
-				// if (!chains.some(chain => connectedChains.map(c => c.id as number).includes(chain.chainIds))) return []
-
 				return Object.keys(actions.schema).map(action => ({
 					protocol,
 					action
@@ -74,32 +67,16 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 			.slice(0, 3)
 	}, [baseSuggestions, plug])
 
-	const handleDragEnd = (result: DropResult) => {
-		if (!result.destination || !plug) return
-
-		const newActions = [...plug.actions]
-		const [removed] = newActions.splice(result.source.index, 1)
-		newActions.splice(result.destination.index, 0, removed)
-
-		const actions = JSON.stringify(newActions)
-
-		setPlugs(prev => prev.map(p => (plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p)))
-		edit({
-			id: plug.id,
-			actions
-		})
-	}
-
 	if (!plug) return null
 
 	return (
-		<div className="mb-72 flex flex-col">
-			<Callout.EmptyPlug index={index} isEmpty={plug.actions.length === 0} />
+		<div className="flex flex-col h-full">
+			<Callout.EmptyPlug className="my-96" index={index} isEmpty={plug.actions.length === 0} />
 
 			<Sentences index={index} />
 
 			{own && plug.actions.length > 0 && suggestions.length > 0 && (
-				<div className="mt-12">
+				<div className="mt-12 mb-72">
 					<h4 className="mb-2 font-bold opacity-40">Suggestions</h4>
 					<div className="flex flex-col gap-2">
 						{suggestions.map((suggestion, suggestionIndex) => (
