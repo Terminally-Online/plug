@@ -78,9 +78,7 @@ const ProfileStats = () => {
 	const [hoveredPeriod, setHoveredPeriod] = useState<number | undefined>(undefined)
 	const [toggledStats, setToggledStats] = useState<boolean[]>([false, false, false, false])
 
-	const { data: statsData } = api.socket.stats.get.useQuery(undefined, {
-		refetchInterval: 60 * 1000
-	})
+	const { data: statsData } = api.socket.stats.get.useQuery(undefined)
 
 	const stats: number[][] =
 		statsData?.periods.map((_, index) => [

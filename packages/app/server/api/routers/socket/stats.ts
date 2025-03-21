@@ -1,136 +1,131 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { Prisma } from "@prisma/client"
+
+function getWeekStart(date: Date) {
+	const result = new Date(date)
+	result.setDate(date.getDate() - ((date.getDay() + 6) % 7))
+	result.setUTCHours(0, 0, 0, 0)
+	return result
+}
+
+const QUERY_TIMEOUT = 10000;
 
 export const stats = createTRPCRouter({
-	get: protectedProcedure.query(async ({ ctx }) => {
-		const now = new Date()
-		const periods = Array.from({ length: 4 })
-			.map((_, i) => {
-				const date = new Date()
-				date.setDate(now.getDate() - i * 7)
-				return date
-			})
-			.reverse()
+	get: protectedProcedure
+		.query(async ({ ctx }) => {
+			const address = ctx.session.address;
+			const now = new Date()
 
-		const getWeekStart = (date: Date) => {
-			const result = new Date(date)
-			result.setDate(date.getDate() - ((date.getDay() + 6) % 7))
-			result.setUTCHours(0, 0, 0, 0)
-			return result
-		}
-
-		const [referralCounts, viewCounts, plugCreationCounts, forkCounts] = await Promise.all([
-			// Referrals - how many users were referred by this user
-			Promise.all(
-				periods.map(async date => {
+			const periodRanges = Array.from({ length: 4 })
+				.map((_, i) => {
+					const date = new Date(now)
+					date.setDate(now.getDate() - i * 7)
 					const weekStart = getWeekStart(date)
 					const weekEnd = new Date(weekStart)
 					weekEnd.setDate(weekStart.getDate() + 7)
-
-					return ctx.db.socketIdentity.count({
-						where: {
-							approvedAt: {
-								gte: weekStart,
-								lt: weekEnd
-							},
-							referrerId: ctx.session.address
-						}
-					})
+					return {
+						weekStart,
+						weekEnd,
+						weekStartIso: weekStart.toISOString(),
+						weekEndIso: new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString()
+					}
 				})
-			),
+				.reverse()
 
-			// Views - how many times plugs were viewed
-			Promise.all(
-				periods.map(async date => {
-					const weekStart = getWeekStart(date)
-					const weekEnd = new Date(weekStart)
-					weekEnd.setDate(weekStart.getDate() + 7)
+			const periodStarts = periodRanges.map(p => p.weekStart.toISOString())
 
-					const views = await ctx.db.view.aggregate({
-						where: {
-							plug: {
-								socketId: ctx.session.address
-							},
-							date: {
-								gte: weekStart,
-								lt: weekEnd
-							}
-						},
-						_sum: {
-							views: true
-						}
-					})
+			const createTimedQuery = <T>(query: Promise<T>): Promise<T> => {
+				const timeout = new Promise<never>((_, reject) =>
+					setTimeout(() => reject(new Error('Query timeout')), QUERY_TIMEOUT)
+				);
+				return Promise.race([query, timeout]) as Promise<T>;
+			};
 
-					return views._sum.views || 0
-				})
-			),
+			try {
+				const [
+					plugCreationData,
+					viewsData,
+					referralsData,
+					forksData,
+				] = await Promise.all([
+					createTimedQuery(ctx.db.$queryRaw`
+							SELECT 
+								${Prisma.raw(periodStarts.map((start, i) => {
+						const end = i < periodStarts.length - 1 ? periodStarts[i + 1] : now.toISOString()
+						return `COUNT(CASE WHEN "createdAt" >= '${start}' AND "createdAt" < '${end}' THEN 1 END) as period_${i}`
+					}).join(', '))}
+							FROM "Plug"
+							WHERE "socketId" = ${address}
+						`),
 
-			// Plugs Created - how many new plugs the creator made
-			Promise.all(
-				periods.map(async date => {
-					const weekStart = getWeekStart(date)
-					const weekEnd = new Date(weekStart)
-					weekEnd.setDate(weekStart.getDate() + 7)
+					createTimedQuery(ctx.db.$queryRaw`
+							SELECT 
+								${Prisma.raw(periodStarts.map((start, i) => {
+						const end = i < periodStarts.length - 1 ? periodStarts[i + 1] : now.toISOString()
+						return `COALESCE(SUM(CASE WHEN v."date" >= '${start}' AND v."date" < '${end}' THEN v."views" ELSE 0 END), 0) as period_${i}`
+					}).join(', '))}
+							FROM "View" v
+							JOIN "Plug" p ON v."plugId" = p."id"
+							WHERE p."socketId" = ${address}
+						`),
 
-					return ctx.db.plug.count({
-						where: {
-							socketId: ctx.session.address,
-							createdAt: {
-								gte: weekStart,
-								lt: weekEnd
-							}
-						}
-					})
-				})
-			),
+					createTimedQuery(ctx.db.$queryRaw`
+							SELECT 
+								${Prisma.raw(periodStarts.map((start, i) => {
+						const end = i < periodStarts.length - 1 ? periodStarts[i + 1] : now.toISOString()
+						return `COUNT(CASE WHEN "approvedAt" >= '${start}' AND "approvedAt" < '${end}' THEN 1 END) as period_${i}`
+					}).join(', '))}
+							FROM "SocketIdentity"
+							WHERE "referrerId" = ${address}
+						`),
 
-			// Forks - how many times others forked the creator's plugs
-			Promise.all(
-				periods.map(async date => {
-					const weekStart = getWeekStart(date)
-					const weekEnd = new Date(weekStart)
-					weekEnd.setDate(weekStart.getDate() + 7)
+					createTimedQuery(ctx.db.$queryRaw`
+							SELECT 
+								${Prisma.raw(periodStarts.map((start, i) => {
+						const end = i < periodStarts.length - 1 ? periodStarts[i + 1] : now.toISOString()
+						return `COUNT(CASE WHEN f."createdAt" >= '${start}' AND f."createdAt" < '${end}' THEN 1 END) as period_${i}`
+					}).join(', '))}
+							FROM "Plug" f
+							JOIN "Plug" p ON f."plugForkedId" = p."id"
+							WHERE p."socketId" = ${address}
+							AND f."socketId" != ${address}
+						`)
+				]);
 
-					// Get all plugs created by this user
-					const userPlugs = await ctx.db.plug.findMany({
-						where: { socketId: ctx.session.address },
-						select: { id: true }
-					})
-					
-					const userPlugIds = userPlugs.map(plug => plug.id)
-
-					// Count plugs created by others that forked from user's plugs
-					return ctx.db.plug.count({
-						where: {
-							plugForkedId: {
-								in: userPlugIds
-							},
-							socketId: {
-								not: ctx.session.address // exclude self-forks
-							},
-							createdAt: {
-								gte: weekStart,
-								lt: weekEnd
-							}
-						}
-					})
-				})
-			)
-		])
-
-		return {
-			counts: {
-				referrals: referralCounts,
-				views: viewCounts,
-				plugs: plugCreationCounts,
-				forks: forkCounts
-			},
-			periods: periods.map(date => {
-				const weekStart = getWeekStart(date)
-				return {
-					weekStart: weekStart.toISOString(),
-					weekEnd: new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString()
+				const extractPeriodData = (data: any) => {
+					if (!data || !data[0]) return periodRanges.map(() => 0)
+					return periodStarts.map((_, i) => Number(data[0][`period_${i}`] || 0))
 				}
-			})
+
+				return {
+					counts: {
+						plugs: extractPeriodData(plugCreationData),
+						views: extractPeriodData(viewsData),
+						referrals: extractPeriodData(referralsData),
+						forks: extractPeriodData(forksData)
+					},
+					periods: periodRanges.map(period => ({
+						weekStart: period.weekStartIso,
+						weekEnd: period.weekEndIso
+					}))
+				};
+
+			} catch (error) {
+				console.error("Stats query error:", error);
+
+				return {
+					counts: {
+						plugs: periodRanges.map(() => 0),
+						views: periodRanges.map(() => 0),
+						referrals: periodRanges.map(() => 0),
+						forks: periodRanges.map(() => 0)
+					},
+					periods: periodRanges.map(period => ({
+						weekStart: period.weekStartIso,
+						weekEnd: period.weekEndIso
+					}))
+				};
+			}
 		}
-	})
+		)
 })
