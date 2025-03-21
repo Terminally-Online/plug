@@ -4,8 +4,8 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"solver/internal/database/serializer"
+	"solver/internal/database/types"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"time"
@@ -14,15 +14,17 @@ import (
 )
 
 type Run struct {
-	Id          string        `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status      string        `json:"status" gorm:"type:text"`
-	Error       *string       `json:"error,omitempty" gorm:"type:text"`
-	Errors      []string      `json:"errors,omitempty" gorm:"type:text[]"`
-	GasEstimate uint64        `json:"gasEstimate,omitempty" gorm:"type:bigint"`
-	From        string        `json:"from,omitempty" gorm:"type:text"`
-	To          string        `json:"to,omitempty" gorm:"type:text"`
-	Value       *big.Int      `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
-	Data        RunOutputData `json:"data,omitempty" gorm:"type:jsonb"`
+	Id              string        `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Status          string        `json:"status" gorm:"type:text"`
+	Error           *string       `json:"error,omitempty" gorm:"type:text"`
+	Errors          []string      `json:"errors,omitempty" gorm:"type:text[]"`
+	GasUsed         uint64        `json:"gasEstimate,omitempty" gorm:"type:bigint"`
+	GasPrice        *uint64       `json:"gasPrice,omitempty" gorm:"type:bigint"`
+	From            string        `json:"from,omitempty" gorm:"type:text"`
+	To              string        `json:"to,omitempty" gorm:"type:text"`
+	Value           *types.BigInt `json:"value,omitempty" gorm:"type:bigint"`
+	Data            RunOutputData `json:"data,omitempty" gorm:"type:jsonb"`
+	TransactionHash *string       `json:"transactionHash,omitempty" gorm:"type:text"`
 
 	IntentId    string               `json:"intentId,omitempty" gorm:"type:text"`
 	Intent      Intent               `json:"-" gorm:"foreignKey:IntentId;references:Id"`
