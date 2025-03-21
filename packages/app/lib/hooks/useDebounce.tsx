@@ -36,11 +36,7 @@ export const useDebounce = <T,>(
 	return [value, debounced, setValue, valueRef]
 }
 
-export const useDebounceInline = <T,>(
-	value: T,
-	delay = DEFAULT_DELAY,
-	callback?: (value: T) => void
-): T => {
+export const useDebounceInline = <T,>(value: T, delay = DEFAULT_DELAY, callback?: (value: T) => void): T => {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
 	useEffect(() => {

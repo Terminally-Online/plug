@@ -1,3 +1,5 @@
+import { useSession } from "next-auth/react"
+import Image from "next/image"
 import { useRouter } from "next/router"
 import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
@@ -13,11 +15,9 @@ import { socketModelAtom } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { Frame } from "../app/frames/base"
+import { ConsoleSidebarPane } from "../app/sidebar"
 import { Callout } from "../app/utils/callout"
 import { Button } from "../shared/buttons/button"
-import { useSession } from "next-auth/react"
-import Image from "next/image"
-import { ConsoleSidebarPane } from "../app/sidebar"
 import { Ticket } from "./ticket"
 
 export const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
@@ -85,7 +85,6 @@ export const ConsoleOnboarding = () => {
 		<>
 			<ConsoleSidebarPane />
 			<div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-12">
-
 				<div className="flex h-full max-h-[960px] w-[460px] items-center justify-center rounded-lg border-[1px] border-plug-green/10">
 					{step < 5 && <ConsoleOnboardingStepOne step={step} handleStep={handleStepChange} />}
 				</div>
@@ -293,17 +292,23 @@ export const ConsoleOnboardingStepOne: FC<
 						tooltip={
 							column?.frame
 								? ""
-								: !color ? "Please select a 'color' for your ticket to proceed." : session?.user.id.startsWith("0x")
-									? "Click here to run your Plug and mint your Ticket!"
-									: color ? "Please log in to run your Plug." : ""
+								: !color
+									? "Please select a 'color' for your ticket to proceed."
+									: session?.user.id.startsWith("0x")
+										? "Click here to run your Plug and mint your Ticket!"
+										: color
+											? "Please log in to run your Plug."
+											: ""
 						}
 					>
 						<Button
 							className="flex w-full flex-row items-center justify-center gap-2 py-4"
-							variant={!color || !session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
+							variant={
+								!color || !session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"
+							}
 							onClick={
 								!color || !session?.user.id.startsWith("0x") || step < 2
-									? () => { }
+									? () => {}
 									: () => onboard.mutate({ onboardingColor: color })
 							}
 						>
@@ -336,7 +341,7 @@ export const ConsoleOnboardingStepOne: FC<
 							{colors.map((color, index) => (
 								<button
 									key={index}
-									className="h-full rounded-lg border-[1px] border-plug-white/40 font-bold text-black/60 transition-all duration-200 hover:text-black/80 text-sm"
+									className="h-full rounded-lg border-[1px] border-plug-white/40 text-sm font-bold text-black/60 transition-all duration-200 hover:text-black/80"
 									style={{ backgroundColor: color }}
 									onClick={() => setColor(color)}
 								>
@@ -349,7 +354,7 @@ export const ConsoleOnboardingStepOne: FC<
 					<Button
 						className="mt-2 w-full py-4"
 						variant={color ? "primary" : "primaryDisabled"}
-						onClick={color ? () => frame("onboarding-colors") : () => { }}
+						onClick={color ? () => frame("onboarding-colors") : () => {}}
 						disabled={!color}
 					>
 						{color ? "Done" : "Select Color"}
@@ -377,9 +382,9 @@ export const ConsoleOnboardingStepOne: FC<
 										onClick={
 											actionIndex === 0
 												? () => {
-													handleStep()
-													frame()
-												}
+														handleStep()
+														frame()
+													}
 												: undefined
 										}
 									>

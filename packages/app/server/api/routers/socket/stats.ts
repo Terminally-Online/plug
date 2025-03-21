@@ -18,7 +18,9 @@ export const stats = createTRPCRouter({
 			return result
 		}
 
-		const [referralCounts, viewCounts
+		const [
+			referralCounts,
+			viewCounts
 			// , runCounts, userCounts
 		] = await Promise.all([
 			Promise.all(
@@ -57,7 +59,7 @@ export const stats = createTRPCRouter({
 
 					return views._sum.views || 0
 				})
-			),
+			)
 
 			// Promise.all(
 			// 	periods.map(async date => {

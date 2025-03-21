@@ -1,6 +1,5 @@
-import { createContext, FC, PropsWithChildren, useContext, useRef, useState } from "react"
-
 import Image from "next/image"
+import { createContext, FC, PropsWithChildren, useContext, useRef, useState } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -39,14 +38,13 @@ const TicketContainer: FC<PropsWithChildren> = ({ children }) => {
 		containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`
 	}
 
-
 	return (
 		<MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
 			<div className="group absolute -bottom-1/2 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
 				<div
 					className={cn("flex items-center justify-center")}
 					style={{
-						perspective: "2000px",
+						perspective: "2000px"
 					}}
 				>
 					<div
@@ -55,7 +53,7 @@ const TicketContainer: FC<PropsWithChildren> = ({ children }) => {
 						onMouseMove={handleMouseMove}
 						onMouseLeave={handleMouseLeave}
 						style={{
-							transformStyle: "preserve-3d",
+							transformStyle: "preserve-3d"
 						}}
 					>
 						{children}
@@ -67,15 +65,17 @@ const TicketContainer: FC<PropsWithChildren> = ({ children }) => {
 }
 
 export const Ticket: FC<TicketProps> = ({ color }) => {
-	return <div className="-z-1 absolute inset-0 select-none overflow-hidden rounded-b-lg [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]">
-		<TicketContainer>
-			<Image
-				className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-				src={`${process.env.NEXT_PUBLIC_APP_URL}/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}`}
-				alt="Plug Founding Ticket"
-				width={1000}
-				height={1600}
-			/>
-		</TicketContainer>
-	</div>
+	return (
+		<div className="-z-1 absolute inset-0 select-none overflow-hidden rounded-b-lg [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]">
+			<TicketContainer>
+				<Image
+					className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
+					src={`${process.env.NEXT_PUBLIC_APP_URL}/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}`}
+					alt="Plug Founding Ticket"
+					width={1000}
+					height={1600}
+				/>
+			</TicketContainer>
+		</div>
+	)
 }

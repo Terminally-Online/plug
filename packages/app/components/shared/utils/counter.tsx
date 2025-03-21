@@ -45,19 +45,17 @@ export const Counter: FC<
 
 	return (
 		<span className={cn("relative flex w-full flex-row-reverse overflow-hidden", className)} {...props}>
-			{count !== undefined && count !== null ? (
-				numArray.map((char, index) =>
-					char === " " ? (
-						<span key={index}>&nbsp;</span>
-					) : !isNaN(Number(char)) ? (
-						<NumberColumn key={index} digit={char} />
-					) : (
-						<span key={index}>{char}</span>
+			{count !== undefined && count !== null
+				? numArray.map((char, index) =>
+						char === " " ? (
+							<span key={index}>&nbsp;</span>
+						) : !isNaN(Number(char)) ? (
+							<NumberColumn key={index} digit={char} />
+						) : (
+							<span key={index}>{char}</span>
+						)
 					)
-				)
-			) : (
-				"-"
-			)}
+				: "-"}
 		</span>
 	)
 }

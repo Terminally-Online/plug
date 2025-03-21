@@ -16,7 +16,7 @@ const remotePatterns = [
 	},
 	{
 		protocol: "https",
-		hostname: "dweb.link"  // Add this IPFS gateway
+		hostname: "dweb.link" // Add this IPFS gateway
 	},
 	{
 		protocol: "https",
@@ -76,7 +76,7 @@ const nextConfig = {
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		return config;
+		return config
 	},
 	experimental: {
 		optimizePackageImports: []

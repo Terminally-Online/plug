@@ -1,7 +1,9 @@
-import { FC, HTMLAttributes, PropsWithChildren, ReactNode, type JSX } from "react";
+import { FC, HTMLAttributes, type JSX, PropsWithChildren, ReactNode } from "react"
 
 import { motion } from "framer-motion"
 import { Loader } from "lucide-react"
+
+import { useAtom } from "jotai"
 
 import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
@@ -9,7 +11,6 @@ import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { usePlugActions } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
-import { useAtom } from "jotai";
 
 const Base: FC<
 	PropsWithChildren & {
@@ -69,7 +70,7 @@ const Loading: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
 	}
-> = ({ index, className, ...props }) => { 
+> = ({ index, className, ...props }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 
 	if (!column) return null
@@ -154,7 +155,11 @@ const EmptyAssets: FC<
 				{...props}
 			>
 				{isReceivable && (
-					<Button variant={authenticating ? "primaryDisabled" : "primary"} sizing="sm" onClick={() => handleSidebar("authenticating")}>
+					<Button
+						variant={authenticating ? "primaryDisabled" : "primary"}
+						sizing="sm"
+						onClick={() => handleSidebar("authenticating")}
+					>
 						{authenticating ? "Depositing..." : "Deposit"}
 					</Button>
 				)}

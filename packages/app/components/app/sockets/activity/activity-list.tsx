@@ -1,12 +1,13 @@
 import { FC, HTMLAttributes, memo, useMemo } from "react"
 
+import { useAtom } from "jotai"
+
 import { ActivityItem } from "@/components/app/sockets/activity/activity-item"
 import { Callout } from "@/components/app/utils/callout"
 import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS } from "@/state/columns"
-import { useAtom } from "jotai"
 
 const SocketActivityList: FC<{
 	activities: any[] | undefined

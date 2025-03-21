@@ -1,15 +1,18 @@
 import { FC, useCallback, useMemo } from "react"
 
+import { useAtom, useSetAtom } from "jotai"
+
+import { DropResult } from "@hello-pangea/dnd"
+
 import { Callout } from "@/components/app/utils/callout"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { SchemasRequestAction, formatTitle, getValues, useConnect } from "@/lib"
+import { formatTitle, getValues, SchemasRequestAction, useConnect } from "@/lib"
+import { api } from "@/server/client"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
-import { useAtom, useSetAtom } from "jotai"
 import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
-import { api } from "@/server/client"
-import { DropResult } from "@hello-pangea/dnd"
+
 import { Sentences } from "../sentences/sentences"
 
 const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "action">[]): Record<string, number> => {
@@ -21,14 +24,16 @@ const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "
 }
 
 export const ActionView: FC<{ index: number }> = ({ index }) => {
-	const { account: { session } } = useConnect()
+	const {
+		account: { session }
+	} = useConnect()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
 	const setPlugs = useSetAtom(plugsAtom)
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
-	const own = plug && session && session.address === plug.socketId || false
+	const own = (plug && session && session.address === plug.socketId) || false
 	const editPlug = useSetAtom(editPlugAtom)
 	const actionMutation = api.plugs.action.edit.useMutation({
 		onSuccess: result => editPlug(result)
@@ -42,7 +47,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 		() =>
 			Object.entries(solverActions).flatMap(([protocol, actions]) => {
 				// const chains = actions.metadata.chains
-				// if (!chains.some(chain => connectedChains.map(c => c.id as number).includes(chain.chainIds))) return []				
+				// if (!chains.some(chain => connectedChains.map(c => c.id as number).includes(chain.chainIds))) return []
 
 				return Object.keys(actions.schema).map(action => ({
 					protocol,
@@ -69,7 +74,6 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 			.slice(0, 3)
 	}, [baseSuggestions, plug])
 
-
 	const handleDragEnd = (result: DropResult) => {
 		if (!result.destination || !plug) return
 
@@ -79,7 +83,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 		const actions = JSON.stringify(newActions)
 
-		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
+		setPlugs(prev => prev.map(p => (plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p)))
 		edit({
 			id: plug.id,
 			actions

@@ -2,13 +2,15 @@ import Link from "next/link"
 
 import { ExternalLink } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ConsoleColumn } from "@/components/app/columns/column"
 import { ColumnAdd } from "@/components/app/columns/utils/column-add"
-import { moveColumnAtom, primaryColumnsAtom} from "@/state/columns"
+import { moveColumnAtom, primaryColumnsAtom } from "@/state/columns"
+
 import { ConsoleSidebarPane } from "../sidebar"
-import { useAtom, useAtomValue} from "jotai"
 
 export const ConsoleColumnRow = () => {
 	const columns = useAtomValue(primaryColumnsAtom)

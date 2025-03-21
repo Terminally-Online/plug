@@ -1,13 +1,5 @@
 import Image from "next/image"
-import React, {
-    createContext,
-    FC,
-    ReactElement,
-    useContext,
-    useMemo,
-    useSyncExternalStore,
-    type JSX,
-} from "react";
+import React, { createContext, FC, type JSX, ReactElement, useContext, useMemo, useSyncExternalStore } from "react"
 import { isAndroid, isBrowser, isChrome, isIOS, isMacOs, isSafari, isWindows, osName } from "react-device-detect"
 
 type OSType = "macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome" | "arc"

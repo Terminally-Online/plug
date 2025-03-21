@@ -33,7 +33,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 	}, [plugs, search])
 
 	return (
-		<div className={cn("w-full flex flex-col gap-2 overflow-hidden", className)} {...props}>
+		<div className={cn("flex w-full flex-col gap-2 overflow-hidden", className)} {...props}>
 			{plugs && plugs.length > 0 && (
 				<Container>
 					<Search

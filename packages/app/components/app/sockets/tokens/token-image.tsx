@@ -135,7 +135,7 @@ export const TokenImage: FC<
 						/>
 					)}
 					<div
-						className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2  items-center justify-center rounded-full"
+						className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
 						style={{
 							backgroundColor: getAssetColor(symbol),
 							height: `${dimensions.content}rem`,
@@ -152,7 +152,7 @@ export const TokenImage: FC<
 						<Image
 							src={logo}
 							alt={symbol}
-							className="absolute left-1/2 -translate-x-1/2  rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							className="absolute left-1/2 -translate-x-1/2 rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 							style={{
 								width: `${dimensions.imageBlur}rem`,
 								height: `${dimensions.imageBlur}rem`
@@ -165,7 +165,7 @@ export const TokenImage: FC<
 						ref={imgRef}
 						src={logo}
 						alt={symbol}
-						className="absolute left-1/2 -translate-x-1/2  rounded-full bg-plug-green/10"
+						className="absolute left-1/2 -translate-x-1/2 rounded-full bg-plug-green/10"
 						style={{
 							height: `${dimensions.content}rem`,
 							width: `${dimensions.content}rem`,

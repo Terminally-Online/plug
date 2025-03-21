@@ -1,4 +1,4 @@
-import { db } from "@/server";
+import { db } from "@/server"
 
 const CLEANUP_OLDER_THAN_DAYS = 3
 

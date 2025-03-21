@@ -13,7 +13,17 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { SchemasRequestAction, SchemasResponseCoils, cn, formatTitle, SchemasRequestValues, useCordStateless, useDebounce, SchemasResponseOptionsSet, SchemasRequestValuesSet } from "@/lib"
+import {
+	cn,
+	formatTitle,
+	SchemasRequestAction,
+	SchemasRequestValues,
+	SchemasRequestValuesSet,
+	SchemasResponseCoils,
+	SchemasResponseOptionsSet,
+	useCordStateless,
+	useDebounce
+} from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 
 type PartProps = HTMLAttributes<HTMLButtonElement> & {
@@ -30,14 +40,14 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	inputIndex: number
 	optionsIndex: number
 	options?: SchemasResponseOptionsSet
-	coils?: SchemasResponseCoils,
+	coils?: SchemasResponseCoils
 	search: Record<number, string | undefined>
 	getInputValue: ReturnType<typeof useCordStateless>["helpers"]["getInputValue"]
 	getInputError: ReturnType<typeof useCordStateless>["helpers"]["getInputError"]
 	handleSearch: (search: string, index: number) => void
 	handleValue: (args: HandleValueProps) => void
 	validateType?: (coilName: string, expectedType: string) => boolean
-	availableCoils?: Record<string, { type: string, actionIndex: number }>
+	availableCoils?: Record<string, { type: string; actionIndex: number }>
 }
 
 export type HandleValueProps = {
@@ -83,15 +93,18 @@ export const Part: FC<PartProps> = memo(
 		const dependentOnValue =
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
 
-		const validateLinkedInput = useCallback((linkedValue: string | undefined, expectedType: string | undefined): boolean => {
-			if (!linkedValue || !validateType || !availableCoils || !expectedType) return false
+		const validateLinkedInput = useCallback(
+			(linkedValue: string | undefined, expectedType: string | undefined): boolean => {
+				if (!linkedValue || !validateType || !availableCoils || !expectedType) return false
 
-			const match = linkedValue.match(/^<-\{(.+)\}$/)
-			if (!match) return false
+				const match = linkedValue.match(/^<-\{(.+)\}$/)
+				if (!match) return false
 
-			const coilName = match[1]
-			return validateType(coilName, expectedType)
-		}, [availableCoils, validateType])
+				const coilName = match[1]
+				return validateType(coilName, expectedType)
+			},
+			[availableCoils, validateType]
+		)
 
 		const indexedOptions =
 			options &&
@@ -112,14 +125,20 @@ export const Part: FC<PartProps> = memo(
 		const validCoils = useMemo(() => {
 			if (!coils) return {}
 
-			return Object.fromEntries(Object.keys(coils).filter(name =>
-				validateLinkedInput(`<-{${name}}`, coils[name])).map(key => [key, coils[key]])
+			return Object.fromEntries(
+				Object.keys(coils)
+					.filter(name => validateLinkedInput(`<-{${name}}`, coils[name]))
+					.map(key => [key, coils[key]])
 			)
 		}, [coils, input, validateLinkedInput])
 
-		const isLinked = typeof value?.value === "string" && value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
-		const isCompatibleCoil = useMemo(() =>
-			typeof value?.value === "string" && isLinked && Object.keys(validCoils).includes(value?.value.replace("<-{", "").replace("}", "")),
+		const isLinked =
+			typeof value?.value === "string" && value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
+		const isCompatibleCoil = useMemo(
+			() =>
+				typeof value?.value === "string" &&
+				isLinked &&
+				Object.keys(validCoils).includes(value?.value.replace("<-{", "").replace("}", "")),
 			[isLinked, value, validCoils]
 		)
 		const isEmpty = !value?.value || (isLinked && !isCompatibleCoil)
@@ -131,7 +150,7 @@ export const Part: FC<PartProps> = memo(
 		const label =
 			(option && option.label) ||
 			((isValid || (isLinked && isCompatibleCoil)) && value?.value) ||
-			(!isLinked && (isLinked && isCompatibleCoil) && action.values?.[input.index]?.label) ||
+			(!isLinked && isLinked && isCompatibleCoil && action.values?.[input.index]?.label) ||
 			input.name
 				?.replaceAll("_", " ")
 				.replace(/([A-Z])/g, " $1")
@@ -145,17 +164,16 @@ export const Part: FC<PartProps> = memo(
 				<button
 					className={cn(
 						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
-						isCompatibleCoil
-							? "bg-orange-300/60"
-							: isValid
-								? "bg-plug-yellow/60"
-								: "bg-plug-red/60",
+						isCompatibleCoil ? "bg-orange-300/60" : isValid ? "bg-plug-yellow/60" : "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
-						background: isLinked && isCompatibleCoil
-							? "bg-orange-300/60"
-							: !isValid ? "bg-plug-red" : "bg-plug-yellow"
+						background:
+							isLinked && isCompatibleCoil
+								? "bg-orange-300/60"
+								: !isValid
+									? "bg-plug-red"
+									: "bg-plug-yellow"
 					}}
 					onClick={() => (own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 				>
@@ -250,7 +268,7 @@ export const Part: FC<PartProps> = memo(
 														}
 														className="group/coil flex flex-row gap-2 px-2 pr-3"
 													>
-														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-400 transition-all duration-200 ease-in-out flex items-center justify-center">
+														<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-300 transition-all duration-200 ease-in-out group-hover/coil:bg-orange-400">
 															<p className="text-xs font-bold text-plug-white">#</p>
 														</div>
 
@@ -278,16 +296,24 @@ export const Part: FC<PartProps> = memo(
 														})
 													}
 												>
-													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
-														}`}>
+													<div
+														className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${
+															isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
+														}`}
+													>
 														<p className="text-xs font-bold text-plug-white">
 															{isCompatibleCoil ? "#" : "!"}
 														</p>
 													</div>
-													<span className={isCompatibleCoil ? "" : "text-red-600 font-semibold"}>
-														{typeof value?.value === "string" && value?.value.startsWith("<-{")
+													<span
+														className={isCompatibleCoil ? "" : "font-semibold text-red-600"}
+													>
+														{typeof value?.value === "string" &&
+														value?.value.startsWith("<-{")
 															? isCompatibleCoil
-																? formatTitle(value?.value.replace("<-{", "").replace("}", ""))
+																? formatTitle(
+																		value?.value.replace("<-{", "").replace("}", "")
+																	)
 																: "Invalid link: Coil not available in this position"
 															: getInputPlaceholder(input.type)}
 													</span>

@@ -1,5 +1,7 @@
 import { FC, useCallback, useMemo, useRef, useState } from "react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { TransferRecipient } from "@/components/app/frames/assets/transfer-recipient"
 import { Frame } from "@/components/app/frames/base"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
@@ -9,7 +11,6 @@ import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 export const TransferNFTFrame: FC<{
 	index: number
@@ -155,9 +156,7 @@ export const TransferNFTFrame: FC<{
 						<TransferRecipient
 							address={column?.transfer?.recipient ?? ""}
 							handleSelect={() =>
-								frame(
-									`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`
-								)
+								frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)
 							}
 						/>
 					</div>

@@ -37,7 +37,11 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 				nextLabel="See All"
 			/>
 
-			<Callout.EmptyPlugs className="z-[9999]" index={index} isEmpty={plugs !== undefined && plugs.length === 0} />
+			<Callout.EmptyPlugs
+				className="z-[9999]"
+				index={index}
+				isEmpty={plugs !== undefined && plugs.length === 0}
+			/>
 
 			<PlugGrid index={index} from={COLUMNS.KEYS.HOME} plugs={visiblePlugs} />
 		</div>

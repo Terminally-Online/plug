@@ -8,6 +8,8 @@ import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
 
 import { SearchIcon } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { Avatar } from "@/components/app/sockets/profile"
@@ -17,7 +19,6 @@ import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { useRecipients } from "@/state/recipients"
-import { useAtom, useAtomValue } from "jotai"
 
 type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]

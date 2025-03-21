@@ -27,7 +27,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token })
 
 	return (
 		<>
-			<Accordion loading={token === undefined} onExpand={token === undefined ? () => { } : () => frame()}>
+			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => frame()}>
 				{token === undefined ? (
 					<div className="invisible">
 						<p>.</p>

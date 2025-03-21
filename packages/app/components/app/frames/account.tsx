@@ -3,6 +3,7 @@ import { signOut } from "next-auth/react"
 import { useDisconnect } from "wagmi"
 
 import BlockiesSvg from "blockies-react-svg"
+import { useAtom, useAtomValue } from "jotai"
 
 import { StatCard } from "@/components/app/cards/stat"
 import { Frame } from "@/components/app/frames/base"
@@ -11,7 +12,6 @@ import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 // NOTE: This is only accessible on the mobile view so the index will always be -1.
 export const AccountFrame = () => {

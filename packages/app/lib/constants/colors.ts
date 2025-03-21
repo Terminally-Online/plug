@@ -20,7 +20,7 @@ export const colors = {
 	pooltogether: "#4C249F",
 	yearn: "#0657F9",
 	assert: "#EB8AF3",
-	boolean: "#9F8AF3",
+	boolean: "#9F8AF3"
 } as const
 
 export const tagColors = {

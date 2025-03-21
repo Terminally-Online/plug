@@ -2,6 +2,8 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { SearchIcon } from "lucide-react"
 
+import { useAtomValue } from "jotai"
+
 import { Search } from "@/components/app/inputs/search"
 import { Tags } from "@/components/app/inputs/tags"
 import { Container } from "@/components/app/layout/container"
@@ -10,7 +12,6 @@ import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
 import { COLUMNS } from "@/state/columns"
 import { plugsAtom } from "@/state/plugs"
-import { useAtomValue } from "jotai"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -22,8 +23,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	const plugs = useAtomValue(plugsAtom)
 
 	const visiblePlugs = useMemo(() => {
-		if (!plugs || plugs.length === 0)
-			return Array(12).fill(undefined)
+		if (!plugs || plugs.length === 0) return Array(12).fill(undefined)
 
 		if (!search) return plugs
 
@@ -32,7 +32,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{(plugs && plugs.length > 0) && (
+			{plugs && plugs.length > 0 && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}

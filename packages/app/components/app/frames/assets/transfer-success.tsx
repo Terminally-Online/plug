@@ -2,14 +2,16 @@ import { FC } from "react"
 
 import { Bell, Waypoints } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+
 import { ChainImage } from "../../sockets/chains/chain.image"
-import { Counter } from "@/components/shared/utils/counter"
-import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -49,13 +51,13 @@ export const TransferSuccessFrame: FC<TransferSuccessFrame> = ({ index, token, c
 			hasOverlay
 		>
 			<div className="flex flex-col">
-				<span className="font-bold text-left">
+				<span className="text-left font-bold">
 					<span className="opacity-40">Your transfer of</span>{" "}
-					<span className="w-min inline-flex mr-1 tabular-nums">
+					<span className="mr-1 inline-flex w-min tabular-nums">
 						<Counter count={column?.transfer?.precise ?? ""} />{" "}
 					</span>
 					<div
-						className="px-2 rounded-xs inline-flex items-center"
+						className="inline-flex items-center rounded-xs px-2"
 						style={{ backgroundColor: color, color: textColor }}
 					>
 						{token?.symbol}

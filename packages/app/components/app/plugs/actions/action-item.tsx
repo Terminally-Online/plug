@@ -1,12 +1,13 @@
 import { FC, useCallback } from "react"
 
+import { useAtom, useSetAtom } from "jotai"
+
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { SchemasResponseSchema, formatTitle, getValues } from "@/lib"
+import { formatTitle, getValues, SchemasResponseSchema } from "@/lib"
+import { api } from "@/server/client"
 import { useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
-import { useAtom, useSetAtom } from "jotai"
-import { api } from "@/server/client"
 
 export const ActionItem: FC<{
 	index: number

@@ -2,6 +2,8 @@ import { FC } from "react"
 
 import { BadgeCheck, SearchIcon } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
@@ -9,7 +11,6 @@ import { Accordion } from "@/components/shared/utils/accordion"
 import { getChainId, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -30,7 +31,7 @@ export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handl
 	const [search, debouncedSearch, handleSearch] = useDebounce("")
 
 	const { data: tokens } = api.solver.tokens.get.useQuery(debouncedSearch, {
-		placeholderData: (prev) => prev
+		placeholderData: prev => prev
 	})
 
 	return (

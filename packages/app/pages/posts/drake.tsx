@@ -1,18 +1,19 @@
-import { motion } from "framer-motion"
 import { useState } from "react"
+
+import { motion } from "framer-motion"
 
 const Page = () => {
 	const [isAnimating, setIsAnimating] = useState(false)
 
 	const handleReveal = () => {
-		console.log("Reveal button clicked");
-		setIsAnimating(true); // Trigger the animation
-	};
+		console.log("Reveal button clicked")
+		setIsAnimating(true) // Trigger the animation
+	}
 
 	const handleReset = () => {
-		console.log("Reset button clicked");
-		setIsAnimating(false); // Reset the animation
-	};
+		console.log("Reset button clicked")
+		setIsAnimating(false) // Reset the animation
+	}
 
 	return (
 		<div className="absolute inset-0">
@@ -64,17 +65,11 @@ const Page = () => {
 			/>
 
 			{/* Buttons for Reveal and Reset */}
-			<div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
-				<button
-					onClick={handleReveal}
-					className="px-6 py-2 bg-black text-white rounded-full"
-				>
+			<div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 space-x-4">
+				<button onClick={handleReveal} className="rounded-full bg-black px-6 py-2 text-white">
 					Reveal
 				</button>
-				<button
-					onClick={handleReset}
-					className="px-6 py-2 bg-red-500 text-white rounded-full"
-				>
+				<button onClick={handleReset} className="rounded-full bg-red-500 px-6 py-2 text-white">
 					Reset
 				</button>
 			</div>

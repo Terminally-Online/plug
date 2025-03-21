@@ -2,6 +2,8 @@ import React, { FC, useMemo, useState } from "react"
 
 import { ExternalLink, EyeOff } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { SocketTokenPriceChart } from "@/components/app/sockets/tokens/token-chart"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
@@ -10,7 +12,6 @@ import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 export const PositionFrame: FC<{
 	index: number
@@ -78,8 +79,8 @@ export const PositionFrame: FC<{
 						enabled={isFrame}
 						keys={keys}
 						colors={colors}
-					// handleHeader={setHeader}
-					// handleTooltip={setTooltipData}
+						// handleHeader={setHeader}
+						// handleTooltip={setTooltipData}
 					/>
 				)}
 
@@ -134,16 +135,16 @@ export const PositionFrame: FC<{
 															Object.keys(colors).includes(key)
 																? undefined
 																: color =>
-																	setColors(prev =>
-																		prev
-																			? {
-																				...prev,
-																				[key]: color
-																			}
-																			: {
-																				[key]: color
-																			}
-																	)
+																		setColors(prev =>
+																			prev
+																				? {
+																						...prev,
+																						[key]: color
+																					}
+																				: {
+																						[key]: color
+																					}
+																		)
 														}
 													/>
 

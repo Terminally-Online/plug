@@ -19,7 +19,7 @@ export const referral = createTRPCRouter({
 			where: { socketId: ctx.session.address }
 		})
 
-		if (currentUser?.referrerId) 
+		if (currentUser?.referrerId)
 			throw new TRPCError({
 				code: "BAD_REQUEST",
 				message: "You are already approved and cannot use another referral code."
@@ -31,10 +31,11 @@ export const referral = createTRPCRouter({
 			}
 		})
 
-		if (!referrer || !referrer.approvedAt || referrer.socketId === ctx.session.address) throw new TRPCError({
-			code: "BAD_REQUEST",
-			message: "Referral code provided is not valid."
-		})
+		if (!referrer || !referrer.approvedAt || referrer.socketId === ctx.session.address)
+			throw new TRPCError({
+				code: "BAD_REQUEST",
+				message: "Referral code provided is not valid."
+			})
 
 		return ctx.db.socketIdentity.update({
 			where: { socketId: ctx.session.address },

@@ -5,11 +5,12 @@ import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
 import { Bell, HousePlug, Plus, Search } from "lucide-react"
 
+import { useAtom } from "jotai"
+
 import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { useAtom} from "jotai"
 import { usePlugActions } from "@/state/plugs"
 
 export const PageNavbar = memo(() => {

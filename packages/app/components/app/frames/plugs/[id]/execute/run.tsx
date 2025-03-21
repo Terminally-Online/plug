@@ -14,7 +14,8 @@ import {
 	Send,
 	Waypoints
 } from "lucide-react"
-import { areAllSentencesValidAtom } from "@/state/sentences"
+
+import { useAtom, useAtomValue } from "jotai"
 
 import { Frame } from "@/components/app/frames/base"
 import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
@@ -26,8 +27,8 @@ import { connectedChains } from "@/contexts"
 import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
+import { areAllSentencesValidAtom } from "@/state/sentences"
 
 export const RunFrame: FC<{
 	index: number
@@ -90,7 +91,7 @@ export const RunFrame: FC<{
 
 	// Using our atom to check if all sentences are valid
 	const checkAllSentencesValid = useAtomValue(areAllSentencesValidAtom)
-	
+
 	const isReady = useMemo(() => {
 		if (!plug || plug.actions.length === 0) return false
 		if (!isActionful) return false
@@ -111,16 +112,13 @@ export const RunFrame: FC<{
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		}
 
-		queue(
-			intent,
-			{
-				onError: data => console.error(data),
-				onSuccess: data => {
-					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
-					frame(`${data.id}-activity`)
-				}
+		queue(intent, {
+			onError: data => console.error(data),
+			onSuccess: data => {
+				navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+				frame(`${data.id}-activity`)
 			}
-		)
+		})
 	}, [index, column, chain, queue, navigate, frame])
 
 	if (!column) return null
@@ -168,12 +166,14 @@ export const RunFrame: FC<{
 								<div className="relative ml-auto flex w-[45%] overflow-hidden">
 									{/* Determine if we need scrolling based on unique protocols */}
 									{(() => {
-										// Calculate the unique protocols 
-										const uniqueProtocols = Array.from(new Set(plug.actions?.map(action => action.protocol)))
-										
+										// Calculate the unique protocols
+										const uniqueProtocols = Array.from(
+											new Set(plug.actions?.map(action => action.protocol))
+										)
+
 										// Show scrolling gradient only if we have 3+ unique protocols
 										const shouldScroll = uniqueProtocols.length >= 3
-										
+
 										return (
 											<>
 												{shouldScroll && (
@@ -207,7 +207,9 @@ export const RunFrame: FC<{
 																	)}
 																>
 																	<Image
-																		src={solverActions[protocol]?.metadata.icon ?? ""}
+																		src={
+																			solverActions[protocol]?.metadata.icon ?? ""
+																		}
 																		alt={formatTitle(protocol)}
 																		width={48}
 																		height={48}

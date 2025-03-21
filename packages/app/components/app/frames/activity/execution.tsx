@@ -1,6 +1,8 @@
-import { FC, useEffect, useMemo, useRef, useState, type JSX } from "react";
+import { FC, type JSX, useEffect, useMemo, useRef, useState } from "react"
 
 import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
+
+import { useAtom, useAtomValue } from "jotai"
 
 import { Frame } from "@/components/app/frames/base"
 import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
@@ -16,7 +18,6 @@ import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
-import { useAtom, useAtomValue } from "jotai";
 
 const ITEMS_PER_PAGE = 10
 
@@ -210,7 +211,9 @@ export const ExecutionFrame: FC<{
 										<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
 											<p>Upcoming</p>
 											<p>
-												<Counter count={new Date(activity.nextSimulationAt).toLocaleDateString()} />
+												<Counter
+													count={new Date(activity.nextSimulationAt).toLocaleDateString()}
+												/>
 											</p>
 										</div>
 									</div>

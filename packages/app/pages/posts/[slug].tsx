@@ -10,8 +10,8 @@ import { postAnimations } from "@/components/blog/animations"
 import { LandingContainer } from "@/components/landing/layout/container"
 import { StaticLayout } from "@/components/landing/layout/static"
 import { Counter } from "@/components/shared/utils/counter"
-import { getFavicon, getPost, Post, PostLookup, posts } from "@/lib"
 import { env } from "@/env"
+import { getFavicon, getPost, Post, PostLookup, posts } from "@/lib"
 
 export const dynamicParams = false
 
@@ -31,21 +31,17 @@ export async function getStaticPaths() {
 }
 
 export default function Page({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
-	const summaryText = post.description || post.content.substring(0, 160).replace(/[#*`]/g, '').trim();
+	const summaryText = post.description || post.content.substring(0, 160).replace(/[#*`]/g, "").trim()
 
-	const opengraphImage = `${env.NEXT_PUBLIC_APP_URL || ''}/api/canvas/post?name=${encodeURIComponent(post.title)}&description=${encodeURIComponent(summaryText.replace("...", ""))}&author=${post.attributes.author}&at=${encodeURIComponent(post.attributes.created)}`
+	const opengraphImage = `${env.NEXT_PUBLIC_APP_URL || ""}/api/canvas/post?name=${encodeURIComponent(post.title)}&description=${encodeURIComponent(summaryText.replace("...", ""))}&author=${post.attributes.author}&at=${encodeURIComponent(post.attributes.created)}`
 
 	return (
-		<StaticLayout
-			title={post.title}
-			description={summaryText}
-			img={opengraphImage}
-		>
+		<StaticLayout title={post.title} description={summaryText} img={opengraphImage}>
 			<LandingContainer>
 				<motion.article
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					className="mx-auto flex max-w-3xl w-full overflow-x-hidden flex-col gap-4 pb-24 font-bold"
+					className="mx-auto flex w-full max-w-3xl flex-col gap-4 overflow-x-hidden pb-24 font-bold"
 				>
 					<motion.h1
 						className="text-[48px] font-black leading-tight md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
@@ -77,43 +73,49 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 						</p>
 					</div>
 
-					{post.slug in postAnimations && <div className="h-[380px] overflow-hidden">
-						{postAnimations[post.slug as keyof typeof postAnimations]}
-					</div>}
+					{post.slug in postAnimations && (
+						<div className="h-[380px] overflow-hidden">
+							{postAnimations[post.slug as keyof typeof postAnimations]}
+						</div>
+					)}
 
 					<ReactMarkdown
 						components={{
 							h1: ({ children }) => (
-								<h1 className="text-[48px] md:text-[72px] lg:text-[96px] xl:text-[120px] font-black">{children}</h1>
+								<h1 className="text-[48px] font-black md:text-[72px] lg:text-[96px] xl:text-[120px]">
+									{children}
+								</h1>
 							),
 							h2: ({ children }) => (
-								<h2 className="mt-8 text-[36px] md:text-[32px] lg:text-[60px] xl:text-[72px] font-black">
+								<h2 className="mt-8 text-[36px] font-black md:text-[32px] lg:text-[60px] xl:text-[72px]">
 									{children}
 								</h2>
 							),
 							h3: ({ children }) => (
-								<h3 className="mt-8 text-[28px] md:text-[28px] lg:text-[48px] xl:text-[56px] font-black">
+								<h3 className="mt-8 text-[28px] font-black md:text-[28px] lg:text-[48px] xl:text-[56px]">
 									{children}
 								</h3>
 							),
 							h4: ({ children }) => (
-								<h4 className="mt-8 text-[24px] md:text-[24px] lg:text-[36px] xl:text-[42px] font-black">
+								<h4 className="mt-8 text-[24px] font-black md:text-[24px] lg:text-[36px] xl:text-[42px]">
 									{children}
 								</h4>
 							),
 							h5: ({ children }) => (
-								<h5 className="mt-8 text-[20px] md:text-[18px] lg:text-[28px] xl:text-[32px] font-black">
+								<h5 className="mt-8 text-[20px] font-black md:text-[18px] lg:text-[28px] xl:text-[32px]">
 									{children}
 								</h5>
 							),
 							h6: ({ children }) => (
-								<h6 className="mt-8 text-[16px] md:text-[14px] lg:text-[20px] xl:text-[24px] font-black">
+								<h6 className="mt-8 text-[16px] font-black md:text-[14px] lg:text-[20px] xl:text-[24px]">
 									{children}
 								</h6>
 							),
 							p: ({ children }) => <p className="break-words opacity-80">{children}</p>,
-							ul: ({ children }) => <ul className="list-disc ml-6 break-words opacity-60">{children}</ul>,
-							ol: ({ children }) => <ol className="list-decimal ml-6 break-words opacity-60">{children}</ol>,
+							ul: ({ children }) => <ul className="ml-6 list-disc break-words opacity-60">{children}</ul>,
+							ol: ({ children }) => (
+								<ol className="ml-6 list-decimal break-words opacity-60">{children}</ol>
+							),
 							li: ({ children }) => <li className="mb-2 ml-2 list-item">{children}</li>,
 							a: ({ children, ...props }) => {
 								const faviconUrl = getFavicon(props.href ?? "")
@@ -121,7 +123,7 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 								return (
 									<span
 										{...props}
-										className="group inline cursor-pointer underline break-words transition-opacity duration-200 hover:opacity-80"
+										className="group inline cursor-pointer break-words underline transition-opacity duration-200 hover:opacity-80"
 										onClick={e => {
 											e.preventDefault()
 											e.stopPropagation()

@@ -2,14 +2,15 @@ import { FC, useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { plugByIdAtom } from "@/state/plugs"
-import { useAtom, useAtomValue } from "jotai"
 
 export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey="running"
+	const frameKey = "running"
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame } = useColumnActions(index, frameKey)
 

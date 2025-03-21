@@ -1,10 +1,13 @@
 import { FC, HTMLAttributes, useState } from "react"
-import { Button } from "@/components/shared/buttons/button"
-import { api } from "@/server/client"
-import { Square, Loader, PlayIcon } from "lucide-react"
+
+import { Loader, PlayIcon, Square } from "lucide-react"
+
 import { useSetAtom } from "jotai"
-import { DEFAULT_COLUMNS } from "@/state/columns"
+
+import { Button } from "@/components/shared/buttons/button"
 import { useResponse } from "@/lib/hooks/useResponse"
+import { api } from "@/server/client"
+import { DEFAULT_COLUMNS } from "@/state/columns"
 import { columnsStorageAtom } from "@/state/columns"
 
 export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
@@ -22,12 +25,12 @@ export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 	})
 
 	return (
-		<div {...props} className="p-4 flex items-center flex-col gap-2">
+		<div {...props} className="flex flex-col items-center gap-2 p-4">
 			<Button
 				variant={isLoading ? "primaryDisabled" : "primary"}
 				onClick={() => toggleSolverMutation.mutate()}
 				disabled={isLoading}
-				className="w-full py-4 justify-center flex flex-row items-center gap-2"
+				className="flex w-full flex-row items-center justify-center gap-2 py-4"
 			>
 				{isLoading ? (
 					<Loader className="h-4 w-4 animate-spin opacity-60" />
@@ -42,7 +45,7 @@ export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 			<Button
 				variant={isLoading ? "primaryDisabled" : "primary"}
 				onClick={() => setColumns(DEFAULT_COLUMNS)}
-				className="w-full py-4 justify-center flex flex-row items-center gap-2"
+				className="flex w-full flex-row items-center justify-center gap-2 py-4"
 			>
 				<Square className="h-4 w-4 fill-current opacity-60" />
 				Reset Columns

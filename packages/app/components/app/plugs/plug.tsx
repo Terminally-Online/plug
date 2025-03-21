@@ -3,6 +3,8 @@ import { FC, HTMLAttributes, useEffect, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
+import { useAtom } from "jotai"
+
 import { AuthRequiredFrame } from "@/components/app/frames/misc/auth-required"
 import { ActionsFrame } from "@/components/app/frames/plugs/[id]/actions"
 import { ExecuteFrame } from "@/components/app/frames/plugs/[id]/execute"
@@ -13,7 +15,6 @@ import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { plugByIdAtom } from "@/state/plugs"
-import { useAtom } from "jotai"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: string; from?: string }> = ({
 	index = COLUMNS.MOBILE_INDEX,

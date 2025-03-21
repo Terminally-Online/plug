@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 
 import { env } from "@/env"
-import { SchemasResponse, IntentResponse, KillResponse } from "@/lib/types"
+import { IntentResponse, KillResponse, SchemasResponse } from "@/lib/types"
 
 let cachedSchemas: Record<string, SchemasResponse | undefined> = {}
 
@@ -33,7 +33,7 @@ export const schemas = async (
 	const response = await axios.get(`${env.SOLVER_URL}/solver`, {
 		params,
 		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+			"X-Api-Key": env.SOLVER_API_KEY
 		}
 	})
 
@@ -56,7 +56,7 @@ export const intent = async (input: {
 }) => {
 	const response = await axios.post(`${env.SOLVER_URL}/solver`, input, {
 		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+			"X-Api-Key": env.SOLVER_API_KEY
 		}
 	})
 
@@ -69,7 +69,7 @@ export const getIntentTransaction = intent
 export const killed = async () => {
 	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {
 		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+			"X-Api-Key": env.SOLVER_API_KEY
 		}
 	})
 
@@ -79,11 +79,15 @@ export const killed = async () => {
 }
 
 export const kill = async () => {
-	const response = await axios.post(`${env.SOLVER_URL}/solver/kill`, {}, {
-		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+	const response = await axios.post(
+		`${env.SOLVER_URL}/solver/kill`,
+		{},
+		{
+			headers: {
+				"X-Api-Key": env.SOLVER_API_KEY
+			}
 		}
-	})
+	)
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 

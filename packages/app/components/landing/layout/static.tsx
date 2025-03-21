@@ -5,17 +5,12 @@ import { LandingFooter } from "@/components/landing/layout/footer"
 import { Navbar } from "@/components/landing/layout/navbar"
 
 type StaticLayoutProps = PropsWithChildren & {
-	title: string,
-	description?: string,
+	title: string
+	description?: string
 	img?: string
 }
 
-export const StaticLayout: FC<StaticLayoutProps> = ({
-	title,
-	description,
-	img,
-	children
-}) => (
+export const StaticLayout: FC<StaticLayoutProps> = ({ title, description, img, children }) => (
 	<>
 		<Head>
 			<title>{title} | Plug</title>

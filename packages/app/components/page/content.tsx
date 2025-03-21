@@ -1,5 +1,7 @@
 import { useSession } from "next-auth/react"
 
+import { useAtom } from "jotai"
+
 import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
 import { Container } from "@/components/app/layout/container"
 import { PlugsDiscover } from "@/components/app/plugs/discover"
@@ -10,7 +12,6 @@ import { SocketAssets } from "@/components/app/sockets/assets"
 import { Plugs } from "@/components/shared/framework/plugs"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS } from "@/state/columns"
-import { useAtom } from "jotai"
 
 const ProfileContent = () => {
 	const { data: sessionData } = useSession()

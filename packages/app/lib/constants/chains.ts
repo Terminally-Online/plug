@@ -7,11 +7,9 @@ import { Chain, RPCType } from "@/lib/types"
 const getAppRPCs = (prefix: string) => {
 	return {
 		[RPCType.AppOnly]: {
-			http: [
-				`https://${env.NEXT_PUBLIC_QUICKNODE_NAME}${prefix}.quiknode.pro/${env.NEXT_PUBLIC_QUICKNODE_KEY}`,
-			],
+			http: [`https://${env.NEXT_PUBLIC_QUICKNODE_NAME}${prefix}.quiknode.pro/${env.NEXT_PUBLIC_QUICKNODE_KEY}`],
 			webSocket: [
-				`wss://${env.NEXT_PUBLIC_QUICKNODE_NAME}${prefix}.quiknode.pro/${env.NEXT_PUBLIC_QUICKNODE_KEY}`,
+				`wss://${env.NEXT_PUBLIC_QUICKNODE_NAME}${prefix}.quiknode.pro/${env.NEXT_PUBLIC_QUICKNODE_KEY}`
 			]
 		}
 	}
