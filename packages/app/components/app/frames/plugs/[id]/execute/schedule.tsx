@@ -2,12 +2,13 @@ import { FC, lazy, Suspense, useMemo } from "react"
 
 import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Dropdown } from "@/components/app/inputs/dropdown"
 import { Button } from "@/components/shared/buttons/button"
 import { cn, frequencies, useConnect } from "@/lib"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 const DayPicker = lazy(() => import("react-day-picker").then(mod => ({ default: mod.DayPicker })))
 
@@ -20,7 +21,7 @@ export const ScheduleFrame: FC<{
 	} = useConnect()
 
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey="schedule"
+	const frameKey = "schedule"
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, schedule } = useColumnActions(index, frameKey)
 
@@ -44,8 +45,8 @@ export const ScheduleFrame: FC<{
 					className={cn(
 						"select-none",
 						column.schedule &&
-						column.schedule.date &&
-						(column.schedule.date.from || column.schedule.date.to)
+							column.schedule.date &&
+							(column.schedule.date.from || column.schedule.date.to)
 					)}
 					classNames={{
 						months: "flex flex-col relative",
@@ -55,11 +56,11 @@ export const ScheduleFrame: FC<{
 						nav: "flex items-center",
 						button_previous: cn(
 							"rounded-sm p-1 bg-white border-[1px] border-plug-green/10 text-black hover:bg-plug-green/10 items-center flex justify-center text-opacity-60 whitespace-nowrap [&.active]:bg-plug-green/5 [&.active]:text-opacity-100 [&.active]:hover:bg-plug-green/10 [&.active]:hover:border-plug-green/5",
-							"absolute left-0 top-1 z-[20]",
+							"absolute left-0 top-1 z-[20]"
 						),
 						button_next: cn(
 							"rounded-sm p-1 bg-white border-[1px] border-plug-green/10 text-black hover:bg-plug-green/10 items-center flex justify-center text-opacity-60 whitespace-nowrap [&.active]:bg-plug-green/5 [&.active]:text-opacity-100 [&.active]:hover:bg-plug-green/10 [&.active]:hover:border-plug-green/5",
-							"absolute right-0 top-1 z-[20]",
+							"absolute right-0 top-1 z-[20]"
 						),
 						month_grid: "w-full border-collapse",
 						weekdays: "flex gap-2 items-center w-full",
@@ -73,14 +74,13 @@ export const ScheduleFrame: FC<{
 						),
 						range_middle: "aria-selected:bg-plug-yellow aria-selected:text-text-plug-green",
 						range_end: "day-range-end",
-						selected:
-							"bg-plug-yellow text-plug-green hover:brightness-105 focus:brightness-105",
+						selected: "bg-plug-yellow text-plug-green hover:brightness-105 focus:brightness-105",
 						today: "bg-plug-green/10 text-black",
 						disabled: "text-black/40",
 						hidden: "invisible"
 					}}
 					components={{
-						Chevron: (props) => {
+						Chevron: props => {
 							if (props.orientation === "left")
 								return <ChevronLeft size={14} className="h-4 w-4 opacity-60" />
 							return <ChevronRight size={14} className="h-4 w-4 opacity-60" />

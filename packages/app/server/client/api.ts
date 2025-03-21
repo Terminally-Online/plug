@@ -1,9 +1,9 @@
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server"
 
 import superjson from "superjson"
-import { ssrPrepass } from '@trpc/next/ssrPrepass';
 
 import { createTRPCNext } from "@trpc/next"
+import { ssrPrepass } from "@trpc/next/ssrPrepass"
 
 import { type AppRouter } from "@/server/api/root"
 
@@ -30,22 +30,17 @@ export const api = createTRPCNext<AppRouter>({
 		}
 	},
 	responseMeta(opts) {
-		const { clientErrors } = opts;
+		const { clientErrors } = opts
 		if (clientErrors.length) {
 			return {
-				status: clientErrors[0].data?.httpStatus ?? 500,
-			};
+				status: clientErrors[0].data?.httpStatus ?? 500
+			}
 		}
-		const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+		const ONE_DAY_IN_SECONDS = 60 * 60 * 24
 		return {
-			headers: new Headers([
-				[
-					'cache-control',
-					`s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
-				],
-			]),
-		};
-	},
+			headers: new Headers([["cache-control", `s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`]])
+		}
+	}
 })
 
 export type RouterInputs = inferRouterInputs<AppRouter>

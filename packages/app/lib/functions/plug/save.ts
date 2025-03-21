@@ -6,7 +6,7 @@ import { env } from "@/env"
 import { IntentResponseIntent } from "@/lib/types"
 
 type CreateIntentProps = Omit<IntentResponseIntent, "id" | "nextSimulationAt" | "periodEndAt" | "runs" | "createdAt">
-type GetIntentProps = { id?: string; address?: string, addresses?: string[] }
+type GetIntentProps = { id?: string; address?: string; addresses?: string[] }
 type IntentIdProps = { id: string }
 
 const save = async <TData>(method: "get" | "post" | "delete", path: string, input?: unknown) => {
@@ -51,5 +51,7 @@ export const getIntent = async ({ id, address, addresses }: GetIntentProps): Pro
 	return await save("get", id ? `/${id}` : addresses ? `/${addresses.join(",")}` : `/${address}`)
 }
 export const toggleIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("post", `/${id}`)
-export const deleteIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("delete", `/${id}`)
-export const toggleIntentStatus = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("post", `/${id}/status`)
+export const deleteIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> =>
+	await save("delete", `/${id}`)
+export const toggleIntentStatus = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> =>
+	await save("post", `/${id}/status`)

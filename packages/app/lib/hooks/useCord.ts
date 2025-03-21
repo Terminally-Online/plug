@@ -8,7 +8,7 @@ import {
 	parseCordSentence,
 	resolveSentence,
 	setValue,
-	shouldRenderInput,
+	shouldRenderInput
 } from "@terminallyonline/cord"
 
 // Helper to create internal Map from object values
@@ -27,13 +27,13 @@ const createStateFromValues = (values: Record<string, string | undefined>) => {
  * Use this when you want to store values in your global state
  */
 export const useCordStateless = (
-	sentence: string, 
+	sentence: string,
 	values: Record<string, string | undefined>,
 	onUpdateValue?: (index: number, value: string | undefined, error?: string) => void
 ) => {
 	// Convert object values to internal Map
 	const valuesMap = useMemo(() => createStateFromValues(values), [values])
-	
+
 	// Track validation errors separately
 	const validationErrors = useMemo(() => {
 		const errors = new Map<number, InputError>()
@@ -52,7 +52,7 @@ export const useCordStateless = (
 	// Filter inputs based on dependencies
 	const filteredInputs = useMemo(() => {
 		if (!parsed) return []
-		return parsed.inputs.filter(input => 
+		return parsed.inputs.filter(input =>
 			shouldRenderInput(input.type, parsed.inputs, index => valuesMap.get(index))
 		)
 	}, [parsed, valuesMap])
@@ -67,15 +67,19 @@ export const useCordStateless = (
 	}, [parsed, filteredInputs])
 
 	// Split sentence into parts for rendering
-	const parts = useMemo(() => parsedWithFilteredInputs
-		? parsedWithFilteredInputs.template
-			.split(/(\{[^}]+\})/g)
-			.map(part => {
-				if (part.match(/\{[^}]+\}/)) return [part]
-				return part.split(/(\s+)/g)
-			})
-			.flat()
-		: [], [parsedWithFilteredInputs])
+	const parts = useMemo(
+		() =>
+			parsedWithFilteredInputs
+				? parsedWithFilteredInputs.template
+						.split(/(\{[^}]+\})/g)
+						.map(part => {
+							if (part.match(/\{[^}]+\}/)) return [part]
+							return part.split(/(\s+)/g)
+						})
+						.flat()
+				: [],
+		[parsedWithFilteredInputs]
+	)
 
 	// Attempt to resolve the complete sentence
 	const resolvedSentence = useMemo(() => {
@@ -136,10 +140,11 @@ export const useCordStateless = (
 			[parsed]
 		),
 		isComplete: useMemo(
-			() => parsedWithFilteredInputs?.inputs.every(input => {
-				const value = valuesMap.get(input.index)
-				return value !== undefined
-			}) ?? false,
+			() =>
+				parsedWithFilteredInputs?.inputs.every(input => {
+					const value = valuesMap.get(input.index)
+					return value !== undefined
+				}) ?? false,
 			[parsedWithFilteredInputs, valuesMap]
 		),
 		isValid: useMemo(() => {
@@ -211,15 +216,19 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		}
 	}, [parsed, filteredInputs])
 
-	const parts = useMemo(() => parsedWithFilteredInputs
-		? parsedWithFilteredInputs.template
-			.split(/(\{[^}]+\})/g)
-			.map(part => {
-				if (part.match(/\{[^}]+\}/)) return [part]
-				return part.split(/(\s+)/g)
-			})
-			.flat()
-		: [], [parsedWithFilteredInputs])
+	const parts = useMemo(
+		() =>
+			parsedWithFilteredInputs
+				? parsedWithFilteredInputs.template
+						.split(/(\{[^}]+\})/g)
+						.map(part => {
+							if (part.match(/\{[^}]+\}/)) return [part]
+							return part.split(/(\s+)/g)
+						})
+						.flat()
+				: [],
+		[parsedWithFilteredInputs]
+	)
 
 	const resolvedSentence = useMemo(() => {
 		if (!parsed) return null
@@ -262,9 +271,9 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 					values: newValues,
 					validationErrors: result.error
 						? new Map(prev.validationErrors).set(index, {
-							type: "validation",
-							message: result.error
-						})
+								type: "validation",
+								message: result.error
+							})
 						: new Map([...prev.validationErrors].filter(([k]) => k !== index))
 				}))
 			},

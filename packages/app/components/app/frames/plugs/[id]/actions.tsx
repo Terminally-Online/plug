@@ -2,13 +2,14 @@ import { FC, useMemo } from "react"
 
 import { Blocks, SearchIcon } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { ActionItem } from "@/components/app/plugs/actions/action-item"
 import { useDebounce } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const [column] = useAtom(columnByIndexAtom(index))

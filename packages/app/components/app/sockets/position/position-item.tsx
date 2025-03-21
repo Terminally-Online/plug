@@ -17,7 +17,7 @@ export const SocketPositionItem: FC<{
 
 	const change = positions
 		? positions.reduce((acc, position) => acc + (position.change ?? 0), 0) /
-		positions.filter(position => position.change !== undefined).length
+			positions.filter(position => position.change !== undefined).length
 		: 0
 
 	return (

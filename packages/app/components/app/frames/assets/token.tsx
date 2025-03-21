@@ -2,6 +2,8 @@ import { FC, useMemo, useState } from "react"
 
 import { ArrowDownFromLine, ArrowRightLeft, MapIcon, Send } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { SocketTokenPriceChart } from "@/components/app/sockets/tokens/token-chart"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
@@ -12,7 +14,6 @@ import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
-import { useAtom, useAtomValue } from "jotai"
 
 export const TokenFrame: FC<{
 	index: number
@@ -34,10 +35,10 @@ export const TokenFrame: FC<{
 	})
 	const [tooltipData, setTooltipData] = useState<
 		| {
-			timestamp: string
-			price: number
-			start: Array<number>
-		}
+				timestamp: string
+				price: number
+				start: Array<number>
+		  }
 		| undefined
 	>()
 
@@ -153,18 +154,19 @@ export const TokenFrame: FC<{
 					<button
 						className={cn(
 							"flex items-center justify-center gap-2 rounded-lg border-[1px] px-12 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90",
-							index === COLUMNS.SIDEBAR_INDEX ? "w-full" : "w-max "
-
+							index === COLUMNS.SIDEBAR_INDEX ? "w-full" : "w-max"
 						)}
 						style={{
 							backgroundColor: index === COLUMNS.SIDEBAR_INDEX ? color : "",
 							borderColor: color ?? "",
-							color: index === COLUMNS.SIDEBAR_INDEX ? textColor : color ?? ""
+							color: index === COLUMNS.SIDEBAR_INDEX ? textColor : (color ?? "")
 						}}
 						onClick={() => {
 							transfer(undefined)
 							frame(
-								index === COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
+								index === COLUMNS.SIDEBAR_INDEX
+									? `${token.symbol}-transfer-deposit`
+									: `${token.symbol}-transfer-recipient`
 							)
 						}}
 					>
@@ -183,11 +185,11 @@ export const TokenFrame: FC<{
 				)}
 
 				<button
-					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 border-[1px]"
+					className="flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 					style={{
 						backgroundColor: index !== COLUMNS.SIDEBAR_INDEX ? color : "",
 						borderColor: color ?? "",
-						color: index !== COLUMNS.SIDEBAR_INDEX ? textColor : color ?? ""
+						color: index !== COLUMNS.SIDEBAR_INDEX ? textColor : (color ?? "")
 					}}
 					onClick={() => {
 						transfer(undefined)

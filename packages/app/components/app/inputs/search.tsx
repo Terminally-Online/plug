@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, RefObject, useEffect, useRef, type JSX } from "react";
+import { FC, type JSX, PropsWithChildren, RefObject, useEffect, useRef } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
@@ -123,5 +123,5 @@ export const Search: FC<Props> = ({
 				{children && <div className="ml-auto">{children}</div>}
 			</div>
 		</div>
-	);
+	)
 }

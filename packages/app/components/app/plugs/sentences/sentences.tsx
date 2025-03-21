@@ -1,25 +1,29 @@
 import { FC, useCallback, useMemo } from "react"
 
+import { useAtom, useSetAtom } from "jotai"
+
+import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd"
+
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
-import { useConnect, SchemasResponseCoils } from "@/lib"
+import { SchemasResponseCoils, useConnect } from "@/lib"
+import { api } from "@/server/client"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
-import { useAtom, useSetAtom } from "jotai"
 import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
-import { api } from "@/server/client"
-import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd"
 
 type SentenceProps = { index: number }
 
 export const Sentences: FC<SentenceProps> = ({ index }) => {
-	const { account: { session } } = useConnect()
+	const {
+		account: { session }
+	} = useConnect()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
 	const setPlugs = useSetAtom(plugsAtom)
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
-	const own = plug && session && session.address === plug.socketId || false
+	const own = (plug && session && session.address === plug.socketId) || false
 	const editPlug = useSetAtom(editPlugAtom)
 	const actionMutation = api.plugs.action.edit.useMutation({
 		onSuccess: result => editPlug(result)
@@ -32,7 +36,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 	const availableCoils = useMemo(() => {
 		if (!plug || !solverActions) return {}
 
-		const coils: Record<string, { type: string, actionIndex: number }> = {}
+		const coils: Record<string, { type: string; actionIndex: number }> = {}
 
 		plug.actions.forEach((action, actionIndex) => {
 			const actionSchema = solverActions[action.protocol]?.schema[action.action]
@@ -44,7 +48,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 
 				coils[name] = {
 					type: actionSchema.coils[name],
-					actionIndex,
+					actionIndex
 				}
 			})
 
@@ -81,7 +85,11 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 			...additionalData
 		}
 
-		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions: JSON.stringify(newActions), updatedAt: new Date() } : p))
+		setPlugs(prev =>
+			prev.map(p =>
+				plug && p.id === column?.item ? { ...p, actions: JSON.stringify(newActions), updatedAt: new Date() } : p
+			)
+		)
 		edit({
 			id: plug.id,
 			actions: JSON.stringify(newActions)
@@ -105,7 +113,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 		newActions.splice(result.destination.index, 0, removed)
 		const actions = JSON.stringify(newActions)
 
-		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
+		setPlugs(prev => prev.map(p => (plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p)))
 		edit({
 			id: plug.id,
 			actions
@@ -118,7 +126,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 		const newActions = plug.actions.filter((_, i) => i !== actionIndex)
 		const actions = JSON.stringify(newActions)
 
-		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
+		setPlugs(prev => prev.map(p => (plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p)))
 		edit({
 			id: plug.id,
 			actions
@@ -127,61 +135,73 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 
 	if (!plug) return null
 
-	return <div className="mb-72 flex flex-col">
-		<DragDropContext onDragEnd={handleDragEnd}>
-			<Droppable droppableId={`${index}-${plug.id}-items`} direction="vertical">
-				{provided => (
-					<div ref={provided.innerRef} className="flex flex-col" {...provided.droppableProps}>
-						{plug.actions.map((action, actionIndex) => {
-							const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
-							const linked = values.filter(val => typeof val?.value === "string" && val?.value?.startsWith("<-{"))
+	return (
+		<div className="mb-72 flex flex-col">
+			<DragDropContext onDragEnd={handleDragEnd}>
+				<Droppable droppableId={`${index}-${plug.id}-items`} direction="vertical">
+					{provided => (
+						<div ref={provided.innerRef} className="flex flex-col" {...provided.droppableProps}>
+							{plug.actions.map((action, actionIndex) => {
+								const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
+								const linked = values.filter(
+									val => typeof val?.value === "string" && val?.value?.startsWith("<-{")
+								)
 
-							let prevCoils: SchemasResponseCoils | undefined = {}
-							if (actionIndex > 0) {
-								const prevAction = plug.actions[actionIndex - 1]
-								prevCoils = solverActions[prevAction.protocol]?.schema[prevAction.action]?.coils || {}
-							}
+								let prevCoils: SchemasResponseCoils | undefined = {}
+								if (actionIndex > 0) {
+									const prevAction = plug.actions[actionIndex - 1]
+									prevCoils =
+										solverActions[prevAction.protocol]?.schema[prevAction.action]?.coils || {}
+								}
 
-							return <Draggable
-								key={String(action.id)}
-								draggableId={String(action.id)}
-								index={actionIndex}
-								isDragDisabled={column?.frame !== undefined}
-							>
-								{(provided, snapshot) => (
-									<div
-										ref={provided.innerRef}
-										className="flex h-full w-full flex-row rounded-lg"
-										{...provided.draggableProps}
-										style={{
-											...provided.draggableProps.style,
-										}}
+								return (
+									<Draggable
+										key={String(action.id)}
+										draggableId={String(action.id)}
+										index={actionIndex}
+										isDragDisabled={column?.frame !== undefined}
 									>
-										<Sentence
-											index={index}
-											item={column?.item ?? ""}
-											actionIndex={actionIndex}
-											action={action}
-											linked={linked}
-											prevCoils={prevCoils}
-											dragging={snapshot.isDragging}
-											handleValueChange={(inputIndex, value, additionalData) =>
-												handleValueChange(actionIndex, inputIndex, value, additionalData)
-											}
-											handleRemoveAction={() => handleRemoveAction(actionIndex)}
-											validateType={validateType}
-											availableCoils={availableCoils}
-											{...provided.dragHandleProps}
-										/>
-									</div>
-								)}
-							</Draggable>
-						})}
+										{(provided, snapshot) => (
+											<div
+												ref={provided.innerRef}
+												className="flex h-full w-full flex-row rounded-lg"
+												{...provided.draggableProps}
+												style={{
+													...provided.draggableProps.style
+												}}
+											>
+												<Sentence
+													index={index}
+													item={column?.item ?? ""}
+													actionIndex={actionIndex}
+													action={action}
+													linked={linked}
+													prevCoils={prevCoils}
+													dragging={snapshot.isDragging}
+													handleValueChange={(inputIndex, value, additionalData) =>
+														handleValueChange(
+															actionIndex,
+															inputIndex,
+															value,
+															additionalData
+														)
+													}
+													handleRemoveAction={() => handleRemoveAction(actionIndex)}
+													validateType={validateType}
+													availableCoils={availableCoils}
+													{...provided.dragHandleProps}
+												/>
+											</div>
+										)}
+									</Draggable>
+								)
+							})}
 
-						{provided.placeholder}
-					</div>
-				)}
-			</Droppable>
-		</DragDropContext>
-	</div>
+							{provided.placeholder}
+						</div>
+					)}
+				</Droppable>
+			</DragDropContext>
+		</div>
+	)
 }

@@ -3,11 +3,12 @@ import { FC, useMemo } from "react"
 
 import { User } from "lucide-react"
 
+import { useAtom } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/shared/buttons/button"
 import { columnByIndexAtom } from "@/state/columns"
 import { useSidebar } from "@/state/sidebar"
-import { useAtom } from "jotai"
 
 const FRAMES_REQUIRED_AUTH = ["schedule", "run"]
 

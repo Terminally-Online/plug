@@ -14,7 +14,7 @@ export const useSearch = () => {
 		debouncedSearch,
 		handleSearch,
 		tag,
-		debouncedTag, 
+		debouncedTag,
 		handleTag,
 		handleReset
 	}

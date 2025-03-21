@@ -2,11 +2,13 @@ import React, { FC, memo, useEffect, useRef, useState } from "react"
 
 import { Check, ChevronLeft, GitFork, Plus, Share, X } from "lucide-react"
 
+import { useAtom } from "jotai"
+
 import { Draggable } from "@hello-pangea/dnd"
 
-import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
 import { ColumnAdd, OPTIONS } from "@/components/app/columns/utils/column-add"
+import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
 import { Header } from "@/components/app/layout/header"
 import { PlugsDiscover } from "@/components/app/plugs/discover"
@@ -20,10 +22,9 @@ import { Button } from "@/components/shared/buttons/button"
 import { cardColors, cn, formatTitle, useConnect } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
+import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 import { SparklingText } from "../utils/sparkling-text"
-import { useAtom } from "jotai"
-import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -35,14 +36,16 @@ export const ConsoleColumn: FC<{
 }> = memo(({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { account: { session } } = useConnect()
+	const {
+		account: { session }
+	} = useConnect()
 	const { socket } = useSocket()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const { frame, remove, resize, navigate } = useColumnActions(index)
 
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? "__non-existant__"))
-	const own = plug && session && session.address === plug.socketId || false
+	const own = (plug && session && session.address === plug.socketId) || false
 	const { fork } = usePlugActions()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
@@ -130,15 +133,19 @@ export const ConsoleColumn: FC<{
 														backgroundImage: cardColors[plug.color]
 													}}
 												/>
-											) : OPTIONS.find(option => option.label === column.key)?.icon ?? <Plus size={18} className="opacity-40" />}
+											) : (
+												(OPTIONS.find(option => option.label === column.key)?.icon ?? (
+													<Plus size={18} className="opacity-40" />
+												))
+											)}
 
 											<div className="top-0 z-[31] flex w-max flex-row items-center gap-2 overflow-hidden">
 												<SparklingText
 													className="text-lg font-bold"
 													sparkles={Boolean(
 														plug?.renamedAt &&
-														plug.renamedAt > (plug.createdAt ?? 0) &&
-														plug.renamedAt !== plug.createdAt
+															plug.renamedAt > (plug.createdAt ?? 0) &&
+															plug.renamedAt !== plug.createdAt
 													)}
 													sparkleKey={new Date(plug?.renamedAt ?? "")?.getTime()}
 													color={cardColors[plug?.color ?? "yellow"]}
@@ -263,10 +270,12 @@ export const ConsoleColumn: FC<{
 							</div>
 						</div>
 
-						<div className="h-full cursor-col-resize relative">
-							<div className={cn("h-full w-[1px] bg-plug-green/10", snapshot.isDragging && "opacity-0")}/>
+						<div className="relative h-full cursor-col-resize">
 							<div
-								className="absolute top-0 bottom-0 -left-4 -right-4 z-[999]"
+								className={cn("h-full w-[1px] bg-plug-green/10", snapshot.isDragging && "opacity-0")}
+							/>
+							<div
+								className="absolute -left-4 -right-4 bottom-0 top-0 z-[999]"
 								onMouseDown={e => {
 									e.preventDefault()
 									setIsResizing(true)

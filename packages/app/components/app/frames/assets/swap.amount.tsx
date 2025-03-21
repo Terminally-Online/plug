@@ -4,17 +4,18 @@ import { formatUnits, getAddress } from "viem"
 
 import { ArrowRight, Bell, CircleDollarSign, Loader, TriangleRight, Waypoints } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.input"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
+import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
-import { useSocket } from "@/state/authentication"
-import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -35,12 +36,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const { socket } = useSocket()
 
 	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {
-		const tokenOutImplementation = tokenOut.implementations.find(
-			implementation => implementation.chain === "base"
-		)
-		const tokenInImplementation = tokenIn.implementations.find(
-			implementation => implementation?.chain === "base"
-		)
+		const tokenOutImplementation = tokenOut.implementations.find(implementation => implementation.chain === "base")
+		const tokenInImplementation = tokenIn.implementations.find(implementation => implementation?.chain === "base")
 
 		return { tokenOutImplementation, tokenInImplementation }
 	}, [tokenIn, tokenOut])
@@ -68,14 +65,14 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const transaction = api.solver.actions.intent.useQuery(
 		{
 			chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
-			from: socket ? column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress : "",
+			from: socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : "",
 			inputs: [
 				{
 					protocol: "plug",
 					action: "swap",
 					amount: debouncedAmount,
 					token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
-					tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`,
+					tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
 				}
 			],
 			options: {
@@ -88,7 +85,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				!!tokenInImplementation &&
 				!!tokenOutImplementation &&
 				debouncedAmount !== "0" &&
-				isSufficientBalance && !!socket,
+				isSufficientBalance &&
+				!!socket,
 			refetchInterval: 3500,
 			staleTime: 1000
 		}
@@ -166,8 +164,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-
-
 			<div>
 				<div className="relative mb-2 flex flex-col gap-2">
 					<SwapAmountInput
@@ -217,7 +213,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 										meta?.buyTokens[
 											getAddress(
 												tokenInImplementation?.contract ??
-												"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+													"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 											)
 										]?.amount ?? 0
 								}

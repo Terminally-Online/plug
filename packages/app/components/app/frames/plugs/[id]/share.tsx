@@ -2,13 +2,14 @@ import { FC } from "react"
 
 import { Badge, Link, Send, Twitter } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { routes, useClipboard } from "@/lib"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
 import { plugByIdAtom } from "@/state/plugs"
-import { useAtom, useAtomValue } from "jotai"
 
 export const ShareFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const [column] = useAtom(columnByIndexAtom(index))

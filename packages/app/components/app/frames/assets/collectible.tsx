@@ -18,6 +18,8 @@ import {
 	Waypoints
 } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { TransferFrame } from "@/components/app/frames/assets/transfer"
 import { Frame } from "@/components/app/frames/base"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
@@ -34,7 +36,6 @@ import { api, RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
-import { useAtom, useAtomValue } from "jotai"
 
 type Traits = Array<{ trait_type: string; value: string }>
 
@@ -171,9 +172,7 @@ export const CollectibleFrame: FC<{
 					<button
 						onClick={() => {
 							transfer({ percentage: 0, precise: "0", recipient: undefined })
-							frame(
-								`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
-							)
+							frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
 						}}
 						className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 						style={{

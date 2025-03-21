@@ -2,11 +2,12 @@ import { FC } from "react"
 
 import { Trash2 } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/shared/buttons/button"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
 import { usePlugActions } from "@/state/plugs"
-import { useAtom, useAtomValue } from "jotai"
 
 export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))

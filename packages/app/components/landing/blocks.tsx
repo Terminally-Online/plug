@@ -8,7 +8,7 @@ import { GTM_EVENTS, routes, useAnalytics, useMediaQuery } from "@/lib"
 
 const blockchains = [
 	"/blockchain/arbitrum",
-	"/blockchain/avalanche", 
+	"/blockchain/avalanche",
 	"/blockchain/base",
 	"/blockchain/bera",
 	"/blockchain/blast",
@@ -188,7 +188,7 @@ export const Blocks = () => {
 												alt={item.split("/").pop() || ""}
 												layout="fill"
 												objectFit="contain"
-												className={`relative transition-all duration-200 ease-in-out rounded-full ${
+												className={`relative rounded-full transition-all duration-200 ease-in-out ${
 													(hoveredItems.has(item) && !hasFallen) || resetAll
 														? ""
 														: "grayscale"

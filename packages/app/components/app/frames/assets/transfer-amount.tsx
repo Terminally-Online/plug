@@ -1,19 +1,21 @@
 import { FC, useCallback, useRef, useState } from "react"
 
+import { getAddress, isAddress } from "viem"
+import { useSendTransaction } from "wagmi"
+
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect, useDebounceInline } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
+import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
-import { TransferRecipient } from "./transfer-recipient"
-import { useSocket } from "@/state/authentication"
-import { getAddress, isAddress } from "viem"
-import { useSendTransaction } from "wagmi"
 import { Marquee } from "../../utils/marquee"
-import { useAtom, useAtomValue } from "jotai"
+import { TransferRecipient } from "./transfer-recipient"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -203,11 +205,13 @@ const ImplementationComponent: FC<{
 const ScrollingError = ({ error }: { error: string | undefined }) => {
 	if (!error) return null
 
-	return <div className="relative min-h-6 overflow-x-hidden">
-		<div className="z-[20] absolute left-0 w-12 bg-gradient-to-r from-plug-white to-plug-white/0 top-0 bottom-0" />
-		<div className="z-[20] absolute right-0 w-12 bg-gradient-to-l from-plug-white to-plug-white/0 top-0 bottom-0" />
-		<Marquee className="-z-1 relative max-w-full text-plug-red font-bold whitespace-nowrap">{error}</Marquee>
-	</div>
+	return (
+		<div className="relative min-h-6 overflow-x-hidden">
+			<div className="absolute bottom-0 left-0 top-0 z-[20] w-12 bg-gradient-to-r from-plug-white to-plug-white/0" />
+			<div className="absolute bottom-0 right-0 top-0 z-[20] w-12 bg-gradient-to-l from-plug-white to-plug-white/0" />
+			<Marquee className="-z-1 relative max-w-full whitespace-nowrap font-bold text-plug-red">{error}</Marquee>
+		</div>
+	)
 }
 
 export const TransferAmountFrame: FC<{
@@ -221,7 +225,9 @@ export const TransferAmountFrame: FC<{
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
-	const { account: { isAuthenticated } } = useConnect()
+	const {
+		account: { isAuthenticated }
+	} = useConnect()
 	const { socket } = useSocket()
 	// const {
 	// 	handle: {
@@ -236,13 +242,14 @@ export const TransferAmountFrame: FC<{
 			? getAddress(socket.id)
 			: getAddress(socket.socketAddress)
 		: ""
-	const recipient = column && socket
-		? index === COLUMNS.SIDEBAR_INDEX
-			? getAddress(socket.socketAddress)
-			: column.transfer?.recipient && isAddress(column.transfer?.recipient)
-				? getAddress(column.transfer?.recipient)
-				: ""
-		: ""
+	const recipient =
+		column && socket
+			? index === COLUMNS.SIDEBAR_INDEX
+				? getAddress(socket.socketAddress)
+				: column.transfer?.recipient && isAddress(column.transfer?.recipient)
+					? getAddress(column.transfer?.recipient)
+					: ""
+			: ""
 
 	// TODO: This is just hard-coded to base for now. It should support having multiple
 	//       chains in the same execution at once.
@@ -263,27 +270,30 @@ export const TransferAmountFrame: FC<{
 		],
 		options: {
 			isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX,
-			simulate: true,
+			simulate: true
 		}
 	})
 	const { data: intent } = api.solver.actions.intent.useQuery(request, {
-		enabled: isFrame && isReady && !!column && !!socket && !!implementation,
+		enabled: isFrame && isReady && !!column && !!socket && !!implementation
 	})
 
 	const handleTransaction = () => {
 		if (!column || !intent) return
 
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
-			sendTransaction({
-				to: intent.transactions[0].to,
-				data: intent.transactions[0].data,
-				value: intent.transactions[0].value
-			}, {
-				onSuccess: data => {
-					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
-					frame(`${data}-activity`)
+			sendTransaction(
+				{
+					to: intent.transactions[0].to,
+					data: intent.transactions[0].data,
+					value: intent.transactions[0].value
+				},
+				{
+					onSuccess: data => {
+						navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+						frame(`${data}-activity`)
+					}
 				}
-			})
+			)
 		else
 			// TODO: Implement the socket side logic for transfers.
 			return
@@ -335,7 +345,9 @@ export const TransferAmountFrame: FC<{
 				label={`${index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
 				handleBack={() =>
-					frame(index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
+					frame(
+						index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`
+					)
 				}
 				hasChildrenPadding={false}
 				hasOverlay
@@ -375,10 +387,18 @@ export const TransferAmountFrame: FC<{
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
-							disabled={intent && isPending || isReady === false}
-							onClick={intent && !isPending && isReady ? handleTransaction : () => { }}
+							disabled={(intent && isPending) || isReady === false}
+							onClick={intent && !isPending && isReady ? handleTransaction : () => {}}
 						>
-							{!isAuthenticated ? "Connect Wallet" : isPending ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
+							{!isAuthenticated
+								? "Connect Wallet"
+								: isPending
+									? "Transfering..."
+									: isReady
+										? index === COLUMNS.SIDEBAR_INDEX
+											? "Deposit"
+											: "Send"
+										: "Enter Amount"}
 						</button>
 					</div>
 				</div>

@@ -195,15 +195,15 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 				isDisabled
 					? undefined
 					: () =>
-						connection.connect(
-							{ connector },
-							{
-								onSuccess: data => {
-									updateRecentConnectorId(connector.id)
-									prove(index, from, data.accounts[0])
+							connection.connect(
+								{ connector },
+								{
+									onSuccess: data => {
+										updateRecentConnectorId(connector.id)
+										prove(index, from, data.accounts[0])
+									}
 								}
-							}
-						)
+							)
 			}
 		>
 			<div className="flex flex-row items-center gap-4">
@@ -269,7 +269,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 						description={
 							sign.failureReason
 								? "An internal error was received while signing the message. " +
-								sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
+									sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
 								: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
 						}
 					>

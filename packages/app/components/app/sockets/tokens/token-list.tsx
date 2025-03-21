@@ -9,6 +9,7 @@ import { cn, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
+
 import { ErrorFrame } from "../../frames/plugs/[id]/execute/error"
 
 type Tokens = RouterOutputs["socket"]["balances"]["positions"]["tokens"] | RouterOutputs["solver"]["tokens"]["get"]
@@ -31,7 +32,7 @@ export const SocketTokenList: FC<
 
 	const { data: searchedTokens } = api.solver.tokens.get.useQuery(debouncedSearch, {
 		enabled: search !== "" && expanded,
-		placeholderData: (prev) => prev
+		placeholderData: prev => prev
 	})
 
 	const visibleTokens = useMemo(() => {

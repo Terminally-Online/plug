@@ -2,10 +2,11 @@ import { useSession } from "next-auth/react"
 
 import { User } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { AuthButton } from "@/components/shared/buttons/auth"
-import { columnByIndexAtom, COLUMNS, isFrameAtom} from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
+import { columnByIndexAtom, COLUMNS, isFrameAtom } from "@/state/columns"
 
 export const AuthFrame = () => {
 	const { data: session } = useSession()

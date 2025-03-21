@@ -32,18 +32,20 @@ const plugIdMapAtom = atom(get => {
 	const plugs = get(plugsStorageAtom)
 	return new Map(plugs.map(p => [p.id, p]))
 })
-export const plugByIdAtom = atomFamily((id: string) => atom(get => {
-	const plug = get(plugIdMapAtom).get(id)
-	if (!plug) return
-	try {
-		return {
-			...plug,
-			actions: JSON.parse(plug.actions) as SchemasRequestActions
+export const plugByIdAtom = atomFamily((id: string) =>
+	atom(get => {
+		const plug = get(plugIdMapAtom).get(id)
+		if (!plug) return
+		try {
+			return {
+				...plug,
+				actions: JSON.parse(plug.actions) as SchemasRequestActions
+			}
+		} catch {
+			return undefined
 		}
-	} catch { 
-		return undefined
-	}
-}))
+	})
+)
 export const plugIdsAtom = selectAtom(
 	plugsAtom,
 	plugs => plugs.map(p => p.id),

@@ -2,13 +2,14 @@ import { FC } from "react"
 
 import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { plugByIdAtom } from "@/state/plugs"
-import { useAtom, useAtomValue } from "jotai"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const [column] = useAtom(columnByIndexAtom(index))

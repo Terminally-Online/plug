@@ -1,15 +1,16 @@
-import { memo, useEffect, useMemo, useRef, useState, type JSX } from "react";
+import { type JSX, memo, useEffect, useMemo, useRef, useState } from "react"
 
-import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon, X } from "lucide-react"
+import { Activity, Cable, Cog, Coins, Globe, ImageIcon, LockIcon, PiggyBank, Plug, Plus, Star, X } from "lucide-react"
 
+import { useAtomValue } from "jotai"
+
+import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { COLUMNS, primaryColumnsAtom, useColumnActions } from "@/state/columns"
 import { Flag, useFlags } from "@/state/flags"
-import { useAtomValue } from "jotai";
-import { usePlugActions } from "@/state/plugs";
-import { Button } from "@/components/shared/buttons/button";
+import { usePlugActions } from "@/state/plugs"
 
 type Options = Array<{
 	label: keyof (typeof COLUMNS)["KEYS"]
@@ -116,11 +117,13 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 			description: "View and manage your Plug settings.",
 			icon: <Cog size={14} className="opacity-40" />
 		},
-		socket?.admin ? {
-			label: "ADMIN",
-			description: "Manage administrative settings.",
-			icon: <LockIcon size={14} className="opacity-40" />
-		} : {}
+		socket?.admin
+			? {
+					label: "ADMIN",
+					description: "Manage administrative settings.",
+					icon: <LockIcon size={14} className="opacity-40" />
+				}
+			: {}
 	]
 
 	const isBody = index != columns.length - 2
@@ -130,7 +133,7 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 			<div
 				ref={resizeRef}
 				className={cn(
-					"relative flex select-none flex-col w-full",
+					"relative flex w-full select-none flex-col",
 					!isBody && "bg-white",
 					columns.some(column => column.index >= 0) ? "" : "ml-2"
 				)}
@@ -141,18 +144,20 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 						<div className="flex w-full flex-row items-center gap-4 px-6 py-4">
 							<Plus size={18} className="opacity-40" />
 							<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add</p>
-							<Button className="opacity-0 pointer-events-none cursor-none" variant="secondary" sizing="sm" onClick={() => { }}>
-								<X
-									size={14}
-									className="opacity-60 transition-opacity group-hover:opacity-100"
-								/>
+							<Button
+								className="pointer-events-none cursor-none opacity-0"
+								variant="secondary"
+								sizing="sm"
+								onClick={() => {}}
+							>
+								<X size={14} className="opacity-60 transition-opacity group-hover:opacity-100" />
 							</Button>
 						</div>
 					</div>
 				)}
 
-				<div className="h-full overflow-y-scroll w-full">
-					<div className="flex h-full flex-col gap-2 p-4 w-full">
+				<div className="h-full w-full overflow-y-scroll">
+					<div className="flex h-full w-full flex-col gap-2 p-4">
 						<Accordion key={"add"} onExpand={() => addPlug(isBody ? { index } : undefined)}>
 							<div className="flex flex-row items-center gap-2">
 								<div className="flex h-10 w-10 min-w-10 items-center justify-center">
@@ -170,9 +175,7 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 							<Accordion
 								key={option.label}
 								onExpand={() =>
-									isBody
-										? navigate({ index, key: option.label })
-										: add({ key: option.label })
+									isBody ? navigate({ index, key: option.label }) : add({ key: option.label })
 								}
 							>
 								<div className="flex flex-row items-center gap-2">
@@ -189,13 +192,12 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 						))}
 					</div>
 				</div>
-
 			</div>
 
 			<div className="relative h-full cursor-col-resize">
 				<div className="h-full w-[1px] bg-plug-green/10" />
 				<div
-					className="absolute top-0 bottom-0 -left-4 -right-4 z-[999]"
+					className="absolute -left-4 -right-4 bottom-0 top-0 z-[999]"
 					onMouseDown={e => {
 						e.preventDefault()
 						setIsResizing(true)

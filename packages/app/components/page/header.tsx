@@ -2,13 +2,14 @@ import { useSession } from "next-auth/react"
 
 import { Ellipsis, GitFork, LogOut, Share } from "lucide-react"
 
+import { useAtom } from "jotai"
+
 import { Container } from "@/components/app/layout/container"
 import { Header } from "@/components/app/layout/header"
 import { Button } from "@/components/shared/buttons/button"
 import { cardColors } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { useAtom } from "jotai"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 const PlugHeader = () => {

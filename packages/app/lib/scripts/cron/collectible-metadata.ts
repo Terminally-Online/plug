@@ -1,5 +1,5 @@
-import { db } from "@/server"
 import { getMetadataForToken } from "@/lib/opensea/metadata"
+import { db } from "@/server"
 
 const work = async () => {
 	const collectiblesWithoutMetadata = await db.collectible.findMany({
@@ -31,4 +31,3 @@ const work = async () => {
 }
 
 work()
-

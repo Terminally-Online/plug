@@ -1,18 +1,20 @@
 import { FC, HTMLAttributes, PropsWithChildren } from "react"
+
 import { motion } from "framer-motion"
-import { cn } from "@/lib";
+
+import { cn } from "@/lib"
 
 interface MarqueeProps extends HTMLAttributes<HTMLDivElement>, PropsWithChildren {
-	height?: string;
-	duration?: number;
-	fontSize?: string;
+	height?: string
+	duration?: number
+	fontSize?: string
 }
 
 const calculateDuration = (children: React.ReactNode): number => {
-	if (typeof children === 'string') {
-		return Math.max(5, Math.min(80, children.length * 1.2));
+	if (typeof children === "string") {
+		return Math.max(5, Math.min(80, children.length * 1.2))
 	}
-	return 15;
+	return 15
 }
 
 export const Marquee: FC<MarqueeProps> = ({
@@ -22,13 +24,10 @@ export const Marquee: FC<MarqueeProps> = ({
 	className,
 	...props
 }) => {
-	const calculatedDuration = userDuration ?? calculateDuration(children);
+	const calculatedDuration = userDuration ?? calculateDuration(children)
 
 	return (
-		<div
-			className={cn(`relative w-full max-w-full`, className)}
-			{...props}
-		>
+		<div className={cn(`relative w-full max-w-full`, className)} {...props}>
 			<motion.div
 				className="absolute whitespace-nowrap"
 				animate={{
@@ -38,19 +37,15 @@ export const Marquee: FC<MarqueeProps> = ({
 							repeat: Infinity,
 							repeatType: "reverse",
 							duration: calculatedDuration,
-							ease: "linear",
-						},
-					},
+							ease: "linear"
+						}
+					}
 				}}
 				style={{
-					transition: `all ${calculatedDuration}s linear infinite`,
+					transition: `all ${calculatedDuration}s linear infinite`
 				}}
 			>
-				<h1
-					className={`${fontSize}`}
-				>
-					{children}
-				</h1>
+				<h1 className={`${fontSize}`}>{children}</h1>
 			</motion.div>
 		</div>
 	)

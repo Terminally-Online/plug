@@ -60,10 +60,7 @@ export const ReferralRequired: FC = () => {
 					<h1 className="text-2xl font-bold">Get Access to Plug.</h1>
 					<p className="mb-8 text-center font-bold text-black/40">
 						Enter the referral code you received to get started or request one by tagging{" "}
-						<button
-							onClick={handleRequestAccess}
-							className="text-plug-green hover:opacity-80"
-						>
+						<button onClick={handleRequestAccess} className="text-plug-green hover:opacity-80">
 							@onplug_io
 						</button>{" "}
 						on Twitter.

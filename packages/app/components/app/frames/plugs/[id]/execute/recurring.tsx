@@ -2,11 +2,12 @@ import { FC } from "react"
 
 import { Clock } from "lucide-react"
 
+import { useAtom, useAtomValue } from "jotai"
+
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/shared/buttons/button"
 import { frequencies } from "@/lib"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-import { useAtom, useAtomValue } from "jotai"
 
 export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
