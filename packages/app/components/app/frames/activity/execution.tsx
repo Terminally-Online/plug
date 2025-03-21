@@ -13,7 +13,7 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { TimeUntil } from "@/components/shared/utils/time-until"
 import { useActivities } from "@/contexts"
-import { cardColors, ChainId, cn, colors, formatFrequency, formatTitle, getChainName, getDominantProtocolColor } from "@/lib"
+import { cardColors, ChainId, cn, formatFrequency, formatTitle, getChainName } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
@@ -91,7 +91,7 @@ export const ExecutionFrame: FC<{
 				<div className="flex flex-col">
 					<ActionPreview
 						index={index}
-						item={activity.plug?.id}
+						item={activity.plug?.id ?? activity.id}
 						actions={actions}
 						errors={visibleRuns[0]?.errors ?? []}
 					/>
