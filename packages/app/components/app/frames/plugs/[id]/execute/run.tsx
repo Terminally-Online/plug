@@ -29,6 +29,7 @@ import { useActions } from "@/state/actions"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 import { areAllSentencesValidAtom } from "@/state/sentences"
+import { useSocket } from "@/state/authentication"
 
 export const RunFrame: FC<{
 	index: number
@@ -42,9 +43,10 @@ export const RunFrame: FC<{
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
 	const [plug] = useAtom(plugByIdAtom(item))
-	const { queue } = usePlugActions()
 
+	const { socket } = useSocket()
 	const [solverActions] = useActions()
+	const { queue } = usePlugActions()
 
 	// TODO: The functionality for this was not finished because right now our in our environment we
 	//       only have one chain that is valid at any given time.
@@ -107,6 +109,7 @@ export const RunFrame: FC<{
 		const intent = {
 			plugId: column.item,
 			chainId: chain,
+			from: socket.socketAddress,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to,
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")

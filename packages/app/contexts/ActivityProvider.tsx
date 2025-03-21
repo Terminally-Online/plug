@@ -26,7 +26,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 			api.plugs.activity.get.useQuery(undefined, {
 				enabled: session !== null && isAnonymous === false
 			}),
-		{ onSuccess: data => { setActivities(data); console.log("got activity", data) } }
+		{ onSuccess: data => setActivities(data) }
 	)
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {
