@@ -145,9 +145,11 @@ export const Part: FC<PartProps> = memo(
 				<button
 					className={cn(
 						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
-						isValid
-							? "bg-plug-yellow/60"
-							: "bg-plug-red/60",
+						isCompatibleCoil
+							? "bg-orange-300/60"
+							: isValid
+								? "bg-plug-yellow/60"
+								: "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
