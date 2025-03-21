@@ -87,6 +87,9 @@ func (d *ActionDefinition[T]) GetHandler() ActionFunc[any] {
 }
 
 func (d *ActionDefinition[T]) GetOptions() ActionOptionsFunc[any] {
+	if d.Options == nil {
+		return nil
+	}
 	return func(lookup *SchemaLookup[any]) (map[int]Options, error) {
 		return d.Options(&SchemaLookup[T]{
 			ChainId: lookup.ChainId,
