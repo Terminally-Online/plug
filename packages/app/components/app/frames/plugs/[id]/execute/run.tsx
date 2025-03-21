@@ -112,7 +112,8 @@ export const RunFrame: FC<{
 			from: socket.socketAddress,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to,
-			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
+			frequency: parseInt(column.schedule?.repeats?.value ?? "0"),
+			socket: column.index !== COLUMNS.SIDEBAR_INDEX
 		}
 
 		queue(intent, {
