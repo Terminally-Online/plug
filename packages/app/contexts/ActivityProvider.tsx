@@ -11,7 +11,7 @@ export const ActivityContext = createContext<{
 	activities: RouterOutputs["plugs"]["activity"]["get"]
 	isLoading: boolean
 	handle: { toggle: (data: { id: string }) => void; delete: (data: { id: string }) => void }
-}>({ activities: [], isLoading: true, handle: { toggle: () => {}, delete: () => {} } })
+}>({ activities: [], isLoading: true, handle: { toggle: () => { }, delete: () => { } } })
 
 export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	const {
@@ -26,7 +26,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 			api.plugs.activity.get.useQuery(undefined, {
 				enabled: session !== null && isAnonymous === false
 			}),
-		{ onSuccess: data => setActivities(data) }
+		{ onSuccess: data => { setActivities(data); console.log("got activity", data) } }
 	)
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {

@@ -13,7 +13,7 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { TimeUntil } from "@/components/shared/utils/time-until"
 import { useActivities } from "@/contexts"
-import { cardColors, ChainId, cn, formatFrequency, formatTitle, getChainName } from "@/lib"
+import { cardColors, ChainId, cn, colors, formatFrequency, formatTitle, getChainName, getDominantProtocolColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
@@ -79,10 +79,10 @@ export const ExecutionFrame: FC<{
 						<div
 							className="mr-4 flex h-8 w-8 min-w-8 items-center justify-center rounded-sm bg-plug-green/10 text-white/60"
 							style={{
-								backgroundImage: cardColors[activity.plug.color]
+								backgroundImage: activity.plug?.color ? cardColors[activity.plug.color] : cardColors['plug']
 							}}
 						/>
-						<span>{activity.plug.name}</span>
+						<span>{activity.inputs.map(input => formatTitle(input.action)).join(", ")}</span>
 					</span>
 				}
 				visible={isFrame}
@@ -91,7 +91,7 @@ export const ExecutionFrame: FC<{
 				<div className="flex flex-col">
 					<ActionPreview
 						index={index}
-						item={activity.plug.id}
+						item={activity.plug?.id}
 						actions={actions}
 						errors={visibleRuns[0]?.errors ?? []}
 					/>
@@ -105,7 +105,7 @@ export const ExecutionFrame: FC<{
 								navigate({
 									index,
 									key: COLUMNS.KEYS.PLUG,
-									item: activity.plug.id,
+									item: activity.plug?.id,
 									from: COLUMNS.KEYS.ACTIVITY
 								})
 							}
