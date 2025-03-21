@@ -95,7 +95,8 @@ export const RunFrame: FC<{
 		if (!plug || plug.actions.length === 0) return false
 		if (!isActionful) return false
 
-		// Use our atom instead of DOM queries
+		// Use our atom to check validation state
+		// This now properly accounts for coil references
 		return checkAllSentencesValid(item)
 	}, [isActionful, plug, item, checkAllSentencesValid])
 

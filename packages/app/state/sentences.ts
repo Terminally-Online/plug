@@ -29,7 +29,16 @@ export const areAllSentencesValidAtom = atom(
     const getSentences = get(plugSentencesValidStateAtom)
     return (plugId: string) => {
       const sentences = getSentences(plugId)
-      return sentences.length > 0 && sentences.every(s => s.isValid && s.isComplete)
+      
+      // Make sure we have sentences and that they're all valid
+      return sentences.length > 0 && sentences.every(s => {
+        // A sentence is valid if both isValid and isComplete are true
+        // These values are set by the useCordStateless hook based on:
+        // 1. All inputs have values (including coil references)
+        // 2. No validation errors exist
+        // 3. All values are non-empty
+        return s.isValid && s.isComplete
+      })
     }
   }
 )
