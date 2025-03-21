@@ -69,7 +69,7 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: SchemasR
 	}
 
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col">
 			{actions.map((action, actionIndex) => {
 				// Get coils from previous actions that can be linked in this action
 				const prevCoils = getCoilsForAction(actionIndex)
