@@ -136,7 +136,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 	if (!plug) return null
 
 	return (
-		<div className="mb-72 flex flex-col">
+		<div className="flex flex-col">
 			<DragDropContext onDragEnd={handleDragEnd}>
 				<Droppable droppableId={`${index}-${plug.id}-items`} direction="vertical">
 					{provided => (
