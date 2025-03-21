@@ -18,11 +18,8 @@ export const stats = createTRPCRouter({
 			return result
 		}
 
-		const [
-			referralCounts,
-			viewCounts
-			// , runCounts, userCounts
-		] = await Promise.all([
+		const [referralCounts, viewCounts, plugCreationCounts, forkCounts] = await Promise.all([
+			// Referrals - how many users were referred by this user
 			Promise.all(
 				periods.map(async date => {
 					const weekStart = getWeekStart(date)
@@ -41,16 +38,22 @@ export const stats = createTRPCRouter({
 				})
 			),
 
+			// Views - how many times plugs were viewed
 			Promise.all(
 				periods.map(async date => {
 					const weekStart = getWeekStart(date)
+					const weekEnd = new Date(weekStart)
+					weekEnd.setDate(weekStart.getDate() + 7)
 
 					const views = await ctx.db.view.aggregate({
 						where: {
 							plug: {
 								socketId: ctx.session.address
 							},
-							date: weekStart
+							date: {
+								gte: weekStart,
+								lt: weekEnd
+							}
 						},
 						_sum: {
 							views: true
@@ -59,70 +62,67 @@ export const stats = createTRPCRouter({
 
 					return views._sum.views || 0
 				})
-			)
+			),
 
-			// Promise.all(
-			// 	periods.map(async date => {
-			// 		const weekStart = getWeekStart(date)
-			// 		const weekEnd = new Date(weekStart)
-			// 		weekEnd.setDate(weekStart.getDate() + 7)
-			//
-			// 		const runs = await ctx.db.run.count({
-			// 			where: {
-			// 				status: "success",
-			// 				createdAt: {
-			// 					gte: weekStart,
-			// 					lt: weekEnd
-			// 				},
-			// 				intent: {
-			// 					plug: {
-			// 						socketId: ctx.session.address
-			// 					}
-			// 				}
-			// 			}
-			// 		})
-			//
-			// 		return runs
-			// 	})
-			// ),
-			//
-			// Promise.all(
-			// 	periods.map(async date => {
-			// 		const weekStart = getWeekStart(date)
-			// 		const weekEnd = new Date(weekStart)
-			// 		weekEnd.setDate(weekStart.getDate() + 7)
-			//
-			// 		const uniqueUsers = await ctx.db.intent.groupBy({
-			// 			by: ["id"],
-			// 			where: {
-			// 				createdAt: {
-			// 					gte: weekStart,
-			// 					lt: weekEnd
-			// 				},
-			// 				plug: {
-			// 					socketId: ctx.session.address
-			// 				},
-			// 				runs: {
-			// 					some: {
-			// 						status: "success"
-			// 					}
-			// 				}
-			// 			}
-			// 		})
-			//
-			// 		return uniqueUsers.length
-			// 	})
-			// )
+			// Plugs Created - how many new plugs the creator made
+			Promise.all(
+				periods.map(async date => {
+					const weekStart = getWeekStart(date)
+					const weekEnd = new Date(weekStart)
+					weekEnd.setDate(weekStart.getDate() + 7)
+
+					return ctx.db.plug.count({
+						where: {
+							socketId: ctx.session.address,
+							createdAt: {
+								gte: weekStart,
+								lt: weekEnd
+							}
+						}
+					})
+				})
+			),
+
+			// Forks - how many times others forked the creator's plugs
+			Promise.all(
+				periods.map(async date => {
+					const weekStart = getWeekStart(date)
+					const weekEnd = new Date(weekStart)
+					weekEnd.setDate(weekStart.getDate() + 7)
+
+					// Get all plugs created by this user
+					const userPlugs = await ctx.db.plug.findMany({
+						where: { socketId: ctx.session.address },
+						select: { id: true }
+					})
+					
+					const userPlugIds = userPlugs.map(plug => plug.id)
+
+					// Count plugs created by others that forked from user's plugs
+					return ctx.db.plug.count({
+						where: {
+							plugForkedId: {
+								in: userPlugIds
+							},
+							socketId: {
+								not: ctx.session.address // exclude self-forks
+							},
+							createdAt: {
+								gte: weekStart,
+								lt: weekEnd
+							}
+						}
+					})
+				})
+			)
 		])
 
 		return {
 			counts: {
 				referrals: referralCounts,
 				views: viewCounts,
-				runs: 0,
-				users: 0
-				// runs: runCounts,
-				// users: userCounts
+				plugs: plugCreationCounts,
+				forks: forkCounts
 			},
 			periods: periods.map(date => {
 				const weekStart = getWeekStart(date)

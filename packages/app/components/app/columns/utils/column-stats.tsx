@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import React, { FC, useState } from "react"
 
-import { CheckCircle, Clipboard } from "lucide-react"
+import { Clipboard } from "lucide-react"
 
 import { Search } from "@/components/app/inputs/search"
 import { Button } from "@/components/shared/buttons/button"
@@ -10,7 +10,7 @@ import { cn } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 
-const GRADIENTS = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
+const COLORS = ["#F3B08A", "#F3EF8A", "#9F8AF3", "#8AF3E6"]
 
 const ProfileStat: FC<{
 	index: number
@@ -26,8 +26,8 @@ const ProfileStat: FC<{
 	return (
 		<div
 			className={cn(
-				"hover:plug-green/5 group relative flex w-full flex-col items-center grayscale filter transition-all duration-200 ease-in-out",
-				isActive && "plug-green/5"
+				"hover:plug-green/5 group relative flex w-full flex-col items-center filter transition-all duration-200 ease-in-out",
+				isActive ? "plug-green/5" : "",
 			)}
 			onMouseEnter={() => onHover(index)}
 			onMouseLeave={() => onHover(undefined)}
@@ -49,15 +49,15 @@ const ProfileStat: FC<{
 					<>
 						<div
 							className={cn(
-								"relative w-full bg-gradient-to-tr transition-all duration-200 ease-in-out",
-								hovering !== undefined && hovering !== i && "grayscale filter",
+								"relative w-full transition-all duration-200 ease-in-out",
+								hovering === undefined && isActive || hovering !== i && "grayscale filter",
 								i === 0 && "rounded-b-lg",
 								i === stats.length - 1 && "rounded-t-lg"
 							)}
 							style={{
 								height: stat === null ? 0 : `${(stat / total) * 100}%`,
 								minHeight: 8,
-								background: `linear-gradient(30deg, ${GRADIENTS[i % GRADIENTS.length]})`
+								backgroundColor: COLORS[i % COLORS.length]
 							}}
 							onMouseEnter={() => {
 								setHovering(i)
@@ -82,11 +82,10 @@ const ProfileStats = () => {
 		refetchInterval: 60 * 1000
 	})
 
-	// Construct stats array with real data
 	const stats: number[][] =
 		statsData?.periods.map((_, index) => [
-			// statsData.counts.users[index] ?? 0,
-			// statsData.counts.runs[index] ?? 0,
+			statsData.counts.plugs[index] ?? 0,
+			statsData.counts.forks[index] ?? 0,
 			statsData.counts.views[index] ?? 0,
 			statsData.counts.referrals[index] ?? 0
 		]) ?? Array(4).fill([0, 0, 0, 0])
@@ -94,19 +93,17 @@ const ProfileStats = () => {
 	const max = Math.max(...stats.map(period => period.reduce((sum: number, value: number) => sum + (value ?? 0), 0)))
 	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
 
-	// Format dates from the API response
 	const startDate = statsData?.periods[0]?.weekStart
 		? new Date(statsData.periods[0].weekStart).toLocaleDateString("en-US", {
-				month: "2-digit",
-				year: "2-digit"
-			})
+			month: "2-digit",
+			year: "2-digit"
+		})
 		: "09/24"
-
 	const endDate = statsData?.periods[statsData.periods.length - 1]?.weekEnd
 		? new Date(statsData.periods[statsData.periods.length - 1].weekEnd).toLocaleDateString("en-US", {
-				month: "2-digit",
-				year: "2-digit"
-			})
+			month: "2-digit",
+			year: "2-digit"
+		})
 		: "10/13"
 
 	const handleToggle = (statIndex: number) => {
@@ -118,60 +115,56 @@ const ProfileStats = () => {
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row gap-2">
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[0] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[0] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
+							}`}
 						onClick={() => handleToggle(0)}
 					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[0]} />
 						</p>
 						<p className="flex flex-row items-center gap-2 font-bold text-black/40">
-							<span className="h-2 w-2 rounded-full bg-gradient-to-tr from-plug-green to-plug-yellow" />
-							Users
+							<span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[0] }} />
+							Plugs
 						</p>
 					</div>
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[1] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[1] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
+							}`}
 						onClick={() => handleToggle(1)}
 					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[1]} />
 						</p>
 						<p className="flex flex-row items-center gap-2 font-bold text-black/40">
-							<span className="h-2 w-2 rounded-full bg-gradient-to-tr from-sun-orange to-sun-yellow" />
-							Runs
+							<span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[1] }} />
+							Forks
 						</p>
 					</div>
 				</div>
 				<div className="flex flex-row gap-2">
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[2] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[2] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
+							}`}
 						onClick={() => handleToggle(2)}
 					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[2]} />
 						</p>
 						<p className="flex flex-row items-center gap-2 font-bold text-black/40">
-							<span className="h-2 w-2 rounded-full bg-gradient-to-tr from-ocean-blue to-ocean-purple" />
+							<span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[2] }} />
 							Views
 						</p>
 					</div>
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[3] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[3] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
+							}`}
 						onClick={() => handleToggle(3)}
 					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[3]} />
 						</p>
 						<p className="flex flex-row items-center gap-2 font-bold text-black/40">
-							<span className="h-2 w-2 rounded-full bg-gradient-to-tr from-pink-pink to-pink-purple" />
+							<span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[3] }} />
 							Referrals
 						</p>
 					</div>
@@ -226,24 +219,14 @@ export const ColumnStats: FC<{ index: number }> = () => {
 					icon={<Clipboard size={14} className="opacity-60" />}
 					placeholder="Copy Referral Link"
 					search={socket?.identity?.referralCode ?? ""}
-					handleSearch={() => {}}
+					handleSearch={() => { }}
 				/>
 				<Button
 					variant={copied ? "primaryDisabled" : "primary"}
 					className="flex w-full flex-row items-center justify-center gap-2 truncate py-4"
 					onClick={handleCopy}
 				>
-					{copied ? (
-						<>
-							<CheckCircle size={14} className="opacity-60" />
-							Copied!
-						</>
-					) : (
-						<>
-							<Clipboard size={14} className="opacity-60" />
-							Copy Referral Link
-						</>
-					)}
+					{copied ? "Copied!" : "Copy Referral Link"}
 				</Button>
 			</div>
 		</div>
