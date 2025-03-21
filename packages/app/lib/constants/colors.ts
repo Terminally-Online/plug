@@ -12,7 +12,7 @@ export const colors = {
 	aave: "#9896FF",
 	basepaint: "#004BE4",
 	ens: "#0080BC",
-	euler: "#2AE5B9",
+	euler: "#07131F",
 	math: "#838388",
 	morpho: "#2470FF",
 	nouns: "#EFC950",

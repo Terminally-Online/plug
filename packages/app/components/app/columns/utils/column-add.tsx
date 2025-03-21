@@ -106,9 +106,6 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 		return options
 	}, [getFlag])
 
-	const isApproved = Boolean(socket?.identity?.approvedAt)
-	if (!isApproved) return null
-
 	const options = [
 		...flagOptions,
 		...OPTIONS,

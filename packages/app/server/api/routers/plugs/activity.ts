@@ -22,10 +22,8 @@ export const activity = createTRPCRouter({
 		return intents
 			.map(intent => {
 				const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
-				if (!plug) return
 				return { ...intent, plug }
 			})
-			.filter(intent => intent != undefined)
 	}),
 
 	queue: protectedProcedure
@@ -35,40 +33,40 @@ export const activity = createTRPCRouter({
 				chainId: z.number(),
 				frequency: z.number(),
 				startAt: z.coerce.date(),
-				endAt: z.coerce.date().optional()
+				endAt: z.coerce.date().optional(),
+				socket: z.boolean()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
 			const plug = await ctx.db.plug.findUniqueOrThrow({
 				where: {
 					id: input.plugId
-				}
+				},
+				include: { socket: true }
 			})
 			const intent = await createIntent({
 				chainId: input.chainId,
-				from: ctx.session.address,
+				from: input.socket ? plug.socket.socketAddress : ctx.session.address,
 				status: "active",
 				inputs: JSON.parse(plug.actions),
 				frequency: input.frequency,
 				startAt: input.startAt.toISOString(),
-				endAt: input.endAt?.toISOString()
+				endAt: input.endAt?.toISOString(),
+				saved: true
 			})
-
-			const updated = {
-				...intent,
-				plug: await ctx.db.plug.update({
-					where: { id: input.plugId, socketId: ctx.session.address },
-					data: {
-						intentIds: {
-							push: intent.id
-						}
+			const updated = await ctx.db.plug.update({
+				where: { id: input.plugId, socketId: ctx.session.address },
+				data: {
+					intentIds: {
+						push: intent.id
 					}
-				})
-			}
+				}
+			})
+			const spread = { ...intent, plug: updated }
 
-			ctx.emitter.emit(subscriptions.execution.update, updated)
+			ctx.emitter.emit(subscriptions.execution.update, spread)
 
-			return updated
+			return spread
 		}),
 
 	toggleSaved: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {

@@ -12,6 +12,7 @@ import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
 import { COLUMNS } from "@/state/columns"
 import { plugsAtom } from "@/state/plugs"
+import { useSocket } from "@/state/authentication"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -19,15 +20,18 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	...props
 }) => {
 	const { search, tag, handleSearch, handleTag } = useSearch()
+	const { socket } = useSocket()
 
 	const plugs = useAtomValue(plugsAtom)
 
 	const visiblePlugs = useMemo(() => {
-		if (!plugs || plugs.length === 0) return Array(12).fill(undefined)
+		const my = plugs.filter(plug => plug.socketId === socket.id)
 
-		if (!search) return plugs
+		if (!my || my.length === 0) return Array(12).fill(undefined)
 
-		return plugs.filter(plug => plug.name.toLowerCase().includes(search.toLowerCase()))
+		if (!search) return my
+
+		return my.filter(plug => plug.name.toLowerCase().includes(search.toLowerCase()))
 	}, [plugs, search])
 
 	return (

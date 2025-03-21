@@ -29,6 +29,7 @@ import { useActions } from "@/state/actions"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 import { areAllSentencesValidAtom } from "@/state/sentences"
+import { useSocket } from "@/state/authentication"
 
 export const RunFrame: FC<{
 	index: number
@@ -42,9 +43,10 @@ export const RunFrame: FC<{
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
 	const [plug] = useAtom(plugByIdAtom(item))
-	const { queue } = usePlugActions()
 
+	const { socket } = useSocket()
 	const [solverActions] = useActions()
+	const { queue } = usePlugActions()
 
 	// TODO: The functionality for this was not finished because right now our in our environment we
 	//       only have one chain that is valid at any given time.
@@ -107,9 +109,11 @@ export const RunFrame: FC<{
 		const intent = {
 			plugId: column.item,
 			chainId: chain,
+			from: socket.socketAddress,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to,
-			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
+			frequency: parseInt(column.schedule?.repeats?.value ?? "0"),
+			socket: column.index !== COLUMNS.SIDEBAR_INDEX
 		}
 
 		queue(intent, {
@@ -157,25 +161,21 @@ export const RunFrame: FC<{
 							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
-						{solverActions && plug?.actions && (
-							<p className="relative flex flex-row gap-4 font-bold">
-								<span className="flex w-max flex-row items-center gap-4">
-									<Library size={18} className="opacity-20" />
-									<span className="opacity-40">Protocols</span>
-								</span>{" "}
-								<div className="relative ml-auto flex w-[45%] overflow-hidden">
-									{/* Determine if we need scrolling based on unique protocols */}
-									{(() => {
-										// Calculate the unique protocols
-										const uniqueProtocols = Array.from(
-											new Set(plug.actions?.map(action => action.protocol))
-										)
+						{solverActions && plug?.actions && (() => {
+								const uniqueProtocols = Array.from(
+									new Set(plug.actions?.map(action => action.protocol))
+								)
 
-										// Show scrolling gradient only if we have 3+ unique protocols
-										const shouldScroll = uniqueProtocols.length >= 3
+								const shouldScroll = uniqueProtocols.length >= 3
 
-										return (
-											<>
+								return (
+									<>
+										<div className="relative flex flex-row gap-4 font-bold">
+											<span className="flex w-max flex-row items-center gap-4">
+												<Library size={18} className="opacity-20" />
+												<span className="opacity-40">Protocol{plug.actions.length > 1 && "s"}</span>
+											</span>{" "}
+											<div className="relative ml-auto flex w-[45%] overflow-hidden">
 												{shouldScroll && (
 													<>
 														<div className="absolute left-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-r from-plug-white to-transparent" />
@@ -195,7 +195,6 @@ export const RunFrame: FC<{
 														repeatDelay: 0
 													}}
 												>
-													{/* Repeat the protocols animation only if we need scrolling */}
 													{[...Array(shouldScroll ? 2 : 1)].map((_, i) => (
 														<div key={i} className="flex flex-row items-center gap-4">
 															{uniqueProtocols.map(protocol => (
@@ -223,44 +222,18 @@ export const RunFrame: FC<{
 														</div>
 													))}
 												</motion.div>
-											</>
-										)
-									})()}
-								</div>
-							</p>
-						)}
-
-						<p className="flex flex-row justify-between font-bold">
-							<span className="flex w-full flex-row items-center gap-4">
-								<Hash size={18} className="opacity-20" />
-								<span className="opacity-40">Actions</span>
-							</span>{" "}
-							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<Counter count={plug?.actions?.length ?? 0} />
-							</span>
-						</p>
-
-						{/* supportedChains.length !== 1 && (
-							<p className="flex flex-row justify-between font-bold">
-								<span className="flex w-max flex-row items-center gap-4">
-									<Globe size={18} className="opacity-20" />
-									<span className="opacity-40">Supported Chains</span>
-								</span>{" "}
-								<span className="group flex flex-row items-center font-bold">
-									{supportedChains.map(chain => (
-										<div className="-ml-1 transition-all duration-100 group-hover:ml-1" key={chain}>
-											<ChainImage chainId={chain} size="xs" />
+											</div>
 										</div>
-									))}
-								</span>
-							</p>
-						) */}
+									</>
+								)
+							})()
+						}
 
 						{chain && (
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Waypoints size={18} className="opacity-20" />
-									<span className="opacity-40">Chain</span>
+									<span className="opacity-40">Blockchain</span>
 								</span>{" "}
 								<span className="flex flex-row items-center gap-2 font-bold">
 									<ChainImage chainId={chain} size="xs" />
@@ -269,22 +242,20 @@ export const RunFrame: FC<{
 							</p>
 						)}
 
-						{!column.schedule && (
-							<p className="flex flex-row justify-between font-bold">
-								<span className="flex w-full flex-row items-center gap-4">
-									<CircleDollarSign size={18} className="opacity-20" />
-									<span className="opacity-40">Fee</span>
-								</span>{" "}
-								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-										<Counter count={0.00011} /> ETH
-									</span>
-									<span className="ml-2 flex flex-row items-center">
-										$<Counter count={0.049} />
-									</span>
+						<p className="flex flex-row justify-between font-bold">
+							<span className="flex w-full flex-row items-center gap-4">
+								<CircleDollarSign size={18} className="opacity-20" />
+								<span className="opacity-40">Gas Fee</span>
+							</span>{" "}
+							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+								<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
+									<Counter count={0.0} /> ETH
 								</span>
-							</p>
-						)}
+								<span className="ml-2 flex flex-row items-center">
+									Free
+								</span>
+							</span>
+						</p>
 					</>
 				)}
 

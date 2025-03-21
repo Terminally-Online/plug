@@ -9,11 +9,11 @@ import { plugByIdAtom } from "@/state/plugs"
 
 export const ActionPreview: FC<{
 	index: number
-	item: string
+	item?: string
 	actions?: SchemasRequestActions
 	errors?: Array<string | null>
 }> = ({ index, item, actions, errors = [] }) => {
-	const [plug] = useAtom(plugByIdAtom(item))
+	const [plug] = useAtom(plugByIdAtom(item ?? ""))
 	const [solverActions] = useActions()
 
 	actions = actions ?? plug?.actions ?? []

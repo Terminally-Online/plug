@@ -79,10 +79,10 @@ export const ExecutionFrame: FC<{
 						<div
 							className="mr-4 flex h-8 w-8 min-w-8 items-center justify-center rounded-sm bg-plug-green/10 text-white/60"
 							style={{
-								backgroundImage: cardColors[activity.plug.color]
+								backgroundImage: activity.plug?.color ? cardColors[activity.plug.color] : cardColors['plug']
 							}}
 						/>
-						<span>{activity.plug.name}</span>
+						<span>{activity.inputs.map(input => formatTitle(input.action)).join(", ")}</span>
 					</span>
 				}
 				visible={isFrame}
@@ -91,7 +91,7 @@ export const ExecutionFrame: FC<{
 				<div className="flex flex-col">
 					<ActionPreview
 						index={index}
-						item={activity.plug.id}
+						item={activity.plug?.id ?? activity.id}
 						actions={actions}
 						errors={visibleRuns[0]?.errors ?? []}
 					/>
@@ -105,7 +105,7 @@ export const ExecutionFrame: FC<{
 								navigate({
 									index,
 									key: COLUMNS.KEYS.PLUG,
-									item: activity.plug.id,
+									item: activity.plug?.id,
 									from: COLUMNS.KEYS.ACTIVITY
 								})
 							}
@@ -188,7 +188,7 @@ export const ExecutionFrame: FC<{
 
 					{(activity.status !== "paused" || activity.runs.length > 0) && (
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
-							<p className="font-bold opacity-40">Simulations</p>
+							<p className="font-bold opacity-40">Runs</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 					)}
@@ -201,7 +201,7 @@ export const ExecutionFrame: FC<{
 									<div className="flex w-full flex-col">
 										<div className="flex flex-row items-center justify-between gap-2 font-bold">
 											<p>
-												Simulation{" "}
+												Run{" "}
 												<span className="text-sm tabular-nums opacity-40">
 													(#{activity.runs.length + 1})
 												</span>

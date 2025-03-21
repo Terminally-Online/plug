@@ -110,14 +110,14 @@ export const ActivityItem: FC<{
 						<div
 							className="mr-4 h-10 w-10 min-w-10 rounded-sm bg-plug-green/10"
 							style={{
-								backgroundImage: cardColors[activity.plug.color]
+								backgroundImage: activity.plug?.color ? cardColors[activity.plug.color] : cardColors['plug']
 							}}
 						/>
 
 						<div className="relative flex w-full flex-col overflow-hidden">
 							<div className="flex flex-row items-center justify-between gap-2 font-bold">
 								<p className="mr-2 truncate overflow-ellipsis whitespace-nowrap">
-									{activity.plug.name}
+									{activity.plug?.name || activity.inputs.map(input => formatTitle(input.action)).join(", ")}
 								</p>
 								<div className="flex-shrink-0">
 									<DateSince date={new Date(activity.createdAt)} />
