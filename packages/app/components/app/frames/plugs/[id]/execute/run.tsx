@@ -166,57 +166,69 @@ export const RunFrame: FC<{
 									<span className="opacity-40">Protocols</span>
 								</span>{" "}
 								<div className="relative ml-auto flex w-[45%] overflow-hidden">
-									{plug.actions.length >= 3 && (
-										<>
-											<div className="absolute left-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-r from-plug-white to-transparent" />
-											<div className="absolute right-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-l from-plug-white to-transparent" />
-										</>
-									)}
-
-									<motion.div
-										className="ml-auto flex flex-row items-center justify-start gap-1 font-bold tabular-nums"
-										animate={{
-											x: plug.actions.length >= 3 ? ["0%", "-50%"] : 0
-										}}
-										transition={{
-											duration: plug.actions.length >= 3 ? plug?.actions && plug.actions.length * 10 : 0,
-											ease: "linear",
-											repeat: Infinity,
-											repeatDelay: 0
-										}}
-									>
-										{[...Array(plug.actions.length >= 3 ? 6 : 1)].map((_, i) => (
-											<div key={i} className="flex flex-row items-center gap-4">
-												{Array.from(new Set(plug.actions?.map(action => action.protocol))).map(
-													protocol => (
-														<div
-															key={protocol}
-															className={cn(
-																"flex w-max flex-row items-center gap-2",
-																plug.actions.length >= 3 && "ml-4"
-															)}
-														>
-															<Image
-																src={solverActions[protocol]?.metadata.icon ?? ""}
-																alt={formatTitle(protocol)}
-																width={48}
-																height={48}
-																className="mr-1 h-4 w-4 rounded-[4px]"
-															/>
-															<span className="whitespace-nowrap">
-																{formatTitle(protocol)}
-															</span>
-														</div>
-													)
+									{/* Determine if we need scrolling based on unique protocols */}
+									{(() => {
+										// Calculate the unique protocols 
+										const uniqueProtocols = Array.from(new Set(plug.actions?.map(action => action.protocol)))
+										
+										// Show scrolling gradient only if we have 3+ unique protocols
+										const shouldScroll = uniqueProtocols.length >= 3
+										
+										return (
+											<>
+												{shouldScroll && (
+													<>
+														<div className="absolute left-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-r from-plug-white to-transparent" />
+														<div className="absolute right-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-l from-plug-white to-transparent" />
+													</>
 												)}
-											</div>
-										))}
-									</motion.div>
+
+												<motion.div
+													className="ml-auto flex flex-row items-center justify-start gap-1 font-bold tabular-nums"
+													animate={{
+														x: shouldScroll ? ["0%", "-50%"] : 0
+													}}
+													transition={{
+														duration: shouldScroll ? uniqueProtocols.length * 10 : 0,
+														ease: "linear",
+														repeat: Infinity,
+														repeatDelay: 0
+													}}
+												>
+													{/* Repeat the protocols animation only if we need scrolling */}
+													{[...Array(shouldScroll ? 2 : 1)].map((_, i) => (
+														<div key={i} className="flex flex-row items-center gap-4">
+															{uniqueProtocols.map(protocol => (
+																<div
+																	key={protocol}
+																	className={cn(
+																		"flex w-max flex-row items-center gap-2",
+																		shouldScroll && "ml-4"
+																	)}
+																>
+																	<Image
+																		src={solverActions[protocol]?.metadata.icon ?? ""}
+																		alt={formatTitle(protocol)}
+																		width={48}
+																		height={48}
+																		className="mr-1 h-4 w-4 rounded-[4px]"
+																	/>
+																	<span className="whitespace-nowrap">
+																		{formatTitle(protocol)}
+																	</span>
+																</div>
+															))}
+														</div>
+													))}
+												</motion.div>
+											</>
+										)
+									})()}
 								</div>
 							</p>
 						)}
 
-						{/* <p className="flex flex-row justify-between font-bold">
+						<p className="flex flex-row justify-between font-bold">
 							<span className="flex w-full flex-row items-center gap-4">
 								<Hash size={18} className="opacity-20" />
 								<span className="opacity-40">Actions</span>
@@ -226,7 +238,7 @@ export const RunFrame: FC<{
 							</span>
 						</p>
 
-						supportedChains.length !== 1 && (
+						{/* supportedChains.length !== 1 && (
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Globe size={18} className="opacity-20" />
@@ -263,10 +275,10 @@ export const RunFrame: FC<{
 								</span>{" "}
 								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
 									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-										<Counter count={0.0} /> ETH
+										<Counter count={0.00011} /> ETH
 									</span>
 									<span className="ml-2 flex flex-row items-center">
-										Free
+										$<Counter count={0.049} />
 									</span>
 								</span>
 							</p>
