@@ -14,18 +14,19 @@ export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
 		const socket = await ctx.db.socket.findFirstOrThrow({ where: { id: ctx.session.address } })
 		const intents = await getIntent({ addresses: [ctx.session.address, socket.socketAddress] })
+		console.log('intents', intents)
 		const intentIds = intents.map(intent => intent.id)
+		console.log('intent ids', intentIds)
 		const plugs = await ctx.db.plug.findMany({
 			where: { intentIds: { hasSome: intentIds } }
 		})
+		console.log('plugs', plugs)
 
 		return intents
 			.map(intent => {
 				const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
-				if (!plug) return
 				return { ...intent, plug }
 			})
-			.filter(intent => intent != undefined)
 	}),
 
 	queue: protectedProcedure
@@ -35,40 +36,39 @@ export const activity = createTRPCRouter({
 				chainId: z.number(),
 				frequency: z.number(),
 				startAt: z.coerce.date(),
-				endAt: z.coerce.date().optional()
+				endAt: z.coerce.date().optional(),
+				socket: z.boolean().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const plug = await ctx.db.plug.findUniqueOrThrow({
+			const { socket, ...plug } = await ctx.db.plug.findUniqueOrThrow({
 				where: {
 					id: input.plugId
-				}
+				},
+				include: { socket: true }
 			})
 			const intent = await createIntent({
 				chainId: input.chainId,
-				from: ctx.session.address,
+				from: input.socket ? socket.socketAddress : ctx.session.address,
 				status: "active",
 				inputs: JSON.parse(plug.actions),
 				frequency: input.frequency,
 				startAt: input.startAt.toISOString(),
 				endAt: input.endAt?.toISOString()
 			})
-
-			const updated = {
-				...intent,
-				plug: await ctx.db.plug.update({
-					where: { id: input.plugId, socketId: ctx.session.address },
-					data: {
-						intentIds: {
-							push: intent.id
-						}
+			const updated = await ctx.db.plug.update({
+				where: { id: input.plugId, socketId: ctx.session.address },
+				data: {
+					intentIds: {
+						push: intent.id
 					}
-				})
-			}
+				}
+			})
+			const spread = { ...intent, plug: updated }
 
-			ctx.emitter.emit(subscriptions.execution.update, updated)
+			ctx.emitter.emit(subscriptions.execution.update, spread)
 
-			return updated
+			return spread
 		}),
 
 	toggleSaved: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {

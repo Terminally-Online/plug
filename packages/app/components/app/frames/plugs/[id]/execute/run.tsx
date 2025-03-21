@@ -104,7 +104,8 @@ export const RunFrame: FC<{
 			chainId: chain,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to,
-			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
+			frequency: parseInt(column.schedule?.repeats?.value ?? "0"),
+			socket: column.index !== COLUMNS.SIDEBAR_INDEX
 		}
 
 		queue(
