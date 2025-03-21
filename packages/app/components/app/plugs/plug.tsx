@@ -25,7 +25,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 	const { data: session } = useSession()
 
 	const [column] = useAtom(columnByIndexAtom(index))
-	const { frame } = useColumnActions(index)
+	const { frame, schedule } = useColumnActions(index)
 	const [plug] = useAtom(plugByIdAtom(item))
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
@@ -68,7 +68,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 						variant="secondary"
 						className="w-max bg-white py-4"
 						onClick={() => {
-							// schedule() // NOTE: Clear the schedule when we have a one-off run use.
+							schedule()
 							frame("run")
 						}}
 					>
