@@ -26,7 +26,7 @@ import { HandleValueProps, Part } from "./part"
 
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
-	item: string
+	item?: string
 	action: SchemasRequestAction
 	actionIndex: number
 	preview?: boolean
@@ -64,7 +64,7 @@ export const Sentence: FC<SentenceProps> = ({
 	const [column] = useAtom(columnByIndexAtom(index))
 	const { frame } = useColumnActions(index)
 
-	const [plug] = useAtom(plugByIdAtom(item))
+	const [plug] = useAtom(plugByIdAtom(item ?? ""))
 	const own = (plug && session && session.address === plug.socketId) || false
 
 	const editPlug = useSetAtom(editPlugAtom)
@@ -82,11 +82,8 @@ export const Sentence: FC<SentenceProps> = ({
 		(index: number, rawValue: string | undefined, _?: string) => {
 			if (!plug) return
 
-			// Determine whether we need to convert the value (for numbers)
 			const isNumber = typeof rawValue === "string" && /^[0-9]+(\.[0-9]+)?$/.test(rawValue)
 			const value = isNumber && rawValue ? parseFloat(rawValue) : rawValue
-
-			// Create a standardized value object that maintains consistency
 			const updatedValue = {
 				// Preserve any existing metadata
 				...action.values?.[index],
@@ -97,8 +94,6 @@ export const Sentence: FC<SentenceProps> = ({
 				// Store the actual value
 				value: value
 			}
-
-			// Create updated actions with the new value
 			const updatedActions = plug.actions.map((action, nestedActionIndex) => {
 				if (nestedActionIndex !== actionIndex) return action
 
@@ -111,14 +106,12 @@ export const Sentence: FC<SentenceProps> = ({
 				}
 			})
 
-			// Update local state immediately for synchronization across columns
 			setPlugs(prev =>
 				prev.map(p =>
-					p.id === item ? { ...p, actions: JSON.stringify(updatedActions), updatedAt: new Date() } : p
+					p.id === plug.id ? { ...p, actions: JSON.stringify(updatedActions), updatedAt: new Date() } : p
 				)
 			)
 
-			// Send to API
 			edit({
 				id: item,
 				actions: JSON.stringify(updatedActions)
@@ -186,6 +179,8 @@ export const Sentence: FC<SentenceProps> = ({
 	const options = actionSchema ? actionSchema.schema[action.action].options : undefined
 
 	useEffect(() => {
+		if(!item) return
+
 		if (actionSchema?.metadata?.chains) {
 			setSentenceValidState(prev => ({
 				...prev,
@@ -193,11 +188,11 @@ export const Sentence: FC<SentenceProps> = ({
 					isValid,
 					isComplete,
 					chains: actionSchema.metadata.chains.join(",") ?? "",
-					actionPreview: item
+					actionPreview: item 
 				}
 			}))
 		}
-	}, [isValid, isComplete, actionSchema, actionIndex, item, setSentenceValidState])
+	}, [isValid, isComplete, actionSchema, actionIndex, plug, setSentenceValidState])
 
 	const handleValue = ({ index, value }: HandleValueProps) => {
 		handleCordValueUpdate(index, value)
@@ -240,9 +235,6 @@ export const Sentence: FC<SentenceProps> = ({
 					className
 				)}
 				noPadding
-				data-sentence
-				data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
-				data-action-preview={item}
 				{...props}
 			>
 				<div className={cn("flex flex-row items-center p-4 font-bold")}>
