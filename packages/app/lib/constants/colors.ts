@@ -8,14 +8,19 @@ export const colors = {
 	blue: "#8AAEF3",
 	magenta: "#EB8AF3",
 	purple: "#9F8AF3",
+	// Protocols for plugs
 	aave: "#9896FF",
+	basepaint: "#004BE4",
 	ens: "#0080BC",
 	euler: "#2AE5B9",
+	math: "#838388",
 	morpho: "#2470FF",
 	nouns: "#EFC950",
 	plug: "#D2F38A",
 	pooltogether: "#4C249F",
 	yearn: "#0657F9",
+	assert: "#EB8AF3",
+	boolean: "#9F8AF3",
 } as const
 
 export const tagColors = {
