@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"solver/internal/client"
 	"solver/internal/database/models"
+	"solver/internal/database/types"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -107,7 +108,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
 		if _, ok := gasUsed.SetString(trace.GasUsed, 0); ok {
-			run.GasEstimate = gasUsed.Uint64()
+			run.GasUsed = gasUsed.Uint64()
 		}
 	}
 
@@ -197,7 +198,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	run := &models.Run{
 		From:   tx.From.Hex(),
 		To:     tx.To.Hex(),
-		Value:  tx.Value,
+		Value:  types.NewBigInt(tx.Value),
 		Status: status,
 		Data: models.RunOutputData{
 			Raw: trace.Output,
@@ -211,7 +212,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
 		if _, ok := gasUsed.SetString(trace.GasUsed, 0); ok {
-			run.GasEstimate = gasUsed.Uint64()
+			run.GasUsed = gasUsed.Uint64()
 		}
 	}
 
