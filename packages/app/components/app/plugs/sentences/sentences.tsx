@@ -43,7 +43,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 				if (!actionSchema?.coils?.[name]) return
 
 				coils[name] = {
-					type: actionSchema.coils[name] ,
+					type: actionSchema.coils[name],
 					actionIndex,
 				}
 			})
@@ -146,6 +146,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 								key={String(action.id)}
 								draggableId={String(action.id)}
 								index={actionIndex}
+								isDragDisabled={column?.frame !== undefined}
 							>
 								{(provided, snapshot) => (
 									<div
