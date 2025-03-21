@@ -24,9 +24,12 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { isLoading } = useResponse(
 		() =>
 			api.plugs.activity.get.useQuery(undefined, {
-				enabled: session !== null && isAnonymous === false
+				enabled: session !== null && isAnonymous === false,
+				refetchInterval: 30_000,
 			}),
-		{ onSuccess: data => setActivities(data) }
+		{ 
+			onSuccess: data => setActivities(data),
+		}
 	)
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {
