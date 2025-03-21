@@ -134,7 +134,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 					<div ref={provided.innerRef} className="flex flex-col" {...provided.droppableProps}>
 						{plug.actions.map((action, actionIndex) => {
 							const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
-							const linked = values.filter(val => val?.value && val?.value?.startsWith("<-{"))
+							const linked = values.filter(val => typeof val?.value === "string" && val?.value?.startsWith("<-{"))
 
 							let prevCoils: SchemasResponseCoils | undefined = {}
 							if (actionIndex > 0) {

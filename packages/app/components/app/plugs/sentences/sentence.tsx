@@ -6,9 +6,9 @@ import { Hash, X } from "lucide-react"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { SchemasRequestAction, SchemasResponseCoils, cn, SchemasRequestValue, useConnect, useCord } from "@/lib"
+import { SchemasRequestAction, SchemasResponseCoils, cn, SchemasRequestValue, useConnect, useCordStateless } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
-import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
+import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { sentenceValidStateAtom } from "@/state/sentences"
 
 import { HandleValueProps, Part } from "./part"
@@ -66,8 +66,9 @@ export const Sentence: FC<SentenceProps> = memo(
 			[actionMutation]
 		)
 		
-		// Use atom for sentence validation state
+		// Use atoms for sentence validation state and global plugs state
 		const setSentenceValidState = useSetAtom(sentenceValidStateAtom)
+		const setPlugs = useSetAtom(plugsAtom)
 
 		const [search, setSearch] = useState<Record<number, string | undefined>>({})
 		const [debouncedSearch, setDebouncedSearch] = useState<typeof search>({})
@@ -103,22 +104,71 @@ export const Sentence: FC<SentenceProps> = memo(
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
 		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? {} : {}
 
+		// Create a simpler values representation for cord
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
-				if (value) {
-					acc[key] = value.value
+				if (value && value.value !== undefined) {
+					// Always store as string for cord
+					acc[key] = String(value.value)
 				}
 				return acc
 			},
 			{} as Record<string, string>
 		)
 
-		const {
-			state: { parsed, parts },
-			actions: { setValue },
-			helpers: { getInputValue, getInputError, isValid, isComplete }
-		} = useCord(sentence, values)
-		
+        // Single unified handler for all value updates
+        const handleCordValueUpdate = useCallback((index: number, rawValue: string | undefined, error?: string) => {
+            if (!plug) return;
+            
+            // Determine whether we need to convert the value (for numbers)
+            const isNumber = typeof rawValue === 'string' && /^[0-9]+(\.[0-9]+)?$/.test(rawValue);
+            const value = isNumber && rawValue ? parseFloat(rawValue) : rawValue;
+            
+            // Create a standardized value object that maintains consistency
+            const updatedValue = {
+                // Preserve any existing metadata
+                ...action.values?.[index],
+                // Always include these basics
+                index: String(index),
+                key: String(index),
+                name: String(index),
+                // Store the actual value
+                value: value
+            };
+            
+            // Create updated actions with the new value
+            const updatedActions = plug.actions.map((action, nestedActionIndex) => {
+                if (nestedActionIndex !== actionIndex) return action;
+                
+                return {
+                    ...action,
+                    values: {
+                        ...action.values,
+                        [index]: updatedValue
+                    }
+                };
+            });
+            
+            // Update local state immediately for synchronization across columns
+            setPlugs(prev => prev.map(p => 
+                p.id === item 
+                    ? { ...p, actions: JSON.stringify(updatedActions), updatedAt: new Date() } 
+                    : p
+            ));
+            
+            // Send to API
+            edit({
+                id: item,
+                actions: JSON.stringify(updatedActions)
+            });
+        }, [plug, action, actionIndex, item, setPlugs, edit]);
+        
+        // Use the stateless cord hook that receives updates through our callback
+        const {
+            state: { parsed, parts },
+            helpers: { getInputValue, getInputError, isValid, isComplete }
+        } = useCordStateless(sentence, values, handleCordValueUpdate);
+			
 		// Update the global validation state whenever isValid or isComplete change
 		useEffect(() => {
 			if (actionSchema?.metadata?.chains) {
@@ -134,26 +184,10 @@ export const Sentence: FC<SentenceProps> = memo(
 			}
 		}, [isValid, isComplete, actionSchema, actionIndex, item, setSentenceValidState])
 
-		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
-			setValue(index, value)
-			edit({
-				id: item,
-				actions: JSON.stringify(
-					plug?.actions.map((action, nestedActionIndex) => ({
-						...action,
-						values:
-							nestedActionIndex === actionIndex
-								? {
-									...action.values,
-									[index]: {
-										...rest,
-										value: value ? isNumber ? parseFloat(value) : value : undefined
-									}
-								}
-								: action.values
-					}))
-				)
-			})
+		// Simplified handleValue that doesn't duplicate transformation logic
+		const handleValue = ({ index, value, ...rest }: HandleValueProps) => {
+			// Let handleCordValueUpdate deal with the typing and formatting
+			handleCordValueUpdate(index, value);
 		}
 
 		// TODO: Need to make sure that we can properly evaluate a sentence when it is using a coil.
