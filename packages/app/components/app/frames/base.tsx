@@ -55,7 +55,7 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 right-0 z-[10] cursor-pointer",
 							index === COLUMNS.MOBILE_INDEX ? "top-0" : "top-[60px]",
 							(handleBack === undefined || hasOverlay === true) &&
-							"rounded-b-lg bg-gradient-to-b from-plug-green/10 to-plug-green/20"
+							"rounded-b-lg bg-gradient-to-b from-plug-green/10 to-plug-green/20 filter"
 						)}
 						onClick={() => frame()}
 					/>
@@ -73,7 +73,7 @@ export const Frame: FC<Props> = ({
 							"z-[41]"
 						)}
 					>
-						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-6 py-4">
+						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden rounded-t-lg border-t-[1px] border-b-[1px] border-plug-green/10 bg-white px-6 py-4">
 							{handleBack && (
 								<Button variant="secondary" onClick={handleBack} className="mr-2 h-min rounded-sm p-1">
 									<ChevronLeft size={14} />
