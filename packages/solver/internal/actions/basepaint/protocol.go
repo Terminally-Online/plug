@@ -15,11 +15,11 @@ func New() actions.Protocol {
 		Chains: []*references.Network{references.Base},
 		Actions: map[string]actions.ActionDefinitionInterface{
 			actions.ActionMint: actions.NewActionDefinition(
-				"Mint {0<count:uint64>} of the latest canvas to {1<recipient:string>}",
+				"Mint {0<count:uint64>} copy of the current canvas to {1<recipient:string>}",
 				basepaint_actions.MintLatest,
 				basepaint_options.MintLatestOptions,
-				actions.IsStatic,
-				actions.IsGlobal,
+				actions.IsUser,
+				actions.IsDynamic,
 				actions.IsEmptyOnchainFunc,
 			),
 		},
