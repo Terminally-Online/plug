@@ -229,7 +229,6 @@ export const Sentence: FC<SentenceProps> = memo(
 						isValid && isComplete && !error
 							? "border-plug-yellow hover:border-plug-yellow"
 							: "border-plug-red hover:border-plug-red",
-						linked && linked.length > 0 && "border-orange-300 hover:border-orange-300",
 						className
 					)}
 					noPadding
