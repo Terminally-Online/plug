@@ -75,7 +75,7 @@ export const ScheduleFrame: FC<{
 						range_end: "day-range-end",
 						selected:
 							"bg-plug-yellow text-plug-green hover:brightness-105 focus:brightness-105",
-						today: "bg-plug-green/10 text-black/40",
+						today: "bg-plug-green/10 text-black",
 						disabled: "text-black/40",
 						hidden: "invisible"
 					}}
