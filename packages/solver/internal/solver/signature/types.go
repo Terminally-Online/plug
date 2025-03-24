@@ -29,12 +29,6 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
-type MinimalPlug struct {
-	To    common.Address `json:"to"`
-	Data  []byte         `json:"data"`
-	Value *big.Int       `json:"value"`
-}
-
 // Plug represents a single transaction to be executed as part of a bundle.
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
@@ -62,14 +56,6 @@ func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
 		Data:     p.Data,
 		Value:    p.Value,
 		Updates:  updates,
-	}
-}
-
-func (p Plug) Minify() *MinimalPlug {
-	return &MinimalPlug{
-		To:    p.To,
-		Data:  p.Data,
-		Value: p.Value,
 	}
 }
 
