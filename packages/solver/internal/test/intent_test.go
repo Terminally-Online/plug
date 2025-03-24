@@ -43,33 +43,51 @@ func TestIntentCreation(t *testing.T) {
 	}
 
 	// Ensure the request was successful
-	require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status code %d, got %d. Response: %s",
-		http.StatusOK, resp.StatusCode, string(body))
+	if resp.StatusCode != http.StatusOK {
+		utils.FailTest(t, "Expected status code %d, got %d. Response: %s",
+			http.StatusOK, resp.StatusCode, string(body))
+		return
+	}
 
 	// Parse the response to get the intent ID
 	var createdIntent map[string]interface{}
 	err = json.Unmarshal(body, &createdIntent)
-	require.NoError(t, err, "Failed to parse response JSON")
+	if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+		return
+	}
 
 	// Verify that we received an intent ID
 	intentId, ok := createdIntent["id"].(string)
-	require.True(t, ok, "Intent ID not found in response")
-	require.NotEmpty(t, intentId, "Intent ID should not be empty")
+	if !ok {
+		utils.FailTest(t, "Intent ID not found in response")
+		return
+	}
+	if intentId == "" {
+		utils.FailTest(t, "Intent ID should not be empty")
+		return
+	}
 
 	utils.SuccessLog(t, "Successfully created intent with ID: %s", intentId)
 
 	// Test intent retrieval
 	t.Run("GetIntent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", intentId), http.MethodGet, nil)
-		require.NoError(t, err, "Failed to get intent")
+		if !utils.CheckNoError(t, err, "Failed to get intent") {
+			return
+		}
 		require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status code %d, got %d. Response: %s",
 			http.StatusOK, resp.StatusCode, string(body))
 
 		// The API returns an array of intents
 		var retrievedIntents []map[string]interface{}
 		err = json.Unmarshal(body, &retrievedIntents)
-		require.NoError(t, err, "Failed to parse response JSON")
-		require.Greater(t, len(retrievedIntents), 0, "Expected at least one intent in response")
+		if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+			return
+		}
+		if len(retrievedIntents) <= 0 {
+			utils.FailTest(t, "Expected at least one intent in response")
+			return
+		}
 
 		retrievedIntent := retrievedIntents[0]
 		// Verify the intent data matches what we created
@@ -83,24 +101,34 @@ func TestIntentCreation(t *testing.T) {
 	// Test updating intent status
 	t.Run("ToggleIntentStatus", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s/status", intentId), http.MethodPost, nil)
-		require.NoError(t, err, "Failed to toggle intent status")
+		if !utils.CheckNoError(t, err, "Failed to toggle intent status") {
+			return
+		}
 		require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status code %d, got %d. Response: %s",
 			http.StatusOK, resp.StatusCode, string(body))
 
 		var updatedIntent map[string]interface{}
 		err = json.Unmarshal(body, &updatedIntent)
-		require.NoError(t, err, "Failed to parse response JSON")
+		if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+			return
+		}
 
 		// Verify the status was toggled from "active" to "paused"
 		assert.Equal(t, "paused", updatedIntent["status"], "Intent status should be paused")
 
 		// Toggle it back to active
 		resp, body, err = utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s/status", intentId), http.MethodPost, nil)
-		require.NoError(t, err, "Failed to toggle intent status back")
-		require.Equal(t, http.StatusOK, resp.StatusCode)
+		if !utils.CheckNoError(t, err, "Failed to toggle intent status back") {
+			return
+		}
+		if !utils.CheckEqual(t, http.StatusOK, resp.StatusCode, "Equality check failed") {
+			return
+		}
 
 		err = json.Unmarshal(body, &updatedIntent)
-		require.NoError(t, err, "Failed to parse response JSON")
+		if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+			return
+		}
 		assert.Equal(t, "active", updatedIntent["status"], "Intent status should be active")
 
 		utils.SuccessLog(t, "Successfully toggled intent status")
@@ -109,25 +137,41 @@ func TestIntentCreation(t *testing.T) {
 	// Test toggling saved status
 	t.Run("ToggleIntentSaved", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", intentId), http.MethodPost, nil)
-		require.NoError(t, err, "Failed to toggle intent saved status")
+		if !utils.CheckNoError(t, err, "Failed to toggle intent saved status") {
+			return
+		}
 		require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status code %d, got %d. Response: %s",
 			http.StatusOK, resp.StatusCode, string(body))
 
 		var updatedIntent map[string]interface{}
 		err = json.Unmarshal(body, &updatedIntent)
-		require.NoError(t, err, "Failed to parse response JSON")
+		if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+			return
+		}
 
 		// By default, saved is false, so the first toggle sets it to true
-		assert.Equal(t, true, updatedIntent["saved"], "Intent saved status should be true")
+		if updatedIntent["saved"] != true {
+			utils.FailTest(t, "Intent saved status should be true. Expected: %v, got: %v", true, updatedIntent["saved"])
+			return
+		}
 
 		// Toggle it back
 		resp, body, err = utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", intentId), http.MethodPost, nil)
-		require.NoError(t, err, "Failed to toggle intent saved status back")
-		require.Equal(t, http.StatusOK, resp.StatusCode)
+		if !utils.CheckNoError(t, err, "Failed to toggle intent saved status back") {
+			return
+		}
+		if !utils.CheckEqual(t, http.StatusOK, resp.StatusCode, "Equality check failed") {
+			return
+		}
 
 		err = json.Unmarshal(body, &updatedIntent)
-		require.NoError(t, err, "Failed to parse response JSON")
-		assert.Equal(t, false, updatedIntent["saved"], "Intent saved status should be false")
+		if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+			return
+		}
+		if updatedIntent["saved"] != false {
+			utils.FailTest(t, "Intent saved status should be false. Expected: %v, got: %v", false, updatedIntent["saved"])
+			return
+		}
 
 		utils.SuccessLog(t, "Successfully toggled intent saved status")
 	})
@@ -135,20 +179,29 @@ func TestIntentCreation(t *testing.T) {
 	// Test intent deletion
 	t.Run("DeleteIntent", func(t *testing.T) {
 		resp, _, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", intentId), http.MethodDelete, nil)
-		require.NoError(t, err, "Failed to delete intent")
+		if !utils.CheckNoError(t, err, "Failed to delete intent") {
+			return
+		}
 		require.Equal(t, http.StatusNoContent, resp.StatusCode, "Expected status code %d, got %d",
 			http.StatusNoContent, resp.StatusCode)
 
 		// Verify the intent is no longer retrievable
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", intentId), http.MethodGet, nil)
-		require.NoError(t, err, "Request to get deleted intent failed")
+		if !utils.CheckNoError(t, err, "Request to get deleted intent failed") {
+			return
+		}
 
 		var retrievedIntents []map[string]interface{}
 		err = json.Unmarshal(body, &retrievedIntents)
-		require.NoError(t, err, "Failed to parse response JSON")
+		if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+			return
+		}
 
 		// API returns empty array for nonexistent intent
-		assert.Equal(t, 0, len(retrievedIntents), "Expected no intents to be returned after deletion")
+		if len(retrievedIntents) != 0 {
+			utils.FailTest(t, "Expected no intents to be returned after deletion. Expected: 0, got: %d", len(retrievedIntents))
+			return
+		}
 
 		utils.SuccessLog(t, "Successfully deleted intent with ID: %s", intentId)
 	})
@@ -192,16 +245,28 @@ func TestIntentQueryByAddress(t *testing.T) {
 
 	// Create the intent
 	resp, body, err := utils.MakeTestRequest("http://localhost:8080/solver/save", http.MethodPost, intentWithSaved)
-	require.NoError(t, err, "Failed to create intent")
-	require.Equal(t, http.StatusOK, resp.StatusCode)
+	if !utils.CheckNoError(t, err, "Failed to create intent") {
+		return
+	}
+	if !utils.CheckEqual(t, http.StatusOK, resp.StatusCode, "Equality check failed") {
+		return
+	}
 
 	var createdIntent map[string]interface{}
 	err = json.Unmarshal(body, &createdIntent)
-	require.NoError(t, err)
+	if !utils.CheckNoError(t, err, "Unexpected error") {
+		return
+	}
 
 	intentId, ok := createdIntent["id"].(string)
-	require.True(t, ok, "Intent ID not found in response")
-	require.NotEmpty(t, intentId)
+	if !ok {
+		utils.FailTest(t, "Intent ID not found in response")
+		return
+	}
+	if intentId == "" {
+		utils.FailTest(t, "Value should not be empty")
+		return
+	}
 
 	// Clean up after the test
 	defer func() {
@@ -213,12 +278,18 @@ func TestIntentQueryByAddress(t *testing.T) {
 
 	// Query by user address
 	resp, body, err = utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", utils.TestAddress), http.MethodGet, nil)
-	require.NoError(t, err, "Failed to query intents by address")
-	require.Equal(t, http.StatusOK, resp.StatusCode)
+	if !utils.CheckNoError(t, err, "Failed to query intents by address") {
+		return
+	}
+	if !utils.CheckEqual(t, http.StatusOK, resp.StatusCode, "Equality check failed") {
+		return
+	}
 
 	var retrievedIntents []map[string]interface{}
 	err = json.Unmarshal(body, &retrievedIntents)
-	require.NoError(t, err)
+	if !utils.CheckNoError(t, err, "Unexpected error") {
+		return
+	}
 
 	// Verify our intent is in the results
 	found := false
@@ -272,31 +343,54 @@ func TestIntentWithSchedule(t *testing.T) {
 	// Parse the response to get the intent ID
 	var createdIntent map[string]interface{}
 	err = json.Unmarshal(body, &createdIntent)
-	require.NoError(t, err, "Failed to parse response JSON")
+	if !utils.CheckNoError(t, err, "Failed to parse response JSON") {
+		return
+	}
 
 	// Verify that we received an intent ID
 	intentId, ok := createdIntent["id"].(string)
-	require.True(t, ok, "Intent ID not found in response")
-	require.NotEmpty(t, intentId, "Intent ID should not be empty")
+	if !ok {
+		utils.FailTest(t, "Intent ID not found in response")
+		return
+	}
+	if intentId == "" {
+		utils.FailTest(t, "Intent ID should not be empty")
+		return
+	}
 
 	// Verify that scheduling parameters were saved correctly
 	startAtStr, ok := createdIntent["startAt"].(string)
-	require.True(t, ok, "startAt not found in response")
+	if !ok {
+		utils.FailTest(t, "startAt not found in response")
+		return
+	}
 	parsedStartAt, err := time.Parse(time.RFC3339, startAtStr)
-	require.NoError(t, err, "Failed to parse startAt time")
+	if !utils.CheckNoError(t, err, "Failed to parse startAt time") {
+		return
+	}
 	assert.WithinDuration(t, startAt, parsedStartAt, time.Second, "startAt time mismatch")
 
 	endAtStr, ok := createdIntent["endAt"].(string)
-	require.True(t, ok, "endAt not found in response")
+	if !ok {
+		utils.FailTest(t, "endAt not found in response")
+		return
+	}
 	parsedEndAt, err := time.Parse(time.RFC3339, endAtStr)
-	require.NoError(t, err, "Failed to parse endAt time")
+	if !utils.CheckNoError(t, err, "Failed to parse endAt time") {
+		return
+	}
 	assert.WithinDuration(t, endAt, parsedEndAt, time.Second, "endAt time mismatch")
 
 	// Check if periodEndAt is set correctly (should be startAt + frequency)
 	periodEndAtStr, ok := createdIntent["periodEndAt"].(string)
-	require.True(t, ok, "periodEndAt not found in response")
+	if !ok {
+		utils.FailTest(t, "periodEndAt not found in response")
+		return
+	}
 	parsedPeriodEndAt, err := time.Parse(time.RFC3339, periodEndAtStr)
-	require.NoError(t, err, "Failed to parse periodEndAt")
+	if !utils.CheckNoError(t, err, "Failed to parse periodEndAt") {
+		return
+	}
 	expectedPeriodEndAt := startAt.Add(24 * time.Hour) // 1 day frequency
 	assert.WithinDuration(t, expectedPeriodEndAt, parsedPeriodEndAt, time.Second, "periodEndAt time mismatch")
 
@@ -304,8 +398,12 @@ func TestIntentWithSchedule(t *testing.T) {
 
 	// Clean up by deleting the intent
 	resp, _, err = utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", intentId), http.MethodDelete, nil)
-	require.NoError(t, err, "Failed to delete scheduled intent")
-	require.Equal(t, http.StatusNoContent, resp.StatusCode)
+	if !utils.CheckNoError(t, err, "Failed to delete scheduled intent") {
+		return
+	}
+	if !utils.CheckEqual(t, http.StatusNoContent, resp.StatusCode, "Equality check failed") {
+		return
+	}
 }
 
 // Test creating an intent with invalid parameters
@@ -405,7 +503,9 @@ func TestNonexistentIntentErrors(t *testing.T) {
 	// Test toggle status on nonexistent intent
 	t.Run("ToggleStatusNonexistent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s/status", nonexistentId), http.MethodPost, nil)
-		require.NoError(t, err)
+		if !utils.CheckNoError(t, err, "Unexpected error") {
+			return
+		}
 
 		// Use our custom error assertions that highlight failures in red
 		if !utils.ErrorEqual(t, http.StatusNotFound, resp.StatusCode, "Should return not found status code") {
@@ -414,7 +514,9 @@ func TestNonexistentIntentErrors(t *testing.T) {
 
 		var errorResponse map[string]interface{}
 		err = json.Unmarshal(body, &errorResponse)
-		require.NoError(t, err)
+		if !utils.CheckNoError(t, err, "Unexpected error") {
+			return
+		}
 
 		if !utils.ErrorContains(t, errorResponse, "error", "Error response missing 'error' field") {
 			return
@@ -436,7 +538,9 @@ func TestNonexistentIntentErrors(t *testing.T) {
 	// Test toggle saved on nonexistent intent
 	t.Run("ToggleSavedNonexistent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", nonexistentId), http.MethodPost, nil)
-		require.NoError(t, err)
+		if !utils.CheckNoError(t, err, "Unexpected error") {
+			return
+		}
 
 		// Use our custom error assertions that highlight failures in red
 		if !utils.ErrorEqual(t, http.StatusNotFound, resp.StatusCode, "Should return not found status code") {
@@ -445,7 +549,9 @@ func TestNonexistentIntentErrors(t *testing.T) {
 
 		var errorResponse map[string]interface{}
 		err = json.Unmarshal(body, &errorResponse)
-		require.NoError(t, err)
+		if !utils.CheckNoError(t, err, "Unexpected error") {
+			return
+		}
 
 		if !utils.ErrorContains(t, errorResponse, "error", "Error response missing 'error' field") {
 			return
@@ -467,7 +573,9 @@ func TestNonexistentIntentErrors(t *testing.T) {
 	// Test delete nonexistent intent
 	t.Run("DeleteNonexistent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", nonexistentId), http.MethodDelete, nil)
-		require.NoError(t, err)
+		if !utils.CheckNoError(t, err, "Unexpected error") {
+			return
+		}
 
 		// Use our custom error assertions that highlight failures in red
 		if !utils.ErrorEqual(t, http.StatusNotFound, resp.StatusCode, "Should return not found status code") {
@@ -476,7 +584,9 @@ func TestNonexistentIntentErrors(t *testing.T) {
 
 		var errorResponse map[string]interface{}
 		err = json.Unmarshal(body, &errorResponse)
-		require.NoError(t, err)
+		if !utils.CheckNoError(t, err, "Unexpected error") {
+			return
+		}
 
 		if !utils.ErrorContains(t, errorResponse, "error", "Error response missing 'error' field") {
 			return

@@ -72,6 +72,11 @@ func TestMain(m *testing.M) {
 	io.Copy(writer, r)
 	os.Stdout = origStdout
 
+	// Print separator between test output and summary
+	fmt.Println("\n" + utils.ColorBlue + strings.Repeat("=", 80) + utils.ColorReset)
+	fmt.Println(utils.ColorBlue + "TEST RESULTS SUMMARY" + utils.ColorReset)
+	fmt.Println(utils.ColorBlue + strings.Repeat("=", 80) + utils.ColorReset + "\n")
+
 	// Generate and print test summary
 	utils.PrintTestSummary(&buf)
 

@@ -8,7 +8,9 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -63,9 +65,23 @@ func WarningLog(t *testing.T, format string, args ...interface{}) {
 	t.Logf(ColorYellow+format+ColorReset, args...)
 }
 
-// RedText simply wraps text in red for visual highlighting
-func RedText(text string) string {
-	return ColorRed + text + ColorReset
+// Test utility functions for more visible test failures
+
+// FailTest logs a failure message in red and fails the test
+// Use this instead of assert.Equal for more visible failures
+func FailTest(t *testing.T, format string, args ...interface{}) {
+	// Get file and line information
+	_, file, line, _ := runtime.Caller(1)
+
+	// Format the test name to include in the output
+	testName := t.Name()
+
+	// Build the full error message with file/line/test info
+	errorPrefix := fmt.Sprintf("%s❌ FAILED [%s:%d] %s: ", ColorRed, filepath.Base(file), line, testName)
+
+	// Format and log the error with ANSI colors
+	errorMsg := fmt.Sprintf(format, args...)
+	t.Errorf("%s%s%s", errorPrefix, errorMsg, ColorReset)
 }
 
 // ErrorEqual is a wrapper around a standard equality check that shows assertion failures in red
@@ -73,7 +89,7 @@ func ErrorEqual(t *testing.T, expected, actual interface{}, msgAndArgs ...interf
 	if expected == actual {
 		return true
 	}
-	
+
 	errorMsg := fmt.Sprintf("Expected: %v, got: %v", expected, actual)
 	if len(msgAndArgs) > 0 {
 		if msg, ok := msgAndArgs[0].(string); ok {
@@ -84,44 +100,8 @@ func ErrorEqual(t *testing.T, expected, actual interface{}, msgAndArgs ...interf
 			}
 		}
 	}
-	
-	t.Error(RedText(errorMsg))
-	return false
-}
 
-// ErrorContains checks if a container contains an item and shows failure in red
-func ErrorContains(t *testing.T, container, item interface{}, msgAndArgs ...interface{}) bool {
-	// Check if container contains item based on type
-	contains := false
-	
-	if container == nil {
-		contains = false
-	} else if str, ok := container.(string); ok {
-		if itemStr, ok := item.(string); ok {
-			contains = strings.Contains(str, itemStr)
-		}
-	} else if m, ok := container.(map[string]interface{}); ok {
-		if key, ok := item.(string); ok {
-			_, contains = m[key]
-		}
-	}
-	
-	if contains {
-		return true
-	}
-	
-	errorMsg := fmt.Sprintf("Expected %v to contain %v", container, item)
-	if len(msgAndArgs) > 0 {
-		if msg, ok := msgAndArgs[0].(string); ok {
-			if len(msgAndArgs) > 1 {
-				errorMsg += "\n" + fmt.Sprintf(msg, msgAndArgs[1:]...)
-			} else {
-				errorMsg += "\n" + msg
-			}
-		}
-	}
-	
-	t.Error(RedText(errorMsg))
+	t.Error(ColorRed + "FAILED ASSERTION: " + errorMsg + ColorReset)
 	return false
 }
 
@@ -320,23 +300,23 @@ func CategorizeFailure(responseBody string, chainId uint64, protocol, action str
 	// Look for common error patterns
 	switch {
 	case Contains(responseBody, "rate limit"):
-		return "RATE_LIMIT_EXCEEDED"
+		return ColorRed + "RATE_LIMIT_EXCEEDED" + ColorReset
 	case Contains(responseBody, "not supported") || Contains(responseBody, "not implemented"):
-		return "FEATURE_NOT_SUPPORTED"
+		return ColorRed + "FEATURE_NOT_SUPPORTED" + ColorReset
 	case Contains(responseBody, "not found") || Contains(responseBody, "couldn't find"):
-		return "RESOURCE_NOT_FOUND"
+		return ColorRed + "RESOURCE_NOT_FOUND" + ColorReset
 	case Contains(responseBody, "chain") && Contains(responseBody, "not supported"):
-		return fmt.Sprintf("CHAIN_NOT_SUPPORTED (Chain ID: %d)", chainId)
+		return ColorRed + fmt.Sprintf("CHAIN_NOT_SUPPORTED (Chain ID: %d)", chainId) + ColorReset
 	case Contains(responseBody, "validation") || Contains(responseBody, "invalid"):
-		return "INPUT_VALIDATION_ERROR"
+		return ColorRed + "INPUT_VALIDATION_ERROR" + ColorReset
 	case Contains(responseBody, "rpc error") || Contains(responseBody, "connection"):
-		return "RPC_CONNECTION_ERROR"
+		return ColorRed + "RPC_CONNECTION_ERROR" + ColorReset
 	case Contains(responseBody, "contract") && Contains(responseBody, "error"):
-		return "CONTRACT_INTERACTION_ERROR"
+		return ColorRed + "CONTRACT_INTERACTION_ERROR" + ColorReset
 	case Contains(responseBody, "timeout") || Contains(responseBody, "timed out"):
-		return "TIMEOUT"
+		return ColorRed + "TIMEOUT" + ColorReset
 	default:
-		return "UNKNOWN_ERROR"
+		return ColorRed + "UNKNOWN_ERROR" + ColorReset
 	}
 }
 
@@ -349,10 +329,38 @@ func Contains(s, substr string) bool {
 func PrintTestSummary(buf *bytes.Buffer) {
 	output := buf.String()
 
-	// Print header
-	fmt.Printf("\n%s╔════════════════════════════════════════╗%s\n", ColorBlue, ColorReset)
-	fmt.Printf("%s║              Test Summary              ║%s\n", ColorBlue, ColorReset)
-	fmt.Printf("%s╚════════════════════════════════════════╝%s\n\n", ColorBlue, ColorReset)
+	// Print header with larger, more visible separator
+	fmt.Printf("\n%s%s%s\n", ColorBlue, strings.Repeat("=", 80), ColorReset)
+	fmt.Printf("%s%s TEST SUMMARY %s%s\n", ColorBlue, strings.Repeat("=", 30), strings.Repeat("=", 30), ColorReset)
+	fmt.Printf("%s%s%s\n\n", ColorBlue, strings.Repeat("=", 80), ColorReset)
+
+	// Count test results first for immediate overview
+	passes := countMatches(output, "--- PASS:")
+	failures := countMatches(output, "--- FAIL:")
+	skips := countMatches(output, "--- SKIP:")
+
+	// Highlight test failures in big text if any exist
+	if failures > 0 {
+		fmt.Printf("%s%s%s\n", ColorRed, strings.Repeat("!", 80), ColorReset)
+		fmt.Printf("%s  ❌ FAILURES DETECTED: %d test(s) failed%s\n", ColorRed, failures, ColorReset)
+		fmt.Printf("%s%s%s\n\n", ColorRed, strings.Repeat("!", 80), ColorReset)
+
+		// Extract and show failure messages
+		failureLines := extractFailureMessages(output)
+		if len(failureLines) > 0 {
+			fmt.Printf("%sFAILURE DETAILS:%s\n", ColorRed, ColorReset)
+			for _, line := range failureLines {
+				fmt.Printf("  %s\n", line)
+			}
+			fmt.Println()
+		}
+	}
+
+	// Print test result summary
+	fmt.Printf("📊 %sPassed: %d%s | %sFailed: %d%s | %sSkipped: %d%s\n\n",
+		ColorGreen, passes, ColorReset,
+		ColorRed, failures, ColorReset,
+		ColorYellow, skips, ColorReset)
 
 	// Extract tested protocols
 	protocols := extractProtocolsTested(output)
@@ -394,11 +402,6 @@ func PrintTestSummary(buf *bytes.Buffer) {
 		}
 	}
 
-	// Count test results
-	passes := countMatches(output, "--- PASS:")
-	failures := countMatches(output, "--- FAIL:")
-	skips := countMatches(output, "--- SKIP:")
-
 	// Check for panics
 	panics := countMatches(output, "panic: ")
 	if panics > 0 {
@@ -416,12 +419,33 @@ func PrintTestSummary(buf *bytes.Buffer) {
 		fmt.Println("  2. Adding delays between API calls")
 		fmt.Println("  3. Running fewer tests in parallel")
 	}
+}
 
-	// Print test result summary
-	fmt.Printf("\n📊 %sPassed: %d%s | %sFailed: %d%s | %sSkipped: %d%s\n",
-		ColorGreen, passes, ColorReset,
-		ColorRed, failures, ColorReset,
-		ColorYellow, skips, ColorReset)
+// Extract failure messages for better reporting
+func extractFailureMessages(output string) []string {
+	var failures []string
+	lines := strings.Split(output, "\n")
+
+	// Look for lines containing FAILED or failure patterns
+	for i, line := range lines {
+		// Check for our custom failure messages first
+		if strings.Contains(line, "❌ FAILED:") {
+			failures = append(failures, line)
+			continue
+		}
+
+		// Look for testify assertion failures
+		if strings.Contains(line, "Error:") && strings.Contains(line, "Not equal:") {
+			// Try to include a few lines of context
+			combinedMessage := line
+			if i+1 < len(lines) && !strings.HasPrefix(lines[i+1], "---") {
+				combinedMessage += " " + strings.TrimSpace(lines[i+1])
+			}
+			failures = append(failures, combinedMessage)
+		}
+	}
+
+	return failures
 }
 
 // Helper to count occurrences of a pattern in text
