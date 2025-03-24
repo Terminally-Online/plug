@@ -88,9 +88,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		}
 	})
 
-
-	console.log('request', request)
-
 	const { data: intent, error: intentError, isLoading } = api.solver.actions.intent.useQuery(request, {
 		enabled:
 			isFrame &&
@@ -103,7 +100,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 	const isReady =
 		amounts[tokenOut.symbol].precise !== "0" && !intentError && !isLoading && isSufficientBalance
-	const meta = intent ? intent.transactions[0].meta : null
+	const meta = intent ? intent.transactions[intent.transactions.length - 1].meta : null
 
 	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
 	const handleTransactionOffchain = useCallback(() => {
@@ -356,10 +353,10 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					</span>{" "}
 					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
 						<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-							<Counter count={0.00011} /> ETH
+							<Counter count={0.0} /> ETH
 						</span>
 						<span className="ml-2 flex flex-row items-center">
-							$<Counter count={0.049} />
+							Free
 						</span>
 					</span>
 				</p>
