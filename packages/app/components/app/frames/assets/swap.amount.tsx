@@ -62,7 +62,15 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		(tokenOutImplementation?.balance ?? 0) > 0 &&
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
-	const request = useDebounceInline({
+	const request = useDebounceInline<{
+		chainId: number,
+		from: string | `0x${string}`
+		inputs: Array<{
+			protocol: string,
+			action: string,
+			[key: string]: string
+		}>, options?: { isEOA?: boolean, simulate?: boolean }
+	}>({
 		chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
 		from: socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : "",
 		inputs: [
@@ -76,9 +84,13 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		],
 		options: {
 			isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX,
-			simualte: true
+			simulate: true
 		}
 	})
+
+
+	console.log('request', request)
+
 	const { data: intent, error: intentError, isLoading } = api.solver.actions.intent.useQuery(request, {
 		enabled:
 			isFrame &&
@@ -87,8 +99,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			amounts[tokenOut.symbol].precise !== "0" &&
 			isSufficientBalance &&
 			!!socket,
-		refetchInterval: 3500,
-		staleTime: 1000
 	})
 
 	const isReady =
