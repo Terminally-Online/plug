@@ -158,7 +158,7 @@ func TestIntentCreation(t *testing.T) {
 func TestIntentQueryByAddress(t *testing.T) {
 	// Create a test intent with a specific address
 	intent := utils.TestIntent{
-		ChainId: 1, 
+		ChainId: 1,
 		From:    utils.TestAddress,
 		Inputs: []map[string]any{
 			{
@@ -240,12 +240,12 @@ func TestIntentWithSchedule(t *testing.T) {
 	endAt := startAt.Add(24 * time.Hour * 7) // One week from start
 
 	intentWithSchedule := map[string]interface{}{
-		"chainId":    1,
-		"from":       utils.TestAddress,
-		"frequency":  1, // Daily frequency
-		"startAt":    startAt.Format(time.RFC3339),
-		"endAt":      endAt.Format(time.RFC3339),
-		"status":     "active",
+		"chainId":   1,
+		"from":      utils.TestAddress,
+		"frequency": 1, // Daily frequency
+		"startAt":   startAt.Format(time.RFC3339),
+		"endAt":     endAt.Format(time.RFC3339),
+		"status":    "active",
 		"inputs": []map[string]interface{}{
 			{
 				"action":   "transfer",
@@ -375,15 +375,23 @@ func TestInvalidIntentCreation(t *testing.T) {
 				t.Fatalf("Request failed: %v", err)
 			}
 
-			// Invalid inputs should result in a 400 Bad Request
-			assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "Expected status code 400, got %d. Response: %s",
-				resp.StatusCode, string(body))
+			// Use our custom red error assertions
+			if !utils.ErrorEqual(t, http.StatusBadRequest, resp.StatusCode, "Invalid intent should return 400") {
+				return
+			}
 
-			// Verify we got an error message back
+			// Verify an error response came back
 			var errorResponse map[string]interface{}
 			err = json.Unmarshal(body, &errorResponse)
-			require.NoError(t, err, "Failed to parse error response")
-			assert.Contains(t, errorResponse, "error", "Error response should contain 'error' field")
+			if err != nil {
+				t.Error(utils.RedText(fmt.Sprintf("Failed to parse error response: %v", err)))
+				return
+			}
+
+			// Check that there's an error field
+			if !utils.ErrorContains(t, errorResponse, "error", "Response should contain error field") {
+				return
+			}
 
 			utils.SuccessLog(t, "Correctly rejected invalid intent: %s", tc.name)
 		})
@@ -398,15 +406,29 @@ func TestNonexistentIntentErrors(t *testing.T) {
 	t.Run("ToggleStatusNonexistent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s/status", nonexistentId), http.MethodPost, nil)
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+
+		// Use our custom error assertions that highlight failures in red
+		if !utils.ErrorEqual(t, http.StatusNotFound, resp.StatusCode, "Should return not found status code") {
+			return
+		}
 
 		var errorResponse map[string]interface{}
 		err = json.Unmarshal(body, &errorResponse)
 		require.NoError(t, err)
-		assert.Contains(t, errorResponse, "error")
+
+		if !utils.ErrorContains(t, errorResponse, "error", "Error response missing 'error' field") {
+			return
+		}
+
 		errorMsg, ok := errorResponse["error"].(string)
-		assert.True(t, ok)
-		assert.Contains(t, errorMsg, "failed to find intent")
+		if !ok {
+			t.Error(utils.RedText("Error field is not a string"))
+			return
+		}
+
+		if !utils.ErrorContains(t, errorMsg, "failed to find intent", "Unexpected error message") {
+			return
+		}
 
 		utils.SuccessLog(t, "Correctly returned 404 for toggling status on nonexistent intent")
 	})
@@ -415,15 +437,29 @@ func TestNonexistentIntentErrors(t *testing.T) {
 	t.Run("ToggleSavedNonexistent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", nonexistentId), http.MethodPost, nil)
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+
+		// Use our custom error assertions that highlight failures in red
+		if !utils.ErrorEqual(t, http.StatusNotFound, resp.StatusCode, "Should return not found status code") {
+			return
+		}
 
 		var errorResponse map[string]interface{}
 		err = json.Unmarshal(body, &errorResponse)
 		require.NoError(t, err)
-		assert.Contains(t, errorResponse, "error")
+
+		if !utils.ErrorContains(t, errorResponse, "error", "Error response missing 'error' field") {
+			return
+		}
+
 		errorMsg, ok := errorResponse["error"].(string)
-		assert.True(t, ok)
-		assert.Contains(t, errorMsg, "failed to find intent")
+		if !ok {
+			t.Error(utils.RedText("Error field is not a string"))
+			return
+		}
+
+		if !utils.ErrorContains(t, errorMsg, "failed to find intent", "Unexpected error message") {
+			return
+		}
 
 		utils.SuccessLog(t, "Correctly returned 404 for toggling saved on nonexistent intent")
 	})
@@ -432,15 +468,29 @@ func TestNonexistentIntentErrors(t *testing.T) {
 	t.Run("DeleteNonexistent", func(t *testing.T) {
 		resp, body, err := utils.MakeTestRequest(fmt.Sprintf("http://localhost:8080/solver/save/%s", nonexistentId), http.MethodDelete, nil)
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+
+		// Use our custom error assertions that highlight failures in red
+		if !utils.ErrorEqual(t, http.StatusNotFound, resp.StatusCode, "Should return not found status code") {
+			return
+		}
 
 		var errorResponse map[string]interface{}
 		err = json.Unmarshal(body, &errorResponse)
 		require.NoError(t, err)
-		assert.Contains(t, errorResponse, "error")
+
+		if !utils.ErrorContains(t, errorResponse, "error", "Error response missing 'error' field") {
+			return
+		}
+
 		errorMsg, ok := errorResponse["error"].(string)
-		assert.True(t, ok)
-		assert.Contains(t, errorMsg, "failed to find intent")
+		if !ok {
+			t.Error(utils.RedText("Error field is not a string"))
+			return
+		}
+
+		if !utils.ErrorContains(t, errorMsg, "failed to find intent", "Unexpected error message") {
+			return
+		}
 
 		utils.SuccessLog(t, "Correctly returned 404 for deleting nonexistent intent")
 	})

@@ -63,6 +63,68 @@ func WarningLog(t *testing.T, format string, args ...interface{}) {
 	t.Logf(ColorYellow+format+ColorReset, args...)
 }
 
+// RedText simply wraps text in red for visual highlighting
+func RedText(text string) string {
+	return ColorRed + text + ColorReset
+}
+
+// ErrorEqual is a wrapper around a standard equality check that shows assertion failures in red
+func ErrorEqual(t *testing.T, expected, actual interface{}, msgAndArgs ...interface{}) bool {
+	if expected == actual {
+		return true
+	}
+	
+	errorMsg := fmt.Sprintf("Expected: %v, got: %v", expected, actual)
+	if len(msgAndArgs) > 0 {
+		if msg, ok := msgAndArgs[0].(string); ok {
+			if len(msgAndArgs) > 1 {
+				errorMsg += "\n" + fmt.Sprintf(msg, msgAndArgs[1:]...)
+			} else {
+				errorMsg += "\n" + msg
+			}
+		}
+	}
+	
+	t.Error(RedText(errorMsg))
+	return false
+}
+
+// ErrorContains checks if a container contains an item and shows failure in red
+func ErrorContains(t *testing.T, container, item interface{}, msgAndArgs ...interface{}) bool {
+	// Check if container contains item based on type
+	contains := false
+	
+	if container == nil {
+		contains = false
+	} else if str, ok := container.(string); ok {
+		if itemStr, ok := item.(string); ok {
+			contains = strings.Contains(str, itemStr)
+		}
+	} else if m, ok := container.(map[string]interface{}); ok {
+		if key, ok := item.(string); ok {
+			_, contains = m[key]
+		}
+	}
+	
+	if contains {
+		return true
+	}
+	
+	errorMsg := fmt.Sprintf("Expected %v to contain %v", container, item)
+	if len(msgAndArgs) > 0 {
+		if msg, ok := msgAndArgs[0].(string); ok {
+			if len(msgAndArgs) > 1 {
+				errorMsg += "\n" + fmt.Sprintf(msg, msgAndArgs[1:]...)
+			} else {
+				errorMsg += "\n" + msg
+			}
+		}
+	}
+	
+	t.Error(RedText(errorMsg))
+	return false
+}
+
 // Console output helpers (for non-test contexts)
 func SuccessPrint(format string, args ...interface{}) {
 	fmt.Printf(ColorGreen+format+ColorReset+"\n", args...)

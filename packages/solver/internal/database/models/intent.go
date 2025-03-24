@@ -16,8 +16,8 @@ import (
 type Intent struct {
 	Id               string              `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	Status           string              `json:"status,omitempty" gorm:"type:text;default:'active'"`
-	ChainId          uint64              `json:"chainId" gorm:"type:int"`
-	From             string              `json:"from,omitempty" gorm:"type:text"`
+	ChainId          uint64              `json:"chainId" gorm:"type:int;not null"`
+	From             string              `json:"from,omitempty" gorm:"type:text;not null"`
 	Value            *types.BigInt       `json:"value,omitempty" gorm:"type:bigint"`
 	GasLimit         *uint64             `json:"gasLimit,omitempty" gorm:"type:int"`
 	Inputs           types.Inputs        `json:"inputs,omitempty" gorm:"type:jsonb"`
@@ -110,4 +110,18 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 	}
 
 	return nil, nil
+}
+
+func (i *Intent) ValidateFields() error {
+	if i.ChainId == 0 {
+		return fmt.Errorf("missing 'chainId'")
+	}
+	if i.From == "" {
+		return fmt.Errorf("missing 'from' address")
+	}
+	if len(i.Inputs) == 0 {
+		return fmt.Errorf("missing 'inputs'")
+	}
+
+	return nil
 }
