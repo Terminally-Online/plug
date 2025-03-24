@@ -192,7 +192,18 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 	data := append(plugs[0].Data, identifier...)
 
 	var run *models.Run
-	if simulate && intent.Options["simulate"].(bool) {
+	
+	// Safely handle the simulate option to prevent crashes from type assertions
+	shouldSimulate := false
+	if simulate {
+		if simulateVal, ok := intent.Options["simulate"]; ok && simulateVal != nil {
+			if boolVal, ok := simulateVal.(bool); ok {
+				shouldSimulate = boolVal
+			}
+		}
+	}
+	
+	if shouldSimulate {
 		simTx := &signature.Transaction{
 			From:  common.HexToAddress(intent.From),
 			To:    plugs[0].To,
@@ -266,7 +277,16 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		LivePlugsId: livePlugs.Id,
 		Status:      "pending",
 	}
-	shouldSimulate := simulate && intent.Options["simulate"] != nil && intent.Options["simulate"].(bool)
+	
+	shouldSimulate := false
+	if simulate {
+		if simulateVal, ok := intent.Options["simulate"]; ok && simulateVal != nil {
+			if boolVal, ok := simulateVal.(bool); ok {
+				shouldSimulate = boolVal
+			}
+		}
+	}
+	
 	if shouldSimulate {
 		simLivePlugs := &signature.LivePlugs{
 			Id:        livePlugs.Id,
