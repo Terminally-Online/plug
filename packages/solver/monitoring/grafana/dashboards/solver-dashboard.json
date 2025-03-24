@@ -65,7 +65,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(http_requests_total[5m])",
+          "expr": "rate(http_requests_total[5m]) * 60",
           "interval": "",
           "legendFormat": "{{method}} {{endpoint}} ({{status}})",
           "refId": "A"
@@ -159,13 +159,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, method, endpoint))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, method, endpoint)) * 1000",
           "interval": "",
           "legendFormat": "p95 {{method}} {{endpoint}}",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, method, endpoint))",
+          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, method, endpoint)) * 1000",
           "interval": "",
           "legendFormat": "p50 {{method}} {{endpoint}}",
           "refId": "B"
@@ -191,7 +191,7 @@
       },
       "yaxes": [
         {
-          "format": "s",
+          "format": "ms",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -259,13 +259,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(solver_requests_total[5m])",
+          "expr": "rate(solver_requests_total[5m]) * 60",
           "interval": "",
           "legendFormat": "Solver Requests",
           "refId": "A"
         },
         {
-          "expr": "rate(solver_errors_total[5m])",
+          "expr": "rate(solver_errors_total[5m]) * 60",
           "interval": "",
           "legendFormat": "Solver Errors",
           "refId": "B"
@@ -292,7 +292,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "Requests per second",
+          "label": "Requests per minute",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -359,13 +359,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(solver_request_duration_seconds_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(solver_request_duration_seconds_bucket[5m])) by (le)) * 1000",
           "interval": "",
           "legendFormat": "p95 (95% of requests are faster than this)",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.50, sum(rate(solver_request_duration_seconds_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(solver_request_duration_seconds_bucket[5m])) by (le)) * 1000",
           "interval": "",
           "legendFormat": "p50 (median duration)",
           "refId": "B"
@@ -391,7 +391,7 @@
       },
       "yaxes": [
         {
-          "format": "s",
+          "format": "ms",
           "label": "Duration",
           "logBase": 1,
           "max": null,
@@ -553,7 +553,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(api_key_requests_total[1m])) by (api_key_id)",
+          "expr": "sum(rate(api_key_requests_total[1m]) * 60) by (api_key_id)",
           "interval": "",
           "legendFormat": "API Key: {{api_key_id}}",
           "refId": "A"
@@ -580,7 +580,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "Requests per second",
+          "label": "Requests per minute",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -709,100 +709,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "Shows API key rate limits",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 24
-      },
-      "hiddenSeries": false,
-      "id": 16,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "api_key_rate_limits > 0",
-          "interval": "",
-          "legendFormat": "API Key: {{api_key_id}} (remaining requests)",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "API Key Rate Limits",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "Remaining requests",
-          "logBase": 1,
-          "max": null,
-          "min": 0,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
       "description": "Shows cache hits and misses broken down by key",
       "fieldConfig": {
         "defaults": {},
@@ -844,13 +750,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cache_hits_total[5m])",
+          "expr": "rate(cache_hits_total[5m]) * 60",
           "interval": "",
           "legendFormat": "Hits - {{key}}",
           "refId": "A"
         },
         {
-          "expr": "rate(cache_misses_total[5m])",
+          "expr": "rate(cache_misses_total[5m]) * 60",
           "interval": "",
           "legendFormat": "Misses - {{key}}",
           "refId": "B"
@@ -877,7 +783,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "Rate (per second)",
+          "label": "Rate (per minute)",
           "logBase": 1,
           "max": null,
           "min": null,

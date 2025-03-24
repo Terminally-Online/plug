@@ -191,9 +191,6 @@ func (h *Middleware) ApiKey(next http.Handler) http.Handler {
 		w.Header().Set("X-RateLimit-Reset", fmt.Sprintf("%d", limitInfo.Reset.Unix()))
 		w.Header().Set("X-RateLimit-Remaining", fmt.Sprintf("%d", limitInfo.Remaining))
 
-		// Update rate limit metrics directly here for reliability
-		apiKeyRateLimits.WithLabelValues(dbKey.Id).Set(float64(limitInfo.Remaining))
-
 		next.ServeHTTP(w, r)
 	})
 }

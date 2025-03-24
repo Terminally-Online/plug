@@ -56,15 +56,6 @@ var (
 		[]string{"api_key_id", "endpoint"},
 	)
 
-	// API key rate limits
-	apiKeyRateLimits = promauto.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "api_key_rate_limits",
-			Help: "Current rate limit values for API keys",
-		},
-		[]string{"api_key_id"},
-	)
-
 	// Solver metrics
 	solverRequestsTotal = promauto.NewCounter(
 		prometheus.CounterOpts{
