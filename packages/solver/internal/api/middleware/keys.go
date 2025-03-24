@@ -32,27 +32,6 @@ type KeyRateLimiter struct {
 	mu   sync.RWMutex // mutex for map operations
 }
 
-// GetLimit returns rate limit information for a given API key
-func (rl *KeyRateLimiter) GetLimit(apiKeyID string) (RateLimitInfo, bool) {
-	rl.mu.RLock()
-	defer rl.mu.RUnlock()
-	
-	for _, cache := range rl.keys {
-		if cache.key.Id == apiKeyID {
-			currentCount := cache.count.Load()
-			resetTime := time.Unix(cache.windowStart.Load()+WINDOW_SECONDS, 0)
-			return RateLimitInfo{
-				Used:      currentCount,
-				Limit:     cache.key.RateLimit,
-				Reset:     resetTime,
-				Remaining: int64(cache.key.RateLimit) - currentCount,
-			}, true
-		}
-	}
-	
-	return RateLimitInfo{}, false
-}
-
 func NewKeyRateLimiter() *KeyRateLimiter {
 	return &KeyRateLimiter{
 		keys: make(map[string]*KeyCache),
@@ -151,7 +130,7 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, limitInf
 	newCount := cachedKey.count.Add(1)
 	limitInfo.Used = newCount
 	limitInfo.Remaining = int64(cachedKey.key.RateLimit) - newCount
-	
+
 	return *cachedKey.key, limitInfo, http.StatusOK, nil
 }
 
@@ -203,11 +182,17 @@ func (h *Middleware) ApiKey(next http.Handler) http.Handler {
 			return
 		}
 
+		// Set the API key ID in the request context and header
 		r.Header.Set("X-Api-Key-Id", dbKey.Id)
+
+		// Set rate limit headers
 		w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", limitInfo.Limit))
 		w.Header().Set("X-RateLimit-Used", fmt.Sprintf("%d", limitInfo.Used))
 		w.Header().Set("X-RateLimit-Reset", fmt.Sprintf("%d", limitInfo.Reset.Unix()))
 		w.Header().Set("X-RateLimit-Remaining", fmt.Sprintf("%d", limitInfo.Remaining))
+
+		// Update rate limit metrics directly here for reliability
+		apiKeyRateLimits.WithLabelValues(dbKey.Id).Set(float64(limitInfo.Remaining))
 
 		next.ServeHTTP(w, r)
 	})

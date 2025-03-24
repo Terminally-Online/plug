@@ -19,9 +19,9 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 	m := middleware.New(*s)
 	r := mux.NewRouter()
 
-	r.Use(m.Metrics)
 	r.Use(m.Json)
 	r.Use(m.Timeout)
+	r.Use(m.Metrics)
 
 	r.Handle("/health", health.GetHealth()).Methods(http.MethodGet)
 

@@ -47,6 +47,15 @@ var (
 		[]string{"method", "endpoint"},
 	)
 
+	// API key request counts
+	apiKeyRequestsTotal = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "api_key_requests_total",
+			Help: "Total number of requests by API key",
+		},
+		[]string{"api_key_id", "endpoint"},
+	)
+
 	// API key rate limits
 	apiKeyRateLimits = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -78,6 +87,33 @@ var (
 			Help: "Total number of solver errors",
 		},
 	)
+
+	// Cache metrics
+	cacheHitsTotal = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "cache_hits_total",
+			Help: "Total number of cache hits",
+		},
+		[]string{"key"},
+	)
+
+	cacheMissesTotal = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "cache_misses_total",
+			Help: "Total number of cache misses",
+		},
+		[]string{"key"},
+	)
+
+	cachePopulateTime = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "cache_populate_time_milliseconds",
+			Help: "Time taken to populate cache in milliseconds",
+			// Custom buckets appropriate for millisecond measurements
+			Buckets: []float64{5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000},
+		},
+		[]string{"key"},
+	)
 )
 
 // ResponseWriterWithMetrics is a wrapper for http.ResponseWriter that captures metrics
@@ -88,6 +124,7 @@ type ResponseWriterWithMetrics struct {
 	requestMethod string
 	requestPath   string
 	startTime     time.Time
+	apiKeyID      string
 }
 
 // WriteHeader captures the status code from the response
@@ -120,6 +157,9 @@ func (m *Middleware) Metrics(next http.Handler) http.Handler {
 		requestMethod := r.Method
 		requestSize := r.ContentLength
 
+		// Get API key ID if it's already set (happens when middleware ordering puts this after ApiKey middleware)
+		apiKeyID := r.Header.Get("X-Api-Key-Id")
+
 		// Create a response writer with metrics
 		metricsWriter := &ResponseWriterWithMetrics{
 			ResponseWriter: w,
@@ -127,20 +167,25 @@ func (m *Middleware) Metrics(next http.Handler) http.Handler {
 			requestMethod:  requestMethod,
 			requestPath:    requestPath,
 			startTime:      time.Now(),
+			apiKeyID:       apiKeyID,
 		}
 
 		// Record request size
 		httpRequestSize.WithLabelValues(requestMethod, requestPath).Observe(float64(requestSize))
 
-		// Track API key usage if present
-		if apiKeyID := r.Header.Get("X-Api-Key-Id"); apiKeyID != "" {
-			if limit, ok := m.apiKeyLimiter.GetLimit(apiKeyID); ok {
-				apiKeyRateLimits.WithLabelValues(apiKeyID).Set(float64(limit.Remaining))
-			}
-		}
-
 		// Call the next handler
 		next.ServeHTTP(metricsWriter, r)
+
+		// After the handler executes, the API key ID header is set by the keys middleware
+		if apiKeyID == "" {
+			apiKeyID = r.Header.Get("X-Api-Key-Id")
+			metricsWriter.apiKeyID = apiKeyID
+		}
+
+		// Track request count by API key and endpoint
+		if apiKeyID != "" {
+			apiKeyRequestsTotal.WithLabelValues(apiKeyID, requestPath).Inc()
+		}
 
 		// Record response metrics
 		metricsWriter.recordMetrics()
@@ -150,15 +195,30 @@ func (m *Middleware) Metrics(next http.Handler) http.Handler {
 // TrackSolverMetrics records solver-specific metrics
 func TrackSolverMetrics(fn func() error) error {
 	solverRequestsTotal.Inc()
-	
+
 	startTime := time.Now()
 	err := fn()
-	
+
 	solverRequestDuration.Observe(time.Since(startTime).Seconds())
-	
+
 	if err != nil {
 		solverErrorsTotal.Inc()
 	}
-	
+
 	return err
+}
+
+// TrackCacheOperation records cache hit/miss metrics
+func TrackCacheOperation(key string, hit bool, populateTimeMillis int64) {
+	if hit {
+		cacheHitsTotal.WithLabelValues(key).Inc()
+	} else {
+		cacheMissesTotal.WithLabelValues(key).Inc()
+	}
+
+	// Only record populate time if the cache was populated (miss or refresh)
+	if populateTimeMillis > 0 {
+		// Convert to float64 as required by Observe method
+		cachePopulateTime.WithLabelValues(key).Observe(float64(populateTimeMillis))
+	}
 }
