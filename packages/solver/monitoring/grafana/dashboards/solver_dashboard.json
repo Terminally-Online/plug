@@ -653,16 +653,7 @@
           "refId": "A"
         }
       ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 5,
-          "yaxis": "left"
-        }
-      ],
+      "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -1012,6 +1003,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Solver API Dashboard",
-  "uid": "solver-api",
+  "uid": "solver-metrics",
   "version": 1
 }
