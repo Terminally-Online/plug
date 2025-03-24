@@ -19,14 +19,14 @@ type Run struct {
 	Error           *string       `json:"error,omitempty" gorm:"type:text"`
 	Errors          []string      `json:"errors,omitempty" gorm:"type:text[]"`
 	GasUsed         uint64        `json:"gasUsed,omitempty" gorm:"type:bigint"`
-	GasPrice        *uint64       `json:"gasPrice,omitempty" gorm:"type:bigint"`
-	From            string        `json:"from,omitempty" gorm:"type:text"`
-	To              string        `json:"to,omitempty" gorm:"type:text"`
-	Value           *types.BigInt `json:"value,omitempty" gorm:"type:bigint"`
-	Data            RunOutputData `json:"data,omitempty" gorm:"type:jsonb"`
+	GasPrice        *uint64       `json:"-" gorm:"type:bigint"`
+	From            string        `json:"-" gorm:"type:text"`
+	To              string        `json:"-" gorm:"type:text"`
+	Value           *types.BigInt `json:"-" gorm:"type:bigint"`
+	Data            RunOutputData `json:"-" gorm:"type:jsonb"`
 	TransactionHash *string       `json:"transactionHash,omitempty" gorm:"type:text"`
 
-	IntentId    string               `json:"intentId,omitempty" gorm:"type:text"`
+	IntentId    string               `json:"-" gorm:"type:text"`
 	Intent      Intent               `json:"-" gorm:"foreignKey:IntentId;references:Id"`
 	LivePlugsId string               `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id;default:null"`
 	LivePlugs   *signature.LivePlugs `json:"livePlugs,omitempty" gorm:"foreignKey:LivePlugsId;references:Id"`
