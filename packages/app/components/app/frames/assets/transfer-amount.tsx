@@ -61,8 +61,6 @@ export const TransferAmountFrame: FC<{
 					: ""
 			: ""
 
-	// TODO: This is just hard-coded to base for now. It should support having multiple
-	//       chains in the same execution at once.
 	const chain = "base"
 	const chainId = getChainId(chain)
 	const implementation = token?.implementations.find(implementation => implementation.chain === chain)
@@ -88,13 +86,13 @@ export const TransferAmountFrame: FC<{
 	})
 
 	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
-	const handleTransactionOffchain = useCallback((key: string | `0x${string}`) => {
+	const handleTransactionOffchain = useCallback(() => {
 		if (!intent) return
 
 		toggleSavedMutation.mutate({ id: intent.intentId }, {
 			onSuccess: () => {
 				navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
-				frame(`${key}-activity`)
+				frame(`${intent.intentId}-activity`)
 			}
 		})
 
@@ -115,8 +113,7 @@ export const TransferAmountFrame: FC<{
 				}
 			)
 		else
-			// TODO: Implement the socket side logic for transfers.
-			return
+			handleTransactionOffchain()
 	}, [column, intent])
 
 	if (!token || !column) return null
