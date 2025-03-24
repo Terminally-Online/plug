@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { formatUnits, getAddress } from "viem"
 
@@ -10,12 +10,13 @@ import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.inpu
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS } from "@/lib"
+import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS, useDebounceInline } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
+import { useSendTransaction } from "wagmi"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -31,9 +32,10 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = `${tokenOut.symbol}-${tokenIn.symbol}-swap-amount`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
-	const { frame } = useColumnActions(index, frameKey)
+	const { frame, navigate } = useColumnActions(index, frameKey)
 
 	const { socket } = useSocket()
+	const { error, sendTransaction, isPending } = useSendTransaction()
 
 	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {
 		const tokenOutImplementation = tokenOut.implementations.find(implementation => implementation.chain === "base")
@@ -47,83 +49,81 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const [amounts, setAmounts] = useState({
 		[tokenOut.symbol]: {
 			precise: ((tokenOutImplementation?.balance ?? 0) / 2).toString(),
-			percentage: 0
+			percentage: (tokenOutImplementation?.balance ?? 0) / 2 === 0 ? 0 : 50
 		},
 		[tokenIn.symbol]: {
 			precise: "0",
 			percentage: 0
 		}
 	})
-	const [debouncedAmount, setDebouncedAmount] = useState(((tokenOutImplementation?.balance ?? 0) / 2).toString())
 
 	const isSufficientBalance =
 		tokenOutImplementation &&
 		(tokenOutImplementation?.balance ?? 0) > 0 &&
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
-	const transaction = api.solver.actions.intent.useQuery(
-		{
-			chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
-			from: socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : "",
-			inputs: [
-				{
-					protocol: "plug",
-					action: "swap",
-					amount: debouncedAmount,
-					token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
-					tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
-				}
-			],
-			options: {
-				isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX
+	const request = useDebounceInline({
+		chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
+		from: socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : "",
+		inputs: [
+			{
+				protocol: "plug",
+				action: "swap",
+				amount: amounts[tokenOut.symbol].precise,
+				token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
+				tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
 			}
-		},
-		{
-			enabled:
-				isFrame &&
-				!!tokenInImplementation &&
-				!!tokenOutImplementation &&
-				debouncedAmount !== "0" &&
-				isSufficientBalance &&
-				!!socket,
-			refetchInterval: 3500,
-			staleTime: 1000
+		],
+		options: {
+			isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX,
+			simualte: true
 		}
-	)
-	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
+	})
+	const { data: intent, error: intentError, isLoading } = api.solver.actions.intent.useQuery(request, {
+		enabled:
+			isFrame &&
+			!!tokenInImplementation &&
+			!!tokenOutImplementation &&
+			amounts[tokenOut.symbol].precise !== "0" &&
+			isSufficientBalance &&
+			!!socket,
+		refetchInterval: 3500,
+		staleTime: 1000
+	})
 
 	const isReady =
-		amounts[tokenOut.symbol].precise !== "0" && !transaction.error && !transaction.isLoading && isSufficientBalance
-	const meta = !transaction?.data ? null : transaction.data.transactions[0].meta
+		amounts[tokenOut.symbol].precise !== "0" && !intentError && !isLoading && isSufficientBalance
+	const meta = intent ? intent.transactions[0].meta : null
 
-	const handleSwap = () => {
-		// toggleSavedMutation.mutate({})
+	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
+	const handleTransactionOffchain = useCallback(() => {
+		if (!intent) return
 
-		frame(`${tokenOut.symbol}-${tokenIn.symbol}-swap-confirm`)
-	}
-
-	useEffect(() => {
-		if (!tokenOutImplementation) return
-
-		setAmounts({
-			[tokenOut.symbol]: {
-				precise: ((tokenOutImplementation?.balance ?? 0) / 2).toString(),
-				percentage: (tokenOutImplementation?.balance ?? 0) / 2 === 0 ? 0 : 50
-			},
-			[tokenIn.symbol]: {
-				precise: "0",
-				percentage: 0
+		toggleSavedMutation.mutate({ id: intent.intentId }, {
+			onSuccess: () => {
+				navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+				frame(`${intent.intentId}-activity`)
 			}
 		})
-	}, [tokenIn, tokenOut, tokenOutImplementation])
+	}, [intent])
 
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setDebouncedAmount(amounts[tokenOut.symbol]?.precise ?? "0")
-		}, 500)
+	const handleTransactionOnchain = useCallback(() => {
+		if (!column || !intent) return
 
-		return () => clearTimeout(timer)
-	}, [amounts, tokenOut])
+		if (column.index === COLUMNS.SIDEBAR_INDEX)
+			sendTransaction(
+				{
+					to: intent.transactions[0].to,
+					data: intent.transactions[0].data,
+					value: intent.transactions[0].value
+				},
+				{
+					onSuccess: handleTransactionOffchain
+				}
+			)
+		else
+			handleTransactionOffchain()
+	}, [column, intent])
 
 	return (
 		<Frame
@@ -215,7 +215,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 										meta?.buyTokens[
 											getAddress(
 												tokenInImplementation?.contract ??
-													"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+												"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 											)
 										]?.amount ?? 0
 								}
@@ -366,13 +366,13 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						borderColor: !isReady ? tokenInColor : "transparent"
 					}}
 					disabled={!isReady}
-					onClick={handleSwap}
+					onClick={handleTransactionOffchain}
 				>
 					{!isSufficientBalance ? (
 						"Insufficient Balance"
 					) : amounts[tokenOut.symbol].precise === "0" ? (
 						"Enter Amount"
-					) : transaction.isLoading ? (
+					) : isLoading ? (
 						<span className="flex flex-row items-center gap-2">
 							<Loader
 								size={14}
@@ -381,7 +381,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							/>
 							<span>Routing...</span>
 						</span>
-					) : transaction.error || !tokenInImplementation || !tokenOutImplementation ? (
+					) : intentError || !tokenInImplementation || !tokenOutImplementation ? (
 						"Route could not be found"
 					) : (
 						"Swap"
