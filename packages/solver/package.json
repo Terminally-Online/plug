@@ -7,13 +7,17 @@
     "bindings:clean": "rm -rf build bindings",
     "bindings:references": "pnpm env:decrypt && mkdir -p abis && go run cmd/bindings/references/main.go",
     "bindings": "pnpm env:decrypt && pnpm bindings:clean && pnpm bindings:references && mkdir -p bindings && go run cmd/bindings/main.go",
-    "db:start": "docker compose up -d",
+    "db:start": "docker compose up -d postgres redis",
     "db:stop": "docker compose down",
     "db:logs": "docker compose logs -f",
     "db:init": "pnpm env:decrypt && go run cmd/database/main.go",
     "predev": "pnpm db:start && pnpm db:init",
     "dev": "pnpm env:decrypt && go run cmd/api/main.go",
     "env:encrypt": "go run cmd/env/main.go encrypt",
-    "env:decrypt": "go run cmd/env/main.go decrypt"
+    "env:decrypt": "go run cmd/env/main.go decrypt",
+    "monitoring:start": "docker compose up -d prometheus grafana",
+    "monitoring:stop": "docker compose stop prometheus grafana",
+    "dev:with-monitoring": "pnpm monitoring:start && pnpm dev",
+    "test": "pnpm env:decrypt && go test -v ./internal/test"
   }
 }

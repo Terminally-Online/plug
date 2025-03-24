@@ -12,12 +12,14 @@ import (
 	"solver/internal/solver"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func SetupRouter(s *solver.Solver) *mux.Router {
 	m := middleware.New(*s)
 	r := mux.NewRouter()
 
+	r.Use(m.Metrics)
 	r.Use(m.Json)
 	r.Use(m.Timeout)
 
@@ -54,6 +56,8 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 	r.Handle("/openapi.json", openapi).Methods(http.MethodGet)
 	r.Handle("/openapi", openapi).Methods(http.MethodGet).Queries("format", "{format}")
 	r.HandleFunc("/docs", open_api.DocsRequest).Methods(http.MethodGet)
+
+	r.Handle("/metrics", promhttp.Handler()).Methods(http.MethodGet)
 
 	return r
 }
