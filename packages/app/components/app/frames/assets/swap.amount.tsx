@@ -61,7 +61,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		(tokenOutImplementation?.balance ?? 0) > 0 &&
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
-	// TODO: Believe we need to handle the cases where we need to run an approval transaction before being able to swap.
 	const transaction = api.solver.actions.intent.useQuery(
 		{
 			chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
@@ -91,12 +90,15 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			staleTime: 1000
 		}
 	)
+	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
 
 	const isReady =
 		amounts[tokenOut.symbol].precise !== "0" && !transaction.error && !transaction.isLoading && isSufficientBalance
 	const meta = !transaction?.data ? null : transaction.data.transactions[0].meta
 
 	const handleSwap = () => {
+		// toggleSavedMutation.mutate({})
+
 		frame(`${tokenOut.symbol}-${tokenIn.symbol}-swap-confirm`)
 	}
 
