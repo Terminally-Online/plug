@@ -44,7 +44,7 @@ func New() *Solver {
 			actions.Morpho:    morpho.New(),
 			actions.Nouns:     nouns.New(),
 			actions.Plug:      plug.New(),
-			actions.YearnV3: yearn_v3.New(),
+			actions.YearnV3:   yearn_v3.New(),
 		},
 		IsKilled: false,
 	}
@@ -166,18 +166,12 @@ func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, er
 		return nil, fmt.Errorf("failed to find live plug: %v", err)
 	}
 
-	// If we're rebuilding from models, we want the most recent LivePlugs and Run
 	livePlug := intent.LivePlugs[0]
 	run := intent.Runs[0]
 
-	plugs := make([]*signature.MinimalPlug, len(livePlug.Plugs.Plugs))
-	for i, plug := range livePlug.Plugs.Plugs {
-		plugs[i] = plug.Minify()
-	}
-
 	return &Solution{
 		LivePlugs:    &livePlug,
-		Transactions: plugs,
+		Transactions: livePlug.Plugs.Plugs,
 		Run:          &run,
 	}, nil
 }
@@ -192,7 +186,7 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 	data := append(plugs[0].Data, identifier...)
 
 	var run *models.Run
-	
+
 	// Safely handle the simulate option to prevent crashes from type assertions
 	shouldSimulate := false
 	if simulate {
@@ -202,7 +196,7 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 			}
 		}
 	}
-	
+
 	if shouldSimulate {
 		simTx := &signature.Transaction{
 			From:  common.HexToAddress(intent.From),
@@ -234,13 +228,8 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 		}
 	}
 
-	transactions := make([]*signature.MinimalPlug, len(plugs))
-	for i, plug := range plugs {
-		transactions[i] = plug.Minify()
-	}
-
 	return &Solution{
-		Transactions: transactions,
+		Transactions: plugs,
 		Run:          run,
 	}, nil
 }
@@ -277,7 +266,7 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		LivePlugsId: livePlugs.Id,
 		Status:      "pending",
 	}
-	
+
 	shouldSimulate := false
 	if simulate {
 		if simulateVal, ok := intent.Options["simulate"]; ok && simulateVal != nil {
@@ -286,7 +275,7 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 			}
 		}
 	}
-	
+
 	if shouldSimulate {
 		simLivePlugs := &signature.LivePlugs{
 			Id:        livePlugs.Id,
@@ -323,13 +312,13 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 	}
 
 	if livePlugs != nil {
-		routerAddress := livePlugs.GetRouterAddress()
-		routerPlug := &signature.MinimalPlug{
-			To:    routerAddress,
-			Data:  callData,
-			Value: big.NewInt(0),
-		}
-		result.Transactions = []*signature.MinimalPlug{routerPlug}
+		// routerAddress := livePlugs.GetRouterAddress()
+		// routerPlug := &signature.MinimalPlug{
+		// 	To:    routerAddress,
+		// 	Data:  callData,
+		// 	Value: big.NewInt(0),
+		// }
+		// result.Transactions = routerPlug
 	}
 
 	return result, nil
@@ -351,11 +340,7 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 			return nil, solveErr
 		}
 
-		transactions := make([]*signature.MinimalPlug, len(plugs))
-		for i, plug := range plugs {
-			transactions[i] = plug.Minify()
-		}
-		result.Transactions = transactions
+		result.Transactions = plugs
 	} else {
 		result, solveErr = s.SolveSocket(intent, simulate)
 		if solveErr != nil {
