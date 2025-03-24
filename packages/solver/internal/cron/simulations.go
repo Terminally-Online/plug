@@ -37,14 +37,14 @@ func Simulations(s *solver.Solver) {
 		if intent.Locked {
 			solution, err := s.RebuildSolutionFromModels(&intent)
 			if err != nil {
-				continue
+				log.Printf("failed to rebuild existing solution: %v", err)
 			}
 			livePlugs[intent.ChainId][intent.Id] = *solution.LivePlugs
 		} else {
 			if solution, err := s.Solve(&intent, !production, true); err == nil {
 				livePlugs[intent.ChainId][intent.Id] = *solution.LivePlugs
 			} else {
-				log.Printf("failed to simulation: %v", err)
+				log.Printf("failed to simulate: %v", err)
 			}
 		}
 
@@ -55,11 +55,6 @@ func Simulations(s *solver.Solver) {
 		}).Error; err != nil {
 			log.Printf("failed to update intent simulation interval: %v", err)
 		}
-	}
-
-	if len(livePlugs) == 0 {
-		log.Println("Simulations ran and there is nothing to execute.")
-		return
 	}
 
 	if !production {
