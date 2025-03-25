@@ -236,7 +236,7 @@ func MakeTestRequest(url, method string, body interface{}) (*http.Response, []by
 	req.Header.Set("User-Agent", "Plug-Solver-TestSuite/1.0")
 
 	client := http.Client{
-		Timeout: 10 * time.Second, // Set a reasonable timeout
+		Timeout: 10 * time.Second,
 	}
 
 	// Always log the request in test failures

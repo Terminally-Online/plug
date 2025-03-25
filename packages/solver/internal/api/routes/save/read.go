@@ -49,7 +49,7 @@ func ReadRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *sol
 	} else if strings.HasPrefix(id, "0x") {
 		query = query.Where("\"from\" = ? AND saved = ?", id, true)
 	} else {
-		query = query.Where("id = ? AND saved = ?", id, true)
+		query = query.Where("id = ?", id)
 	}
 	result := query.
 		Order("created_at desc").

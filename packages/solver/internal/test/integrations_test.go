@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -129,18 +130,26 @@ func TestGetSchemaEndpoint(t *testing.T) {
 	// Make the request
 	resp, body, err := utils.MakeTestRequest("http://localhost:8080/solver?chainId=1", http.MethodGet, nil)
 	if err != nil {
-		utils.ErrorLog(t, "ERROR: %v", err)
-		t.Fatalf("Schema endpoint test failed: %v", err)
+		utils.FailTest(t, "Schema endpoint test failed: %v", err)
+		return
 	}
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// Check status code with our custom utility that shows errors in red
+	if resp.StatusCode != http.StatusOK {
+		utils.FailTest(t, "Expected status code %d, got %d", http.StatusOK, resp.StatusCode)
+		return
+	}
 
 	var schemaResponse map[string]interface{}
 	err = json.Unmarshal(body, &schemaResponse)
-	require.NoError(t, err)
+	utils.RequireNoError(t, err, "Failed to unmarshal schema response")
 
 	// Check that we have some protocols returned
-	assert.Greater(t, len(schemaResponse), 0)
+	if len(schemaResponse) == 0 {
+		utils.FailTest(t, "Expected schema to contain protocols, but got empty response")
+		return
+	}
+	
 	utils.SuccessLog(t, "Successfully retrieved schema with %d protocols", len(schemaResponse))
 }
 
