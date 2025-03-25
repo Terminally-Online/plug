@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { formatUnits, getAddress } from "viem"
 
@@ -17,6 +17,7 @@ import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/sta
 
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { useSendTransaction } from "wagmi"
+import { ScrollingError } from "./scrolling-error"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -44,6 +45,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		return { tokenOutImplementation, tokenInImplementation }
 	}, [tokenIn, tokenOut])
 
+	const [step, setStep] = useState(0)
 	const [tokenOutColor, setTokenOutColor] = useState("#000000")
 	const [tokenInColor, setTokenInColor] = useState("#000000")
 	const [amounts, setAmounts] = useState({
@@ -62,6 +64,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		(tokenOutImplementation?.balance ?? 0) > 0 &&
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
+	const isEOA = column && column.index === COLUMNS.SIDEBAR_INDEX
 	const request = useDebounceInline<{
 		chainId: number,
 		from: string | `0x${string}`
@@ -83,7 +86,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			}
 		],
 		options: {
-			isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX,
+			isEOA: isEOA,
 			simulate: true
 		}
 	})
@@ -99,38 +102,39 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	})
 
 	const isReady =
-		amounts[tokenOut.symbol].precise !== "0" && !intentError && !isLoading && isSufficientBalance
+		amounts[tokenOut.symbol].precise !== "0" && !intentError && !isLoading && isSufficientBalance && !isPending
+	// TODO: This is using a magic lookup that is just because I know the meta is on the last swap transaction. This
+	//       will need to change when there is a standardized way of handling metadata of the action being run.
 	const meta = intent ? intent.transactions[intent.transactions.length - 1].meta : null
 
 	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
-	const handleTransactionOffchain = useCallback(() => {
+	const handleTransactionOffchain = useCallback(async () => {
 		if (!intent) return
 
-		toggleSavedMutation.mutate({ id: intent.intentId }, {
-			onSuccess: () => {
-				navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
-				frame(`${intent.intentId}-activity`)
-			}
-		})
-	}, [intent])
+		if (step === 0) toggleSavedMutation.mutateAsync({ id: intent.intentId })
 
-	const handleTransactionOnchain = useCallback(() => {
+		const handleTransactionRedirect = () => {
+			navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+			frame(`${intent.intentId}-activity`)
+		}
+
+		if (step === intent.transactions.length - 1) handleTransactionRedirect()
+		else setStep(prev => prev + 1)
+	}, [intent, step])
+
+
+	const handleTransactionOnchain = useCallback(async () => {
 		if (!column || !intent) return
 
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
-			sendTransaction(
-				{
-					to: intent.transactions[0].to,
-					data: intent.transactions[0].data,
-					value: intent.transactions[0].value
-				},
-				{
-					onSuccess: handleTransactionOffchain
-				}
-			)
-		else
-			handleTransactionOffchain()
-	}, [column, intent])
+			sendTransaction({
+				to: intent.transactions[step].to,
+				data: intent.transactions[step].data,
+				value: intent.transactions[step].value
+			}, {
+				onSuccess: handleTransactionOffchain
+			})
+	}, [column, intent, step])
 
 	return (
 		<Frame
@@ -268,19 +272,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 
-				{/* {tokenOutImplementation && tokenOutImplementation.chain && (
-					<p className="flex flex-row justify-between font-bold">
-						<span className="flex w-max flex-row items-center gap-4">
-							<Waypoints size={18} className="opacity-20" />
-							<span className="opacity-40">Chain</span>
-						</span>{" "}
-						<span className="flex flex-row items-center gap-2 font-bold">
-							<ChainImage chainId={getChainId(tokenOutImplementation.chain)} size="xs" />
-							{getChainName(getChainId(tokenOutImplementation.chain))}
-						</span>
-					</p>
-				)} */}
-
 				{meta && (
 					<>
 						<p className="flex flex-row justify-between font-bold tabular-nums">
@@ -362,7 +353,10 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				</p>
 			</div>
 
+
 			<div className="mx-6 my-4 flex flex-col gap-4">
+				<ScrollingError error={error?.message ?? ""} />
+
 				<button
 					className={cn(
 						"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] px-12 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105"
@@ -372,8 +366,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						color: !isReady ? tokenInColor : getTextColor(tokenInColor),
 						borderColor: !isReady ? tokenInColor : "transparent"
 					}}
-					disabled={!isReady}
-					onClick={handleTransactionOffchain}
+					disabled={!isReady || isPending}
+					onClick={handleTransactionOnchain}
 				>
 					{!isSufficientBalance ? (
 						"Insufficient Balance"
@@ -390,6 +384,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						</span>
 					) : intentError || !tokenInImplementation || !tokenOutImplementation ? (
 						"Route could not be found"
+					) : isEOA && intent && intent.transactions.length > 1 && step === 0? (
+						"Approve"
 					) : (
 						"Swap"
 					)}
