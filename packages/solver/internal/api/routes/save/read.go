@@ -45,11 +45,11 @@ func ReadRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *sol
 	query := database.DB
 	if strings.Contains(id, ",") {
 		addresses := strings.Split(id, ",")
-		query = query.Where("\"from\" IN ?", addresses)
+		query = query.Where("\"from\" IN ? AND saved = ?", addresses, true)
 	} else if strings.HasPrefix(id, "0x") {
-		query = query.Where("\"from\" = ?", id)
+		query = query.Where("\"from\" = ? AND saved = ?", id, true)
 	} else {
-		query = query.Where("id = ?", id)
+		query = query.Where("id = ? AND saved = ?", id, true)
 	}
 	result := query.
 		Order("created_at desc").

@@ -23,11 +23,22 @@ type CoilInput[T any, R any] struct {
 func (c *CoilInput[T, R]) UnmarshalJSON(data []byte) error {
 	var raw string
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return json.Unmarshal(data, &c.decoded)
+		var num json.Number
+		if err := json.Unmarshal(data, &num); err == nil {
+			raw = num.String()
+		} else {
+			return json.Unmarshal(data, &c.decoded)
+		}
 	}
+	
 	c.raw = raw
-	trimmed := strings.TrimPrefix(strings.TrimSuffix(raw, CoilSuffix), CoilPrefix)
-	return json.Unmarshal([]byte(trimmed), &c.decoded)
+	
+	if strings.HasPrefix(raw, CoilPrefix) && strings.HasSuffix(raw, CoilSuffix) {
+		trimmed := strings.TrimPrefix(strings.TrimSuffix(raw, CoilSuffix), CoilPrefix)
+		return json.Unmarshal([]byte(trimmed), &c.decoded)
+	}
+	
+	return json.Unmarshal([]byte(`"`+raw+`"`), &c.decoded)
 }
 
 func (c *CoilInput[T, R]) GetIsLinked() bool {

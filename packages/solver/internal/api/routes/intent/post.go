@@ -21,7 +21,7 @@ func PostContext(oc openapi.OperationContext) error {
 
 	oc.AddReqStructure(models.Intent{})
 
-	oc.AddRespStructure(map[string]interface{}{}, openapi.WithHTTPStatus(http.StatusOK))
+	oc.AddRespStructure(map[string]any{}, openapi.WithHTTPStatus(http.StatusOK))
 	oc.AddRespStructure(
 		map[string]string{"error": "invalid request body"},
 		openapi.WithContentType("application/json"),

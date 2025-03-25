@@ -29,25 +29,15 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
-type MinimalPlug struct {
-	To    common.Address `json:"to"`
-	Data  []byte         `json:"data"`
-	Value *big.Int       `json:"value"`
-}
-
 // Plug represents a single transaction to be executed as part of a bundle.
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
-	// Selector determines call type: 0 for standard call, 1 for delegatecall, 2 call with value, 3 static call
 	Selector uint8          `json:"selector"`
 	To       common.Address `json:"to"`
 	Data     []byte         `json:"data"`
 	Value    *big.Int       `json:"value"`
-	// Updates contains dynamic data modifications to be applied at execution time
-	Updates []coil.Update `json:"updates"`
-
-	// Meta contains additional protocol-specific data (not used for execution)
-	Meta any `json:"meta,omitempty"`
+	Updates  []coil.Update  `json:"updates,omitempty"`
+	Meta     any            `json:"meta,omitempty"`
 }
 
 func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
@@ -62,14 +52,6 @@ func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
 		Data:     p.Data,
 		Value:    p.Value,
 		Updates:  updates,
-	}
-}
-
-func (p Plug) Minify() *MinimalPlug {
-	return &MinimalPlug{
-		To:    p.To,
-		Data:  p.Data,
-		Value: p.Value,
 	}
 }
 
