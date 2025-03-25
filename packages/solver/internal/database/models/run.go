@@ -10,6 +10,7 @@ import (
 	"solver/internal/utils"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"gorm.io/gorm"
 )
 
@@ -37,8 +38,8 @@ type Run struct {
 }
 
 type RunOutputData struct {
-	Raw     []byte `json:"raw,omitempty" gorm:"type:bytea"`
-	Decoded any    `json:"decoded,omitempty" gorm:"type:jsonb"`
+	Raw     hexutil.Bytes `json:"raw,omitempty" gorm:"type:bytea"`
+	Decoded any           `json:"decoded,omitempty" gorm:"type:jsonb"`
 }
 
 // Add these methods to the RunOutputData type
