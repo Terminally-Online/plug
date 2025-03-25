@@ -55,6 +55,8 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 	if definition.GetOptions() != nil {
 		if !definition.GetIsUserSpecific() {
 			from = utils.ZeroAddress
+		} else if from == utils.ZeroAddress {
+			return nil, fmt.Errorf("schema requires a from address")
 		}
 
 		lookup, err := NewSchemaLookup[any](chainId, from, search, nil)
