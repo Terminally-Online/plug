@@ -12,9 +12,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"solver/internal/test/utils"
 )
 
@@ -149,7 +146,7 @@ func TestGetSchemaEndpoint(t *testing.T) {
 		utils.FailTest(t, "Expected schema to contain protocols, but got empty response")
 		return
 	}
-	
+
 	utils.SuccessLog(t, "Successfully retrieved schema with %d protocols", len(schemaResponse))
 }
 
@@ -177,25 +174,33 @@ func TestGetSchemaForProtocol(t *testing.T) {
 			)
 			if err != nil {
 				utils.ErrorLog(t, "ERROR: %v", err)
-				t.Fatalf("Failed to make request for protocol %s: %v", protocol, err)
+				utils.RequireNoError(t, err, "Failed to make request for protocol %s", protocol)
 			}
 
 			// Some protocols might not be available on chain 1, so we'll skip if we get 400
+			// Maintain the same skip behavior to keep test reporting consistent
 			if resp.StatusCode == http.StatusBadRequest {
 				utils.WarningLog(t, "Protocol %s not available on chain 1", protocol)
 				t.Skipf("Protocol %s not available on chain 1", protocol)
 				return
 			}
 
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
+			// Check status code
+			if resp.StatusCode != http.StatusOK {
+				utils.FailTest(t, "Expected status code %d, got %d", http.StatusOK, resp.StatusCode)
+				return
+			}
 
 			var schemaResponse map[string]interface{}
 			err = json.Unmarshal(body, &schemaResponse)
-			require.NoError(t, err)
+			utils.RequireNoError(t, err, "Failed to unmarshal schema response")
 
 			// Check that our protocol is in the response
 			_, ok := schemaResponse[protocol]
-			assert.True(t, ok, "Protocol %s should be in the response", protocol)
+			if !ok {
+				utils.FailTest(t, "Protocol %s should be in the response", protocol)
+				return
+			}
 			utils.SuccessLog(t, "Successfully retrieved schema for protocol %s", protocol)
 		})
 	}
@@ -300,35 +305,47 @@ func TestGetSchemaForActions(t *testing.T) {
 				)
 				if err != nil {
 					utils.ErrorLog(t, "ERROR: %v", err)
-					t.Fatalf("Failed to make request for protocol %s action %s: %v", protocol, action, err)
+					utils.RequireNoError(t, err, "Failed to make request for protocol %s action %s", protocol, action)
 				}
 
 				// All schema endpoints should work with status 200 for valid inputs
 				if resp.StatusCode != http.StatusOK {
 					utils.ErrorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d",
 						action, protocol, tc.Intent.ChainId, resp.StatusCode)
-					t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d",
+					utils.FailTest(t, "Action %s should be available for protocol %s on chain %d. Got status %d",
 						action, protocol, tc.Intent.ChainId, resp.StatusCode)
 					return
 				}
 
 				var schemaResponse map[string]interface{}
 				err = json.Unmarshal(body, &schemaResponse)
-				require.NoError(t, err)
+				utils.RequireNoError(t, err, "Failed to unmarshal schema response")
 
 				// Check that our protocol is in the response
 				protocolData, ok := schemaResponse[protocol]
-				assert.True(t, ok, "Protocol %s should be in the response", protocol)
+				if !ok {
+					utils.FailTest(t, "Protocol %s should be in the response", protocol)
+					return
+				}
 
 				// Extract schema and check for the action
 				protocolMap, ok := protocolData.(map[string]interface{})
-				assert.True(t, ok)
+				if !ok {
+					utils.FailTest(t, "Protocol data should be a map")
+					return
+				}
 
 				schema, ok := protocolMap["schema"].(map[string]interface{})
-				assert.True(t, ok)
+				if !ok {
+					utils.FailTest(t, "Schema data should be a map")
+					return
+				}
 
 				_, ok = schema[action]
-				assert.True(t, ok, "Action %s should be in the schema", action)
+				if !ok {
+					utils.FailTest(t, "Action %s should be in the schema", action)
+					return
+				}
 				utils.SuccessLog(t, "Successfully retrieved schema for %s.%s on chain %d", protocol, action, tc.Intent.ChainId)
 			})
 		}
@@ -354,35 +371,47 @@ func TestGetSchemaForActions(t *testing.T) {
 			)
 			if err != nil {
 				utils.ErrorLog(t, "ERROR: %v", err)
-				t.Fatalf("Failed to make request for protocol %s action %s: %v", tc.protocol, tc.action, err)
+				utils.RequireNoError(t, err, "Failed to make request for protocol %s action %s", tc.protocol, tc.action)
 			}
 
 			// All schema endpoints should work with status 200 for valid inputs
 			if resp.StatusCode != http.StatusOK {
 				utils.ErrorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d",
 					tc.action, tc.protocol, tc.chainId, resp.StatusCode)
-				t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d",
+				utils.FailTest(t, "Action %s should be available for protocol %s on chain %d. Got status %d",
 					tc.action, tc.protocol, tc.chainId, resp.StatusCode)
 				return
 			}
 
 			var schemaResponse map[string]interface{}
 			err = json.Unmarshal(body, &schemaResponse)
-			require.NoError(t, err)
+			utils.RequireNoError(t, err, "Failed to unmarshal schema response")
 
 			// Check that our protocol is in the response
 			protocolData, ok := schemaResponse[tc.protocol]
-			assert.True(t, ok, "Protocol %s should be in the response", tc.protocol)
+			if !ok {
+				utils.FailTest(t, "Protocol %s should be in the response", tc.protocol)
+				return
+			}
 
 			// Extract schema and check for the action
 			protocolMap, ok := protocolData.(map[string]interface{})
-			assert.True(t, ok)
+			if !ok {
+				utils.FailTest(t, "Protocol data should be a map")
+				return
+			}
 
 			schema, ok := protocolMap["schema"].(map[string]interface{})
-			assert.True(t, ok)
+			if !ok {
+				utils.FailTest(t, "Schema data should be a map")
+				return
+			}
 
 			_, ok = schema[tc.action]
-			assert.True(t, ok, "Action %s should be in the schema", tc.action)
+			if !ok {
+				utils.FailTest(t, "Action %s should be in the schema", tc.action)
+				return
+			}
 			utils.SuccessLog(t, "Successfully retrieved schema for %s.%s on chain %d", tc.protocol, tc.action, tc.chainId)
 		})
 	}
