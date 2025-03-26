@@ -49,7 +49,7 @@ func CreateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *s
 
 	err := inputs.ValidateFields()
 	if err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidRequestBody(err))
 		return
 	}
 
