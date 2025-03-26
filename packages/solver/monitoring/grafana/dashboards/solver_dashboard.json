@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -992,7 +992,7 @@
   "refresh": "5s",
   "schemaVersion": 27,
   "style": "dark",
-  "tags": [],
+  "tags": ["solver", "api", "metrics"],
   "templating": {
     "list": []
   },
@@ -1003,6 +1003,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Solver API Dashboard",
-  "uid": "solver-metrics",
+  "uid": "solver-metrics-dashboard",
   "version": 1
 }

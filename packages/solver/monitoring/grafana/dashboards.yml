@@ -1,11 +1,12 @@
 apiVersion: 1
 
 providers:
-  - name: 'dashboard-provider'
+  - name: 'default'
+    orgId: 1
     type: file
     disableDeletion: false
-    updateIntervalSeconds: 5
+    updateIntervalSeconds: 10
     allowUiUpdates: true
     options:
       path: /etc/grafana/dashboards
-      foldersFromFilesStructure: true
+      foldersFromFilesStructure: false
