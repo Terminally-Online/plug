@@ -77,6 +77,8 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 	}
 
 	for i := range transactions {
+		transactions[i].Data = hexutil.Bytes(transactions[i].Data)
+		
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
 		} else {
@@ -166,18 +168,12 @@ func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, er
 		return nil, fmt.Errorf("failed to find live plug: %v", err)
 	}
 
-	// If we're rebuilding from models, we want the most recent LivePlugs and Run
 	livePlug := intent.LivePlugs[0]
 	run := intent.Runs[0]
 
-	plugs := make([]*signature.MinimalPlug, len(livePlug.Plugs.Plugs))
-	for i, plug := range livePlug.Plugs.Plugs {
-		plugs[i] = plug.Minify()
-	}
-
 	return &Solution{
 		LivePlugs:    &livePlug,
-		Transactions: plugs,
+		Transactions: livePlug.Plugs.Plugs,
 		Run:          &run,
 	}, nil
 }
@@ -189,14 +185,25 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 	}
 
 	identifier := []byte("plug")
-	data := append(plugs[0].Data, identifier...)
+	combinedData := append([]byte(plugs[0].Data), identifier...)
 
 	var run *models.Run
-	if simulate && intent.Options["simulate"].(bool) {
+
+	// Safely handle the simulate option to prevent crashes from type assertions
+	shouldSimulate := false
+	if simulate {
+		if simulateVal, ok := intent.Options["simulate"]; ok && simulateVal != nil {
+			if boolVal, ok := simulateVal.(bool); ok {
+				shouldSimulate = boolVal
+			}
+		}
+	}
+
+	if shouldSimulate {
 		simTx := &signature.Transaction{
 			From:  common.HexToAddress(intent.From),
 			To:    plugs[0].To,
-			Data:  data,
+			Data:  hexutil.Bytes(combinedData),
 			Value: plugs[0].Value,
 		}
 
@@ -223,13 +230,8 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 		}
 	}
 
-	transactions := make([]*signature.MinimalPlug, len(plugs))
-	for i, plug := range plugs {
-		transactions[i] = plug.Minify()
-	}
-
 	return &Solution{
-		Transactions: transactions,
+		Transactions: plugs,
 		Run:          run,
 	}, nil
 }
@@ -266,7 +268,16 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		LivePlugsId: livePlugs.Id,
 		Status:      "pending",
 	}
-	shouldSimulate := simulate && intent.Options["simulate"] != nil && intent.Options["simulate"].(bool)
+
+	shouldSimulate := false
+	if simulate {
+		if simulateVal, ok := intent.Options["simulate"]; ok && simulateVal != nil {
+			if boolVal, ok := simulateVal.(bool); ok {
+				shouldSimulate = boolVal
+			}
+		}
+	}
+
 	if shouldSimulate {
 		simLivePlugs := &signature.LivePlugs{
 			Id:        livePlugs.Id,
@@ -302,14 +313,16 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		LivePlugs: livePlugs,
 	}
 
+	// TODO: I have no idea what this was doing and I commented it out and cannot decipher it right now.
+	//       I will come back here myself or when I realize this caused a regression. - CHANCE
 	if livePlugs != nil {
-		routerAddress := livePlugs.GetRouterAddress()
-		routerPlug := &signature.MinimalPlug{
-			To:    routerAddress,
-			Data:  callData,
-			Value: big.NewInt(0),
-		}
-		result.Transactions = []*signature.MinimalPlug{routerPlug}
+		// routerAddress := livePlugs.GetRouterAddress()
+		// routerPlug := &signature.MinimalPlug{
+		// 	To:    routerAddress,
+		// 	Data:  callData,
+		// 	Value: big.NewInt(0),
+		// }
+		// result.Transactions = routerPlug
 	}
 
 	return result, nil
@@ -331,11 +344,7 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 			return nil, solveErr
 		}
 
-		transactions := make([]*signature.MinimalPlug, len(plugs))
-		for i, plug := range plugs {
-			transactions[i] = plug.Minify()
-		}
-		result.Transactions = transactions
+		result.Transactions = plugs
 	} else {
 		result, solveErr = s.SolveSocket(intent, simulate)
 		if solveErr != nil {

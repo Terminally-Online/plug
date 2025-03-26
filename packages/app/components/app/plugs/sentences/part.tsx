@@ -245,9 +245,9 @@ export const Part: FC<PartProps> = memo(
 									</div>
 								)}
 
-								{isReady && !isOptionBased && Object.keys(validCoils).length > 0 && (
+								{isReady && !isOptionBased && (
 									<>
-										<div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
+										{Object.keys(validCoils).length > 0 && <div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
 											{Object.keys(validCoils).map((coil, index) => {
 												if (value?.value === `<-{${coil}}`) return null
 
@@ -276,7 +276,7 @@ export const Part: FC<PartProps> = memo(
 													</Button>
 												)
 											})}
-										</div>
+										</div>}
 
 										{isLinked ? (
 											<>
@@ -297,9 +297,8 @@ export const Part: FC<PartProps> = memo(
 													}
 												>
 													<div
-														className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${
-															isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
-														}`}
+														className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
+															}`}
 													>
 														<p className="text-xs font-bold text-plug-white">
 															{isCompatibleCoil ? "#" : "!"}
@@ -309,11 +308,11 @@ export const Part: FC<PartProps> = memo(
 														className={isCompatibleCoil ? "" : "font-semibold text-red-600"}
 													>
 														{typeof value?.value === "string" &&
-														value?.value.startsWith("<-{")
+															value?.value.startsWith("<-{")
 															? isCompatibleCoil
 																? formatTitle(
-																		value?.value.replace("<-{", "").replace("}", "")
-																	)
+																	value?.value.replace("<-{", "").replace("}", "")
+																)
 																: "Invalid link: Coil not available in this position"
 															: getInputPlaceholder(input.type)}
 													</span>

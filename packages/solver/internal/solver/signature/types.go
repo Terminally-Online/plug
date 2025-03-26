@@ -17,7 +17,7 @@ import (
 type Transaction struct {
 	From  common.Address `json:"from"`
 	To    common.Address `json:"to"`
-	Data  []byte         `json:"data"`
+	Data  hexutil.Bytes  `json:"data"`
 	Value *big.Int       `json:"value"`
 	Gas   *big.Int       `json:"gas"`
 }
@@ -29,25 +29,15 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
-type MinimalPlug struct {
-	To    common.Address `json:"to"`
-	Data  []byte         `json:"data"`
-	Value *big.Int       `json:"value"`
-}
-
 // Plug represents a single transaction to be executed as part of a bundle.
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
-	// Selector determines call type: 0 for standard call, 1 for delegatecall, 2 call with value, 3 static call
 	Selector uint8          `json:"selector"`
 	To       common.Address `json:"to"`
-	Data     []byte         `json:"data"`
+	Data     hexutil.Bytes  `json:"data"` 
 	Value    *big.Int       `json:"value"`
-	// Updates contains dynamic data modifications to be applied at execution time
-	Updates []coil.Update `json:"updates"`
-
-	// Meta contains additional protocol-specific data (not used for execution)
-	Meta any `json:"meta,omitempty"`
+	Updates  []coil.Update  `json:"updates,omitempty"`
+	Meta     any            `json:"meta,omitempty"`
 }
 
 func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
@@ -59,17 +49,9 @@ func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
 	return plug_router.PlugTypesLibPlug{
 		Selector: p.Selector,
 		To:       p.To,
-		Data:     p.Data,
+		Data:     []byte(p.Data), 
 		Value:    p.Value,
 		Updates:  updates,
-	}
-}
-
-func (p Plug) Minify() *MinimalPlug {
-	return &MinimalPlug{
-		To:    p.To,
-		Data:  p.Data,
-		Value: p.Value,
 	}
 }
 
@@ -158,11 +140,11 @@ func (l *LivePlugs) GetRawPlugs() []Transaction {
 	identifier := []byte("plug")
 
 	for idx, plug := range l.Plugs.Plugs {
-		data := append(plug.Data, identifier...)
+		combinedData := append([]byte(plug.Data), identifier...)
 		txs[idx] = Transaction{
 			From:  common.HexToAddress(l.From),
 			To:    plug.To,
-			Data:  data,
+			Data:  hexutil.Bytes(combinedData),
 			Value: plug.Value,
 			Gas:   nil, // Will be estimated during simulation
 		}
@@ -172,8 +154,8 @@ func (l *LivePlugs) GetRawPlugs() []Transaction {
 }
 
 type Result struct {
-	Success bool   `json:"success"`
-	Result  []byte `json:"result"`
+	Success bool          `json:"success"`
+	Result  hexutil.Bytes `json:"result"`
 }
 
 // GORM lifecycle hooks for LivePlugs

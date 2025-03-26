@@ -24,7 +24,6 @@ var (
 	}{
 		{"0 */1 * * * *", func() { cron.Simulations(Solver) }},
 		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }},
-		{"0 */5 * * * *", func() { cron.LogDBStats() }},
 	}
 )
 

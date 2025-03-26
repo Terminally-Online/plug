@@ -138,7 +138,9 @@ const IntentResponseIntentSchema = <TDecoded extends z.ZodTypeAny = z.ZodRecord<
 		periodEndAt: z.string().nullable().optional(),
 		nextSimulationAt: z.string().nullable().optional(),
 		runs: z.array(SolverResponseRunSchema(decodedSchema)),
-		createdAt: z.string()
+		createdAt: z.string(),
+		saved: z.boolean().optional(),
+		locked: z.boolean().optional()
 	})
 export type IntentResponseIntent<TDecoded extends Record<string, unknown> = Record<string, unknown>> = z.infer<
 	ReturnType<typeof IntentResponseIntentSchema<z.ZodType<TDecoded>>>
@@ -177,6 +179,7 @@ const IntentResponseSchema = <TDecoded extends z.ZodTypeAny = z.ZodRecord<z.ZodS
 	decodedSchema: TDecoded = z.record(z.string(), z.unknown()) as unknown as TDecoded
 ) =>
 	z.object({
+		intentId: z.string(),
 		transactions: z.array(SolutionResponseTransactionSchema),
 		run: SolutionResponseRunSchema(decodedSchema).optional()
 	})

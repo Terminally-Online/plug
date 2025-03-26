@@ -42,10 +42,9 @@ export const ConsoleColumn: FC<{
 	const { socket } = useSocket()
 
 	const [column] = useAtom(columnByIndexAtom(index))
-	const { frame, remove, resize, navigate } = useColumnActions(index)
+	const { remove, resize, navigate } = useColumnActions(index)
 
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? "__non-existant__"))
-	const own = (plug && session && session.address === plug.socketId) || false
 	const { fork } = usePlugActions()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
@@ -144,8 +143,8 @@ export const ConsoleColumn: FC<{
 													className="text-lg font-bold"
 													sparkles={Boolean(
 														plug?.renamedAt &&
-															plug.renamedAt > (plug.createdAt ?? 0) &&
-															plug.renamedAt !== plug.createdAt
+														plug.renamedAt > (plug.createdAt ?? 0) &&
+														plug.renamedAt !== plug.createdAt
 													)}
 													sparkleKey={new Date(plug?.renamedAt ?? "")?.getTime()}
 													color={cardColors[plug?.color ?? "yellow"]}
@@ -163,7 +162,7 @@ export const ConsoleColumn: FC<{
 
 											{plug && (
 												<div className="ml-auto flex w-max flex-row items-center justify-end gap-4">
-													<>
+													{plug.actions.length !== 0 && <>
 														<Button
 															variant="secondary"
 															className="rounded-sm p-1"
@@ -207,7 +206,7 @@ export const ConsoleColumn: FC<{
 																className="opacity-60 transition-opacity group-hover:opacity-100"
 															/>
 														</Button>
-													</>
+													</>}
 
 													<Button
 														variant="secondary"
@@ -283,9 +282,10 @@ export const ConsoleColumn: FC<{
 							/>
 						</div>
 					</div>
-				)}
-			</Draggable>
-		</div>
+				)
+				}
+			</Draggable >
+		</div >
 	)
 })
 

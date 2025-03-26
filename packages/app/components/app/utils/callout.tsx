@@ -206,12 +206,13 @@ const EmptyPlug: FC<
 		index: number
 		isEmpty: boolean
 	}
-> = ({ index, isEmpty, className, ...props }) => {
+> = ({ index, isEmpty, ...props }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
+
 	if (!column || isEmpty === false) return null
+
 	return (
 		<Base
-			className={cn("my-52", className)}
 			title="No actions added, yet."
 			description="Get started by adding one of the many actions available to your Plug."
 			{...props}

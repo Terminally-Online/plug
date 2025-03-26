@@ -25,7 +25,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 	const { data: session } = useSession()
 
 	const [column] = useAtom(columnByIndexAtom(index))
-	const { frame } = useColumnActions(index)
+	const { frame, schedule } = useColumnActions(index)
 	const [plug] = useAtom(plugByIdAtom(item))
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
@@ -47,12 +47,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 
 			<div className="absolute bottom-0 left-0 z-[2] mb-4 flex w-full flex-col gap-2 overflow-y-visible">
 				<div className="pointer-events-none absolute bottom-[120px] left-0 right-0 top-0 z-[-1] bg-gradient-to-t from-white to-white/0" />
-				<div
-					className={cn(
-						"absolute -bottom-4 left-0 right-0 z-[-1] h-[140px] bg-white",
-						index !== COLUMNS.MOBILE_INDEX && "rounded-b-lg"
-					)}
-				/>
+				<div className="pointer-events-none absolute -bottom-4 left-0 right-0 z-[-1] h-[140px] bg-white" />
 
 				{own && (
 					<Search
@@ -68,7 +63,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 						variant="secondary"
 						className="w-max bg-white py-4"
 						onClick={() => {
-							// schedule() // NOTE: Clear the schedule when we have a one-off run use.
+							schedule()
 							frame("run")
 						}}
 					>

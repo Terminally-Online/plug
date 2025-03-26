@@ -33,7 +33,7 @@
 		"seed": "tsx prisma/seed.ts"
 	},
 	"dependencies": {
-		"@anthropic-ai/sdk": "^0.33.1",
+		"@anthropic-ai/sdk": "^0.39.0",
 		"@hello-pangea/dnd": "^18.0.1",
 		"@next-auth/prisma-adapter": "^1.0.7",
 		"@next/third-parties": "15.2.1",
@@ -44,7 +44,7 @@
 		"@terminallyonline/cord": "^0.3.2",
 		"@terminallyonline/plug-core": "^0.4.1",
 		"@trpc/client": "11.0.0-rc.819",
-		"@trpc/next": "11.0.0-rc.819",
+		"@trpc/next": "11.0.0",
 		"@trpc/react-query": "11.0.0-rc.819",
 		"@trpc/server": "11.0.0-rc.819",
 		"@vercel/og": "^0.6.3",
@@ -59,7 +59,7 @@
 		"framer-motion": "^11.11.11",
 		"jotai": "^2.12.2",
 		"lucide-react": "^0.477.0",
-		"next": "15.2.0",
+		"next": "15.2.3",
 		"next-auth": "^4.24.10",
 		"next-pwa": "^5.6.0",
 		"qrcode-generator": "^1.4.4",
