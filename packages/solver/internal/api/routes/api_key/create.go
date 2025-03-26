@@ -43,15 +43,15 @@ func CreateContext(oc openapi.OperationContext) error {
 func CreateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	var apiKey models.ApiKey
 	if err := json.NewDecoder(r.Body).Decode(&apiKey); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInternal("failed to decode request body: "+err.Error()))
 		return
 	}
 	if err := database.DB.Create(&apiKey).Error; err != nil {
-		utils.MakeHttpError(w, "failed to save api key: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to save api key: "+err.Error()))
 		return
 	}
 	if err := json.NewEncoder(w).Encode(apiKey); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		return
 	}
 }

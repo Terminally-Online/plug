@@ -158,7 +158,7 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
 	var params SchemaQueryParams
 	if err := Decoder.Decode(&params, r.URL.Query()); err != nil {
-		utils.MakeHttpError(w, fmt.Sprintf("invalid parameters: %v", err), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidParameters(err))
 		return
 	}
 
@@ -174,16 +174,16 @@ func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solv
 	case exists && params.Action != "":
 		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
 	default:
-		utils.MakeHttpError(w, "invalid protocol", http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidField("protocol", params.Protocol))
 		return
 	}
 	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, err)
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(result); err != nil {
-		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		return
 	}
 }
