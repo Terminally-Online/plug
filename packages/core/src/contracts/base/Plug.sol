@@ -28,16 +28,20 @@ contract Plug is PlugInterface {
      * See {PlugInterface-plug}.
      */
     function plug(PlugTypesLib.LivePlugs calldata $livePlugs) external payable virtual {
-        emit PlugLib.PlugResult(0, _plug($livePlugs, msg.sender));
+        (PlugTypesLib.Result memory results, bytes32 livePlugsHash) = _plug($livePlugs, msg.sender);
+        emit PlugLib.PlugResult(0, livePlugsHash, results);
     }
 
     /**
-     * See {PlugInterface-tryPlug}.
+     * See {PlugInterface-plug}.
      */
     function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs) external payable virtual {
         uint256 length = $livePlugs.length;
+        PlugTypesLib.Result memory results;
+        bytes32 livePlugsHash;
         for (uint8 i; i < length; i++) {
-            emit PlugLib.PlugResult(i, _plug($livePlugs[i], msg.sender));
+            (results, livePlugsHash) = _plug($livePlugs[i], msg.sender);
+            emit PlugLib.PlugResult(i, livePlugsHash, results);
         }
     }
 
@@ -78,6 +82,23 @@ contract Plug is PlugInterface {
     }
 
     /**
+     * @notice Internal function to compute the hash of a live plug bundle
+     * @param $socket The socket interface to use for hashing
+     * @param $livePlugs The signed bundle of Plugs being hashed
+     * @return $livePlugsHash The computed hash of the live plugs bundle
+     */
+    function _hash(
+        PlugSocketInterface $socket,
+        PlugTypesLib.LivePlugs calldata $livePlugs
+    )
+        internal
+        view
+        returns (bytes32 $livePlugsHash)
+    {
+        $livePlugsHash = $socket.hash($livePlugs);
+    }
+
+    /**
      * @notice Internal function to execute the Plug.
      * @param $livePlugs The signed bundle of Plugs being executed.
      * @param $sender The sender of the transaction.
@@ -88,11 +109,13 @@ contract Plug is PlugInterface {
         address $sender
     )
         internal
-        returns (PlugTypesLib.Result memory $results)
+        returns (PlugTypesLib.Result memory $results, bytes32 $livePlugsHash)
     {
-        try _socket($livePlugs).plug($livePlugs, $sender) returns (
-            PlugTypesLib.Result memory _results
-        ) {
+        PlugSocketInterface socket = _socket($livePlugs);
+
+        $livePlugsHash = _hash(socket, $livePlugs);
+
+        try socket.plug($livePlugs, $sender) returns (PlugTypesLib.Result memory _results) {
             $results = _results;
         } catch Error(string memory reason) {
             $results = PlugTypesLib.Result({ index: type(uint8).max - 1, error: reason });
@@ -103,14 +126,20 @@ contract Plug is PlugInterface {
             });
         } catch (bytes memory data) {
             if (data.length < 4) {
-                return PlugTypesLib.Result({ index: type(uint8).max - 4, error: "Plug:empty-data" });
+                return (
+                    PlugTypesLib.Result({ index: type(uint8).max - 4, error: "Plug:empty-data" }),
+                    $livePlugsHash
+                );
             }
 
             if (bytes4(data) != PlugLib.PlugFailed.selector) {
-                return PlugTypesLib.Result({
-                    index: type(uint8).max - 3,
-                    error: "Plug:unknown-selector"
-                });
+                return (
+                    PlugTypesLib.Result({
+                        index: type(uint8).max - 3,
+                        error: "Plug:unknown-selector"
+                    }),
+                    $livePlugsHash
+                );
             }
 
             bytes memory slicedData;
@@ -132,7 +161,7 @@ contract Plug is PlugInterface {
             }
             (uint8 index, string memory reason) = abi.decode(slicedData, (uint8, string));
 
-            return PlugTypesLib.Result({ index: index, error: reason });
+            $results = PlugTypesLib.Result({ index: index, error: reason });
         }
     }
 }

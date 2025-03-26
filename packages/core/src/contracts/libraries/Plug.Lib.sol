@@ -11,7 +11,7 @@ library PlugLib {
     event SocketOwnershipTransferred(
         address indexed previousOwner, address indexed newOwner, bytes32 imageHash
     );
-    event PlugResult(uint8 index, PlugTypesLib.Result reason);
+    event PlugResult(uint256 index, bytes32 livePlugsHash, PlugTypesLib.Result reason);
 
     error NotImplemented();
 

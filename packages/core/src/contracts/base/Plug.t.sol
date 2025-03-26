@@ -77,10 +77,12 @@ contract PlugTest is Test {
         plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugsArray, solver);
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.prank(solver);
-
         vm.expectEmit(address(plug));
-        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 1, error: "PlugCore:plug-failed" }));
+        emit PlugLib.PlugResult(
+            0, livePlugsHash, PlugTypesLib.Result({ index: 1, error: "PlugCore:plug-failed" })
+        );
         plug.plug(livePlugsArray);
     }
 
@@ -98,9 +100,12 @@ contract PlugTest is Test {
         emit EchoInvoked(address(socket), "Hello World");
         plug.plug(livePlugsArray);
 
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.expectEmit(address(plug));
         emit PlugLib.PlugResult(
-            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:nonce-invalid" })
+            0,
+            livePlugsHash,
+            PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:nonce-invalid" })
         );
         plug.plug(livePlugsArray);
     }
@@ -116,9 +121,12 @@ contract PlugTest is Test {
         bytes memory signature = abi.encodePacked(r, s, v);
         livePlugsArray[0] = PlugTypesLib.LivePlugs({ plugs: plugs, signature: signature });
 
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.expectEmit(address(plug));
         emit PlugLib.PlugResult(
-            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:signature-invalid" })
+            0,
+            livePlugsHash,
+            PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:signature-invalid" })
         );
         plug.plug(livePlugsArray);
     }
@@ -134,9 +142,12 @@ contract PlugTest is Test {
             createPlugs(plugsArray, uint48(block.timestamp + 3 minutes), solver);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugs);
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.expectEmit(address(plug));
         emit PlugLib.PlugResult(
-            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:solver-invalid" })
+            0,
+            livePlugsHash,
+            PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:solver-invalid" })
         );
         plug.plug(livePlugsArray);
     }
@@ -153,9 +164,12 @@ contract PlugTest is Test {
         livePlugsArray[0] = createLivePlugs(plugs);
         vm.prank(solver);
 
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.expectEmit(address(plug));
         emit PlugLib.PlugResult(
-            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:solver-expired" })
+            0,
+            livePlugsHash,
+            PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:solver-expired" })
         );
         plug.plug(livePlugsArray);
     }
@@ -178,8 +192,11 @@ contract PlugTest is Test {
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         livePlugsArray[0] = createLivePlugs(plugs);
 
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.expectEmit(address(plug));
-        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 0, error: "PlugCore:plug-failed" }));
+        emit PlugLib.PlugResult(
+            0, livePlugsHash, PlugTypesLib.Result({ index: 0, error: "PlugCore:plug-failed" })
+        );
         plug.plug(livePlugsArray);
     }
 
@@ -191,8 +208,11 @@ contract PlugTest is Test {
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         livePlugsArray[0] = createLivePlugs(plugs);
 
+        bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
         vm.expectEmit(address(plug));
-        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 1, error: "PlugCore:plug-failed" }));
+        emit PlugLib.PlugResult(
+            0, livePlugsHash, PlugTypesLib.Result({ index: 1, error: "PlugCore:plug-failed" })
+        );
         plug.plug(livePlugsArray);
     }
 
@@ -207,9 +227,12 @@ contract PlugTest is Test {
             PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
             livePlugsArray[0] = createLivePlugs(plugs);
 
+            bytes32 livePlugsHash = socket.hash(livePlugsArray[0]);
             vm.expectEmit(address(plug));
             emit PlugLib.PlugResult(
-                0, PlugTypesLib.Result({ index: testIndex + 1, error: "PlugCore:plug-failed" })
+                0,
+                livePlugsHash,
+                PlugTypesLib.Result({ index: testIndex + 1, error: "PlugCore:plug-failed" })
             );
             plug.plug(livePlugsArray);
         }

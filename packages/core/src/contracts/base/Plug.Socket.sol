@@ -145,6 +145,18 @@ contract PlugSocket is
     }
 
     /**
+     * See { PlugSocket-hash }
+     */
+    function hash(PlugTypesLib.LivePlugs calldata $livePlugs)
+        public
+        pure
+        override
+        returns (bytes32 $livePlugsHash)
+    {
+        return getLivePlugsHash($livePlugs);
+    }
+
+    /**
      * @notice Execute a set of Plugs.
      * @param $plugs The Plugs to execute containing the bundle and side effects.
      * @param $solver Encoded data defining the Solver and compensation.
