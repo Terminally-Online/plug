@@ -46,6 +46,13 @@ func CreateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *s
 		utils.RespondWithError(w, utils.ErrInvalidRequestBody(err))
 		return
 	}
+
+	err := inputs.ValidateFields()
+	if err != nil {
+		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	var apiKey models.ApiKey
 	if err := database.DB.First(&apiKey, "key = ?", r.Header.Get("X-Api-Key")).Error; err != nil {
 		utils.RespondWithError(w, utils.ErrUnauthorized("api key does not exist"))
