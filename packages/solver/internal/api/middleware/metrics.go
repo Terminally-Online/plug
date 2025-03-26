@@ -105,6 +105,16 @@ var (
 		},
 		[]string{"key"},
 	)
+
+	// OptionsResolutionTime tracks time to get options for each protocol/chainId/action
+	OptionsResolutionTime = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "options_resolution_time_seconds",
+			Help:    "Time taken to resolve options for protocol/chainId/action combination in seconds",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"protocol", "chain_id", "action"},
+	)
 )
 
 // ResponseWriterWithMetrics is a wrapper for http.ResponseWriter that captures metrics
@@ -212,4 +222,16 @@ func TrackCacheOperation(key string, hit bool, populateTimeMillis int64) {
 		// Convert to float64 as required by Observe method
 		cachePopulateTime.WithLabelValues(key).Observe(float64(populateTimeMillis))
 	}
+}
+
+// TrackOptionsBuildTime records the time taken to resolve options for a protocol/chainId/action combination
+func TrackOptionsBuildTime(protocol string, chainId uint64, action string, fn func() error) error {
+	startTime := time.Now()
+	err := fn()
+	duration := time.Since(startTime).Seconds()
+	chainIdStr := strconv.FormatUint(chainId, 10)
+
+	OptionsResolutionTime.WithLabelValues(protocol, chainIdStr, action).Observe(duration)
+
+	return err
 }
