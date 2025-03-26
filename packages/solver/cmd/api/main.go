@@ -52,6 +52,6 @@ func main() {
 	log.Println("Started server on http://localhost:8080")
 	log.Println("OpenAPI specification available at: http://localhost:8080/openapi.json")
 	log.Println("API Documentation UI available at: http://localhost:8080/docs")
-	log.Println("Grafana dashboards available at: http://localhost:3100 with creds admin:admin")
+	log.Println("Grafana dashboards available at: http://localhost:3100")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
