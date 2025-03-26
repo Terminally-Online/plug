@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"slices"
 	"solver/internal/actions"
+	"solver/internal/api/middleware"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
 	"solver/internal/solver"
@@ -140,9 +141,26 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 		searchMap[param.Index] = param.Value
 	}
 
-	chainSchema, err := handler.GetSchema(chainId, from, searchMap, action)
-	if err != nil {
-		return nil, err
+	var chainSchema actions.ChainSchema
+	var chainSchemaErr error
+
+	middleware.TrackOptionsBuildTime(protocol, chainId, action, func() error {
+		schemaResults, err := handler.GetSchema(chainId, from, searchMap, action)
+		if err != nil {
+			chainSchemaErr = err
+			return err
+		}
+		if schemaResults != nil {
+			chainSchema = *schemaResults
+		} else {
+			chainSchemaErr = fmt.Errorf("schema results is nil")
+			return chainSchemaErr
+		}
+		return nil
+	})
+
+	if chainSchemaErr != nil {
+		return nil, chainSchemaErr
 	}
 
 	response[protocol] = actions.ProtocolSchema{

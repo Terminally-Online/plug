@@ -14,6 +14,10 @@
     "predev": "pnpm db:start && pnpm db:init",
     "dev": "pnpm env:decrypt && go run cmd/api/main.go",
     "env:encrypt": "go run cmd/env/main.go encrypt",
-    "env:decrypt": "go run cmd/env/main.go decrypt"
+    "env:decrypt": "go run cmd/env/main.go decrypt",
+    "monitoring:start": "docker compose up -d prometheus grafana",
+    "monitoring:stop": "docker compose stop prometheus grafana",
+    "dev:with-monitoring": "pnpm monitoring:start && pnpm dev",
+    "test": "pnpm env:decrypt && go test -v ./internal/test"
   }
 }

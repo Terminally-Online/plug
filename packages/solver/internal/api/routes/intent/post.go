@@ -3,6 +3,7 @@ package intent
 import (
 	"encoding/json"
 	"net/http"
+	"solver/internal/api/middleware"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
 	"solver/internal/database"
@@ -57,7 +58,15 @@ func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *sol
 		return
 	}
 
-	if solution, err := s.Solve(intent, true, false); err != nil {
+	// Wrap solver call with metrics tracking
+	var solution interface{}
+	err = middleware.TrackSolverMetrics(func() error {
+		var solveErr error
+		solution, solveErr = s.Solve(intent, true, false)
+		return solveErr
+	})
+	
+	if err != nil {
 		utils.RespondWithError(w, utils.ErrInternal("failed to solve intent: "+err.Error()))
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {
