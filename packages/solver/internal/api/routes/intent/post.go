@@ -22,7 +22,7 @@ func PostContext(oc openapi.OperationContext) error {
 
 	oc.AddReqStructure(models.Intent{})
 
-	oc.AddRespStructure(map[string]interface{}{}, openapi.WithHTTPStatus(http.StatusOK))
+	oc.AddRespStructure(map[string]any{}, openapi.WithHTTPStatus(http.StatusOK))
 	oc.AddRespStructure(
 		map[string]string{"error": "invalid request body"},
 		openapi.WithContentType("application/json"),
@@ -45,7 +45,7 @@ func PostContext(oc openapi.OperationContext) error {
 func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
 	var intent *models.Intent
 	if err := json.NewDecoder(r.Body).Decode(&intent); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidRequestBody(err))
 		return
 	}
 
@@ -54,7 +54,7 @@ func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *sol
 
 	intent, err = intent.GetOrCreate(database.DB)
 	if err != nil {
-		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to initialize intent: "+err.Error()))
 		return
 	}
 
@@ -67,10 +67,10 @@ func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *sol
 	})
 	
 	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to solve intent: "+err.Error()))
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {
-			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+			utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		}
 	}
 }

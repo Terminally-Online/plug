@@ -43,12 +43,12 @@ func CreateContext(oc openapi.OperationContext) error {
 func CreateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *solver.Solver) {
 	var inputs models.Intent
 	if err := json.NewDecoder(r.Body).Decode(&inputs); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidRequestBody(err))
 		return
 	}
 	var apiKey models.ApiKey
 	if err := database.DB.First(&apiKey, "key = ?", r.Header.Get("X-Api-Key")).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
+		utils.RespondWithError(w, utils.ErrUnauthorized("api key does not exist"))
 		return
 	}
 	inputs.ApiKeyId = apiKey.Id
@@ -56,7 +56,7 @@ func CreateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *s
 		inputs.Saved = val.(bool)
 	}
 	if err := database.DB.Omit("nextSimulationAt", "periodEndAt").Create(&inputs).Error; err != nil {
-		utils.MakeHttpError(w, "failed to save intent: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to save intent: "+err.Error()))
 		return
 	}
 	if err := json.NewEncoder(w).Encode(inputs); err != nil {

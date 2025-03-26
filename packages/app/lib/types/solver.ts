@@ -179,6 +179,7 @@ const IntentResponseSchema = <TDecoded extends z.ZodTypeAny = z.ZodRecord<z.ZodS
 	decodedSchema: TDecoded = z.record(z.string(), z.unknown()) as unknown as TDecoded
 ) =>
 	z.object({
+		intentId: z.string(),
 		transactions: z.array(SolutionResponseTransactionSchema),
 		run: SolutionResponseRunSchema(decodedSchema).optional()
 	})

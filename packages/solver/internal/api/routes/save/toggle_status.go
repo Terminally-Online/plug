@@ -2,6 +2,7 @@ package save
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"solver/internal/api/routes"
 	"solver/internal/database"
@@ -44,7 +45,7 @@ func ToggleStatusRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client
 
 	var intent models.Intent
 	if err := database.DB.First(&intent, "id = ?", id).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find intent: "+err.Error(), http.StatusNotFound)
+		utils.RespondWithError(w, utils.ErrNotFound(fmt.Sprintf("failed to find intent with id: %s", err.Error())))
 		return
 	}
 
@@ -55,7 +56,7 @@ func ToggleStatusRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client
 	}
 
 	if err := database.DB.Select("status").Updates(&intent).Error; err != nil {
-		utils.MakeHttpError(w, "failed to toggle intent: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to toggle intent: "+err.Error()))
 		return
 	}
 
