@@ -1,6 +1,7 @@
 package save
 
 import (
+	"fmt"
 	"net/http"
 	"solver/internal/api/routes"
 	"solver/internal/database"
@@ -43,12 +44,12 @@ func DeleteRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *s
 
 	var intent models.Intent
 	if err := database.DB.First(&intent, "id = ?", id).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find intent: "+err.Error(), http.StatusNotFound)
+		utils.RespondWithError(w, utils.ErrNotFound(fmt.Sprintf("failed to find intent with id: %s", err.Error())))
 		return
 	}
 
 	if err := database.DB.Delete(&intent).Error; err != nil {
-		utils.MakeHttpError(w, "failed to delete intent: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to delete intent: "+err.Error()))
 		return
 	}
 

@@ -61,17 +61,29 @@ func MakeHTTPRequest[T any](fullUrl string, method string, headers map[string]st
 }
 
 type ErrorResponse struct {
-	Error string `json:"error"`
-	Code  int    `json:"code"`
+	Error   string `json:"error"`
+	Message string `json:"message"`
+	Code    int    `json:"code"`
 }
 
-func MakeHttpError(w http.ResponseWriter, message string, status int) {
-	w.WriteHeader(status)
+func RespondWithError(w http.ResponseWriter, err error) {
+	statusCode := http.StatusInternalServerError
+	message := err.Error()
+	errorType := "InternalError"
+
+	if serverErr, ok := err.(SolverError); ok {
+		statusCode = serverErr.GetStatusCode()
+		message = serverErr.Message
+		errorType = serverErr.Type
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
 	if err := json.NewEncoder(w).Encode(ErrorResponse{
-		Error: message,
-		Code:  status,
+		Error:   errorType,
+		Message: message,
+		Code:    statusCode,
 	}); err != nil {
-		// If we fail to write the error response, log to stderr as last resort
 		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
 	}
 }

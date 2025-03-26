@@ -55,13 +55,13 @@ func ReadRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *sol
 		Order("created_at desc").
 		Find(&intents)
 	if result.Error != nil {
-		utils.MakeHttpError(w, "database error: "+result.Error.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("database error: "+result.Error.Error()))
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(intents); err != nil {
-		utils.MakeHttpError(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		return
 	}
 }
