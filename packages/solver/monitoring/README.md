@@ -12,7 +12,7 @@ This directory contains configuration files for monitoring the solver API using 
 ### Option 1: Start with monitoring enabled
 
 ```bash
-pnpm dev:with-monitoring
+pnpm dev:monitoring
 ```
 
 This command will start both the monitoring stack and your solver API.
