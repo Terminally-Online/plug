@@ -10,11 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-func getActiveOperators() ([]othentic_attestation.Struct0, error) {
-	client, err := ethclient.Dial(config.Node_8453)
-	if err != nil {
-		return nil, err
-	}
+func getActiveOperators(client *ethclient.Client) ([]othentic_attestation.Struct0, error) {
 
 	attestationCenter, err := othentic_attestation.NewOthenticAttestation(
 		config.AttestationCenter,
@@ -36,8 +32,18 @@ func getActiveOperators() ([]othentic_attestation.Struct0, error) {
 	})
 }
 
-func ElectRoundRobin(blockNumber uint64) (*common.Address, error) {
-	operators, err := getActiveOperators()
+func ElectRoundRobin() (*common.Address, error) {
+	client, err := ethclient.Dial(config.Node_8453)
+	if err != nil {
+		return nil, err
+	}
+
+	operators, err := getActiveOperators(client)
+	if err != nil {
+		return nil, err
+	}
+
+	blockNumber, err := client.BlockNumber(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -45,4 +51,14 @@ func ElectRoundRobin(blockNumber uint64) (*common.Address, error) {
 	index := blockNumber % uint64(len(operators))
 
 	return &operators[index].Operator, nil
+
+}
+
+func IsElectedLeader(operatorAddress string) bool {
+	electedLeader, err := ElectRoundRobin()
+	if err != nil {
+		return false
+	}
+
+	return *electedLeader == common.HexToAddress(operatorAddress)
 }

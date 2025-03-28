@@ -1,16 +1,23 @@
 package signature
 
 import (
+	"context"
+	"crypto/ecdsa"
 	"fmt"
 	"math/big"
+	"os"
 	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/utils"
 	"time"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"gorm.io/gorm"
 )
 
@@ -34,7 +41,7 @@ type EIP712Domain struct {
 type Plug struct {
 	Selector uint8          `json:"selector"`
 	To       common.Address `json:"to"`
-	Data     hexutil.Bytes  `json:"data"` 
+	Data     hexutil.Bytes  `json:"data"`
 	Value    *big.Int       `json:"value"`
 	Updates  []coil.Update  `json:"updates,omitempty"`
 	Meta     any            `json:"meta,omitempty"`
@@ -49,7 +56,7 @@ func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
 	return plug_router.PlugTypesLibPlug{
 		Selector: p.Selector,
 		To:       p.To,
-		Data:     []byte(p.Data), 
+		Data:     []byte(p.Data),
 		Value:    p.Value,
 		Updates:  updates,
 	}
@@ -134,31 +141,103 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 	return append(plugCalldata, identifier...), nil
 }
 
-// GetRawPlugs returns the individual transactions that would be executed
-func (l *LivePlugs) GetRawPlugs() []Transaction {
-	txs := make([]Transaction, len(l.Plugs.Plugs))
-	identifier := []byte("plug")
-
-	for idx, plug := range l.Plugs.Plugs {
-		combinedData := append([]byte(plug.Data), identifier...)
-		txs[idx] = Transaction{
-			From:  common.HexToAddress(l.From),
-			To:    plug.To,
-			Data:  hexutil.Bytes(combinedData),
-			Value: plug.Value,
-			Gas:   nil, // Will be estimated during simulation
-		}
+// Execute submits the LivePlugs transaction to the blockchain and returns the transaction hash
+func (l *LivePlugs) Execute() (string, error) {
+	// Get router address for this chain
+	routerAddress := l.GetRouterAddress()
+	if (routerAddress == common.Address{}) {
+		return "", fmt.Errorf("router address not found for chain ID %d", l.ChainId)
 	}
 
-	return txs
-}
+	// Get RPC URL for the chain
+	rpcURL, err := utils.GetRPCURL(l.ChainId)
+	if err != nil {
+		return "", fmt.Errorf("failed to get RPC URL for chain %d: %w", l.ChainId, err)
+	}
 
-type Result struct {
-	Success bool          `json:"success"`
-	Result  hexutil.Bytes `json:"result"`
-}
+	// Connect to the node
+	client, err := ethclient.Dial(rpcURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to blockchain: %w", err)
+	}
+	defer client.Close()
 
-// GORM lifecycle hooks for LivePlugs
+	// Get the operator's account from environment
+	privateKeyHex := os.Getenv("PRIVATE_KEY")
+	if privateKeyHex == "" {
+		return "", fmt.Errorf("PRIVATE_KEY environment variable not set")
+	}
+	
+	privateKey, err := crypto.HexToECDSA(privateKeyHex)
+	if err != nil {
+		return "", fmt.Errorf("failed to load private key: %w", err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return "", fmt.Errorf("error casting public key to ECDSA")
+	}
+
+	// Get the sender address
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+
+	// Get the latest nonce for the account
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		return "", fmt.Errorf("failed to get nonce: %w", err)
+	}
+
+	// Get the current gas price
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return "", fmt.Errorf("failed to get gas price: %w", err)
+	}
+
+	// Get plug execution calldata
+	calldata, err := l.GetCallData()
+	if err != nil {
+		return "", fmt.Errorf("failed to get calldata: %w", err)
+	}
+
+	// Estimate gas for the transaction (with some buffer)
+	gasLimit, err := client.EstimateGas(context.Background(), ethereum.CallMsg{
+		From:     fromAddress,
+		To:       &routerAddress,
+		GasPrice: gasPrice,
+		Data:     calldata,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to estimate gas: %w", err)
+	}
+	gasLimit = uint64(float64(gasLimit) * 1.2) // Add 20% buffer
+
+	// Create transaction
+	chainID := big.NewInt(int64(l.ChainId))
+	tx := types.NewTransaction(
+		nonce,
+		routerAddress,
+		big.NewInt(0), // No value transfer
+		gasLimit,
+		gasPrice,
+		calldata,
+	)
+
+	// Sign the transaction
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+	if err != nil {
+		return "", fmt.Errorf("failed to sign transaction: %w", err)
+	}
+
+	// Submit the transaction
+	err = client.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		return "", fmt.Errorf("failed to send transaction: %w", err)
+	}
+
+	// Return the transaction hash
+	return signedTx.Hash().Hex(), nil
+}
 
 // BeforeCreate is automatically called by GORM before inserting a new record.
 // It generates a UUID if one isn't provided and ensures the packed calldata
@@ -194,4 +273,9 @@ func (l *LivePlugs) BeforeSave(tx *gorm.DB) error {
 // Currently, all deserialization happens automatically through GORM tags.
 func (l *LivePlugs) AfterFind(tx *gorm.DB) error {
 	return nil
+}
+
+type Result struct {
+	Success bool          `json:"success"`
+	Result  hexutil.Bytes `json:"result"`
 }

@@ -7,12 +7,12 @@ import (
 	"slices"
 	"solver/internal/actions"
 	"solver/internal/api/routes"
-	"solver/internal/cache"
+	"solver/internal/redis"
 	"solver/internal/solver"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/go-redis/redis/v8"
+	redisv8 "github.com/go-redis/redis/v8"
 	"github.com/gorilla/schema"
 	"github.com/swaggest/openapi-go"
 )
@@ -155,7 +155,7 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 	return response, nil
 }
 
-func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
+func GetRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *solver.Solver) {
 	var params SchemaQueryParams
 	if err := Decoder.Decode(&params, r.URL.Query()); err != nil {
 		utils.MakeHttpError(w, fmt.Sprintf("invalid parameters: %v", err), http.StatusBadRequest)
@@ -189,5 +189,5 @@ func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solv
 }
 
 func Get(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(GetRequest, GetContext, cache.Redis, s)
+	return routes.NewRouteHandler(GetRequest, GetContext, redis.CacheRedis, s)
 }

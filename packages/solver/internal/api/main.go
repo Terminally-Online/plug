@@ -49,6 +49,7 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 
 	killable.Handle("/solver", intent.Get(s)).Methods(http.MethodGet)
 	killable.Handle("/solver", intent.Post(s)).Methods(http.MethodPost)
+	killable.Handle("/solver/intent/sign", intent.Sign(s)).Methods(http.MethodPost)
 
 	openapi := open_api.SetupOpenAPIRoutes(r)
 	r.Handle("/openapi.json", openapi).Methods(http.MethodGet)

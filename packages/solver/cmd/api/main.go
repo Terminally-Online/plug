@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 	"solver/internal/api"
-	"solver/internal/cache"
 	"solver/internal/cron"
+	"solver/internal/redis"
 	"solver/internal/solver"
 	"solver/internal/utils"
 	"time"
@@ -33,7 +33,7 @@ func main() {
 		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
 	}
 
-	if _, err := cache.Redis.Ping(context.Background()).Result(); err != nil {
+	if _, err := redis.CacheRedis.Ping(context.Background()).Result(); err != nil {
 		log.Fatal(err)
 	}
 

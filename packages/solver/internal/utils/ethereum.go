@@ -161,3 +161,23 @@ func ParseAddressAndDecimals(input string) (address *common.Address, decimals ui
 
 	return &hexAddress, uint8(decimals64), nil
 }
+
+// GetRPCURL returns the RPC URL for the specified chain ID
+func GetRPCURL(chainId uint64) (string, error) {
+	switch chainId {
+	case 1:
+		rpcURL := GetEnvOrDefault("RPC_1", "")
+		if rpcURL == "" {
+			return "", fmt.Errorf("RPC_1 environment variable not set")
+		}
+		return rpcURL, nil
+	case 8453:
+		rpcURL := GetEnvOrDefault("RPC_8453", "")
+		if rpcURL == "" {
+			return "", fmt.Errorf("RPC_8453 environment variable not set")
+		}
+		return rpcURL, nil
+	default:
+		return "", fmt.Errorf("no RPC URL configured for chain ID %d", chainId)
+	}
+}

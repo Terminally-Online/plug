@@ -1,15 +1,53 @@
 package cron
 
 import (
+	"context"
+	"encoding/json"
 	"log"
-	"solver/internal/client"
+	"solver/internal/avs/config"
+	"solver/internal/avs/streams"
 	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver"
-	"solver/internal/solver/signature"
-	"solver/internal/utils"
 	"time"
 )
+
+func SubmitAVSTask(solution *solver.Solution, err error) error {
+	if err != nil {
+		return err
+	}
+
+	if !config.Production {
+		return nil
+	}
+
+	if len(solution.LivePlugs.Plugs.Plugs) == 0 || solution.Run.Status == "success" {
+		return nil
+	}
+
+	plugsData, err := json.Marshal(solution.LivePlugs.Plugs)
+	if err != nil {
+		log.Printf("Error marshaling Plugs: %v", err)
+		return err
+	}
+
+	data := map[string]any{
+		"id":        solution.IntentId,
+		"chainId":   solution.LivePlugs.ChainId,
+		"from":      solution.LivePlugs.From,
+		"timestamp": time.Now().Unix(),
+		"plugs":     string(plugsData),
+	}
+
+	ctx := context.Background()
+	if err := streams.Publish(ctx, solution.IntentId, data); err != nil {
+		log.Printf("Error publishing to Circuit stream: %v", err)
+		return err
+	}
+
+	log.Printf("Published intent %s to Circuit stream", solution.IntentId)
+	return nil
+}
 
 func Simulations(s *solver.Solver) {
 	if s.IsKilled {
@@ -30,24 +68,7 @@ func Simulations(s *solver.Solver) {
 		return
 	}
 
-	production := utils.GetEnvOrDefault("SOLVER_ENV", "development") == "production"
-
-	livePlugs := make(map[uint64]map[string]signature.LivePlugs, 0)
 	for _, intent := range intents {
-		if intent.Locked {
-			solution, err := s.RebuildSolutionFromModels(&intent)
-			if err != nil {
-				log.Printf("failed to rebuild existing solution: %v", err)
-			}
-			livePlugs[intent.ChainId][intent.Id] = *solution.LivePlugs
-		} else {
-			if solution, err := s.Solve(&intent, !production, true); err == nil {
-				livePlugs[intent.ChainId][intent.Id] = *solution.LivePlugs
-			} else {
-				log.Printf("failed to simulate: %v", err)
-			}
-		}
-
 		intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
 		if err := database.DB.Model(&intent).Updates(map[string]any{
 			"period_end_at":      intent.PeriodEndAt,
@@ -55,24 +76,15 @@ func Simulations(s *solver.Solver) {
 		}).Error; err != nil {
 			log.Printf("failed to update intent simulation interval: %v", err)
 		}
-	}
 
-	if !production {
-		log.Println("Solver is not in production so will not be executing transactions.")
-		return
-	}
-
-	for chainId, chainPlugs := range livePlugs {
-		client, err := client.New(chainId)
-		if err != nil {
-			log.Printf("failed to create client for chain %d: %v", chainId, err)
-			continue
-		}
-
-		_, err = client.Plug(chainPlugs)
-		if err != nil {
-			log.Printf("failed to simulate plugs for chain %d: %v", chainId, err)
-			continue
+		if intent.Locked {
+			if err := SubmitAVSTask(s.RebuildSolutionFromModels(&intent)); err != nil {
+				log.Printf("failed to submit intent execution task to avs")
+			}
+		} else if err := SubmitAVSTask(s.Solve(&intent, !config.Production, true)); err != nil {
+			log.Printf("failed to submit intent execution task to avs")
+		} else {
+			log.Printf("failed to simulate intent")
 		}
 	}
 }

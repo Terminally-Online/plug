@@ -3,7 +3,7 @@ package config
 import (
 	"crypto/ecdsa"
 	"fmt"
-	"os"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -11,19 +11,14 @@ import (
 
 var (
 	ChainId           = int64(8453)
-	PrivateKey        = GetEnvOrDefault("PRIVATE_KEY", "")
-	Node_1            = GetEnvOrDefault("RPC_1", "")
-	Node_8453         = GetEnvOrDefault("RPC_8453", "")
-	Port              = GetEnvOrDefault("PORT", "8081")
+	Production        = utils.GetEnvOrDefault("AVS_ENV", "development") == "production"
+	SolverUrl         = utils.GetEnvOrDefault("SOLVER_URL", "http://localhost:8080")
+	PrivateKey        = utils.GetEnvOrDefault("PRIVATE_KEY", "")
+	Node_1            = utils.GetEnvOrDefault("RPC_1", "")
+	Node_8453         = utils.GetEnvOrDefault("RPC_8453", "")
+	Port              = utils.GetEnvOrDefault("PORT", "6473")
 	AttestationCenter = common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d")
 )
-
-func GetEnvOrDefault(key, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultValue
-}
 
 func GetNodeUrl(chainId int64) (string, error) {
 	switch chainId {
