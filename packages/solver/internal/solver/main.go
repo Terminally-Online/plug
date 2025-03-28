@@ -77,6 +77,8 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 	}
 
 	for i := range transactions {
+		transactions[i].Data = hexutil.Bytes(transactions[i].Data)
+		
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
 		} else {
@@ -183,7 +185,7 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 	}
 
 	identifier := []byte("plug")
-	data := append(plugs[0].Data, identifier...)
+	combinedData := append([]byte(plugs[0].Data), identifier...)
 
 	var run *models.Run
 
@@ -201,7 +203,7 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 		simTx := &signature.Transaction{
 			From:  common.HexToAddress(intent.From),
 			To:    plugs[0].To,
-			Data:  data,
+			Data:  hexutil.Bytes(combinedData),
 			Value: plugs[0].Value,
 		}
 

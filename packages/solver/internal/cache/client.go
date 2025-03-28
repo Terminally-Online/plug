@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"solver/internal/api/middleware"
 	"solver/internal/utils"
 	"time"
 
@@ -14,10 +15,10 @@ import (
 )
 
 var (
-	RedisHost = utils.GetEnvOrDefault("REDIS_HOST", "localhost")
-	RedisPort = utils.GetEnvOrDefault("REDIS_POST", "6379")
+	RedisHost    = utils.GetEnvOrDefault("REDIS_HOST", "localhost")
+	RedisPort    = utils.GetEnvOrDefault("REDIS_POST", "6379")
 	RedisAddress = fmt.Sprintf("%s:%s", RedisHost, RedisPort)
-	Redis = redis.NewClient(&redis.Options{
+	Redis        = redis.NewClient(&redis.Options{
 		Addr:        RedisAddress,
 		Password:    os.Getenv("REDIS_PASSWORD"),
 		DB:          0,
@@ -80,6 +81,7 @@ func WithCache[T any](key string, options []CacheOption, fn func() (T, error)) (
 			if err := json.Unmarshal(cachedData.Value, &result); err == nil {
 				// Check if the data is fresh
 				if time.Since(cachedData.CreatedAt) <= opts.duration {
+					middleware.TrackCacheOperation(key, true, 0)
 					return result, nil
 				}
 
@@ -87,8 +89,10 @@ func WithCache[T any](key string, options []CacheOption, fn func() (T, error)) (
 				if opts.useStale {
 					// Use stale data and update in background
 					go func() {
-						updateCache(context.Background(), key, fn, opts)
+						_, populateTime, _ := updateCacheWithTiming(context.Background(), key, fn, opts)
+						middleware.TrackCacheOperation(key, false, populateTime)
 					}()
+					middleware.TrackCacheOperation(key, true, 0)
 					return result, nil
 				}
 			}
@@ -97,15 +101,22 @@ func WithCache[T any](key string, options []CacheOption, fn func() (T, error)) (
 	}
 
 	// No valid cache or stale data not requested - do synchronous update
-	return updateCache(context.Background(), key, fn, opts)
+	result, populateTimeMillis, err := updateCacheWithTiming(context.Background(), key, fn, opts)
+	middleware.TrackCacheOperation(key, false, populateTimeMillis)
+	return result, err
 }
 
-// updateCache executes the function and updates the cache
-func updateCache[T any](ctx context.Context, key string, fn func() (T, error), opts *cacheOptions) (T, error) {
-	result, err := fn()
+// updateCacheWithTiming executes the function and updates the cache, measuring the time it takes
+func updateCacheWithTiming[T any](ctx context.Context, key string, fn func() (T, error), opts *cacheOptions) (result T, populateTimeMillis int64, err error) {
+	startTime := time.Now()
+
+	result, err = fn()
+
+	populateTime := time.Since(startTime).Milliseconds()
+
 	if err != nil {
 		var zero T
-		return zero, err
+		return zero, populateTime, err
 	}
 
 	// Cache the result
@@ -127,7 +138,7 @@ func updateCache[T any](ctx context.Context, key string, fn func() (T, error), o
 		}
 	}
 
-	return result, nil
+	return result, populateTime, nil
 }
 
 // CacheOptions holds configuration for cache behavior

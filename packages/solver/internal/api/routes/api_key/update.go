@@ -51,18 +51,18 @@ func UpdateRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *s
 
 	var apiKey models.ApiKey
 	if err := database.DB.First(&apiKey, "id = ?", id).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
+		utils.RespondWithError(w, utils.ErrUnauthorized("api key does not exist"))
 		return
 	}
 
 	var newApiKey models.ApiKey
 	if err := json.NewDecoder(r.Body).Decode(&newApiKey); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidRequestBody(err))
 		return
 	}
 
 	if err := database.DB.Model(&apiKey).Updates(newApiKey).Error; err != nil {
-		utils.MakeHttpError(w, "failed to update api key: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to update api key: "+err.Error()))
 		return
 	}
 }

@@ -17,7 +17,7 @@ import (
 type Transaction struct {
 	From  common.Address `json:"from"`
 	To    common.Address `json:"to"`
-	Data  []byte         `json:"data"`
+	Data  hexutil.Bytes  `json:"data"`
 	Value *big.Int       `json:"value"`
 	Gas   *big.Int       `json:"gas"`
 }
@@ -34,7 +34,7 @@ type EIP712Domain struct {
 type Plug struct {
 	Selector uint8          `json:"selector"`
 	To       common.Address `json:"to"`
-	Data     []byte         `json:"data"`
+	Data     hexutil.Bytes  `json:"data"` 
 	Value    *big.Int       `json:"value"`
 	Updates  []coil.Update  `json:"updates,omitempty"`
 	Meta     any            `json:"meta,omitempty"`
@@ -49,7 +49,7 @@ func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
 	return plug_router.PlugTypesLibPlug{
 		Selector: p.Selector,
 		To:       p.To,
-		Data:     p.Data,
+		Data:     []byte(p.Data), 
 		Value:    p.Value,
 		Updates:  updates,
 	}
@@ -140,11 +140,11 @@ func (l *LivePlugs) GetRawPlugs() []Transaction {
 	identifier := []byte("plug")
 
 	for idx, plug := range l.Plugs.Plugs {
-		data := append(plug.Data, identifier...)
+		combinedData := append([]byte(plug.Data), identifier...)
 		txs[idx] = Transaction{
 			From:  common.HexToAddress(l.From),
 			To:    plug.To,
-			Data:  data,
+			Data:  hexutil.Bytes(combinedData),
 			Value: plug.Value,
 			Gas:   nil, // Will be estimated during simulation
 		}
@@ -154,8 +154,8 @@ func (l *LivePlugs) GetRawPlugs() []Transaction {
 }
 
 type Result struct {
-	Success bool   `json:"success"`
-	Result  []byte `json:"result"`
+	Success bool          `json:"success"`
+	Result  hexutil.Bytes `json:"result"`
 }
 
 // GORM lifecycle hooks for LivePlugs

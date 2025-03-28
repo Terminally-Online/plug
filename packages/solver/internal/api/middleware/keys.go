@@ -21,9 +21,10 @@ type KeyCache struct {
 }
 
 type RateLimitInfo struct {
-	Used  int64     `json:"used"`
-	Limit int       `json:"limit"`
-	Reset time.Time `json:"reset"`
+	Used      int64     `json:"used"`
+	Limit     int       `json:"limit"`
+	Reset     time.Time `json:"reset"`
+	Remaining int64     `json:"remaining"`
 }
 
 type KeyRateLimiter struct {
@@ -71,10 +72,12 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, limitInf
 			rl.keys[apiKey] = cachedKey
 
 			resetTime := time.Unix(cachedKey.windowStart.Load()+WINDOW_SECONDS, 0)
+			currentCount := cachedKey.count.Load()
 			limitInfo = RateLimitInfo{
-				Used:  cachedKey.count.Load(),
-				Limit: cachedKey.key.RateLimit,
-				Reset: resetTime,
+				Used:      currentCount,
+				Limit:     cachedKey.key.RateLimit,
+				Reset:     resetTime,
+				Remaining: int64(cachedKey.key.RateLimit) - currentCount,
 			}
 
 			return *cachedKey.key, limitInfo, http.StatusOK, nil
@@ -98,10 +101,12 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, limitInf
 		cachedKey.count.Store(1)
 
 		resetTime := time.Unix(cachedKey.windowStart.Load()+WINDOW_SECONDS, 0)
+		currentCount := cachedKey.count.Load()
 		limitInfo = RateLimitInfo{
-			Used:  cachedKey.count.Load(),
-			Limit: cachedKey.key.RateLimit,
-			Reset: resetTime,
+			Used:      currentCount,
+			Limit:     cachedKey.key.RateLimit,
+			Reset:     resetTime,
+			Remaining: int64(cachedKey.key.RateLimit) - currentCount,
 		}
 
 		rl.mu.Unlock()
@@ -111,16 +116,21 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, limitInf
 	currentCount := cachedKey.count.Load()
 	resetTime := time.Unix(cachedKey.windowStart.Load()+WINDOW_SECONDS, 0)
 	limitInfo = RateLimitInfo{
-		Used:  currentCount,
-		Limit: cachedKey.key.RateLimit,
-		Reset: resetTime,
+		Used:      currentCount,
+		Limit:     cachedKey.key.RateLimit,
+		Reset:     resetTime,
+		Remaining: int64(cachedKey.key.RateLimit) - currentCount,
 	}
 
 	if currentCount >= int64(cachedKey.key.RateLimit) {
 		return *cachedKey.key, limitInfo, http.StatusTooManyRequests, fmt.Errorf("rate limit exceeded")
 	}
 
-	limitInfo.Used = cachedKey.count.Add(1)
+	// Update the Used count after incrementing
+	newCount := cachedKey.count.Add(1)
+	limitInfo.Used = newCount
+	limitInfo.Remaining = int64(cachedKey.key.RateLimit) - newCount
+
 	return *cachedKey.key, limitInfo, http.StatusOK, nil
 }
 
@@ -172,10 +182,14 @@ func (h *Middleware) ApiKey(next http.Handler) http.Handler {
 			return
 		}
 
+		// Set the API key ID in the request context and header
 		r.Header.Set("X-Api-Key-Id", dbKey.Id)
+
+		// Set rate limit headers
 		w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", limitInfo.Limit))
 		w.Header().Set("X-RateLimit-Used", fmt.Sprintf("%d", limitInfo.Used))
 		w.Header().Set("X-RateLimit-Reset", fmt.Sprintf("%d", limitInfo.Reset.Unix()))
+		w.Header().Set("X-RateLimit-Remaining", fmt.Sprintf("%d", limitInfo.Remaining))
 
 		next.ServeHTTP(w, r)
 	})

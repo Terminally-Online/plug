@@ -47,12 +47,12 @@ func ReadRequest(w http.ResponseWriter, r *http.Request, _ *redis.Client, s *sol
 
 	var apiKey models.ApiKey
 	if err := database.DB.First(&apiKey, "id = ?", id).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
+		utils.RespondWithError(w, utils.ErrUnauthorized("api key does not exist"))
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(apiKey); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		return
 	}
 }
