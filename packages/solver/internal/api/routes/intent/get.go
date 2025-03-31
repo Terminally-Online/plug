@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"slices"
 	"solver/internal/actions"
+	"solver/internal/api/middleware"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
 	"solver/internal/solver"
@@ -140,9 +141,26 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 		searchMap[param.Index] = param.Value
 	}
 
-	chainSchema, err := handler.GetSchema(chainId, from, searchMap, action)
-	if err != nil {
-		return nil, err
+	var chainSchema actions.ChainSchema
+	var chainSchemaErr error
+
+	middleware.TrackOptionsBuildTime(protocol, chainId, action, func() error {
+		schemaResults, err := handler.GetSchema(chainId, from, searchMap, action)
+		if err != nil {
+			chainSchemaErr = err
+			return err
+		}
+		if schemaResults != nil {
+			chainSchema = *schemaResults
+		} else {
+			chainSchemaErr = fmt.Errorf("schema results is nil")
+			return chainSchemaErr
+		}
+		return nil
+	})
+
+	if chainSchemaErr != nil {
+		return nil, chainSchemaErr
 	}
 
 	response[protocol] = actions.ProtocolSchema{
@@ -158,7 +176,7 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
 	var params SchemaQueryParams
 	if err := Decoder.Decode(&params, r.URL.Query()); err != nil {
-		utils.MakeHttpError(w, fmt.Sprintf("invalid parameters: %v", err), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidParameters(err))
 		return
 	}
 
@@ -174,16 +192,16 @@ func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solv
 	case exists && params.Action != "":
 		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
 	default:
-		utils.MakeHttpError(w, "invalid protocol", http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidField("protocol", params.Protocol))
 		return
 	}
 	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, err)
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(result); err != nil {
-		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		return
 	}
 }

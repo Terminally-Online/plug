@@ -13,7 +13,11 @@
     "db:init": "pnpm env:decrypt && go run cmd/database/main.go",
     "predev": "pnpm db:start && pnpm db:init",
     "dev": "pnpm env:decrypt && go run cmd/api/main.go",
+    "dev:monitoring": "pnpm monitoring:start && pnpm dev",
     "env:encrypt": "go run cmd/env/main.go encrypt",
-    "env:decrypt": "go run cmd/env/main.go decrypt"
+    "env:decrypt": "go run cmd/env/main.go decrypt",
+    "monitoring:start": "cd monitoring && docker compose up -d",
+    "monitoring:stop": "cd monitoring && docker compose down",
+    "test": "pnpm env:decrypt && go test -v ./internal/test"
   }
 }
