@@ -8,7 +8,7 @@ import (
 )
 
 type ActionOnchainFunctionInterface interface {
-	GetCoilUpdate(string) (*coil.Update, error)
+	GetCoilUpdate(string, ActionDefinitionInterface) (*coil.Update, error)
 }
 
 type ActionOnchainFunctionResponse struct {
@@ -31,7 +31,11 @@ func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, erro
 	return calldata, nil
 }
 
-func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string, definition *ActionDefinition[any]) (*coil.Update, error) {
+func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string, definition ActionDefinitionInterface) (*coil.Update, error) {
+	if definition == nil {
+		return nil, fmt.Errorf("update reference to linked input definition is nil")
+	}
+
 	abi, err := r.Metadata.GetAbi()
 	if err != nil {
 		return nil, err
