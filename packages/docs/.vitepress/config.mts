@@ -55,31 +55,9 @@ export default defineConfig({
             text: "Coils",
             link: "/concepts/coils",
           },
-        ],
-      },
-
-      {
-        text: "Circuit (AVS)",
-        items: [
           {
-            text: "Abstract",
-            link: "/avs/abstract",
-          },
-          {
-            text: "Operators",
-            link: "/avs/operators",
-          },
-          {
-            text: "Enrollment",
-            link: "/avs/enrollment",
-          },
-          {
-            text: "Rewards",
-            link: "/avs/rewards",
-          },
-          {
-            text: "Tasks",
-            link: "/avs/tasks",
+            text: "Circuit",
+            link: "/concepts/circuit",
           },
         ],
       },
