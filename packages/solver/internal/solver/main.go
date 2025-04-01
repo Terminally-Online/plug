@@ -50,7 +50,7 @@ func New() *Solver {
 	}
 }
 
-func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
@@ -65,7 +65,7 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 		return nil, fmt.Errorf("unsupported schema lookup: %s-%s", inputs.Protocol, inputs.Action)
 	}
 
-	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw)
+	lookup, err := actions.NewSchemaLookup[any](plugs, chainId, from, nil, &raw)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 
 	for i := range transactions {
 		transactions[i].Data = hexutil.Bytes(transactions[i].Data)
-		
+
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
 		} else {
@@ -90,7 +90,7 @@ func (s *Solver) GetTransaction(raw json.RawMessage, chainId uint64, from common
 }
 
 func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uint64, from common.Address) (plugs []signature.Plug, error error) {
-	plugs, err := s.GetTransaction(inputs, chainId, from)
+	plugs, err := s.GetTransaction(plugs, inputs, chainId, from)
 	if err != nil {
 		return nil, err
 	}

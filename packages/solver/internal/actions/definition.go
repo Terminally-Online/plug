@@ -10,7 +10,6 @@ import (
 type ActionFunc[T any] func(lookup *SchemaLookup[T]) ([]signature.Plug, error)
 type ActionOptionsFunc[T any] func(lookup *SchemaLookup[T]) (map[int]Options, error)
 
-
 type ActionDefinitionInterface interface {
 	GetType() string
 	GetSentence() string
@@ -116,6 +115,28 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 	}
 
 	return slices, nil
+}
+
+func (d *ActionDefinition[T]) GetCoilSlice(name string) (*coil.Slice, error) {
+	if d.Response == nil || d.Response.Metadata == nil || d.Response.FunctionName == "" {
+		return nil, nil
+	}
+
+	abi, err := d.Response.Metadata.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ABI: %w", err)
+	}
+
+	slices, err := coil.GetCoilSlices(abi, d.Response.FunctionName, &name, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
+	if len(slices) == 0 {
+		return nil, fmt.Errorf("no slices found for name: %s", name)
+	}
+
+	return &slices[0], nil
 }
 
 func (d *ActionDefinition[T]) GetCoilKeys() (map[string]string, error) {

@@ -29,10 +29,6 @@ export default defineConfig({
             text: "Introduction",
             link: "/",
           },
-          // {
-          //   text: "Integrations",
-          //   link: "/introduction/integrations",
-          // },
           {
             text: "FAQ",
             link: "/introduction/frequently-asked-questions",
@@ -59,9 +55,31 @@ export default defineConfig({
             text: "Coils",
             link: "/concepts/coils",
           },
+        ],
+      },
+
+      {
+        text: "Circuit (AVS)",
+        items: [
           {
-            text: "Schedules",
-            link: "/concepts/schedules",
+            text: "Abstract",
+            link: "/avs/abstract",
+          },
+          {
+            text: "Operators",
+            link: "/avs/operators",
+          },
+          {
+            text: "Enrollment",
+            link: "/avs/enrollment",
+          },
+          {
+            text: "Rewards",
+            link: "/avs/rewards",
+          },
+          {
+            text: "Tasks",
+            link: "/avs/tasks",
           },
         ],
       },

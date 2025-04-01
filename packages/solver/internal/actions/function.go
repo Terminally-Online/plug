@@ -31,15 +31,10 @@ func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, erro
 	return calldata, nil
 }
 
-func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string) (*coil.Update, error) {
+func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string, definition *ActionDefinition[any]) (*coil.Update, error) {
 	abi, err := r.Metadata.GetAbi()
 	if err != nil {
 		return nil, err
-	}
-
-	slices, err := coil.GetCoilSlices(abi, r.FunctionName, nil, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find coils: %w", err)
 	}
 
 	position, err := coil.GetCoilPosition(abi, r.FunctionName, &param, nil)
@@ -47,8 +42,13 @@ func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string) (*coil.Updat
 		return nil, fmt.Errorf("failed to find coils: %w", err)
 	}
 
+	slice, err := definition.GetCoilSlice(param)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
 	return &coil.Update{
 		Start: position,
-		Slice: slices[0],
+		Slice: *slice,
 	}, nil
 }
