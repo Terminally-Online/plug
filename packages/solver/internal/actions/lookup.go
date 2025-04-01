@@ -15,10 +15,10 @@ type SchemaLookup[T any] struct {
 	From                     common.Address
 	Search                   map[int]string
 	Inputs                   *T
-	PreviousActionDefinition *ActionDefinition[any]
+	PreviousActionDefinition ActionDefinitionInterface
 }
 
-func NewSchemaLookup[T any](chainId uint64, from common.Address, search map[int]string, raw *json.RawMessage, previousActionDefinition *ActionDefinition[any]) (*SchemaLookup[T], error) {
+func NewSchemaLookup[T any](chainId uint64, from common.Address, search map[int]string, raw *json.RawMessage, previousActionDefinition ActionDefinitionInterface) (*SchemaLookup[T], error) {
 	client, err := client.New(chainId)
 	if err != nil {
 		return nil, err
@@ -42,14 +42,34 @@ func NewSchemaLookup[T any](chainId uint64, from common.Address, search map[int]
 }
 
 type ValueFunc[R any] func() (R, error)
-type FunctionResponseInterface interface {
-	GetCoilUpdate(string, *SchemaLookup[any]) (*coil.Update, error)
+
+func GetAndUpdate[I any, O any](
+	input *coil.CoilInput[I, O],
+	valueFunc func() (O, error),
+	coilFunc ActionOnchainFunctionInterface,
+	param string,
+	updates []coil.Update,
+	definition ActionDefinitionInterface,
+) (O, []coil.Update, error) {
+	response, err := valueFunc()
+	if err != nil || !input.GetIsLinked() {
+		return response, nil, err
+	}
+
+	if update, err := coilFunc.GetCoilUpdate(param, definition); update != nil {
+		updates = append(updates, *update)
+		return response, updates, err
+	} else if err != nil {
+		return response, nil, err
+	}
+
+	return response, nil, err
 }
 
 func (lookup *SchemaLookup[T]) GetAndUpdate(
 	input *coil.CoilInput[T, any],
 	valueFunc ValueFunc[any],
-	coilFunc FunctionResponseInterface,
+	coilFunc ActionOnchainFunctionInterface,
 	param string,
 	updates []coil.Update,
 ) (any, []coil.Update, error) {
@@ -58,7 +78,7 @@ func (lookup *SchemaLookup[T]) GetAndUpdate(
 		return response, nil, err
 	}
 
-	if update, err := coilFunc.GetCoilUpdate(param, lookup); update != nil {
+	if update, err := coilFunc.GetCoilUpdate(param, lookup.PreviousActionDefinition); update != nil {
 		updates = append(updates, *update)
 		return response, updates, err
 	} else if err != nil {

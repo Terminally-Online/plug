@@ -18,6 +18,8 @@ type ActionDefinitionInterface interface {
 	GetOptions() ActionOptionsFunc[any]
 	GetCoils() ([]coil.Update, error)
 	GetCoilKeys() (map[string]string, error)
+	GetCoilSlice(string) (*coil.Slice, error)
+	GetCoilSlices() ([]coil.Slice, error)
 }
 
 type ActionDefinition[T any] struct {

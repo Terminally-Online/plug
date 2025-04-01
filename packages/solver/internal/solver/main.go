@@ -50,7 +50,7 @@ func New() *Solver {
 	}
 }
 
-func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, chainId uint64, from common.Address, prevAction *actions.ActionDefinitionInterface) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
@@ -65,7 +65,7 @@ func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, cha
 		return nil, fmt.Errorf("unsupported schema lookup: %s-%s", inputs.Protocol, inputs.Action)
 	}
 
-	lookup, err := actions.NewSchemaLookup[any](plugs, chainId, from, nil, &raw)
+	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw, *prevAction)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +89,8 @@ func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, cha
 	return transactions, nil
 }
 
-func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uint64, from common.Address) (plugs []signature.Plug, error error) {
-	plugs, err := s.GetTransaction(plugs, inputs, chainId, from)
+func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uint64, from common.Address, prevAction *actions.ActionDefinitionInterface) (plugs []signature.Plug, error error) {
+	plugs, err := s.GetTransaction(plugs, inputs, chainId, from, prevAction)
 	if err != nil {
 		return nil, err
 	}
@@ -100,10 +100,24 @@ func (s *Solver) GetPlugsArray(head []signature.Plug, inputs []byte, chainId uin
 
 func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 	var plugs []signature.Plug
+	var prevAction *actions.ActionDefinitionInterface
+
 	for _, input := range intent.Inputs {
+		protocolKey, protocolKeyOk := input["protocol"].(string)
+		actionKey, actionKeyOk := input["action"].(string)
+		if !protocolKeyOk || !actionKeyOk {
+			return nil, utils.ErrBuild("protocol and action must be defined in input")
+		}
+
+		protocol, protocolExists := s.Protocols[protocolKey]
+		action, actionExists := protocol.Actions[actionKey]
+		if !protocolExists || !actionExists {
+			return nil, fmt.Errorf("unsupported schema lookup: %s-%s", protocolKey, actionKey)
+		}
+
 		inputsMap := map[string]any{
-			"protocol": input["protocol"],
-			"action":   input["action"],
+			"protocol": protocol,
+			"action":   action,
 		}
 		maps.Copy(inputsMap, input)
 		inputs, err := json.Marshal(inputsMap)
@@ -111,10 +125,13 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 			return nil, utils.ErrBuild(err.Error())
 		}
 
-		plugs, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From))
+		plugs, err = s.GetPlugsArray(plugs, inputs, intent.ChainId, common.HexToAddress(intent.From), prevAction)
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
 		}
+
+		// Store the current action as prevAction for the next iteration
+		prevAction = &action
 	}
 
 	if len(plugs) == 0 {
