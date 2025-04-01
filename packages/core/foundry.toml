@@ -4,9 +4,8 @@
     libs = ["lib"]
     remappings = [
         "@prb/test/=lib/prb-test/src/",
-        "@op/=lib/interop-lib/src/",
+        "op/=lib/interop-lib/src/",
         "forge-std/=lib/forge-std/src/",
-        "@nftchance/plug-core/=node_modules/@nftchance/plug-core/src/",
         "solady/=node_modules/solady/src/",
     ]
     block_timestamp = 1_680_220_800
@@ -18,7 +17,7 @@
     optimizer_runs = 10_000
     via_ir = true
     script = "src/contracts/script"
-    solc = "0.8.23"
+    solc = "0.8.26"
 
 [profile.ci]
     fuzz = { runs = 10_000 }

@@ -14,6 +14,7 @@ export const router = base('Plug.sol')
 export const factory = base('Plug.Factory.sol')
 export const socket = base('Plug.Socket.sol')
 export const ticket = base('Plug.Ticket.sol')
+export const token = base('Plug.Token.sol')
 
 export const assert = base('Plug.Assert.sol')
 export const boolean = base('Plug.Boolean.sol')
