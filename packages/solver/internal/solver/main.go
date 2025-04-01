@@ -65,7 +65,12 @@ func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, cha
 		return nil, fmt.Errorf("unsupported schema lookup: %s-%s", inputs.Protocol, inputs.Action)
 	}
 
-	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw, *prevAction)
+	var lookupPrevAction actions.ActionDefinitionInterface
+	if prevAction != nil {
+		lookupPrevAction = *prevAction
+	}
+
+	lookup, err := actions.NewSchemaLookup[any](chainId, from, nil, &raw, lookupPrevAction)
 	if err != nil {
 		return nil, err
 	}

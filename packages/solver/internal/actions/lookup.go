@@ -52,7 +52,7 @@ func GetAndUpdate[I any, O any](
 	definition ActionDefinitionInterface,
 ) (O, []coil.Update, error) {
 	response, err := valueFunc()
-	if err != nil || !input.GetIsLinked() {
+	if err != nil || !input.GetIsLinked() || definition == nil {
 		return response, nil, err
 	}
 
@@ -76,6 +76,11 @@ func (lookup *SchemaLookup[T]) GetAndUpdate(
 	response, err := valueFunc()
 	if err != nil || !input.GetIsLinked() {
 		return response, nil, err
+	}
+
+	// Skip coil updates if PreviousActionDefinition is nil
+	if lookup.PreviousActionDefinition == nil {
+		return response, updates, nil
 	}
 
 	if update, err := coilFunc.GetCoilUpdate(param, lookup.PreviousActionDefinition); update != nil {
