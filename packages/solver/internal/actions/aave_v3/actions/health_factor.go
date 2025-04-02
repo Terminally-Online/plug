@@ -5,8 +5,9 @@ import (
 	"solver/internal/solver/signature"
 )
 
-type HealthFactorRequest struct {}
+type HealthFactorRequest struct{}
 
+// TODO MASON: reimplement this
 func HealthFactor(lookup *actions.SchemaLookup[HealthFactorRequest]) ([]signature.Plug, error) {
 	// NOTE: Aave v3 uses 18 decimals for their health factor.
 	//      https://github.com/aave/aave-v3-core/blob/782f51917056a53a2c228701058a6c3fb233684a/test-suites/emode.spec.ts#L555

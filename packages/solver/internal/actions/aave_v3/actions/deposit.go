@@ -2,10 +2,11 @@ package actions
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/aave_v3_pool"
-	"solver/bindings/erc_20"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -13,40 +14,57 @@ import (
 )
 
 type DepositRequest struct {
-		Token  string `json:"token"`
-		Amount string `json:"amount"`
-	}
+	Token  string                           `json:"token"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+}
+
+var DepositFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     aave_v3_pool.AaveV3PoolMetaData,
+	FunctionName: "deposit",
+}
 
 func Deposit(lookup *actions.SchemaLookup[DepositRequest]) ([]signature.Plug, error) {
 	token, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+
+	// TODO MASON: is this right? we'll need to have two separate GetAndUpdates for the approval and deposit to replace both inputs from the previous plug if it exists, right?
+	// or will this conflict because we're returning two plugs and the deposit will try and reference the approval?
+	var approvalUpdates []coil.Update
+	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approvalUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
+		return nil, err
 	}
 
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack(
-		"approve",
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
 		common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
-		amount,
+		approvalAmount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("AaveV3Pool")
-	}
-	depositCalldata, err := poolAbi.Pack("deposit",
+	var depositUpdates []coil.Update
+	depositAmount, depositUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&DepositFunc,
+		"amount",
+		depositUpdates,
+		lookup.PreviousActionDefinition,
+	)
+
+	depositCalldata, err := DepositFunc.GetCalldata(
 		token,
-		amount,
+		depositAmount,
 		lookup.From,
 		uint16(0),
 	)
@@ -55,10 +73,12 @@ func Deposit(lookup *actions.SchemaLookup[DepositRequest]) ([]signature.Plug, er
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
+		To:      *token,
+		Data:    approveCalldata,
+		Updates: approvalUpdates,
 	}, {
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
-		Data: depositCalldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
+		Data:    depositCalldata,
+		Updates: depositUpdates,
 	}}, nil
 }

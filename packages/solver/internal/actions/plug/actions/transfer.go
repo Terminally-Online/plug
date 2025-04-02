@@ -72,23 +72,9 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 		return nil, err
 	}
 
-	amountFunc := func() (*big.Int, error) {
-		// Check if this is a linked value - if so, we don't need to convert it here and can just return placeholder 0
-		if lookup.Inputs.Amount.GetIsLinked() {
-			return big.NewInt(0), nil
-		}
-
-		// Otherwise convert the string amount to a uint
-		amount, err := utils.StringToUint(lookup.Inputs.Amount.GetValue(), uint8(decimals))
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert amount: %w", err)
-		}
-		return amount, nil
-	}
-
 	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
-		amountFunc,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&TransferFunc,
 		"_value",
 		updates,

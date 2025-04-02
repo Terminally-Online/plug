@@ -10,6 +10,7 @@ type APYRequest struct {
 	Token     string `json:"token"`
 }
 
+// TODO MASON: reimplement this
 func APY(lookup *actions.SchemaLookup[APYRequest]) ([]signature.Plug, error) {
 	// token, _, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
 	// if err != nil {
