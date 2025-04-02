@@ -1,6 +1,6 @@
 # Schedules
 
-Driving Plug exists a global lifecycle that is used to drive the building, simulating, and onchain execution of Plugs. Without this lifecycle, everything will stand still so this is the most important piece of the system to understand.
+Plug utilizes a global lifecycle to drive the building, simulating, and onchain execution of Plugs. Without this lifecycle, everything would stand still so this is a critical piece of the system to understand.
 
 ## The Flow
 
