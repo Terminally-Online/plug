@@ -29,8 +29,6 @@ func Deposit(lookup *actions.SchemaLookup[DepositRequest]) ([]signature.Plug, er
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	// TODO MASON: is this right? we'll need to have two separate GetAndUpdates for the approval and deposit to replace both inputs from the previous plug if it exists, right?
-	// or will this conflict because we're returning two plugs and the deposit will try and reference the approval?
 	var approvalUpdates []coil.Update
 	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -61,6 +59,9 @@ func Deposit(lookup *actions.SchemaLookup[DepositRequest]) ([]signature.Plug, er
 		depositUpdates,
 		lookup.PreviousActionDefinition,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	depositCalldata, err := DepositFunc.GetCalldata(
 		token,
