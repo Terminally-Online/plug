@@ -9,6 +9,8 @@ import (
 
 type ActionOnchainFunctionInterface interface {
 	GetCoilUpdate(string, string, ActionDefinitionInterface) (*coil.Update, error)
+	GetCalldata(...any) ([]byte, error)
+	GetFunctionName() string
 }
 
 type ActionOnchainFunctionResponse struct {
@@ -55,4 +57,8 @@ func (r *ActionOnchainFunctionResponse) GetCoilUpdate(paramToReplace string, lin
 		Start: position,
 		Slice: *slice,
 	}, nil
+}
+
+func (r *ActionOnchainFunctionResponse) GetFunctionName() string {
+	return r.FunctionName
 }

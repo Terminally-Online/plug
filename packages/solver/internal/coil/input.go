@@ -58,3 +58,7 @@ func (c *CoilInput[T, R]) Get(valueFunc func() (R, error)) (R, error) {
 
 	return response, err
 }
+
+func (c *CoilInput[T, R]) GetLinkedReturnKey() string {
+	return strings.TrimPrefix(strings.TrimSuffix(c.raw, CoilSuffix), CoilPrefix)
+}

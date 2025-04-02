@@ -130,8 +130,6 @@ func (d *ActionDefinition[T]) GetCoilSlice(name string) (*coil.Slice, error) {
 		return nil, fmt.Errorf("failed to get ABI: %w", err)
 	}
 
-	fmt.Printf("getting coil slice for %s, slice name %s\n", d.Response.FunctionName, name)
-	fmt.Printf("coil slice definition %+v\n", d)
 	slices, err := coil.GetCoilSlices(abi, d.Response.FunctionName, &name, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find coils: %w", err)

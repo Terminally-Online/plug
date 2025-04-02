@@ -86,8 +86,6 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 		return amount, nil
 	}
 
-	fmt.Printf("transfer lookup.Inputs.Amount: %v\n", lookup.Inputs.Amount)
-	fmt.Printf("transfer previousActionDefinition: %v\n", lookup.PreviousActionDefinition)
 	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		amountFunc,

@@ -56,10 +56,8 @@ func GetAndUpdate[I any, O any](
 		return response, nil, err
 	}
 
-	// TODO MASON: is there any reason why we have I as any instead of constraining it to a string?
-	// It seems to me like the key of a coil input will always be a string to match the function signature of the linked coil
-	inValue := fmt.Sprintf("%v", input.GetValue())
-	if update, err := coilFunc.GetCoilUpdate(param, inValue, definition); update != nil {
+	fmt.Printf("lookup.go::GetAndUpdate -- Replacing param '%s' in the '%s' function call with linked coil key '%s' from previous plug '%s'\n", param, coilFunc.GetFunctionName(), input.GetLinkedReturnKey(), definition.GetSentence())
+	if update, err := coilFunc.GetCoilUpdate(param, input.GetLinkedReturnKey(), definition); update != nil {
 		updates = append(updates, *update)
 		return response, updates, err
 	} else if err != nil {
