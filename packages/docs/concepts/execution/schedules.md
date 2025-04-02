@@ -29,17 +29,17 @@ For one-time executions, the Solver will simulate the transaction once and attem
 
 As a complete concept [frequencies](#frequencies) control a majority of the time-based logic in the Solver and supporting systems to ensure that simulations and executions are processed at the correct times.
 
-### Workflow
+### Plug Frequencies
 
-A [workflow frequency](#workflow) defines the rate of simulations. During Beta, this is set to 10 minutes by default for every workflow regardless of the [execution frequency](#execution).
+A [plug frequency](#plug-frequencies) defines the rate of simulations. During Beta, this is set to 10 minutes by default for every workflow regardless of the [execution frequency](#execution-frequencies).
 
 Notably, today Plug does not use a "listener" system to trigger the simulations. Instead, it uses a cron-like job that ticks every second and pulls in new simulation targets from the application every 1 minute. This means that while you have a queued execution and a transaction has not run, the Solver will simulate (and attempt to execute the transaction if fit) as often as every 10 minutes without the user doing anything.
 
 This is helpful in the case that an execution has been queued and the user wants to run it as soon as the conditions are met. Now, the simulation can fail to resolve several times and still execute once the chain state has changed in a way that enables the transaction to be built, simulated, and executed.
 
-### Execution
+### Execution Frequencies
 
-A second form of frequencies the system uses is [execution frequencies](#execution) that define how often a transaction _could_ be run. A user may want a transaction to only run once, daily, or even monthly.
+A second form of frequencies the system uses is [execution frequencies](#execution-frequencies) that define how often a transaction _could_ be run. A user may want a transaction to only run once, daily, or even monthly.
 
 As we are using a cron-like system it is important to mention that in a typical cron-like system there would be the case of time drift because the system uses a notional definition of when it is time to run the job.
 

@@ -40,24 +40,46 @@ export default defineConfig({
         text: "Core Concepts",
         items: [
           {
-            text: "Actions",
-            link: "/concepts/actions",
-          },
-          {
-            text: "Constraints",
-            link: "/concepts/constraints",
-          },
-          {
             text: "Plugs",
             link: "/concepts/plugs",
+            collapsed: false,
+            items: [
+              {
+                text: "Actions",
+                link: "/concepts/atoms/actions",
+              },
+              {
+                text: "Constraints",
+                link: "/concepts/atoms/constraints",
+              },
+              {
+                text: "Reads",
+                link: "/concepts/atoms/reads",
+              },
+              {
+                text: "Coils",
+                link: "/concepts/atoms/coils",
+              },
+            ],
           },
           {
-            text: "Coils",
-            link: "/concepts/coils",
-          },
-          {
-            text: "Circuit",
-            link: "/concepts/circuit",
+            text: "Execution",
+            link: "/concepts/execution",
+            collapsed: false,
+            items: [
+              {
+                text: "Circuit",
+                link: "/concepts/execution/circuit",
+              },
+              {
+                text: "Schedules",
+                link: "/concepts/execution/schedules",
+              },
+              {
+                text: "Fees",
+                link: "/concepts/execution/fees",
+              },
+            ],
           },
         ],
       },
