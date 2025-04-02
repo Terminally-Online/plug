@@ -32,6 +32,10 @@ func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, erro
 }
 
 func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string, definition ActionDefinitionInterface) (*coil.Update, error) {
+	fmt.Printf("getting coil update for %s\n", r.FunctionName)
+	fmt.Printf("coil update param %s\n", param)
+	fmt.Printf("coil update definition %+v\n", definition)
+
 	if definition == nil {
 		return nil, fmt.Errorf("update reference to linked input definition is nil")
 	}

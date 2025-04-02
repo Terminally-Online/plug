@@ -35,7 +35,7 @@ func (c *CoilInput[T, R]) UnmarshalJSON(data []byte) error {
 
 	if strings.HasPrefix(raw, CoilPrefix) && strings.HasSuffix(raw, CoilSuffix) {
 		trimmed := strings.TrimPrefix(strings.TrimSuffix(raw, CoilSuffix), CoilPrefix)
-		return json.Unmarshal([]byte(trimmed), &c.decoded)
+		return json.Unmarshal([]byte(`"`+trimmed+`"`), &c.decoded)
 	}
 
 	return json.Unmarshal([]byte(`"`+raw+`"`), &c.decoded)
