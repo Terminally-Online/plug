@@ -5,17 +5,24 @@ import (
 	"math/big"
 	"solver/bindings/euler_evault_implementation"
 	"solver/internal/actions"
-	"solver/internal/actions/euler/reads"
 	euler_utils "solver/internal/actions/euler/utils"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type BorrowRequest struct {
-	Amount          string `json:"amount"`
-	Token           string `json:"token"`
-	Vault           string `json:"vault"`
-	SubAccountIndex uint8  `json:"sub-account"`
+	Amount          coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token           string                           `json:"token"`
+	Vault           string                           `json:"vault"`
+	SubAccountIndex uint8                            `json:"sub-account"`
+}
+
+var BorrowFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     euler_evault_implementation.EulerEvaultImplementationMetaData,
+	FunctionName: "borrow",
 }
 
 func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, error) {
@@ -24,25 +31,22 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var updates []coil.Update
+	amount, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&BorrowFunc,
+		"amount",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
-	}
-
-	vault, err := reads.GetVault(lookup.Inputs.Vault, lookup.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault: %w", err)
-	}
-
-	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("EulerEvaultImplementation")
+		return nil, err
 	}
 
 	subAccountAddress := euler_utils.GetSubAccountAddress(lookup.From, lookup.Inputs.SubAccountIndex)
 
-	calldata, err := vaultAbi.Pack(
-		"borrow",
+	calldata, err := BorrowFunc.GetCalldata(
 		amount,
 		subAccountAddress,
 	)
@@ -52,11 +56,11 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 
 	call, err := euler_utils.WrapEVCCall(
 		lookup.ChainId,
-		vault.Vault,
+		common.HexToAddress(lookup.Inputs.Vault),
 		subAccountAddress,
 		big.NewInt(0),
 		calldata,
-		nil,
+		updates,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap borrow call: %w", err)
