@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {PlugAddressesLib} from './Plug.Addresses.Lib.sol';
@@ -41,12 +41,20 @@ library PlugLib {
 	//                   REWARDS                   //
 	/////////////////////////////////////////////////
 
-    event NewRewardPeriod(uint256 indexed period, bytes32 merkleRoot, uint256 totalAmount);
-    event RewardClaimed(uint256 indexed period, address indexed user, uint256 amount);
+	event NewRewardPeriod(
+		uint256 indexed period,
+		bytes32 merkleRoot,
+		uint256 totalAmount
+	);
+	event RewardClaimed(
+		uint256 indexed period,
+		address indexed user,
+		uint256 amount
+	);
 
-    error InvalidMerkleProof();
-    error PeriodNotInitialized();
-    error RewardsAlreadyClaimed();
-    error InsufficientRewardBalance();
-    error ZeroAmount();
+	error InvalidMerkleProof();
+	error PeriodNotInitialized();
+	error RewardsAlreadyClaimed();
+	error InsufficientRewardBalance();
+	error ZeroAmount();
 }

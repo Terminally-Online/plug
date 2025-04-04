@@ -8,7 +8,7 @@ import (
 )
 
 type ActionOnchainFunctionInterface interface {
-	GetCoilUpdate(string) (*coil.Update, error)
+	GetCoilUpdate(string, ActionDefinitionInterface) (*coil.Update, error)
 }
 
 type ActionOnchainFunctionResponse struct {
@@ -31,15 +31,14 @@ func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, erro
 	return calldata, nil
 }
 
-func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string) (*coil.Update, error) {
+func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string, definition ActionDefinitionInterface) (*coil.Update, error) {
+	if definition == nil {
+		return nil, fmt.Errorf("update reference to linked input definition is nil")
+	}
+
 	abi, err := r.Metadata.GetAbi()
 	if err != nil {
 		return nil, err
-	}
-
-	slices, err := coil.GetCoilSlices(abi, r.FunctionName, nil, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find coils: %w", err)
 	}
 
 	position, err := coil.GetCoilPosition(abi, r.FunctionName, &param, nil)
@@ -47,8 +46,13 @@ func (r *ActionOnchainFunctionResponse) GetCoilUpdate(param string) (*coil.Updat
 		return nil, fmt.Errorf("failed to find coils: %w", err)
 	}
 
+	slice, err := definition.GetCoilSlice(param)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
 	return &coil.Update{
 		Start: position,
-		Slice: slices[0],
+		Slice: *slice,
 	}, nil
 }
