@@ -59,7 +59,7 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 			from = utils.ZeroAddress
 		}
 
-		lookup, err := NewSchemaLookup[any](chainId, from, search, nil)
+		lookup, err := NewSchemaLookup[any](chainId, from, search, nil, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
 		}

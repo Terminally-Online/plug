@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugAddressesLib } from "./Plug.Addresses.Lib.sol";
@@ -11,7 +11,7 @@ library PlugLib {
     event SocketOwnershipTransferred(
         address indexed previousOwner, address indexed newOwner, bytes32 imageHash
     );
-    event PlugResult(uint8 index, PlugTypesLib.Result reason);
+    event PlugResult(uint256 index, bytes32 livePlugsHash, PlugTypesLib.Result reason);
 
     error NotImplemented();
 
