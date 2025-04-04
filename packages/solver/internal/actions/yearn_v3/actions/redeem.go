@@ -41,4 +41,5 @@ func Redeem(lookup *actions.SchemaLookup[RedeemRequest]) ([]signature.Plug, erro
 	// 	To:   *gauge,
 	// 	Data: calldata,
 	// }}, nil
+	return nil, nil
 }
