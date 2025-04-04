@@ -9,7 +9,7 @@ library PlugLib {
 	/////////////////////////////////////////////////
 	//                     PLUG                    //
 	/////////////////////////////////////////////////
-	event PlugResult(uint8 index, PlugTypesLib.Result reason);
+	event PlugResult(uint8 index, bytes32 plugsHash, PlugTypesLib.Result reason);
 
 	error PlugFailed(uint8 $index, string $reason);
 
