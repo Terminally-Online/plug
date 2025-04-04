@@ -8,7 +8,9 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/schema v1.4.1
+	github.com/gorilla/schema v1.4.1
 	github.com/joho/godotenv v1.5.1
+	github.com/prometheus/client_golang v1.19.0
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggest/openapi-go v0.2.57
 	github.com/swaggest/rest v0.2.73
@@ -54,6 +56,9 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/prometheus/client_model v0.5.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
+	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/swaggest/jsonschema-go v0.3.73 // indirect
 	github.com/swaggest/refl v1.3.1 // indirect
@@ -64,6 +69,7 @@ require (
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
