@@ -2,37 +2,51 @@
 
 pragma solidity 0.8.23;
 
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { PlugAddressesLib } from "./Plug.Addresses.Lib.sol";
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
+import {PlugAddressesLib} from './Plug.Addresses.Lib.sol';
 
 library PlugLib {
-    event SocketDeployed(address indexed implementation, address indexed vault, bytes32 salt);
+	/////////////////////////////////////////////////
+	//                     PLUG                    //
+	/////////////////////////////////////////////////
+	event PlugResult(uint8 index, PlugTypesLib.Result reason);
 
-    event SocketOwnershipTransferred(
-        address indexed previousOwner, address indexed newOwner, bytes32 imageHash
-    );
-    event PlugResult(uint8 index, PlugTypesLib.Result reason);
+	error PlugFailed(uint8 $index, string $reason);
 
-    error NotImplemented();
+	/////////////////////////////////////////////////
+	//                    SOCKET                   //
+	/////////////////////////////////////////////////
 
-    error SocketAddressInvalid(address $intended, address $socket);
-    error SocketAddressEmpty(address $socket);
+	event SocketDeployed(
+		address indexed implementation,
+		address indexed vault,
+		bytes32 salt
+	);
+	event SocketOwnershipTransferred(
+		address indexed previousOwner,
+		address indexed newOwner,
+		bytes32 imageHash
+	);
 
-    error SaltInvalid(address $implementation, address $admin);
-    error CallerInvalid(address $expected, address $reality);
-    error RouterInvalid(address $reality);
-    error TypeInvalid(uint8 $reality);
+	error SocketAddressInvalid(address $intended, address $socket);
+	error SocketAddressEmpty(address $socket);
 
-    error PlugFailed(uint8 $index, string $reason);
+	error SaltInvalid(address $implementation, address $admin);
+	error CallerInvalid(address $expected, address $reality);
+	error RouterInvalid(address $reality);
+	error TypeInvalid(uint8 $reality);
+	error CompensationFailed(address $recipient, uint256 $value);
 
-    error CompensationFailed(address $recipient, uint256 $value);
+	/////////////////////////////////////////////////
+	//                   REWARDS                   //
+	/////////////////////////////////////////////////
 
-    error ThresholdInvalid();
-    error ThresholdExceeded(uint256 $expected, uint256 $reality);
-    error ThresholdInsufficient(uint256 $expected, uint256 $reality);
+    event NewRewardPeriod(uint256 indexed period, bytes32 merkleRoot, uint256 totalAmount);
+    event RewardClaimed(uint256 indexed period, address indexed user, uint256 amount);
 
-    error TargetInvalid();
-
-    error TokenAllowanceInvalid();
-    error TokenBalanceInvalid();
+    error InvalidMerkleProof();
+    error PeriodNotInitialized();
+    error RewardsAlreadyClaimed();
+    error InsufficientRewardBalance();
+    error ZeroAmount();
 }
