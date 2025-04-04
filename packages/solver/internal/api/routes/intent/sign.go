@@ -107,22 +107,25 @@ func verifySignature(message string, signedMessage string, operatorAddress strin
 	return recoveredAddr == common.HexToAddress(operatorAddress), nil
 }
 
+func MakeHTTPError(w http.ResponseWriter, err string, code int) { 
+}
+
 func SignRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *solver.Solver) {
 	var req SignatureRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.MakeHTTPError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	message := fmt.Sprintf("Request signed LivePlugs for intent %s", req.IntentID)
 	valid, err := verifySignature(message, req.SignedMessage, req.OperatorAddress)
 	if err != nil {
-		utils.MakeHttpError(w, "signature verification error: "+err.Error(), http.StatusBadRequest)
+		utils.MakeHTTPError(w, "signature verification error: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if !valid {
-		utils.MakeHttpError(w, "invalid signature", http.StatusUnauthorized)
+		utils.MakeHTTPError(w, "invalid signature", http.StatusUnauthorized)
 		return
 	}
 
@@ -130,18 +133,18 @@ func SignRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *s
 	var intent models.Intent
 	result := database.DB.Where("id = ?", req.IntentID).First(&intent)
 	if result.Error != nil {
-		utils.MakeHttpError(w, "intent not found: "+result.Error.Error(), http.StatusNotFound)
+		utils.MakeHTTPError(w, "intent not found: "+result.Error.Error(), http.StatusNotFound)
 		return
 	}
 
 	rpcUrl, err := client.GetQuicknodeUrl(intent.ChainId)
 	if err != nil {
-		utils.MakeHttpError(w, "failed to get RPC URL: "+err.Error(), http.StatusInternalServerError)
+		utils.MakeHTTPError(w, "failed to get RPC URL: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	ethClient, err := ethclient.Dial(rpcUrl)
 	if err != nil {
-		utils.MakeHttpError(w, "failed to connect to blockchain: "+err.Error(), http.StatusInternalServerError)
+		utils.MakeHTTPError(w, "failed to connect to blockchain: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -149,25 +152,25 @@ func SignRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *s
 
 	isActive, err := verifyOperatorInAttestationCenter(ethClient, attestationCenterAddress, common.HexToAddress(req.OperatorAddress))
 	if err != nil {
-		utils.MakeHttpError(w, "failed to verify operator: "+err.Error(), http.StatusInternalServerError)
+		utils.MakeHTTPError(w, "failed to verify operator: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if !isActive {
-		utils.MakeHttpError(w, "operator is not active", http.StatusForbidden)
+		utils.MakeHTTPError(w, "operator is not active", http.StatusForbidden)
 		return
 	}
 
 	solution, err := s.Solve(&intent, false, true)
 	if err != nil {
-		utils.MakeHttpError(w, "failed to solve intent: "+err.Error(), http.StatusInternalServerError)
+		utils.MakeHTTPError(w, "failed to solve intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(map[string]any{
 		"livePlugs": solution.LivePlugs,
 	}); err != nil {
-		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		utils.MakeHTTPError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 	}
 }
 
