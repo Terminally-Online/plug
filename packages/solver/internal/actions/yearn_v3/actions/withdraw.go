@@ -2,10 +2,11 @@ package actions
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/yearn_v3_pool"
 	"solver/internal/actions"
 	"solver/internal/actions/yearn_v3/reads"
-	"solver/internal/actions/yearn_v3/types"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strings"
@@ -14,9 +15,9 @@ import (
 )
 
 type WithdrawRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Vault  string `json:"vault"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Vault  string                           `json:"vault"`
 }
 
 var WithdrawFunc = actions.ActionOnchainFunctionResponse{
@@ -30,25 +31,20 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var updates []coil.Update
+	amount, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&WithdrawFunc,
+		"assets",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
+		return nil, err
 	}
 
-	vaults, err := reads.GetVaults(lookup.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vaults: %v", err)
-	}
-	var targetVault *types.YearnVault
-	for _, vault := range vaults {
-		if strings.EqualFold(vault.Address, lookup.Inputs.Vault) {
-			targetVault = &vault
-			break
-		}
-	}
-	if targetVault == nil {
-		return nil, fmt.Errorf("deposit not available for vault: %s", lookup.Inputs.Vault)
-	}
+	targetVault, err := reads.GetVault(lookup.ChainId, lookup.Inputs.Vault)
 	if !strings.EqualFold(token.Hex(), targetVault.Token.Address) {
 		return nil, fmt.Errorf("asset %s cannot be used in vault: %s", token, lookup.Inputs.Vault)
 	}
@@ -59,7 +55,8 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(lookup.Inputs.Vault),
-		Data: withdrawCalldata,
+		To:      common.HexToAddress(lookup.Inputs.Vault),
+		Data:    withdrawCalldata,
+		Updates: updates,
 	}}, nil
 }
