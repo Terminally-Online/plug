@@ -22,8 +22,12 @@ body,
 html,
 .VPSidebar,
 .curtain,
-.search {
+.search,
+.container {
   background-color: #fefff7 !important;
+}
+.content-body {
+  border-left: 1px solid rgba(56, 88, 66, 0.1) !important;
 }
 
 .VPSidebar {
@@ -175,6 +179,6 @@ code {
   font-weight: 700 !important;
 }
 
-.content-body { 
+.content-body {
   background: #fefff7 !important;
 }

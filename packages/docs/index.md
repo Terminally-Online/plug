@@ -37,7 +37,7 @@ The first question most people have is, of course, how is Plug different from ev
 
 ## Background
 
-Plug was created by a terminally online team led by [Chance](https://twitter.com/nftchance), [Reka](https://twitter.com/reka_eth), and [Drake](https://twitter.com/drakedanner). We understand the experience of using the blockchain deeply and have a vast majority of our assets onchain. The lack of real asset management and use was painfully aware. We missed countless opportunities, we’ve watched many fall for phishing attack vectors as they bounce between different interfaces, we’ve see the impacts of blackswan events that result in thousands of people losing all their money in the blink of an eye. Plug was created to resolve this.
+Plug was created by a terminally online team led by [Chance](https://twitter.com/nftchance) and [Drake](https://twitter.com/drakedanner). We understand the experience of using the blockchain deeply and have a vast majority of our assets onchain. The lack of real asset management and use was painfully aware. We missed countless opportunities, we’ve watched many fall for phishing attack vectors as they bounce between different interfaces, we’ve see the impacts of blackswan events that result in thousands of people losing all their money in the blink of an eye. Plug was created to resolve this.
 
 Today, Plug is the only place the general blockchain user can go to add constraints to their transactions. There’s no technical experience needed. There’s no loss of asset custody. It’s an improvement in experience, outcomes, and safety for every single user.
 

@@ -51,6 +51,9 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --filter=@terminallyonline/plug-core...
 
+      - name: 🙏 Install Forge dependencies
+        run: forge install
+
       - name: 📦 Build Packages
         run: pnpm build --filter=@terminallyonline/plug-core
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import {
     Test, PlugEtcherLib, LibClone, PlugFactory, PlugLib
@@ -31,7 +31,7 @@ contract PlugFactoryTest is Test {
         assertEq(implementationAddress, address(socketImplementation));
 
         /// @dev Decode the single nonce used to guard the signature.
-        (uint96 singleNonce) = abi.decode(salt, (uint96));
+        uint96 singleNonce = abi.decode(salt, (uint96));
         assertEq(nonce, singleNonce);
     }
 

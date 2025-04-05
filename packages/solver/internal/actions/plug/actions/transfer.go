@@ -60,20 +60,35 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 	}
 
 	var updates []coil.Update
-	recipient, updates, err := lookup.Inputs.Recipient.GetAndUpdate(
-		lookup.Inputs.Recipient.GetValueWithError, &TransferFunc, "_to", updates,
+	recipient, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Recipient,
+		lookup.Inputs.Recipient.GetValueWithError,
+		&TransferFunc,
+		"_to",
+		updates,
+		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	amount, updates, err := lookup.Inputs.Amount.GetAndUpdate(func() (*big.Int, error) {
+	// Define a more specific type conversion function
+	amountFunc := func() (*big.Int, error) {
 		amount, err := utils.StringToUint(lookup.Inputs.Amount.GetValue(), uint8(decimals))
 		if err != nil {
 			return nil, err
 		}
 		return amount, nil
-	}, &TransferFunc, "_value", updates)
+	}
+
+	amount, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		amountFunc,
+		&TransferFunc,
+		"_value",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
 		return nil, err
 	}
