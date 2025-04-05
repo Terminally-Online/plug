@@ -15,6 +15,7 @@ export const factory = base('Plug.Factory.sol')
 export const socket = base('Plug.Socket.sol')
 export const ticket = base('Plug.Ticket.sol')
 export const token = base('Plug.Token.sol')
+export const rewards = base('Plug.Rewards.sol')
 
 export const assert = base('Plug.Assert.sol')
 export const boolean = base('Plug.Boolean.sol')
@@ -31,7 +32,9 @@ export const constantContracts: Readonly<Array<Contract>> = [
 	coercion,
 	database,
 	evm,
-	math
+	math,
+	token,
+	rewards
 ] as const
 export const etchContracts: Readonly<Array<Contract>> = [
 	router,

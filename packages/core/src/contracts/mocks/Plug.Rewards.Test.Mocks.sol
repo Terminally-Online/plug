@@ -13,7 +13,7 @@ abstract contract SuperchainERC20 is ERC20 {
         _mint($to, $amount);
         return true;
     }
-    
+
     function crosschainBurn(address $from, uint256 $amount) external returns (bool) {
         _burn($from, $amount);
         return true;
@@ -22,5 +22,6 @@ abstract contract SuperchainERC20 is ERC20 {
 
 // Mock PredeployAddresses
 library PredeployAddresses {
-    address public constant SUPERCHAIN_TOKEN_BRIDGE = address(0x9876543210987654321098765432109876543210);
+    address public constant SUPERCHAIN_TOKEN_BRIDGE =
+        address(0x9876543210987654321098765432109876543210);
 }
