@@ -1886,12 +1886,12 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "index",
-                        "type": "uint256",
+                        "type": "uint8",
                         "indexed": false,
-                        "internalType": "uint256"
+                        "internalType": "uint8"
                     },
                     {
-                        "name": "livePlugsHash",
+                        "name": "plugsHash",
                         "type": "bytes32",
                         "indexed": false,
                         "internalType": "bytes32"
