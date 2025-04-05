@@ -13,6 +13,6 @@ type SolutionStatus struct {
 type Solution struct {
 	IntentId     string               `json:"intentId"`
 	LivePlugs    *signature.LivePlugs `json:"-"`
-	Transactions []signature.Plug    `json:"transactions,omitempty"`
+	Transactions []signature.Plug     `json:"transactions,omitempty"`
 	Run          *models.Run          `json:"run,omitempty"`
 }

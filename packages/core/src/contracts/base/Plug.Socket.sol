@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 import { PlugTypes } from "../abstracts/Plug.Types.sol";
@@ -142,6 +142,18 @@ contract PlugSocket is
      */
     function version() public pure override returns (string memory $version) {
         $version = "0.0.1";
+    }
+
+    /**
+     * See { PlugSocket-hash }
+     */
+    function hash(PlugTypesLib.LivePlugs calldata $livePlugs)
+        public
+        pure
+        override
+        returns (bytes32 $livePlugsHash)
+    {
+        return getLivePlugsHash($livePlugs);
     }
 
     /**

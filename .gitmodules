@@ -4,3 +4,6 @@
 [submodule "packages/core/lib/prb-test"]
 	path = packages/core/lib/prb-test
 	url = https://github.com/PaulRBerg/prb-test
+[submodule "packages/core/lib/interop-lib"]
+	path = packages/core/lib/interop-lib
+	url = https://github.com/ethereum-optimism/interop-lib

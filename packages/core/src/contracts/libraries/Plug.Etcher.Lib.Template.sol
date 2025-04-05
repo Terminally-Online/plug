@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { PlugLib } from "../libraries/Plug.Lib.sol";
+
 /// @notice INSERT IMPORTS
 
 interface ImmutableCreate2Factory {

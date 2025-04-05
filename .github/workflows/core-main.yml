@@ -57,8 +57,11 @@ jobs:
         with:
           version: nightly
 
-      - name: 📦 Install dependencies
+      - name: ⬇️ Install dependencies
         run: pnpm install --filter=@terminallyonline/plug-core...
+
+      - name: 🙏 Install Forge dependencies
+        run: forge install
 
       - name: 📦 Build package
         run: pnpm build

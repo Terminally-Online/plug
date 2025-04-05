@@ -36,13 +36,4 @@ By employing snapshot actions, you can orchestrate complex, condition-based tran
 
 Snapshot actions involve capturing and utilizing the current state of the blockchain to inform transaction execution at a later time in the process of transaction execution.
 
-## Chain Abstracted Actions
 
-Chain abstraction is an emerging trend in the blockchain space that addresses the challenges posed by the increasing fragmentation of liquidity and assets across multiple chains. As users typically have to bridge between chains and manage assets across diverse networks, managing these fragmented assets can become cumbersome and inefficient.
-
-Plug revolutionizes this process by enabling transactions to be executed across multiple chains through a single, unified intent. This eliminates the need for users to switch networks manually in their wallets or sign multiple transactions. Here’s how it simplifies the cross-chain experience:
-
-- **Multi-Chain Execution:** Users can select multiple chains over which to execute their intents, allowing for seamless interactions across different blockchain environments.
-- **Unified Intents:** Create intents that orchestrate actions and outcomes across these multiple chains, simplifying the management of decentralized assets.
-
-Although certain blockchain actions may not be available on all chains, Plug intelligently filters and adjusts the available options based on what each chain can support. This capability means that users don’t have to worry about the specific technical requirements or limitations of the chain connected to their wallet. Desired outcomes are delivered across all supported chains, without the complexities or delays typically associated with bridging between networks. This approach not only enhances usability but also maximizes the efficiency of asset utilization across the blockchain ecosystem.

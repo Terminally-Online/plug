@@ -43,7 +43,7 @@ export const DEFAULT_SCHEMA = {
 			name: 'PlugTypes',
 			filename: 'Plug.Types',
 			license: 'MIT',
-			solidity: '0.8.23'
+			solidity: '0.8.26'
 		},
 		types: EIP712_TYPES,
 		dangerous: {

@@ -87,3 +87,22 @@ func RespondWithError(w http.ResponseWriter, err error) {
 		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
 	}
 }
+
+func MakeHTTPError(w http.ResponseWriter, err string, code int) {
+    w.WriteHeader(code)
+    
+    errorResponse := map[string]string{
+        "error": err,
+        "status": http.StatusText(code),
+    }
+    
+    responseJSON, jsonErr := json.Marshal(errorResponse)
+    if jsonErr != nil {
+        w.Header().Set("Content-Type", "text/plain")
+        w.Write(fmt.Appendf(nil, "Error %d: %s", code, err))
+        return
+    }
+    
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(responseJSON)
+}

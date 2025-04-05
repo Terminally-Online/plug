@@ -30,14 +30,14 @@ func (c *CoilInput[T, R]) UnmarshalJSON(data []byte) error {
 			return json.Unmarshal(data, &c.decoded)
 		}
 	}
-	
+
 	c.raw = raw
-	
+
 	if strings.HasPrefix(raw, CoilPrefix) && strings.HasSuffix(raw, CoilSuffix) {
 		trimmed := strings.TrimPrefix(strings.TrimSuffix(raw, CoilSuffix), CoilPrefix)
 		return json.Unmarshal([]byte(trimmed), &c.decoded)
 	}
-	
+
 	return json.Unmarshal([]byte(`"`+raw+`"`), &c.decoded)
 }
 
@@ -57,26 +57,4 @@ func (c *CoilInput[T, R]) Get(valueFunc func() (R, error)) (R, error) {
 	response, err := valueFunc()
 
 	return response, err
-}
-
-type ValueFunc[R any] func() (R, error)
-
-type FunctionResponseInterface interface {
-	GetCoilUpdate(string) (*Update, error)
-}
-
-func (c *CoilInput[T, R]) GetAndUpdate(valueFunc ValueFunc[R], coilFunc FunctionResponseInterface, param string, updates []Update) (R, []Update, error) {
-	response, err := valueFunc()
-	if err != nil {
-		return response, nil, err
-	}
-
-	if update, err := coilFunc.GetCoilUpdate(param); update != nil {
-		updates = append(updates, *update)
-		return response, updates, err
-	} else if err != nil {
-		return response, nil, err
-	}
-
-	return response, nil, err
 }
