@@ -2,7 +2,6 @@ package actions
 
 import (
 	"fmt"
-	"log"
 	"math/big"
 	"solver/bindings/erc_20"
 	"solver/internal/actions"
@@ -75,9 +74,7 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 
 	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
-		func() (*big.Int, error) {
-			return utils.StringToUint(lookup.Inputs.Amount.GetValue(), uint8(decimals))
-		},
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&TransferFunc,
 		"_value",
 		updates,

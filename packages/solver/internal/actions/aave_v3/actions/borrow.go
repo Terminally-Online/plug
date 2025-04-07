@@ -2,19 +2,26 @@ package actions
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/aave_v3_pool"
 	"solver/internal/actions"
-	"solver/internal/bindings/references"
-	"solver/internal/solver/signature"
 	aave_utils "solver/internal/actions/aave_v3/utils"
+	"solver/internal/bindings/references"
+	"solver/internal/coil"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type BorrowRequest struct {
-	Token  string `json:"token"`
-	Amount string `json:"amount"`
+	Token  string                           `json:"token"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+}
+
+var BorrowFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     aave_v3_pool.AaveV3PoolMetaData,
+	FunctionName: "borrow",
 }
 
 func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, error) {
@@ -22,18 +29,23 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
-	amountOut, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+
+	var updates []coil.Update
+	amount, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&BorrowFunc,
+		"amount",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
+		return nil, err
 	}
 
-	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("AaveV3Pool")
-	}
-	calldata, err := poolAbi.Pack("borrow",
+	calldata, err := BorrowFunc.GetCalldata(
 		tokenOut,
-		amountOut,
+		amount,
 		aave_utils.InterestRateMode,
 		uint16(0),
 		lookup.From,

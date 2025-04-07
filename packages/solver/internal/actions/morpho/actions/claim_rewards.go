@@ -7,9 +7,15 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/morpho/reads"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
+
+var ClaimRewardsFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     morpho_distributor.MorphoDistributorMetaData,
+	FunctionName: "claim",
+}
 
 func ClaimRewards(lookup *actions.SchemaLookup[any]) ([]signature.Plug, error) {
 	distributions, err := reads.GetDistributions(lookup.From, lookup.ChainId)
@@ -18,11 +24,6 @@ func ClaimRewards(lookup *actions.SchemaLookup[any]) ([]signature.Plug, error) {
 	}
 	if len(distributions) == 0 {
 		return nil, fmt.Errorf("no active distributions found for address: %s", lookup.From)
-	}
-
-	distributorAbi, err := morpho_distributor.MorphoDistributorMetaData.GetAbi()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho distributor abi: %w", err)
 	}
 
 	claims := []signature.Plug{}
@@ -35,15 +36,15 @@ func ClaimRewards(lookup *actions.SchemaLookup[any]) ([]signature.Plug, error) {
 		for i, proofItem := range distribution.Proof {
 			proof[i] = common.HexToHash(proofItem)
 		}
-		claimCalldata, err := distributorAbi.Pack(
-			"claim",
+
+		claimCalldata, err := ClaimRewardsFunc.GetCalldata(
 			lookup.From,
 			common.HexToAddress(distribution.Asset.Address),
 			claimable,
 			proof,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to pack claim calldata: %w", err)
+			return nil, utils.ErrTransaction(err.Error())
 		}
 		claims = append(claims, signature.Plug{
 			To:   common.HexToAddress(distribution.Distributor.Address),

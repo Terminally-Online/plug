@@ -1,5 +1,7 @@
 package actions
 
+import "solver/bindings/erc_20"
+
 const (
 	TypeAction     string = "action"
 	TypeConstraint string = "constraint"
@@ -55,4 +57,9 @@ const (
 
 var (
 	IsEmptyOnchainFunc *ActionOnchainFunctionResponse = nil
+
+	Erc20ApprovalFunc = ActionOnchainFunctionResponse{
+		Metadata:     erc_20.Erc20MetaData,
+		FunctionName: "approve",
+	}
 )

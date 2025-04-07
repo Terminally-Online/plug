@@ -56,34 +56,8 @@ func GetAndUpdate[I any, O any](
 		return response, nil, err
 	}
 
-	if update, err := coilFunc.GetCoilUpdate(param, definition); update != nil {
-		updates = append(updates, *update)
-		return response, updates, err
-	} else if err != nil {
-		return response, nil, err
-	}
-
-	return response, nil, err
-}
-
-func (lookup *SchemaLookup[T]) GetAndUpdate(
-	input *coil.CoilInput[T, any],
-	valueFunc ValueFunc[any],
-	coilFunc ActionOnchainFunctionInterface,
-	param string,
-	updates []coil.Update,
-) (any, []coil.Update, error) {
-	response, err := valueFunc()
-	if err != nil || !input.GetIsLinked() {
-		return response, nil, err
-	}
-
-	// Skip coil updates if PreviousActionDefinition is nil
-	if lookup.PreviousActionDefinition == nil {
-		return response, updates, nil
-	}
-
-	if update, err := coilFunc.GetCoilUpdate(param, lookup.PreviousActionDefinition); update != nil {
+	fmt.Printf("lookup.go::GetAndUpdate -- Replacing param '%s' in the '%s' function call with linked coil key '%s' from previous plug '%s'\n", param, coilFunc.GetFunctionName(), input.GetLinkedReturnKey(), definition.GetSentence())
+	if update, err := coilFunc.GetCoilUpdate(param, input.GetLinkedReturnKey(), definition); update != nil {
 		updates = append(updates, *update)
 		return response, updates, err
 	} else if err != nil {
