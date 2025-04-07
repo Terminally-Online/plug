@@ -1,15 +1,17 @@
 import { authenticationLoadingAtom, authenticationResponseAtom } from "@/state/authentication"
 import { useColumnActions } from "@/state/columns"
 import { useAtom, useSetAtom } from "jotai"
-import { getCsrfToken, signIn } from "next-auth/react"
+import { getCsrfToken, signIn, SignInResponse } from "next-auth/react"
 import { useCallback, useState } from "react"
 import { Account, SignableMessage } from "viem"
 import { createSiweMessage } from "viem/siwe"
 import { Connector, useAccount, useChainId, useDisconnect, useSignMessage } from "wagmi"
+import { useConnect } from "./useConnect"
 
 export const useAuthenticate = () => {
 	const chainId = useChainId()
 	const account = useAccount()
+	const {  } = useConnect()
 	const { signMessage, reset } = useSignMessage()
 	const { disconnect } = useDisconnect()
 
@@ -44,11 +46,22 @@ export const useAuthenticate = () => {
 	}
 
 	const authenticate = useCallback(
-		async (index: number, from?: string, address?: string) => {
+		async (
+			context: {
+				address?: string
+			}, options: {
+				onSuccess: (response: SignInResponse | undefined) => void,
+				onError: (error: unknown) => void
+			}
+		) => {
 			try {
 				setAuthenticationLoading(false)
 
-				const message = await createMessage(address ?? account.address)
+				const user = context.address ?? account.address
+
+				if (!user) throw new Error("No user to authenticate")
+
+				const message = await createMessage()
 				const handleAuthenticationSuccess = async (signature: string) => {
 					setAuthenticationLoading(true)
 					setAuthenticationResponse(undefined)
@@ -62,8 +75,10 @@ export const useAuthenticate = () => {
 					})
 
 					setAuthenticationResponse(authenticationResponse)
+					options.onSuccess(authenticationResponse)
+
 					// NOTE: This navigate should have been done in an onSuccess callback.
-					navigate({ index, key: from })
+					// navigate({ index: context.index, key: context.from })
 				}
 				const handleAuthenticationError = (error: unknown, account: {
 					account?: `0x${string}` | Account | undefined,
@@ -76,6 +91,8 @@ export const useAuthenticate = () => {
 
 					reset()
 					disconnect()
+
+					options.onError(error)
 				}
 
 				signMessage({ message }, {

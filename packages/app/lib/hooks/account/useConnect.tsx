@@ -69,17 +69,6 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 		}
 	}, [connection, is.authenticating, disconnect])
 
-	// const sign = useSignMessage()
-	//
-	// const { disconnect } = useDisconnect()
-	//
-	// const { data: session } = useSession()
-	//
-	// const { navigate } = useColumnActions()
-	//
-	// const isAuthenticated = (account.status === "connected" && session?.user.id?.startsWith("0x")) || false
-
-
 	return (
 		<ConnectionContext.Provider value={connection}>
 			{children}
