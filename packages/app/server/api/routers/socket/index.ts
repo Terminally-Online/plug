@@ -11,7 +11,6 @@ import { createClient, SOCKET_BASE_QUERY } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
-import { companion } from "./companion"
 import { onboard } from "./onboard"
 import { referral } from "./referral"
 import { stats } from "./stats"
@@ -75,13 +74,6 @@ export const socket = createTRPCRouter({
 								avatar
 							}
 						},
-						companion: {
-							create: {
-								name: "New Companion",
-								feedCount: 0,
-								treatsFed: 0
-							}
-						}
 					}
 				}
 			},
@@ -99,16 +91,6 @@ export const socket = createTRPCRouter({
 									}
 								}
 							},
-							companion: {
-								connectOrCreate: {
-									where: { socketId: ctx.session.address },
-									create: {
-										name: "New Companion",
-										feedCount: 0,
-										treatsFed: 0
-									}
-								}
-							}
 						},
 						update: {
 							ens: {
@@ -117,17 +99,6 @@ export const socket = createTRPCRouter({
 									data: { name, avatar, updatedAt: new Date() }
 								}
 							},
-							companion: {
-								upsert: {
-									where: { socketId: ctx.session.address },
-									create: {
-										name: "New Companion",
-										feedCount: 0,
-										treatsFed: 0
-									},
-									update: {}
-								}
-							}
 						}
 					}
 				}
@@ -211,7 +182,6 @@ export const socket = createTRPCRouter({
 		}),
 
 	balances,
-	companion,
 	referral,
 	stats,
 	onboard

@@ -54,16 +54,6 @@ export const INITIAL_SOCKET: RouterOutputs["socket"]["get"] = {
 		onboardingCount: 0,
 		socketId: "anonymous-static",
 		farcasterId: null,
-		companion: {
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			socketId: "anonymous-static",
-			lastFeedAt: null,
-			feedCount: 0,
-			treatsFed: 0,
-			streak: 0,
-			name: "New Companion"
-		},
 		ens: null,
 		farcaster: null,
 		referralCode: "",
