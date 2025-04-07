@@ -1,51 +1,27 @@
-import { Session } from "next-auth"
-import { getCsrfToken, signIn, useSession } from "next-auth/react"
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect } from "react"
+import { createContext, PropsWithChildren, useContext, useEffect } from "react"
 
-import { Account, SignableMessage, UserRejectedRequestError } from "viem"
-import { createSiweMessage } from "viem/siwe"
+import { UserRejectedRequestError } from "viem"
 import {
-	Connector,
 	ResolvedRegister,
-	useAccount,
-	UseAccountReturnType,
-	useChainId,
 	UseConnectReturnType,
 	useConnect as useConnectWagmi,
-	useSignMessage,
-	UseSignMessageReturnType
 } from "wagmi"
 
-import { useAtom, useSetAtom } from "jotai"
+import { useSetAtom } from "jotai"
 
 import { CONNECTION, getConnectorWithId, WalletConnectProvider } from "@/lib"
-import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
+import { useDisconnect } from "wagmi"
 import {
-	authenticationLoadingAtom,
-	authenticationResponseAtom,
-	walletConnectProviderAtom,
 	walletConnectURIAtom
 } from "@/state/authentication"
-import { useColumnActions } from "@/state/columns"
+import { useSidebar } from "@/state/sidebar"
 
-const ConnectionContext = createContext<
-	| {
-		connection: UseConnectReturnType<ResolvedRegister["config"]>
-		account: UseAccountReturnType<ResolvedRegister["config"]> & {
-			isAuthenticated: boolean
-			session: Session | null
-		}
-		sign: UseSignMessageReturnType
-		prove: (index: number, from?: string, address?: string) => Promise<void>
-	}
-	| undefined
->(undefined)
+const ConnectionContext = createContext<UseConnectReturnType<ResolvedRegister['config']> | undefined>(undefined)
 
 export function ConnectionProvider({ children }: PropsWithChildren) {
-	const [walletConnectProvider, setWalletConnectProvider] = useAtom(walletConnectProviderAtom)
-	const [walletConnectURI, setWalletConnectURI] = useAtom(walletConnectURIAtom)
-	const setAuthenticationLoading = useSetAtom(authenticationLoadingAtom)
-	const setAuthenticationResponse = useSetAtom(authenticationResponseAtom)
+	const setWalletConnectURI = useSetAtom(walletConnectURIAtom)
+
+	const { is } = useSidebar()
 
 	const connection = useConnectWagmi({
 		mutation: {
@@ -54,95 +30,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 			}
 		}
 	})
-
-	const chainId = useChainId()
-	const account = useAccount()
-	const sign = useSignMessage()
-
 	const { disconnect } = useDisconnect()
-
-	const { data: session } = useSession()
-
-	const { navigate } = useColumnActions()
-
-	const isAuthenticated = (account.status === "connected" && session?.user.id?.startsWith("0x")) || false
-
-	const createMessage = async (address?: string) => {
-		if (!address) throw new Error("No wallet connected.")
-
-		const nonce = await getCsrfToken()
-
-		if (!nonce) throw new Error("Could not get nonce.")
-
-		const expirationTime = new Date(new Date().getTime() + 5 * 60 * 1000)
-		const domain = window.location.host
-		const uri = window.location.origin
-		const statement = `Access the Plug platform by proving your ownership of the address: ${account.address}.`
-		const message = createSiweMessage({
-			address: (address ?? account.address) as `0x${string}`,
-			chainId,
-			domain,
-			nonce,
-			uri,
-			version: "1",
-			statement,
-			expirationTime
-		})
-		return message
-	}
-
-	/**
-	 * Trigger and handle the signing of a message to prove ownership of the address.
-	 * @param address The address to prove ownership of.
-	 * @returns A promise that resolves when the signing is complete.
-	 */
-	const prove = useCallback(
-		async (index: number, from?: string, address?: string) => {
-			try {
-				setAuthenticationLoading(false)
-
-				const message = await createMessage(address ?? account.address)
-				const handleAuthenticationSuccess = async (signature: string) => {
-					setAuthenticationLoading(true)
-					setAuthenticationResponse(undefined)
-
-					const authenticationResponse = await signIn("credentials", {
-						message,
-						signature,
-						chainId,
-						redirect: true,
-						callbackUrl: `${window.location.origin}/app${window.location.search}`
-					})
-
-					setAuthenticationResponse(authenticationResponse)
-					navigate({ index, key: from })
-				}
-				const handleAuthenticationError = (_: unknown, account: {
-					account?: `0x${string}` | Account | undefined,
-					message: SignableMessage,
-					connector?: Connector | undefined
-				}) => {
-					if (account.connector) account.connector.disconnect()
-
-					connection.reset()
-					sign.reset()
-					disconnect()
-				}
-
-				sign.signMessage({ message }, {
-					onSuccess: handleAuthenticationSuccess,
-					onError: handleAuthenticationError
-				})
-			} catch (e) {
-				setAuthenticationLoading(false)
-
-				connection.reset()
-				sign.reset()
-				disconnect()
-			}
-		},
-		[navigate, connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
-	)
 
 	/**
 	 * Prepare the wallet connect provider for displaying the QR code outside of the general context.
@@ -154,33 +42,46 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	 * will have a loading cycle. This way, it is constantly prepared and ready to be displayed.
 	 * @see {@link https://www.npmjs.com/package/@walletconnect/ethereum-provider}
 	 */
-	const init = useCallback(async () => {
-		if (walletConnectProvider) return
-
-		const connector = getConnectorWithId(connection.connectors, CONNECTION.WALLET_CONNECT_CONNECTOR_ID, {
-			shouldThrow: true
-		})
-		const provider = (await connector?.getProvider?.()) as WalletConnectProvider
-
-		setWalletConnectProvider(provider)
-
-		await provider.connect()
-	}, [connection.connectors, setWalletConnectProvider])
-
 	useEffect(() => {
-		if (account.address) return
+		const init = async () => {
+			const connector = getConnectorWithId(connection.connectors, CONNECTION.WALLET_CONNECT_CONNECTOR_ID, {
+				shouldThrow: true
+			})
+			const provider = (await connector?.getProvider?.()) as WalletConnectProvider
 
-		if (!walletConnectProvider) {
-			init()
-		} else if (walletConnectURI === undefined) {
-			walletConnectProvider.once("display_uri", setWalletConnectURI)
+			await provider.connect()
+
+			provider.once("display_uri", setWalletConnectURI)
 		}
-	}, [account.address, walletConnectProvider, walletConnectURI, init, setWalletConnectURI])
+
+		init()
+	}, [])
+
+
+	/**
+	 * When the user had an active connection, but closes the authentication context we go ahead and
+	 * reset the connection to clear out the process that the user has signalled to be abandoned.
+	 */
+	useEffect(() => {
+		if (!is.authenticating && connection.isPending) {
+			connection.reset()
+			disconnect()
+		}
+	}, [connection, is.authenticating, disconnect])
+
+	// const sign = useSignMessage()
+	//
+	// const { disconnect } = useDisconnect()
+	//
+	// const { data: session } = useSession()
+	//
+	// const { navigate } = useColumnActions()
+	//
+	// const isAuthenticated = (account.status === "connected" && session?.user.id?.startsWith("0x")) || false
+
 
 	return (
-		<ConnectionContext.Provider
-			value={{ connection, account: { ...account, isAuthenticated, session }, sign, prove }}
-		>
+		<ConnectionContext.Provider value={connection}>
 			{children}
 		</ConnectionContext.Provider>
 	)
