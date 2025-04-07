@@ -34,7 +34,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		() =>
 			api.solver.actions.schemas.useQuery(
 				{ chainId: 8453 },
-				{ enabled }
+				{ enabled: isAuthenticated }
 			),
 		{ onSuccess: actions => setActions(actions) }
 	)
@@ -43,7 +43,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		onSuccess: data => setPlugs(prev => [...prev, ...data.filter(d => !prev.some(p => p.id === d.id))])
 	})
 
-	usePlugSubscriptions({ enabled })
+	usePlugSubscriptions({ enabled: isAuthenticated })
 
 	useInitializeHoldingsFetching({
 		address,
