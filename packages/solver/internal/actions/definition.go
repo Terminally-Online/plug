@@ -66,10 +66,11 @@ func (d *ActionDefinition[T]) GetIsUserSpecific() bool {
 func (d *ActionDefinition[T]) GetHandler() ActionFunc[any] {
 	return func(lookup *SchemaLookup[any]) ([]signature.Plug, error) {
 		typedLookup := &SchemaLookup[T]{
-			ChainId: lookup.ChainId,
-			Client:  lookup.Client,
-			From:    lookup.From,
-			Search:  lookup.Search,
+			ChainId:                  lookup.ChainId,
+			Client:                   lookup.Client,
+			From:                     lookup.From,
+			Search:                   lookup.Search,
+			PreviousActionDefinition: lookup.PreviousActionDefinition,
 		}
 
 		inputsJSON, err := json.Marshal(lookup.Inputs)
@@ -79,7 +80,7 @@ func (d *ActionDefinition[T]) GetHandler() ActionFunc[any] {
 
 		var typedInputs T
 		if err := json.Unmarshal(inputsJSON, &typedInputs); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal inputs to target type: %w", err)
+			return nil, fmt.Errorf("failed to unmarshal inputs to target type: %w (input: %s)", err, string(inputsJSON))
 		}
 
 		typedLookup.Inputs = &typedInputs

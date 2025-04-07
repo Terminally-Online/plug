@@ -19,7 +19,7 @@ type BalanceRequest struct {
 
 var NativeBalanceFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     plug_evm.PlugEvmMetaData,
-	FunctionName: "balanceOf",
+	FunctionName: "getBalance",
 }
 
 var BalanceFunc = actions.ActionOnchainFunctionResponse{

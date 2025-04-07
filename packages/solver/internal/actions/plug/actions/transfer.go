@@ -72,18 +72,9 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 		return nil, err
 	}
 
-	// Define a more specific type conversion function
-	amountFunc := func() (*big.Int, error) {
-		amount, err := utils.StringToUint(lookup.Inputs.Amount.GetValue(), uint8(decimals))
-		if err != nil {
-			return nil, err
-		}
-		return amount, nil
-	}
-
 	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
-		amountFunc,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&TransferFunc,
 		"_value",
 		updates,

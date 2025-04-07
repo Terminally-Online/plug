@@ -2,9 +2,11 @@ package actions
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/aave_v3_pool"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -12,8 +14,13 @@ import (
 )
 
 type WithdrawRequest struct {
-	Token  string `json:"token"`
-	Amount string `json:"amount"`
+	Token  string                           `json:"token"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+}
+
+var WithdrawFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     aave_v3_pool.AaveV3PoolMetaData,
+	FunctionName: "withdraw",
 }
 
 func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, error) {
@@ -21,18 +28,24 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
-	amountOut, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+
+	var updates []coil.Update
+
+	amount, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&WithdrawFunc,
+		"amount",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %w", err)
+		return nil, err
 	}
 
-	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("AaveV3Pool")
-	}
-	calldata, err := poolAbi.Pack("withdraw",
+	calldata, err := WithdrawFunc.GetCalldata(
 		tokenOut,
-		amountOut,
+		amount,
 		lookup.From,
 	)
 	if err != nil {
@@ -40,7 +53,8 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave"]["pool"]),
-		Data: calldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["aave"]["pool"]),
+		Data:    calldata,
+		Updates: updates,
 	}}, nil
 }

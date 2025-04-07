@@ -2,11 +2,12 @@ package actions
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/aave_v3_pool"
-	"solver/bindings/erc_20"
 	"solver/internal/actions"
 	aave_utils "solver/internal/actions/aave_v3/utils"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -14,8 +15,13 @@ import (
 )
 
 type RepayRequest struct {
-	Token  string `json:"token"`
-	Amount string `json:"amount"`
+	Token  string                           `json:"token"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+}
+
+var RepayFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     aave_v3_pool.AaveV3PoolMetaData,
+	FunctionName: "repay",
 }
 
 func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error) {
@@ -23,31 +29,41 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
-	amountIn, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+
+	var approvalUpdates []coil.Update
+	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approvalUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert repayment amount to uint: %w", err)
+		return nil, err
 	}
 
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack(
-		"approve",
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
 		common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
-		amountIn,
+		approvalAmount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("AaveV3Pool")
-	}
-	repayCalldata, err := poolAbi.Pack("repay",
+	var repayUpdates []coil.Update
+	repayAmount, repayUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&RepayFunc,
+		"amount",
+		repayUpdates,
+		lookup.PreviousActionDefinition,
+	)
+
+	repayCalldata, err := RepayFunc.GetCalldata(
 		tokenIn,
-		amountIn,
+		repayAmount,
 		aave_utils.InterestRateMode,
 		lookup.From,
 	)
@@ -56,10 +72,12 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 	}
 
 	return []signature.Plug{{
-		To:   *tokenIn,
-		Data: approveCalldata,
+		To:      *tokenIn,
+		Data:    approveCalldata,
+		Updates: approvalUpdates,
 	}, {
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
-		Data: repayCalldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
+		Data:    repayCalldata,
+		Updates: repayUpdates,
 	}}, nil
 }

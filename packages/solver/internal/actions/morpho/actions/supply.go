@@ -2,11 +2,12 @@ package actions
 
 import (
 	"fmt"
-	"solver/bindings/erc_20"
+	"math/big"
 	"solver/bindings/morpho_router"
 	"solver/internal/actions"
 	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -14,9 +15,9 @@ import (
 )
 
 type SupplyCollateralRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Target string `json:"target"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Target string                           `json:"target"`
 }
 
 var SupplyCollateralFunc = actions.ActionOnchainFunctionResponse{
@@ -30,9 +31,17 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var approvalUpdates []coil.Update
+	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approvalUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert supply collateral amount to uint: %w", err)
+		return nil, err
 	}
 
 	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
@@ -40,34 +49,44 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack(
-		"approve",
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
 		common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
-		amount,
+		approvalAmount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	var supplyUpdates []coil.Update
+	supplyAmount, supplyUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&SupplyCollateralFunc,
+		"assets",
+		supplyUpdates,
+		lookup.PreviousActionDefinition,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	supplyCollateralCalldata, err := SupplyCollateralFunc.GetCalldata(
 		market.Params,
-		amount,
+		supplyAmount,
 		lookup.From,
 		[]byte{},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack supply calldata: %w", err)
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
+		To:      *token,
+		Data:    approveCalldata,
+		Updates: approvalUpdates,
 	}, {
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
-		Data: supplyCollateralCalldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		Data:    supplyCollateralCalldata,
+		Updates: supplyUpdates,
 	}}, nil
 }

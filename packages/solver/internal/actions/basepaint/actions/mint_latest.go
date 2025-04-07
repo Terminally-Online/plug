@@ -6,23 +6,37 @@ import (
 	"solver/bindings/basepaint_referral"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type MintLatestRequest struct {
-	Recipient common.Address `json:"recipient"`
-	Count     uint64         `json:"count"`
+	Recipient coil.CoilInput[common.Address, common.Address] `json:"recipient"`
+	Count     uint64                                         `json:"count"`
+}
+
+var MintLatestFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     basepaint_referral.BasepaintReferralMetaData,
+	FunctionName: "mintLatest",
 }
 
 func MintLatest(lookup *actions.SchemaLookup[MintLatestRequest]) ([]signature.Plug, error) {
-	referralAbi, err := basepaint_referral.BasepaintReferralMetaData.GetAbi()
+	var updates []coil.Update
+	recipient, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Recipient,
+		lookup.Inputs.Recipient.GetValueWithError,
+		&MintLatestFunc,
+		"sendMintsTo",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	mintLatestCalldata, err := referralAbi.Pack("mintLatest", lookup.Inputs.Recipient, lookup.Inputs.Count, references.Referral)
+	mintLatestCalldata, err := MintLatestFunc.GetCalldata(recipient, lookup.Inputs.Count, references.Referral)
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +48,10 @@ func MintLatest(lookup *actions.SchemaLookup[MintLatestRequest]) ([]signature.Pl
 
 	return []signature.Plug{
 		{
-			To:       common.HexToAddress(references.Base.References["basepaint"]["referral"]),
-			Data:     mintLatestCalldata,
-			Value:    value,
+			To:      common.HexToAddress(references.Base.References["basepaint"]["referral"]),
+			Data:    mintLatestCalldata,
+			Value:   value,
+			Updates: updates,
 		},
 	}, nil
 }
