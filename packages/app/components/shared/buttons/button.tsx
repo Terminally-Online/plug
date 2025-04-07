@@ -2,15 +2,12 @@ import Link from "next/link"
 import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
 import { cn } from "@/lib"
-import { Chain } from "viem"
-import { useChainId, useSwitchChain } from "wagmi"
 
 type Props = {
 	variant?: "primary" | "primaryDisabled" | "secondary" | "white" | "disabled" | "destructive" | "none"
 	sizing?: "sm" | "md" | "lg"
 	href?: string
 	external?: boolean
-	chain?: Chain
 } & React.HTMLProps<HTMLButtonElement> &
 	PropsWithChildren
 
@@ -42,29 +39,10 @@ export const Button: FC<Props> = ({
 	children,
 	external = false,
 	disabled = false,
-	chain,
 	...props
 }) => {
 	const base =
 		"group relative outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none border-[1px]"
-
-	const chainId = useChainId()
-	const { switchChain } = useSwitchChain()
-	
-	const needsNetworkSwitch = chain && chainId !== chain.id
-	
-	if (needsNetworkSwitch && switchChain) {
-		return (
-			<button
-				{...props}
-				type="button"
-				onClick={() => switchChain({ chainId: chain.id })}
-				className={cn(variants[variant], sizings[sizing], base, className)}
-			>
-				Switch to {chain.name}
-			</button>
-		)
-	}
 
 	if (onClick || disabled)
 		return (
@@ -80,6 +58,7 @@ export const Button: FC<Props> = ({
 		)
 
 	if (href === undefined || typeof href == String(undefined)) return null
+
 	external = href ? href.startsWith("http") : false
 
 	if (external)
@@ -95,8 +74,10 @@ export const Button: FC<Props> = ({
 		)
 
 	return (
-		<Link href={href} className={cn(variants[variant], sizings[sizing], base, className)}>
-			{children}
-		</Link>
+		<>
+			<Link href={href} className={cn(variants[variant], sizings[sizing], base, className)}>
+				{children}
+			</Link>
+		</>
 	)
 }
