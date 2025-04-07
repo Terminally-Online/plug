@@ -1,11 +1,10 @@
 import { FC } from "react"
 
-import { TransferAmountFrame } from "@/components/app/frames/assets/transfer-amount"
-import { TransferNFTFrame } from "@/components/app/frames/assets/transfer-nft"
-import { TransferRecipientFrame } from "@/components/app/frames/assets/transfer-recipient"
+import { TransferAmountFrame } from "@/components/app/frames/assets/transfer/amount/frame"
+import { TransferNFTFrame } from "@/components/app/frames/assets/transfer/nft/frame"
+import { TransferRecipientFrame } from "@/components/app/frames/assets/transfer/recipient/frame"
+import { TransferSuccessFrame } from "@/components/app/frames/assets/transfer/success/frame"
 import { RouterOutputs } from "@/server/client"
-
-import { TransferSuccessFrame } from "./transfer-success"
 
 type TransferFrameProps = {
 	index: number

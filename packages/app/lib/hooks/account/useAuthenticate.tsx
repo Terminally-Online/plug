@@ -57,13 +57,12 @@ export const useAuthenticate = () => {
 			}
 		) => {
 			try {
-				setAuthenticationLoading(false)
-
 				const user = context?.address ?? account.address
 
 				if (!user) throw new Error("No user to authenticate")
 
-				const message = await createMessage(user)
+				setAuthenticationLoading(false)
+
 				const handleAuthenticationSuccess = async (signature: string) => {
 					setAuthenticationLoading(true)
 					setAuthenticationResponse(undefined)
@@ -95,6 +94,7 @@ export const useAuthenticate = () => {
 					options?.onError?.(error)
 				}
 
+				const message = await createMessage(user)
 				signMessage(
 					{ message },
 					{

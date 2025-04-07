@@ -5,19 +5,15 @@ import { useConnect, Connector as wagmiConnector } from "wagmi"
 import { Loader2 } from "lucide-react"
 
 import { useSetAtom } from "jotai"
+
+import { ConnectorImage } from "@/components/app/columns/authenticate/connector/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import {
-	cn,
-	CONNECTOR_ICON_OVERRIDE_MAP,
-	greenGradientStyle,
-	recentConnectorIdAtom,
-	useRecentConnectorId
-} from "@/lib"
+import { cn, CONNECTOR_ICON_OVERRIDE_MAP, greenGradientStyle, recentConnectorIdAtom, useRecentConnectorId } from "@/lib"
 import { useAuthenticate } from "@/lib/hooks/account/useAuthenticate"
 import { useColumnActions } from "@/state/columns"
-import { ConnectorImage } from "./connector-image"
 
-export const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }> = ({ connector, index, from }) => {
+type Props = { connector: wagmiConnector; index: number; from?: string }
+export const ConnectorItem: FC<Props> = ({ connector, index, from }) => {
 	const connection = useConnect()
 	const { authenticate } = useAuthenticate()
 

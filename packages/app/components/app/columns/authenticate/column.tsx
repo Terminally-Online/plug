@@ -13,7 +13,7 @@ import { useAccount } from "@/lib/hooks/account/useAccount"
 import { useAuthenticate } from "@/lib/hooks/account/useAuthenticate"
 import { authenticationAtom } from "@/state/authentication"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
-import { Connectors } from "./connector/connectors"
+import { ConnectorList } from "@/components/app/columns/authenticate/connector/list"
 
 export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const { data: session } = useSession()
@@ -71,7 +71,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 				</Callout>
 			)}
 
-			{account.address === undefined && <Connectors index={index} from={column?.from} />}
+			{account.address === undefined && <ConnectorList index={index} from={column?.from} />}
 		</div>
 	)
 }

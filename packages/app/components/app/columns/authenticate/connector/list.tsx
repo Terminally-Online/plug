@@ -3,10 +3,10 @@ import { FC } from "react"
 
 import { Animate } from "@/components/app/utils/animate"
 import { useOrderedConnections } from "@/lib/hooks/account/useConnections"
-import { Connector } from "@/components/app/columns/authenticate/connector/connector";
-import { ConnectorQrCode } from "@/components/app/columns/authenticate/connector/connector-qr-code";
+import { ConnectorItem } from "@/components/app/columns/authenticate/connector/item";
+import { ConnectorQrCode } from "@/components/app/columns/authenticate/connector/qr-code";
 
-export const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
+export const ConnectorList: FC<{ index: number; from?: string }> = ({ index, from }) => {
 	const connectors = useOrderedConnections(true)
 
 	return (
@@ -17,7 +17,7 @@ export const Connectors: FC<{ index: number; from?: string }> = ({ index, from }
 				<Animate.List>
 					{connectors.map(connector => (
 						<Animate.ListItem key={connector.id}>
-							<Connector connector={connector} index={index} from={from} />
+							<ConnectorItem connector={connector} index={index} from={from} />
 						</Animate.ListItem>
 					))}
 				</Animate.List>
