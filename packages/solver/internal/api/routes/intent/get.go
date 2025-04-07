@@ -8,9 +8,13 @@ import (
 	"solver/internal/actions"
 	"solver/internal/api/middleware"
 	"solver/internal/api/routes"
+	"solver/internal/cache"
 	"solver/internal/redis"
 	"solver/internal/solver"
 	"solver/internal/utils"
+	"sort"
+	"strings"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	redisv8 "github.com/go-redis/redis/v8"
@@ -180,23 +184,52 @@ func GetRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *so
 		return
 	}
 
-	protocol, exists := s.Protocols[params.Protocol]
+	cacheKey := fmt.Sprintf("schema:%d:%s:%s:%s", params.ChainId, params.Protocol, params.Action, params.From.Hex())
 
-	var result map[string]actions.ProtocolSchema
-	var err error
-	switch {
-	case params.Protocol == "":
-		result, err = GetAllSchemas(s, params.ChainId)
-	case exists && params.Action == "":
-		result, err = GetProtocolSchema(&protocol, params.Protocol, params.ChainId)
-	case exists && params.Action != "":
-		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
-	default:
-		utils.RespondWithError(w, utils.ErrInvalidField("protocol", params.Protocol))
-		return
+	paramKeyParts := make([]string, len(params.Search))
+	for i, param := range params.Search {
+		paramKeyParts[i] = fmt.Sprintf("%d:%s", param.Index, param.Value)
 	}
+
+	// Sort the keys to ensure that if we receive the same params in a different order, we still get the same cache key
+	sort.Strings(paramKeyParts)
+
+	if len(paramKeyParts) != 0 {
+		cacheKey = fmt.Sprintf("%s:%s", cacheKey, strings.Join(paramKeyParts, ":"))
+	}
+
+	cacheOptions := cache.WithOptions(
+		cache.WithDuration(10*time.Minute),
+		cache.WithStaleData(true),
+	)
+
+	result, err := cache.WithCache(cacheKey, cacheOptions, func() (map[string]actions.ProtocolSchema, error) {
+		var result map[string]actions.ProtocolSchema
+		var err error
+
+		switch {
+		case params.Protocol == "":
+			result, err = GetAllSchemas(s, params.ChainId)
+		case params.Protocol != "" && params.Action == "":
+			handler, exists := s.Protocols[params.Protocol]
+			if !exists {
+				return nil, fmt.Errorf("unsupported protocol")
+			}
+			result, err = GetProtocolSchema(&handler, params.Protocol, params.ChainId)
+		case params.Protocol != "" && params.Action != "":
+			handler, exists := s.Protocols[params.Protocol]
+			if !exists {
+				return nil, fmt.Errorf("unsupported protocol")
+			}
+			result, err = GetActionSchema(&handler, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
+		default:
+			return nil, utils.ErrInvalidField("protocol", params.Protocol)
+		}
+
+		return result, err
+	})
 	if err != nil {
-		utils.RespondWithError(w, err)
+		utils.RespondWithError(w, utils.ErrInternal("failed to get schema: "+err.Error()))
 		return
 	}
 
