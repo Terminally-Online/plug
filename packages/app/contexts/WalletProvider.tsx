@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from "react"
 
 import { Chain, createClient } from "viem"
-import { anvil, base, mainnet } from "viem/chains"
+import { base } from "viem/chains"
 import { createConfig, WagmiProvider, webSocket } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 

@@ -2,9 +2,10 @@ import { Session } from "next-auth"
 import { getCsrfToken, signIn, useSession } from "next-auth/react"
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect } from "react"
 
-import { UserRejectedRequestError } from "viem"
+import { Account, SignableMessage, UserRejectedRequestError } from "viem"
 import { createSiweMessage } from "viem/siwe"
 import {
+	Connector,
 	ResolvedRegister,
 	useAccount,
 	UseAccountReturnType,
@@ -29,14 +30,14 @@ import { useColumnActions } from "@/state/columns"
 
 const ConnectionContext = createContext<
 	| {
-			connection: UseConnectReturnType<ResolvedRegister["config"]>
-			account: UseAccountReturnType<ResolvedRegister["config"]> & {
-				isAuthenticated: boolean
-				session: Session | null
-			}
-			sign: UseSignMessageReturnType
-			prove: (index: number, from?: string, address?: string) => Promise<void>
-	  }
+		connection: UseConnectReturnType<ResolvedRegister["config"]>
+		account: UseAccountReturnType<ResolvedRegister["config"]> & {
+			isAuthenticated: boolean
+			session: Session | null
+		}
+		sign: UseSignMessageReturnType
+		prove: (index: number, from?: string, address?: string) => Promise<void>
+	}
 	| undefined
 >(undefined)
 
@@ -66,6 +67,30 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 
 	const isAuthenticated = (account.status === "connected" && session?.user.id?.startsWith("0x")) || false
 
+	const createMessage = async (address?: string) => {
+		if (!address) throw new Error("No wallet connected.")
+
+		const nonce = await getCsrfToken()
+
+		if (!nonce) throw new Error("Could not get nonce.")
+
+		const expirationTime = new Date(new Date().getTime() + 5 * 60 * 1000)
+		const domain = window.location.host
+		const uri = window.location.origin
+		const statement = `Access the Plug platform by proving your ownership of the address: ${account.address}.`
+		const message = createSiweMessage({
+			address: (address ?? account.address) as `0x${string}`,
+			chainId,
+			domain,
+			nonce,
+			uri,
+			version: "1",
+			statement,
+			expirationTime
+		})
+		return message
+	}
+
 	/**
 	 * Trigger and handle the signing of a message to prove ownership of the address.
 	 * @param address The address to prove ownership of.
@@ -76,54 +101,38 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 			try {
 				setAuthenticationLoading(false)
 
-				const nonce = await getCsrfToken()
+				const message = await createMessage(address ?? account.address)
+				const handleAuthenticationSuccess = async (signature: string) => {
+					setAuthenticationLoading(true)
+					setAuthenticationResponse(undefined)
 
-				if (!nonce) throw new Error("Could not get nonce.")
+					const authenticationResponse = await signIn("credentials", {
+						message,
+						signature,
+						chainId,
+						redirect: true,
+						callbackUrl: `${window.location.origin}/app${window.location.search}`
+					})
 
-				const expirationTime = new Date(new Date().getTime() + 5 * 60 * 1000)
-				const domain = window.location.host
-				const uri = window.location.origin
-				const statement = `Access the Plug platform by proving your ownership of the address: ${account.address}.`
-				const message = createSiweMessage({
-					address: (address ?? account.address) as `0x${string}`,
-					chainId,
-					domain,
-					nonce,
-					uri,
-					version: "1",
-					statement,
-					expirationTime
+					setAuthenticationResponse(authenticationResponse)
+					navigate({ index, key: from })
+				}
+				const handleAuthenticationError = (_: unknown, account: {
+					account?: `0x${string}` | Account | undefined,
+					message: SignableMessage,
+					connector?: Connector | undefined
+				}) => {
+					if (account.connector) account.connector.disconnect()
+
+					connection.reset()
+					sign.reset()
+					disconnect()
+				}
+
+				sign.signMessage({ message }, {
+					onSuccess: handleAuthenticationSuccess,
+					onError: handleAuthenticationError
 				})
-
-				sign.signMessage(
-					{
-						message
-					},
-					{
-						onSuccess: async signature => {
-							setAuthenticationLoading(true)
-							setAuthenticationResponse(undefined)
-
-							const authenticationResponse = await signIn("credentials", {
-								message,
-								signature,
-								chainId,
-								redirect: true,
-								callbackUrl: `${window.location.origin}/app${window.location.search}`
-							})
-
-							setAuthenticationResponse(authenticationResponse)
-							navigate({ index, key: from })
-						},
-						onError: (e, account) => {
-							if (account.connector) account.connector.disconnect()
-
-							connection.reset()
-							sign.reset()
-							disconnect()
-						}
-					}
-				)
 			} catch (e) {
 				setAuthenticationLoading(false)
 
@@ -146,10 +155,11 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	 * @see {@link https://www.npmjs.com/package/@walletconnect/ethereum-provider}
 	 */
 	const init = useCallback(async () => {
+		if (walletConnectProvider) return
+
 		const connector = getConnectorWithId(connection.connectors, CONNECTION.WALLET_CONNECT_CONNECTOR_ID, {
 			shouldThrow: true
 		})
-
 		const provider = (await connector?.getProvider?.()) as WalletConnectProvider
 
 		setWalletConnectProvider(provider)

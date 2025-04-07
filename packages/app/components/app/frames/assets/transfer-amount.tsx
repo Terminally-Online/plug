@@ -5,6 +5,7 @@ import { useSendTransaction } from "wagmi"
 
 import { useAtom, useAtomValue } from "jotai"
 
+import { Button } from "@/components/shared/buttons/button"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { cn, getChainId, NATIVE_TOKEN_ADDRESS, useConnect, useDebounceInline } from "@/lib"
@@ -15,6 +16,7 @@ import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/sta
 import { TransferRecipient } from "./transfer-recipient"
 import { TransferTokenImplementation } from "./transfer-implementation"
 import { ScrollingError } from "./scrolling-error"
+import { base } from "viem/chains"
 
 
 export const TransferAmountFrame: FC<{
@@ -157,7 +159,7 @@ export const TransferAmountFrame: FC<{
 					<div className="mx-6 mt-2 flex flex-col gap-4">
 						<ScrollingError error={error?.message ?? ""} />
 
-						<button
+						<Button
 							className={cn(
 								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
 								isReady === false && "transparent"
@@ -169,6 +171,7 @@ export const TransferAmountFrame: FC<{
 							}}
 							disabled={(intent && isPending) || isReady === false}
 							onClick={intent && !isPending && isReady ? handleTransactionOnchain : () => { }}
+							chain={base}
 						>
 							{!isAuthenticated
 								? "Connect Wallet"
@@ -179,7 +182,7 @@ export const TransferAmountFrame: FC<{
 											? "Deposit"
 											: "Send"
 										: "Enter Amount"}
-						</button>
+						</Button>
 					</div>
 				</div>
 			</Frame>
