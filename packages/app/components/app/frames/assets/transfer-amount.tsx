@@ -8,7 +8,7 @@ import { useAtom, useAtomValue } from "jotai"
 import { Button } from "@/components/shared/buttons/button"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { cn, getChainId, NATIVE_TOKEN_ADDRESS, useConnect, useDebounceInline } from "@/lib"
+import { cn, getChainId, NATIVE_TOKEN_ADDRESS, useDebounceInline } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
@@ -16,7 +16,7 @@ import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/sta
 import { TransferRecipient } from "./transfer-recipient"
 import { TransferTokenImplementation } from "./transfer-implementation"
 import { ScrollingError } from "./scrolling-error"
-import { base } from "viem/chains"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 
 export const TransferAmountFrame: FC<{
@@ -30,9 +30,7 @@ export const TransferAmountFrame: FC<{
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
-	const {
-		account: { isAuthenticated }
-	} = useConnect()
+	const { isAuthenticated } = useAccount()
 	const { socket } = useSocket()
 	const { error, sendTransaction, isPending } = useSendTransaction()
 
@@ -171,7 +169,6 @@ export const TransferAmountFrame: FC<{
 							}}
 							disabled={(intent && isPending) || isReady === false}
 							onClick={intent && !isPending && isReady ? handleTransactionOnchain : () => { }}
-							chain={base}
 						>
 							{!isAuthenticated
 								? "Connect Wallet"

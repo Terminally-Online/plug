@@ -15,10 +15,11 @@ import { Search } from "@/components/app/inputs/search"
 import { Avatar } from "@/components/app/sockets/profile"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib"
+import { formatAddress, getChainId, greenGradientStyle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { useRecipients } from "@/state/recipients"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
@@ -44,7 +45,7 @@ export const TransferRecipient: FC<
 		handleSelect: (address: string) => void
 	}
 > = ({ isRecent = false, address = "", handleSelect, className }) => {
-	const { account } = useConnect()
+	const account = useAccount()
 
 	const { data: ensAddress } = useEnsAddress({
 		name: normalize(address),
@@ -154,7 +155,7 @@ interface TransferRecipientFrameProps {
 }
 
 export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
-	const { account } = useConnect()
+	const account = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = token

@@ -9,12 +9,13 @@ import {
 
 import { useSetAtom } from "jotai"
 
-import { CONNECTION, getConnectorWithId, WalletConnectProvider } from "@/lib"
+import { CONNECTION, WalletConnectProvider } from "@/lib"
 import { useDisconnect } from "wagmi"
 import {
 	walletConnectURIAtom
 } from "@/state/authentication"
 import { useSidebar } from "@/state/sidebar"
+import { getConnectorWithId } from "./useConnections"
 
 const ConnectionContext = createContext<UseConnectReturnType<ResolvedRegister['config']> | undefined>(undefined)
 

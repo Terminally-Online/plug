@@ -1,34 +1,32 @@
 import { Session } from "next-auth"
 import { createContext, FC, PropsWithChildren, useContext } from "react"
 
-import { useAtom, useSetAtom } from "jotai"
+import { useSetAtom } from "jotai"
 
-import { useConnect } from "@/lib"
 import { useResponse } from "@/lib/hooks/useResponse"
 import { api } from "@/server/client"
 import { actionsAtom } from "@/state/actions"
 import { socketModelAtom } from "@/state/authentication"
 import { plugsAtom, usePlugSubscriptions } from "@/state/plugs"
 import { useInitializeHoldingsFetching } from "@/state/positions"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 type DataContextType = {}
 
 export const DataContext = createContext<DataContextType>({} as DataContextType)
 
 export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = ({ children }) => {
-	const {
-		account: { session }
-	} = useConnect()
+	const { address, isConnected, isAuthenticated } = useAccount()
 
-	const [socket, setSocket] = useAtom(socketModelAtom)
+	const setSocket = useSetAtom(socketModelAtom)
 	const setActions = useSetAtom(actionsAtom)
 	const setPlugs = useSetAtom(plugsAtom)
 
+	const enabled = isConnected || isAuthenticated
+
 	useResponse(
 		() =>
-			api.socket.get.useQuery(undefined, {
-				enabled: session !== null
-			}),
+			api.socket.get.useQuery(undefined, { enabled }),
 		{ onSuccess: socket => setSocket(socket) }
 	)
 
@@ -36,26 +34,24 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		() =>
 			api.solver.actions.schemas.useQuery(
 				{ chainId: 8453 },
-				{
-					enabled: session !== null
-				}
+				{ enabled }
 			),
 		{ onSuccess: actions => setActions(actions) }
 	)
 
-	useResponse(() => api.plugs.all.useQuery({ target: "mine" }, { enabled: session !== null }), {
+	useResponse(() => api.plugs.all.useQuery({ target: "mine" }, { enabled }), {
 		onSuccess: data => setPlugs(prev => [...prev, ...data.filter(d => !prev.some(p => p.id === d.id))])
 	})
 
-	usePlugSubscriptions({ enabled: session !== null })
+	usePlugSubscriptions({ enabled })
 
 	useInitializeHoldingsFetching({
-		address: session?.address,
-		enabled: session !== null && session?.address.startsWith("0x")
+		address,
+		enabled: isAuthenticated
 	})
 	useInitializeHoldingsFetching({
-		address: socket?.socketAddress,
-		enabled: session !== null && session?.address.startsWith("0x")
+		address,
+		enabled: isAuthenticated
 	})
 
 	return <DataContext.Provider value={{}}>{children}</DataContext.Provider>

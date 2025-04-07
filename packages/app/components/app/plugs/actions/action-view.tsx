@@ -6,11 +6,12 @@ import { Sentences } from "@/components/app/plugs/sentences/sentences"
 import { Callout } from "@/components/app/utils/callout"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { formatTitle, getValues, SchemasRequestAction, useConnect } from "@/lib"
+import { formatTitle, getValues, SchemasRequestAction } from "@/lib"
 import { api } from "@/server/client"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
@@ -21,15 +22,13 @@ const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "
 }
 
 export const ActionView: FC<{ index: number }> = ({ index }) => {
-	const {
-		account: { session }
-	} = useConnect()
+	const { address } = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
-	const own = (plug && session && session.address === plug.socketId) || false
+	const own = (plug && address === plug.socketId) || false
 	const editPlug = useSetAtom(editPlugAtom)
 	const actionMutation = api.plugs.action.edit.useMutation({
 		onSuccess: result => editPlug(result)

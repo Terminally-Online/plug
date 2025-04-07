@@ -9,5 +9,5 @@ export const useAccount = () => {
 	const isConnected = account.status === "connected"
 	const isAuthenticated = session?.user.id?.startsWith("0x") || false
 
-	return { ...account, isConnected, isAuthenticated }
+	return { ...account, ...session, isConnected, isAuthenticated }
 }

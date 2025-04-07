@@ -2,7 +2,8 @@ import { useCallback, useMemo } from "react"
 
 import { Connector } from "wagmi"
 
-import { CONNECTION, isMobileWeb, useConnect, useRecentConnectorId } from "@/lib"
+import { CONNECTION, isMobileWeb, useRecentConnectorId } from "@/lib"
+import { useConnect } from "./useConnect"
 
 type ConnectorID = (typeof CONNECTION)[keyof typeof CONNECTION]
 

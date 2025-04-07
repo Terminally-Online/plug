@@ -1,12 +1,12 @@
 import { useSession } from "next-auth/react"
 import { FC, useCallback } from "react"
 
-import { Connector as wagmiConnector } from "wagmi"
+import { useConnect, Connector as wagmiConnector } from "wagmi"
 
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 
 import { Animate } from "@/components/app/utils/animate"
 import { Callout } from "@/components/app/utils/callout"
@@ -19,18 +19,19 @@ import {
 	formatAddress,
 	greenGradientStyle,
 	recentConnectorIdAtom,
-	useConnect,
-	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
 import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state/authentication"
-import { columnByIndexAtom } from "@/state/columns"
+import { columnByIndexAtom, useColumnActions } from "@/state/columns"
+import { useOrderedConnections } from "@/lib/hooks/account/useConnections"
+import { useAuthenticate } from "@/lib/hooks/account/useAuthenticate"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
 
 const ConnectorQrCode = () => {
-	const { connection } = useConnect()
+	const connection = useConnect()
 
 	const qrMatrix = useAtomValue(walletConnectURIMatrixAtom)
 
@@ -171,7 +172,10 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 }
 
 const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }> = ({ connector, index, from }) => {
-	const { connection, prove } = useConnect()
+	const connection = useConnect()
+	const { authenticate } = useAuthenticate()
+
+	const { navigate } = useColumnActions()
 
 	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
 
@@ -188,23 +192,27 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 		return null
 	}
 
+	const handleConnect = () => {
+		if (isDisabled) return
+
+		connection.connect(
+			{ connector },
+			{
+				onSuccess: data => {
+					updateRecentConnectorId(connector.id)
+					authenticate(
+						{ address: data.accounts[0] },
+						{ onSuccess: () => navigate({ index, from }) }
+					)
+				}
+			}
+		)
+	}
+
 	return (
 		<Accordion
 			className={cn(isDisabled && "cursor-not-allowed bg-plug-green/5")}
-			onExpand={
-				isDisabled
-					? undefined
-					: () =>
-							connection.connect(
-								{ connector },
-								{
-									onSuccess: data => {
-										updateRecentConnectorId(connector.id)
-										prove(index, from, data.accounts[0])
-									}
-								}
-							)
-			}
+			onExpand={handleConnect}
 		>
 			<div className="flex flex-row items-center gap-4">
 				<ConnectorImage icon={icon} name={connector.name} />
@@ -239,10 +247,19 @@ const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 
 export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const { data: session } = useSession()
-	const { account, sign, prove } = useConnect()
-	const [column] = useAtom(columnByIndexAtom(index))
+	const account = useAccount()
 
+	const { authenticate, failureReason, isLoading } = useAuthenticate()
+	const { navigate } = useColumnActions()
+
+	const column = useAtomValue(columnByIndexAtom(index))
 	const authentication = useAtomValue(authenticationAtom)
+
+	const handleAuthenticate = () => {
+		// NOTE: Passing undefined as the authenticating address because the user should
+		//       a connected wallet that will inform the address to use.
+		authenticate(undefined, { onSuccess: () => navigate({ index, from: column?.from }) })
+	}
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center text-center">
@@ -255,24 +272,24 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 
 			{session?.user.id !== account.address &&
 				account.address &&
-				sign.isPending === false &&
+				isLoading === false &&
 				authentication.isLoading === false && (
 					<Callout
-						title={sign.failureReason ? "Signature error." : "Prove ownership."}
+						title={failureReason ? "Signature error." : "Prove ownership."}
 						description={
-							sign.failureReason
+							failureReason
 								? "An internal error was received while signing the message. " +
-									sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
+								failureReason.message.split("Details:")[1].split("Details:")[0].trim()
 								: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
 						}
 					>
-						<Button className="mt-2" sizing="sm" onClick={() => prove(index, column?.from)}>
+						<Button className="mt-2" sizing="sm" onClick={handleAuthenticate}>
 							Sign Message
 						</Button>
 					</Callout>
 				)}
 
-			{account.address && sign.isPending && (
+			{account.address && isLoading && (
 				<Callout
 					title="Proving ownership."
 					description={`Completing the signing process to prove ownership of ${formatAddress(account.address)}`}
