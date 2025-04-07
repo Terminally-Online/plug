@@ -1,8 +1,6 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
-
-import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
 import { ColumnStats } from "@/components/app/columns/utils/column-stats"
 import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
 import { Header } from "@/components/app/layout/header"
@@ -14,6 +12,7 @@ import { usePlugActions } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 import { useAccount } from "@/lib/hooks/account/useAccount"
 import { useDisconnect } from "@/lib/hooks/account/useDisconnect"
+import { ColumnAuthenticate } from "../columns/authenticate/column"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {

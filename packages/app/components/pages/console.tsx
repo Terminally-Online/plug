@@ -39,13 +39,13 @@ export const ConsolePage = () => {
 	const { add } = useColumnActions()
 	const plugs = useAtomValue(plugsAtom)
 
-	useEffect(() => {
-		const isAnonymous = !socket.id.startsWith("0x")
-		const isPotentiallyExpired = !address || socket.id === address
-		if (isAnonymous || isPotentiallyExpired) return
-
-		disconnect()
-	}, [socket, address, disconnect])
+	// useEffect(() => {
+	// 	const isAnonymous = !socket.id.startsWith("0x")
+	// 	const isPotentiallyExpired = !address || socket.id === address
+	// 	if (isAnonymous || isPotentiallyExpired) return
+	//
+	// 	disconnect()
+	// }, [socket, address, disconnect])
 
 	useEffect(() => {
 		if (!socket || !socket.identity) return

@@ -65,6 +65,14 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 		}
 	}, [connection, is.authenticating, disconnect])
 
+	// useEffect(() => {
+	// 	const isAnonymous = !socket.id.startsWith("0x")
+	// 	const isPotentiallyExpired = !address || socket.id === address
+	// 	if (isAnonymous || isPotentiallyExpired) return
+	//
+	// 	disconnect()
+	// }, [socket, address, disconnect])
+
 	return <ConnectionContext.Provider value={connection}>{children}</ConnectionContext.Provider>
 }
 
