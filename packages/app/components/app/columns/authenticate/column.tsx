@@ -26,7 +26,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const authentication = useAtomValue(authenticationAtom)
 
 	const handleAuthenticate = () => {
-		authenticate({
+		authenticate(undefined, {
 			onSuccess: () => navigate({ index, from: column?.from }),
 			onError: error => console.error(error)
 		})
