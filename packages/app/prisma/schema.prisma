@@ -69,31 +69,6 @@ model ENS {
   @@index([name])
 }
 
-model Companion {
-  // ---------------------------------------------------------------------------
-  // Core
-  // ---------------------------------------------------------------------------
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now()) @updatedAt
-  lastFeedAt DateTime?
-
-  // ---------------------------------------------------------------------------
-  // Fields
-  // ---------------------------------------------------------------------------
-  name      String
-  feedCount Int    @default(0)
-  treatsFed Int    @default(0)
-  streak    Int    @default(0)
-
-  // ---------------------------------------------------------------------------
-  // One-to-one
-  // ---------------------------------------------------------------------------
-  identity SocketIdentity @relation(fields: [socketId], references: [socketId], onDelete: Cascade)
-  socketId String         @id
-
-  @@index([name])
-}
-
 model SocketIdentity {
   // ---------------------------------------------------------------------------
   // Core
@@ -121,7 +96,6 @@ model SocketIdentity {
   farcaster   FarcasterUser? @relation(fields: [farcasterId], references: [id], onDelete: SetNull)
   farcasterId String?        @unique
   ens         ENS?
-  companion   Companion?
 
   // ---------------------------------------------------------------------------
   // Many-to-one

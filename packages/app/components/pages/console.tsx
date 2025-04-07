@@ -41,7 +41,9 @@ export const ConsolePage = () => {
 	const plugs = useAtomValue(plugsAtom)
 
 	useEffect(() => {
-		if (socket.id === address || !socket.id.startsWith("0x")) return
+		const isAnonymous = !socket.id.startsWith("0x")
+		const isPotentiallyExpired = !address || socket.id === address
+		if (isAnonymous || isPotentiallyExpired) return
 
 		disconnect()
 	}, [socket, address, disconnect])
