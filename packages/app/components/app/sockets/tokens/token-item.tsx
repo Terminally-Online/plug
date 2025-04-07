@@ -1,7 +1,7 @@
 import React, { FC, memo, useState } from "react"
 
-import { SwapFrame } from "@/components/app/frames/assets/swap"
-import { TokenFrame } from "@/components/app/frames/assets/token"
+import { SwapFrame } from "@/components/app/frames/assets/swap/frame"
+import { TokenFrame } from "@/components/app/frames/assets/token/frame"
 import { TransferFrame } from "@/components/app/frames/assets/transfer/frame"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"

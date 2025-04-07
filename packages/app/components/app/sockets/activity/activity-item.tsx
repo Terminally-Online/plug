@@ -2,8 +2,8 @@ import { FC } from "react"
 
 import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
 
-import { ExecutionFrame } from "@/components/app/frames/activity/execution"
-import { SimulationFrame } from "@/components/app/frames/activity/simulation"
+import { ExecutionFrame } from "@/components/app/frames/activity/execution/frame"
+import { SimulationFrame } from "@/components/app/frames/activity/simulation/frame"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"

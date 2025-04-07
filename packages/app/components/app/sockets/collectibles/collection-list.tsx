@@ -2,7 +2,7 @@ import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { CollectibleFrame } from "@/components/app/frames/assets/collectible"
+import { CollectibleFrame } from "@/components/app/frames/assets/collectible/frame"
 import { Search } from "@/components/app/inputs/search"
 import { SocketCollectionItem } from "@/components/app/sockets/collectibles/collection-item"
 import { Callout } from "@/components/app/utils/callout"

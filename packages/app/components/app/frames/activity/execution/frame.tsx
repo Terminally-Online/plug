@@ -17,7 +17,7 @@ import { cardColors, ChainId, cn, formatFrequency, formatTitle, getChainName } f
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
-import { ChainImage } from "../../sockets/chains/chain.image"
+import { ChainImage } from "../../../sockets/chains/chain.image"
 
 const ITEMS_PER_PAGE = 10
 

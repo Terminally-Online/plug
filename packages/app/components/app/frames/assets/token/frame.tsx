@@ -13,7 +13,7 @@ import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
-import { ChainImage } from "../../sockets/chains/chain.image"
+import { ChainImage } from "../../../sockets/chains/chain.image"
 
 export const TokenFrame: FC<{
 	index: number

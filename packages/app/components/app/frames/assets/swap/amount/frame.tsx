@@ -6,7 +6,7 @@ import { ArrowRight, Bell, CircleDollarSign, Loader, TriangleRight, Waypoints } 
 
 import { useAtom, useAtomValue } from "jotai"
 
-import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.input"
+import { SwapAmountInput } from "@/components/app/frames/assets/swap/amount/input"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
@@ -15,9 +15,9 @@ import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
-import { ChainImage } from "../../sockets/chains/chain.image"
 import { useSendTransaction } from "wagmi"
-import { ScrollingError } from "./scrolling-error"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
+import { ScrollingError } from "../../scrolling-error"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
