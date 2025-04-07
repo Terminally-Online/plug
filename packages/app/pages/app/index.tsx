@@ -1,5 +1,3 @@
-"use client"
-
 import { NextPageContext } from "next"
 import { Session } from "next-auth"
 import { getSession, SessionProvider, signIn } from "next-auth/react"
@@ -9,6 +7,7 @@ import { ActivityProvider, BeforeInstallProvider, DataProvider, WalletProvider }
 import { ConnectionProvider } from "@/lib"
 import { api } from "@/server/client"
 
+// TODO: This is not functioning correctly because our JWT cookie is reliant on tokens.
 export const getInitialProps = async (context: NextPageContext) => {
 	let session = await getSession(context)
 
