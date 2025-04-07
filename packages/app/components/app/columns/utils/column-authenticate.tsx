@@ -21,11 +21,11 @@ import {
 	recentConnectorIdAtom,
 	useRecentConnectorId
 } from "@/lib"
+import { useAccount } from "@/lib/hooks/account/useAccount"
+import { useAuthenticate } from "@/lib/hooks/account/useAuthenticate"
+import { useOrderedConnections } from "@/lib/hooks/account/useConnections"
 import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state/authentication"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
-import { useOrderedConnections } from "@/lib/hooks/account/useConnections"
-import { useAuthenticate } from "@/lib/hooks/account/useAuthenticate"
-import { useAccount } from "@/lib/hooks/account/useAccount"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
@@ -200,20 +200,14 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 			{
 				onSuccess: data => {
 					updateRecentConnectorId(connector.id)
-					authenticate(
-						{ address: data.accounts[0] },
-						{ onSuccess: () => navigate({ index, from }) }
-					)
+					authenticate({ address: data.accounts[0] }, { onSuccess: () => navigate({ index, from }) })
 				}
 			}
 		)
 	}
 
 	return (
-		<Accordion
-			className={cn(isDisabled && "cursor-not-allowed bg-plug-green/5")}
-			onExpand={handleConnect}
-		>
+		<Accordion className={cn(isDisabled && "cursor-not-allowed bg-plug-green/5")} onExpand={handleConnect}>
 			<div className="flex flex-row items-center gap-4">
 				<ConnectorImage icon={icon} name={connector.name} />
 				<p className="font-bold">{connector.name}</p>
@@ -279,7 +273,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 						description={
 							failureReason
 								? "An internal error was received while signing the message. " +
-								failureReason.message.split("Details:")[1].split("Details:")[0].trim()
+									failureReason.message.split("Details:")[1].split("Details:")[0].trim()
 								: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
 						}
 					>

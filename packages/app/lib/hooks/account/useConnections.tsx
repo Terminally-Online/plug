@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react"
 import { Connector } from "wagmi"
 
 import { CONNECTION, isMobileWeb, useRecentConnectorId } from "@/lib"
+
 import { useConnect } from "./useConnect"
 
 type ConnectorID = (typeof CONNECTION)[keyof typeof CONNECTION]
@@ -66,7 +67,7 @@ function getInjectedConnectors(connectors: readonly Connector[]) {
 
 type InjectableConnector = Connector & { isInjected?: boolean }
 export function useOrderedConnections(excludeWalletConnectConnections = false): InjectableConnector[] {
-	const { connectors }  = useConnect()
+	const { connectors } = useConnect()
 	const recentConnectorId = useRecentConnectorId()
 
 	const sortByRecent = useCallback(
@@ -83,16 +84,11 @@ export function useOrderedConnections(excludeWalletConnectConnections = false): 
 	)
 
 	return useMemo(() => {
-		const { injectedConnectors: injectedConnectorsBase, isCoinbaseWalletBrowser } = getInjectedConnectors(
-			connectors
-		)
+		const { injectedConnectors: injectedConnectorsBase, isCoinbaseWalletBrowser } =
+			getInjectedConnectors(connectors)
 		const injectedConnectors = injectedConnectorsBase.map(c => ({ ...c, isInjected: true }))
 
-		const coinbaseSdkConnector = getConnectorWithId(
-			connectors,
-			CONNECTION.COINBASE_SDK_CONNECTOR_ID,
-			SHOULD_THROW
-		)
+		const coinbaseSdkConnector = getConnectorWithId(connectors, CONNECTION.COINBASE_SDK_CONNECTOR_ID, SHOULD_THROW)
 		const walletConnectConnector = getConnectorWithId(
 			connectors,
 			CONNECTION.WALLET_CONNECT_CONNECTOR_ID,

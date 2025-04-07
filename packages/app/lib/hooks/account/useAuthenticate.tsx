@@ -1,11 +1,14 @@
-import { authenticationLoadingAtom, authenticationResponseAtom } from "@/state/authentication"
-import { useColumnActions } from "@/state/columns"
-import { useSetAtom } from "jotai"
 import { getCsrfToken, signIn, SignInResponse } from "next-auth/react"
 import { useCallback } from "react"
+
 import { Account, SignableMessage } from "viem"
 import { createSiweMessage } from "viem/siwe"
 import { Connector, useAccount, useChainId, useDisconnect, useSignMessage } from "wagmi"
+
+import { useSetAtom } from "jotai"
+
+import { authenticationLoadingAtom, authenticationResponseAtom } from "@/state/authentication"
+import { useColumnActions } from "@/state/columns"
 
 export const useAuthenticate = () => {
 	const chainId = useChainId()
@@ -47,8 +50,9 @@ export const useAuthenticate = () => {
 		async (
 			context?: {
 				address?: string
-			}, options?: {
-				onSuccess?: (response: SignInResponse | undefined) => void,
+			},
+			options?: {
+				onSuccess?: (response: SignInResponse | undefined) => void
 				onError?: (error: unknown) => void
 			}
 		) => {
@@ -75,11 +79,14 @@ export const useAuthenticate = () => {
 					setAuthenticationResponse(authenticationResponse)
 					options?.onSuccess?.(authenticationResponse)
 				}
-				const handleAuthenticationError = (error: unknown, account: {
-					account?: `0x${string}` | Account | undefined,
-					message: SignableMessage,
-					connector?: Connector | undefined
-				}) => {
+				const handleAuthenticationError = (
+					error: unknown,
+					account: {
+						account?: `0x${string}` | Account | undefined
+						message: SignableMessage
+						connector?: Connector | undefined
+					}
+				) => {
 					if (account.connector) account.connector.disconnect()
 
 					reset()
@@ -88,10 +95,13 @@ export const useAuthenticate = () => {
 					options?.onError?.(error)
 				}
 
-				signMessage({ message }, {
-					onSuccess: handleAuthenticationSuccess,
-					onError: handleAuthenticationError
-				})
+				signMessage(
+					{ message },
+					{
+						onSuccess: handleAuthenticationSuccess,
+						onError: handleAuthenticationError
+					}
+				)
 			} catch (e) {
 				setAuthenticationLoading(false)
 
@@ -99,7 +109,16 @@ export const useAuthenticate = () => {
 				disconnect()
 			}
 		},
-		[navigate, chainId, account, signMessage, reset, disconnect, setAuthenticationLoading, setAuthenticationResponse]
+		[
+			navigate,
+			chainId,
+			account,
+			signMessage,
+			reset,
+			disconnect,
+			setAuthenticationLoading,
+			setAuthenticationResponse
+		]
 	)
 
 	return { authenticate, error, failureReason, isLoading, isError }

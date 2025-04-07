@@ -1,26 +1,21 @@
 import { createContext, PropsWithChildren, useContext, useEffect } from "react"
 
 import { UserRejectedRequestError } from "viem"
-import {
-	ResolvedRegister,
-	UseConnectReturnType,
-	useConnect as useConnectWagmi,
-} from "wagmi"
+import { ResolvedRegister, UseConnectReturnType, useConnect as useConnectWagmi } from "wagmi"
+import { useDisconnect } from "wagmi"
 
-import { useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 
 import { CONNECTION, WalletConnectProvider } from "@/lib"
-import { useDisconnect } from "wagmi"
-import {
-	walletConnectURIAtom
-} from "@/state/authentication"
+import { walletConnectURIAtom } from "@/state/authentication"
 import { useSidebar } from "@/state/sidebar"
+
 import { getConnectorWithId } from "./useConnections"
 
-const ConnectionContext = createContext<UseConnectReturnType<ResolvedRegister['config']> | undefined>(undefined)
+const ConnectionContext = createContext<UseConnectReturnType<ResolvedRegister["config"]> | undefined>(undefined)
 
 export function ConnectionProvider({ children }: PropsWithChildren) {
-	const setWalletConnectURI = useSetAtom(walletConnectURIAtom)
+	const [walletConnectURI, setWalletConnectURI] = useAtom(walletConnectURIAtom)
 
 	const { is } = useSidebar()
 
@@ -44,20 +39,20 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	 * @see {@link https://www.npmjs.com/package/@walletconnect/ethereum-provider}
 	 */
 	useEffect(() => {
+		if (walletConnectURI) return
+
 		const init = async () => {
 			const connector = getConnectorWithId(connection.connectors, CONNECTION.WALLET_CONNECT_CONNECTOR_ID, {
 				shouldThrow: true
 			})
 			const provider = (await connector?.getProvider?.()) as WalletConnectProvider
+			provider.once("display_uri", setWalletConnectURI)
 
 			await provider.connect()
-
-			provider.once("display_uri", setWalletConnectURI)
 		}
 
 		init()
-	}, [])
-
+	}, [connection.connectors, walletConnectURI])
 
 	/**
 	 * When the user had an active connection, but closes the authentication context we go ahead and
@@ -70,11 +65,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 		}
 	}, [connection, is.authenticating, disconnect])
 
-	return (
-		<ConnectionContext.Provider value={connection}>
-			{children}
-		</ConnectionContext.Provider>
-	)
+	return <ConnectionContext.Provider value={connection}>{children}</ConnectionContext.Provider>
 }
 
 /**
