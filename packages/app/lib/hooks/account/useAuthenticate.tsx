@@ -63,7 +63,7 @@ export const useAuthenticate = () => {
 
 				if (!user) throw new Error("No user to authenticate")
 
-				const message = await createMessage()
+				const message = await createMessage(user)
 				const handleAuthenticationSuccess = async (signature: string) => {
 					setAuthenticationLoading(true)
 					setAuthenticationResponse(undefined)
