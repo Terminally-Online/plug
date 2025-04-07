@@ -1,5 +1,4 @@
 import { useSession } from "next-auth/react"
-import Link from "next/link"
 import { FC, HTMLAttributes } from "react"
 
 import { useChainId } from "wagmi"
@@ -10,7 +9,6 @@ import {
 	CalendarCheck,
 	CalendarClock,
 	Computer,
-	Copy,
 	ExternalLink,
 	Flower2,
 	Glasses,

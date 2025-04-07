@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.4.2
+
+### Patch Changes
+
+- 98c9299: feat: version bump to 0.8.26
+
 ## 0.4.1
 
 ### Patch Changes
