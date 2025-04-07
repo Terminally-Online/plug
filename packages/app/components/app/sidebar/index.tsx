@@ -166,7 +166,7 @@ export const ConsoleSidebar = () => {
 			<div className="flex h-full flex-col items-center border-r-[1px] border-plug-green/10 p-2 pt-2">
 				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
-						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						className="relative mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
 						onClick={() => sidebar("authenticating")}
 					>
 						{avatar ? (
