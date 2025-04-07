@@ -45,13 +45,16 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	}
 
 	targetVault, err := reads.GetVault(lookup.ChainId, lookup.Inputs.Vault)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
 	if !strings.EqualFold(token.Hex(), targetVault.Token.Address) {
 		return nil, fmt.Errorf("asset %s cannot be used in vault: %s", token, lookup.Inputs.Vault)
 	}
 
-	withdrawCalldata, err := WithdrawFunc.GetCalldata(amount, lookup.From)
+	withdrawCalldata, err := WithdrawFunc.GetCalldata(amount, lookup.From, lookup.From)
 	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
+		return nil, err
 	}
 
 	return []signature.Plug{{

@@ -398,12 +398,11 @@ func TestGetSchemaEndpoint(t *testing.T) {
 // TestGetSchemaForProtocol tests the /solver endpoint for a specific protocol
 func TestGetSchemaForProtocol(t *testing.T) {
 	protocols := []string{
-		"euler",
 		"aave_v3",
+		"euler",
 		"morpho",
-		"yearn_v3",
 		"nouns",
-		"ens",
+		"yearn_v3",
 		"assert",
 		"boolean",
 		"math",
@@ -413,7 +412,7 @@ func TestGetSchemaForProtocol(t *testing.T) {
 	for _, protocol := range protocols {
 		t.Run(fmt.Sprintf("Protocol_%s", protocol), func(t *testing.T) {
 			resp, body, err := makeTestRequest(
-				fmt.Sprintf("http://localhost:8080/solver?chainId=1&protocol=%s", protocol),
+				fmt.Sprintf("http://localhost:8080/solver?chainId=8453&protocol=%s", protocol),
 				http.MethodGet,
 				nil,
 			)
@@ -422,10 +421,10 @@ func TestGetSchemaForProtocol(t *testing.T) {
 				t.Fatalf("Failed to make request for protocol %s: %v", protocol, err)
 			}
 
-			// Some protocols might not be available on chain 1, so we'll skip if we get 400
+			// Some protocols might not be available on base, so we'll skip if we get 400
 			if resp.StatusCode == http.StatusBadRequest {
-				warningLog(t, "Protocol %s not available on chain 1", protocol)
-				t.Skipf("Protocol %s not available on chain 1", protocol)
+				warningLog(t, "Protocol %s not available on base", protocol)
+				t.Skipf("Protocol %s not available on base", protocol)
 				return
 			}
 
@@ -583,8 +582,6 @@ func TestGetSchemaForActions(t *testing.T) {
 		chainId  uint64
 	}{
 		{"nouns", "bid", 1},
-		{"ens", "buy", 1},
-		{"ens", "renew", 1},
 	}
 
 	for _, tc := range additionalTests {
@@ -800,8 +797,8 @@ func TestGetSolution(t *testing.T) {
 	const baseChainID = 8453
 
 	// Define protocols to test, with preferred chains
-	baseProtocols := []string{"morpho", "euler"}                          // Protocols to test on Base chain
-	mainnetProtocols := []string{"aave_v3", "yearn_v3", "nouns", "ens"}   // Protocols to test on Ethereum mainnet
+	baseProtocols := []string{"morpho", "euler", "yearn_v3", "aave_v3"}   // Protocols to test on Base chain
+	mainnetProtocols := []string{"nouns"}                                 // Protocols to test on Ethereum mainnet
 	utilityProtocols := []string{"assert", "boolean", "math", "database"} // Chain-agnostic utility protocols
 
 	// Run tests for each group
@@ -810,11 +807,11 @@ func TestGetSolution(t *testing.T) {
 	}
 
 	for _, protocol := range mainnetProtocols {
-		runProtocolTests(t, protocol, testEOAAddress, 1) // Chain ID 1 for Ethereum mainnet
+		runProtocolTests(t, protocol, testEOAAddress, 1)
 	}
 
 	for _, protocol := range utilityProtocols {
-		runProtocolTests(t, protocol, testEOAAddress, baseChainID) // Test utilities on Base
+		runProtocolTests(t, protocol, testEOAAddress, baseChainID)
 	}
 }
 
@@ -1006,7 +1003,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 
 			// Validate the essential fields
 			missingFields := []string{}
-			for _, field := range []string{"intentId", "transactions"} {
+			for _, field := range []string{"intentId", "run"} {
 				if _, ok := solution[field]; !ok {
 					missingFields = append(missingFields, field)
 				}

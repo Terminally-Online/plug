@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"solver/bindings/euler_evault_implementation"
+	"solver/bindings/euler_evc"
 	"solver/internal/actions"
 	euler_utils "solver/internal/actions/euler/utils"
 	"solver/internal/bindings/references"
@@ -27,7 +28,7 @@ var DepositCollateralFunc = actions.ActionOnchainFunctionResponse{
 }
 
 var EnableCollateralFunc = actions.ActionOnchainFunctionResponse{
-	Metadata:     euler_evault_implementation.EulerEvaultImplementationMetaData,
+	Metadata:     euler_evc.EulerEvcMetaData,
 	FunctionName: "enableCollateral",
 }
 
