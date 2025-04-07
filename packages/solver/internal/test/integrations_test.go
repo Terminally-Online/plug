@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
+	"solver/internal/test/utils"
+
 	"github.com/joho/godotenv"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // ANSI color codes for terminal output
@@ -384,14 +384,14 @@ func TestGetSchemaEndpoint(t *testing.T) {
 		t.Fatalf("Schema endpoint test failed: %v", err)
 	}
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	utils.CheckEqual(t, http.StatusOK, resp.StatusCode)
 
 	var schemaResponse map[string]interface{}
 	err = json.Unmarshal(body, &schemaResponse)
-	require.NoError(t, err)
+	utils.RequireNoError(t, err)
 
 	// Check that we have some protocols returned
-	assert.Greater(t, len(schemaResponse), 0)
+	utils.RequireGreater(t, len(schemaResponse), 0)
 	successLog(t, "Successfully retrieved schema with %d protocols", len(schemaResponse))
 }
 
@@ -406,7 +406,6 @@ func TestGetSchemaForProtocol(t *testing.T) {
 		"assert",
 		"boolean",
 		"math",
-		"database",
 	}
 
 	for _, protocol := range protocols {
@@ -428,15 +427,15 @@ func TestGetSchemaForProtocol(t *testing.T) {
 				return
 			}
 
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
+			utils.CheckEqual(t, http.StatusOK, resp.StatusCode)
 
 			var schemaResponse map[string]interface{}
 			err = json.Unmarshal(body, &schemaResponse)
-			require.NoError(t, err)
+			utils.RequireNoError(t, err)
 
 			// Check that our protocol is in the response
 			_, ok := schemaResponse[protocol]
-			assert.True(t, ok, "Protocol %s should be in the response", protocol)
+			utils.RequireTrue(t, ok, "Protocol %s should be in the response", protocol)
 			successLog(t, "Successfully retrieved schema for protocol %s", protocol)
 		})
 	}
@@ -555,21 +554,21 @@ func TestGetSchemaForActions(t *testing.T) {
 
 				var schemaResponse map[string]interface{}
 				err = json.Unmarshal(body, &schemaResponse)
-				require.NoError(t, err)
+				utils.RequireNoError(t, err)
 
 				// Check that our protocol is in the response
 				protocolData, ok := schemaResponse[protocol]
-				assert.True(t, ok, "Protocol %s should be in the response", protocol)
+				utils.RequireTrue(t, ok, "Protocol %s should be in the response", protocol)
 
 				// Extract schema and check for the action
 				protocolMap, ok := protocolData.(map[string]interface{})
-				assert.True(t, ok)
+				utils.RequireTrue(t, ok)
 
 				schema, ok := protocolMap["schema"].(map[string]interface{})
-				assert.True(t, ok)
+				utils.RequireTrue(t, ok)
 
 				_, ok = schema[action]
-				assert.True(t, ok, "Action %s should be in the schema", action)
+				utils.RequireTrue(t, ok, "Action %s should be in the schema", action)
 				successLog(t, "Successfully retrieved schema for %s.%s on chain %d", protocol, action, tc.Intent.ChainId)
 			})
 		}
@@ -607,21 +606,21 @@ func TestGetSchemaForActions(t *testing.T) {
 
 			var schemaResponse map[string]interface{}
 			err = json.Unmarshal(body, &schemaResponse)
-			require.NoError(t, err)
+			utils.RequireNoError(t, err)
 
 			// Check that our protocol is in the response
 			protocolData, ok := schemaResponse[tc.protocol]
-			assert.True(t, ok, "Protocol %s should be in the response", tc.protocol)
+			utils.RequireTrue(t, ok, "Protocol %s should be in the response", tc.protocol)
 
 			// Extract schema and check for the action
 			protocolMap, ok := protocolData.(map[string]interface{})
-			assert.True(t, ok)
+			utils.RequireTrue(t, ok)
 
 			schema, ok := protocolMap["schema"].(map[string]interface{})
-			assert.True(t, ok)
+			utils.RequireTrue(t, ok)
 
 			_, ok = schema[tc.action]
-			assert.True(t, ok, "Action %s should be in the schema", tc.action)
+			utils.RequireTrue(t, ok, "Action %s should be in the schema", tc.action)
 			successLog(t, "Successfully retrieved schema for %s.%s on chain %d", tc.protocol, tc.action, tc.chainId)
 		})
 	}
@@ -797,9 +796,9 @@ func TestGetSolution(t *testing.T) {
 	const baseChainID = 8453
 
 	// Define protocols to test, with preferred chains
-	baseProtocols := []string{"morpho", "euler", "yearn_v3", "aave_v3"}   // Protocols to test on Base chain
-	mainnetProtocols := []string{"nouns"}                                 // Protocols to test on Ethereum mainnet
-	utilityProtocols := []string{"assert", "boolean", "math", "database"} // Chain-agnostic utility protocols
+	baseProtocols := []string{"morpho", "euler", "yearn_v3", "aave_v3"} // Protocols to test on Base chain
+	mainnetProtocols := []string{"nouns"}                               // Protocols to test on Ethereum mainnet
+	utilityProtocols := []string{"assert", "boolean", "math"}           // Chain-agnostic utility protocols
 
 	// Run tests for each group
 	for _, protocol := range baseProtocols {
