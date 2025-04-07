@@ -12,7 +12,7 @@ import { usePlugActions } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 import { useAccount } from "@/lib/hooks/account/useAccount"
 import { useDisconnect } from "@/lib/hooks/account/useDisconnect"
-import { ColumnAuthenticate } from "../columns/authenticate/column"
+import { ColumnAuthenticate } from "@/components/app/columns/authenticate/column"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {

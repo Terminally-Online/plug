@@ -26,9 +26,10 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const authentication = useAtomValue(authenticationAtom)
 
 	const handleAuthenticate = () => {
-		// NOTE: Passing undefined as the authenticating address because the user should
-		//       a connected wallet that will inform the address to use.
-		authenticate(undefined, { onSuccess: () => navigate({ index, from: column?.from }) })
+		authenticate({
+			onSuccess: () => navigate({ index, from: column?.from }),
+			onError: error => console.error(error)
+		})
 	}
 
 	return (

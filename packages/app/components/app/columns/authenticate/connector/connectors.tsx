@@ -3,8 +3,8 @@ import { FC } from "react"
 
 import { Animate } from "@/components/app/utils/animate"
 import { useOrderedConnections } from "@/lib/hooks/account/useConnections"
-import { Connector } from "./connector";
-import { ConnectorQrCode } from "./connector-qr-code";
+import { Connector } from "@/components/app/columns/authenticate/connector/connector";
+import { ConnectorQrCode } from "@/components/app/columns/authenticate/connector/connector-qr-code";
 
 export const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 	const connectors = useOrderedConnections(true)
