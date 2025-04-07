@@ -14,22 +14,22 @@ import (
 )
 
 type Intent struct {
-	Id               string              `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status           string              `json:"status,omitempty" gorm:"type:text;default:'active'"`
-	ChainId          uint64              `json:"chainId" gorm:"type:int"`
-	From             string              `json:"from,omitempty" gorm:"type:text"`
-	Value            *types.BigInt       `json:"value,omitempty" gorm:"type:bigint"`
-	GasLimit         *uint64             `json:"gasLimit,omitempty" gorm:"type:int"`
-	Inputs           types.Inputs        `json:"inputs,omitempty" gorm:"type:jsonb"`
-	Options          types.Options       `json:"options,omitempty" gorm:"type:jsonb"`
-	Frequency        int                 `json:"frequency,omitempty" gorm:"type:int"`
+	Id               string              `json:"id" gorm:"primaryKey;type:text"`
+	Status           string              `json:"status" gorm:"type:text;default:'active'"`
+	ChainId          uint64              `json:"chainId" gorm:"type:int;not null"`
+	From             string              `json:"from" gorm:"type:text;not null"`
+	Value            *types.BigInt       `json:"value" gorm:"type:bigint"`
+	GasLimit         *uint64             `json:"gasLimit" gorm:"type:int"`
+	Inputs           types.Inputs        `json:"inputs" gorm:"type:jsonb"`
+	Options          types.Options       `json:"options" gorm:"type:jsonb"`
+	Frequency        int                 `json:"frequency" gorm:"type:int"`
 	AccessList       ethTypes.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
-	StartAt          *time.Time          `json:"startAt,omitempty" gorm:"type:timestamp"`
-	EndAt            *time.Time          `json:"endAt,omitempty" gorm:"type:timestamp"`
-	PeriodEndAt      *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
-	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
-	Saved            bool                `json:"saved,omitempty" gorm:"type:boolean"`
-	Locked           bool                `json:"locked,omitempty" gorm:"type:boolean"`
+	StartAt          *time.Time          `json:"startAt" gorm:"type:timestamp"`
+	EndAt            *time.Time          `json:"endAt" gorm:"type:timestamp"`
+	PeriodEndAt      *time.Time          `json:"periodEndAt" gorm:"type:timestamp"`
+	NextSimulationAt *time.Time          `json:"nextSimulationAt" gorm:"type:timestamp"`
+	Saved            bool                `json:"saved" gorm:"type:boolean"`
+	Locked           bool                `json:"locked" gorm:"type:boolean"`
 
 	Runs      []Run                 `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
 	LivePlugs []signature.LivePlugs `json:"-" gorm:"foreignKey:IntentId;references:Id"`
@@ -110,4 +110,18 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 	}
 
 	return nil, nil
+}
+
+func (i *Intent) ValidateFields() error {
+	if i.ChainId == 0 {
+		return fmt.Errorf("missing 'chainId'")
+	}
+	if i.From == "" {
+		return fmt.Errorf("missing 'from' address")
+	}
+	if len(i.Inputs) == 0 {
+		return fmt.Errorf("missing 'inputs'")
+	}
+
+	return nil
 }

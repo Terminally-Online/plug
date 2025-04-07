@@ -53,7 +53,9 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 	}
 
 	if definition.GetOptions() != nil {
-		if !definition.GetIsUserSpecific() {
+		if definition.GetIsUserSpecific() && from == utils.ZeroAddress {
+			return nil, utils.ErrMissingField("from")
+		} else if !definition.GetIsUserSpecific() {
 			from = utils.ZeroAddress
 		}
 

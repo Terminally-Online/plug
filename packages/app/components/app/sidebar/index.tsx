@@ -1,9 +1,8 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { Cat, ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
+import { ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
 
 import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
-import { ColumnCompanion } from "@/components/app/columns/utils/column-companion"
 import { ColumnStats } from "@/components/app/columns/utils/column-stats"
 import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
 import { Header } from "@/components/app/layout/header"
@@ -81,7 +80,7 @@ export const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || is.stats || is.companion || is.searching) && (
+			{(is.authenticating || is.stats || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="relative mr-0 flex flex-col overflow-hidden"
@@ -92,13 +91,11 @@ export const ConsoleSidebarPane = () => {
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4">
 							<Header
 								label={
-									is.companion
-										? "Companion"
-										: is.stats
-											? "Stats"
-											: socket.id.startsWith("0x")
-												? "Wallet"
-												: "Login"
+									is.stats
+										? "Stats"
+										: socket.id.startsWith("0x")
+											? "Wallet"
+											: "Login"
 								}
 								size="md"
 								icon={
@@ -128,8 +125,6 @@ export const ConsoleSidebarPane = () => {
 						<div className="h-full overflow-y-scroll">
 							{is.stats ? (
 								<ColumnStats index={0} />
-							) : is.companion ? (
-								<ColumnCompanion index={0} />
 							) : socket.id.startsWith("0x") ? (
 								<ColumnWallet index={0} />
 							) : socket.id.startsWith("0x") === false ? (
@@ -171,7 +166,7 @@ export const ConsoleSidebar = () => {
 			<div className="flex h-full flex-col items-center border-r-[1px] border-plug-green/10 p-2 pt-2">
 				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
-						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						className="relative mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
 						onClick={() => sidebar("authenticating")}
 					>
 						{avatar ? (
@@ -213,19 +208,6 @@ export const ConsoleSidebar = () => {
 								isExpanded={is.expanded}
 								isActive={is.stats}
 								onClick={() => sidebar("stats")}
-							/>
-
-							<ConsoleSidebarAction
-								icon={
-									<Cat
-										size={14}
-										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-									/>
-								}
-								title="Companion"
-								isExpanded={is.expanded}
-								isActive={is.companion}
-								onClick={() => sidebar("companion")}
 							/>
 						</>
 					)}

@@ -36,10 +36,9 @@ contract Plug is PlugInterface {
      * See {PlugInterface-plug}.
      */
     function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs) external payable virtual {
-        uint256 length = $livePlugs.length;
         PlugTypesLib.Result memory results;
         bytes32 livePlugsHash;
-        for (uint8 i; i < length; i++) {
+        for (uint8 i; i < $livePlugs.length; i++) {
             (results, livePlugsHash) = _plug($livePlugs[i], msg.sender);
             emit PlugLib.PlugResult(i, livePlugsHash, results);
         }
