@@ -79,10 +79,9 @@ model SocketIdentity {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  referralCode String    @default(uuid())
-  requestedAt  DateTime?
-  approvedAt   DateTime?
-
+  referralCode    String    @default(uuid())
+  requestedAt     DateTime?
+  approvedAt      DateTime?
   onboardingAt    DateTime?
   onboardedAt     DateTime?
   onboardingColor String?
