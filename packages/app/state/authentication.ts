@@ -42,6 +42,7 @@ export const INITIAL_SOCKET: RouterOutputs["socket"]["get"] = {
 	id: "anonymous-static",
 	createdAt: new Date(),
 	updatedAt: new Date(),
+	deploymentFactory: null,
 	deploymentNonce: 1738,
 	deploymentDelegate: null,
 	deploymentImplementation: null,
