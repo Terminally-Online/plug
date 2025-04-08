@@ -12,7 +12,7 @@ import { Frame } from "@/components/app/frames/base"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { ChainSpecificButton } from "@/components/shared/buttons/authenticate"
 import { Button } from "@/components/shared/buttons/button"
-import { ChainId, formatTitle, getBlockExplorerAddress, getChainName, routes } from "@/lib"
+import { ChainId, formatAddress, formatTitle, getBlockExplorerAddress, getChainName, routes } from "@/lib"
 import { api } from "@/server/client/api"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
@@ -103,6 +103,18 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 							{formatTitle(getChainName(chainId))}
 						</span>
 					</p>
+					{intent && intent.transactions.length > 0 && <div className="w-full font-bold">
+						<p className="flex w-full flex-row items-center gap-4">
+							<Diameter size={18} className="opacity-20" />
+							<span className="mr-auto opacity-40">Factory</span>
+							<span
+								className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
+								onClick={() => navigator.clipboard.writeText(intent.transactions?.[0]?.to ?? "")}
+							>
+								{formatAddress(intent.transactions?.[0]?.to)}
+							</span>
+						</p>
+					</div>}
 					<div className="w-full font-bold">
 						<p className="flex w-full flex-row items-center gap-4">
 							<Diameter size={18} className="opacity-20" />
