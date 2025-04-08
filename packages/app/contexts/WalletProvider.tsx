@@ -27,7 +27,9 @@ export const WALLETCONNECT_PARAMS = {
 	showQrModal: false
 }
 
-export const connectedChains = [chains[mainnet.id], chains[base.id], chains[optimism.id]]
+export const connectedChains = [
+	chains[mainnet.id], chains[base.id], chains[optimism.id], chains[berachain.id]
+]
 
 export const wagmiConfig = createConfig({
 	chains: Object.values(connectedChains) as Chain[] as [Chain, ...Chain[]],
