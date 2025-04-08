@@ -26,12 +26,14 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 
 	const { data: bytecode } = useBytecode({
 		chainId,
-		address: socket.socketAddress as `0x${string}`
+		address: socket.socketAddress as `0x${string}`,
+		query: { enabled: isFrame }
 	})
 
 	const { data: balanceData } = useBalance({
 		chainId,
-		address: socket.socketAddress as `0x${string}`
+		address: socket.socketAddress as `0x${string}`,
+		query: { enabled: isFrame }
 	})
 
 	const { data: intent, error: intentError } = api.solver.actions.intent.useQuery(
@@ -55,7 +57,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 			}
 		},
 		{
-			enabled: !bytecode && socket && socket.id.startsWith("0x")
+			enabled: isFrame && !bytecode && socket && socket.id.startsWith("0x")
 		}
 	)
 	const { error, sendTransaction, isPending } = useSendTransaction()
