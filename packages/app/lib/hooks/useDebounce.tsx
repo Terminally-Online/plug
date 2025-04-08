@@ -6,7 +6,7 @@ const DEFAULT_DELAY = 250
 export const useDebounce = <T,>(
 	initial: T,
 	delay = DEFAULT_DELAY,
-	callback = (_: T) => {}
+	callback = (_: T) => { }
 ): [T, T, (value: T) => void, React.ForwardedRef<T>] => {
 	const pathname = usePathname()
 
@@ -37,16 +37,31 @@ export const useDebounce = <T,>(
 }
 
 export const useDebounceInline = <T,>(value: T, delay = DEFAULT_DELAY, callback?: (value: T) => void): T => {
-	const [debouncedValue, setDebouncedValue] = useState<T>(value)
+	const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+	const callbackRef = useRef(callback);
+	const valueRef = useRef<T>(value);
 
 	useEffect(() => {
-		const timeout = setTimeout(() => {
-			setDebouncedValue(value)
-			callback?.(value)
-		}, delay)
+		callbackRef.current = callback;
+	}, [callback]);
 
-		return () => clearTimeout(timeout)
-	}, [value, delay, callback])
+	useEffect(() => {
+		const isEqual = typeof value === 'object' && value !== null
+			? JSON.stringify(value) === JSON.stringify(valueRef.current)
+			: value === valueRef.current;
 
-	return debouncedValue
-}
+		if (!isEqual) {
+			valueRef.current = value;
+
+			const timeout = setTimeout(() => {
+				setDebouncedValue(value);
+				callbackRef.current?.(value);
+			}, delay);
+
+			return () => clearTimeout(timeout);
+		}
+	}, [value, delay]);
+
+	return debouncedValue;
+};
