@@ -1,5 +1,5 @@
 import { ChainId } from "@/lib";
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { Frame } from "@/components/app/frames/base";
 import { useAtom, useAtomValue } from "jotai";
 import { columnByIndexAtom, COLUMNS, isFrameAtom } from "@/state/columns";
@@ -8,6 +8,8 @@ import { useSocket } from "@/state/authentication";
 import { ChainSpecificButton } from "@/components/shared/buttons/authenticate";
 import { Router } from "lucide-react";
 import { api } from "@/server/client/api";
+import { env } from "@/env";
+import { ScrollingError } from "../../assets/scrolling-error";
 
 export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ index, chainId }) => {
     const [column] = useAtom(columnByIndexAtom(index))
@@ -16,7 +18,6 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
 
     const { socket } = useSocket()
 
-    const { error, sendTransaction, isPending } = useSendTransaction()
 
     const { data: bytecode } = useBytecode({
         chainId,
@@ -30,10 +31,10 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
             {
                 protocol: "plug",
                 action: "deploy",
-                nonce: 123,
-                admin: "0x62180042606624f02d8a130da8a3171e9b33894d",
-                delegate: "0x62180042606624f02d8a130da8a3171e9b33894d",
-                implementation: "0x00000000906bb1a5fe6527c051A4C3b1c4595a8a"
+                nonce: socket.deploymentNonce ?? 1738,
+                admin: socket.id ?? "",
+                delegate: socket.deploymentDelegate ?? "",
+                implementation: socket.deploymentImplementation ?? ""
             }
         ],
         options: {
@@ -41,17 +42,19 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
             simulate: true
         }
     }, {
-        enabled: !bytecode && socket.id.startsWith("0x"),
+        enabled: !bytecode && socket && socket.id.startsWith("0x"),
     })
+    const { error, sendTransaction, isPending } = useSendTransaction()
 
-    const handleDeploy = () => {
-        if (bytecode) return
+    const handleDeploy = useCallback(() => {
+        if (bytecode || !intent) return
 
-        // send it to the router
-        // solver needs to have an action for deployment
-
-        // TODO: Implement this.
-    }
+        sendTransaction({
+            to: intent.transactions[0].to,
+            data: intent.transactions[0].data,
+            value: intent.transactions[0].value,
+        }, { onError: error => console.error(error) })
+    }, [bytecode, intent])
 
     return (
         <Frame
@@ -62,9 +65,16 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
             hasOverlay
         >
             <div className="flex flex-col gap-4">
-                <p className="text-center text-sm opacity-40 font-bold max-w-[400px] mx-auto">The first time your Socket sees a transaction it will automatically deploy. If you are new here, you can disregard this. Please only use this for emergencies.</p>
-                <ChainSpecificButton chainId={chainId} className="py-4 w-full" onClick={handleDeploy} disabled={bytecode !== undefined}>
-                    {bytecode ? "Already Published" : "Publish"}
+                {error ? <ScrollingError error={error?.message ?? ""} /> : <p className="text-center text-sm opacity-40 font-bold max-w-[400px] mx-auto">The first time your Socket sees a transaction it will automatically deploy. If you are new here, you can disregard this. Please only use this for emergencies.</p>}
+
+
+                <ChainSpecificButton 
+                    className="py-4 w-full" 
+                    chainId={chainId} 
+                    onClick={handleDeploy} 
+                    disabled={Boolean(bytecode)}
+                >
+                    {isPending ? "Publishing..." : bytecode ? "Already Published" : "Publish"}
                 </ChainSpecificButton>
             </div>
         </Frame>

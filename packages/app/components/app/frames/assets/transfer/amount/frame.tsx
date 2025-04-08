@@ -171,9 +171,9 @@ export const TransferAmountFrame: FC<TransferAmountFrameProps> = ({ index, token
 							color: isReady ? textColor : color,
 							borderColor: isReady ? "#FFFFFF" : color
 						}}
-						disabled={isDisabled}
-						onClick={handleTransactionOnchain}
 						chainId={base.id}
+						onClick={handleTransactionOnchain}
+						disabled={isDisabled}
 					>
 						{!isAuthenticated
 							? "Connect Wallet"
