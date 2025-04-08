@@ -40,6 +40,7 @@ const (
 	ActionBid                string = "bid"
 	ActionRenew              string = "renew"
 	ActionMint               string = "mint"
+	ActionDeploy             string = "deploy"
 
 	ReadBalance            string = "balance"
 	ReadPrice              string = "price"
