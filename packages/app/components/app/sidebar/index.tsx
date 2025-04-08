@@ -1,6 +1,6 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
+import { ChartBar, LogOut, Plus, ScanFace, Settings, Wallet, X } from "lucide-react"
 import { ColumnStats } from "@/components/app/columns/utils/column-stats"
 import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
 import { Header } from "@/components/app/layout/header"
@@ -13,6 +13,7 @@ import { useSidebar } from "@/state/sidebar"
 import { useAccount } from "@/lib/hooks/account/useAccount"
 import { useDisconnect } from "@/lib/hooks/account/useDisconnect"
 import { ColumnAuthenticate } from "@/components/app/columns/authenticate/column"
+import { ColumnSettings } from "../columns/settings/column"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
@@ -33,11 +34,12 @@ const ConsoleSidebarAction: FC<
 		)}
 		{...props}
 	>
-		<div className="opacity-60">{icon}</div>
+		<div className={cn(!isActive && "opacity-80")}>{icon}</div>
 
 		<p
 			className={cn(
-				"mr-auto whitespace-nowrap font-bold opacity-80 transition-all duration-200 ease-in-out",
+				"mr-auto whitespace-nowrap font-bold transition-all duration-200 ease-in-out",
+				!isActive && "opacity-80",
 				isExpanded === false ? "hidden" : "group-hover:opacity-100"
 			)}
 		>
@@ -80,7 +82,7 @@ export const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || is.stats || is.searching) && (
+			{(is.authenticating || is.stats || is.searching || is.settings) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="relative mr-0 flex flex-col overflow-hidden"
@@ -91,15 +93,22 @@ export const ConsoleSidebarPane = () => {
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4">
 							<Header
 								label={
-									is.stats
-										? "Stats"
-										: socket.id.startsWith("0x")
-											? "Wallet"
-											: "Login"
+									is.settings ? "Settings" :
+										is.stats
+											? "Stats"
+											: socket.id.startsWith("0x")
+												? "Wallet"
+												: "Login"
 								}
 								size="md"
 								icon={
-									is.stats ? (
+									is.settings ? (
+										<Settings
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+
+									) : is.stats ? (
 										<ChartBar
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -123,7 +132,9 @@ export const ConsoleSidebarPane = () => {
 						</div>
 
 						<div className="h-full overflow-y-scroll">
-							{is.stats ? (
+							{is.settings ? (
+								<ColumnSettings index={0} className="px-6 py-4" />
+							) : is.stats ? (
 								<ColumnStats index={0} />
 							) : socket.id.startsWith("0x") ? (
 								<ColumnWallet index={0} />
@@ -214,18 +225,34 @@ export const ConsoleSidebar = () => {
 
 				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
 					{(socket || address) && (
-						<ConsoleSidebarAction
-							className={cn(is.expanded && "pr-16")}
-							icon={
-								<LogOut
-									size={14}
-									className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-								/>
-							}
-							title="Logout"
-							isExpanded={is.expanded}
-							onClick={() => disconnect()}
-						/>
+						<>
+							<ConsoleSidebarAction
+								className={cn(is.expanded && "pr-16")}
+								icon={
+									<Settings
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Settings"
+								isExpanded={is.expanded}
+								isActive={is.settings}
+								onClick={() => sidebar("settings")}
+							/>
+
+							<ConsoleSidebarAction
+								className={cn(is.expanded && "pr-16")}
+								icon={
+									<LogOut
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Logout"
+								isExpanded={is.expanded}
+								onClick={() => disconnect()}
+							/>
+						</>
 					)}
 				</div>
 			</div>
