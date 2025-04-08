@@ -4,7 +4,6 @@ import (
 	"math/big"
 	"solver/bindings/plug_factory"
 	"solver/internal/actions"
-	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -12,24 +11,11 @@ import (
 )
 
 type DeployRequest struct {
+	Factory        common.Address `json:"factory"`
 	Nonce          *big.Int       `json:"nonce"`
 	Admin          common.Address `json:"admin"`
 	Delegate       common.Address `json:"delegate"`
 	Implementation common.Address `json:"implementation"`
-}
-
-func getSaltHash(nonce *big.Int, admin, oneClicker, implementation common.Address) ([]byte, error) {
-	return abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 96}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}.Pack(
-		nonce,
-		admin,
-		oneClicker,
-		implementation,
-	)
 }
 
 func Deploy(lookup *actions.SchemaLookup[DeployRequest]) ([]signature.Plug, error) {
@@ -42,7 +28,12 @@ func Deploy(lookup *actions.SchemaLookup[DeployRequest]) ([]signature.Plug, erro
 		return nil, err
 	}
 
-	salt, err := getSaltHash(
+	salt, err := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 96}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}.Pack(
 		lookup.Inputs.Nonce,
 		lookup.Inputs.Admin,
 		lookup.Inputs.Delegate,
@@ -58,7 +49,7 @@ func Deploy(lookup *actions.SchemaLookup[DeployRequest]) ([]signature.Plug, erro
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Plug["factory"]),
+		To:   lookup.Inputs.Factory,
 		Data: deployCalldata,
 	}}, nil
 }

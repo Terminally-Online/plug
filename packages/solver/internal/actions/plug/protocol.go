@@ -49,7 +49,7 @@ func New() actions.Protocol {
 				),
 
 				actions.ActionDeploy: actions.NewActionDefinition(
-					"Deploy Socket with {0<nonce:uint64>} for {1<admin:address>} with a delegate of {2<delegate:address>} on {3<implementation:address>}",
+					"Deploy Socket on {0<factory:address>} with {1<nonce:uint64>} for {2<admin:address>} with a delegate of {3<delegate:address>} with {4<implementation:address>}",
 					plug_actions.Deploy,
 					nil,
 					actions.IsGlobal,
