@@ -1,6 +1,6 @@
-import addresses from '../../addresses.json'
-import { version } from 'package.json'
-import { encodeAbiParameters, getContractAddress, Hex, parseAbiParameters } from 'viem'
+import addresses from '@terminallyonline/plug-core/addresses.json'
+import { version } from '@terminallyonline/plug-core/package.json'
+import { bytesToHex, encodePacked, getContractAddress, Hex, toBytes } from 'viem'
 
 export const getSocketImplementation = () => {
     const versioned = addresses[version as keyof typeof addresses]
@@ -8,13 +8,14 @@ export const getSocketImplementation = () => {
 }
 
 export const getSocketSalt = (
-    nonce: bigint,
-    admin: `0x${string}`,
+	nonce: bigint,
+	admin: `0x${string}`,
 ) => {
-    return encodeAbiParameters(
-        parseAbiParameters(["uint96", "address"]),
-        [nonce, admin],
-    )
+	const bytes = toBytes(encodePacked(['uint96', 'address'], [nonce, admin]), {
+		size: 32
+	})
+
+	return { bytes, hex: bytesToHex(bytes) as `0x${string}` | string }
 }
 
 export const getSocketAddress = (salt: Hex) => {

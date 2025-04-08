@@ -93,20 +93,13 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 					<span className="group ml-auto flex flex-row items-center gap-4">1738</span>
 				</p>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
-					<Flower2 size={14} className="opacity-20" />
-					<span className="opacity-40">Salt</span>{" "}
-					<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-						{formatAddress(socket?.salt ?? "", 8)}
-					</span>
-				</p>
-				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<Puzzle size={14} className="opacity-20" />
 					<span className="opacity-40">Implementation</span>{" "}
 					<span
 						className="group ml-auto flex cursor-pointer flex-row items-center gap-4"
 						onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
 					>
-						{socket?.implementation ? formatAddress(socket?.implementation) : "None"}
+						{socket?.deploymentImplementation ? formatAddress(socket?.deploymentImplementation) : "None"}
 					</span>
 				</p>
 

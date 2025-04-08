@@ -5,8 +5,6 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { getSocketAddress, getSocketSalt } from "@terminallyonline/plug-core/lib"
-
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
@@ -14,12 +12,30 @@ import { balances } from "./balances"
 import { onboard } from "./onboard"
 import { referral } from "./referral"
 import { stats } from "./stats"
+import { env } from "@/env"
+import { getSocketAddress, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
 
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
 export const MAGIC_NONCE = BigInt(1738)
 
-// NOTE: This client can be only mainnet because it is only used for ENS lookups
 const client = createClient(mainnet.id)
+
+const getDeployment = (admin: `0x${string}`) => {
+	const { deployment: { address: implementation } } = getSocketImplementation()
+	const { hex: salt } = getSocketSalt(
+		MAGIC_NONCE,
+		admin as `0x${string}`,
+	)
+	const { address: socketAddress } = getSocketAddress(salt as `0x${string}`)
+
+	return {
+		socketAddress,
+		deploymentNonce: parseInt(MAGIC_NONCE.toString()),
+		deploymentDelegate: env.SOLVER_DELEGATE_ADDRESS,
+		deploymentImplementation: implementation,
+		deploymentSalt: salt
+	} as const
+}
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ ctx }) => {
@@ -47,16 +63,20 @@ export const socket = createTRPCRouter({
 			}
 		}
 
+
+		let nonce = undefined
+		let delegate = undefined
 		let socketAddress = ""
 		let salt = ""
 		let implementation = ""
 		if (ctx.session.address.startsWith("0x")) {
-			const { bytes, hex } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
-			const socketDetails = getSocketAddress(bytes)
+			const deployment = getDeployment(ctx.session.address as `0x${string}`)
 
-			socketAddress = socketDetails.address
-			salt = hex
-			implementation = socketDetails.implementation
+			socketAddress = deployment.socketAddress
+			nonce = deployment.deploymentNonce
+			delegate = deployment.deploymentDelegate
+			implementation = deployment.deploymentImplementation
+			salt = deployment.deploymentSalt
 		}
 
 		await ctx.db.socket.upsert({
@@ -65,9 +85,9 @@ export const socket = createTRPCRouter({
 				id: ctx.session.address,
 				socketAddress,
 				deploymentNonce: parseInt(MAGIC_NONCE.toString()),
-				deploymentAdmin: "",
-				deploymentDelegate: "",
+				deploymentDelegate: delegate,
 				deploymentImplementation: implementation,
+				deploymentSalt: salt,
 				identity: {
 					create: {
 						ens: {
