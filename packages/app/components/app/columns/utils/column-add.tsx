@@ -111,11 +111,6 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 		const base = [
 			...flagOptions,
 			...OPTIONS,
-			{
-				label: "SETTINGS",
-				description: "View and manage your Plug settings.",
-				icon: <Cog size={14} className="opacity-40" />
-			},
 		]
 
 		if (socket?.admin)
