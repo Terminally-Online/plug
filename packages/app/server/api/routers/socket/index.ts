@@ -20,14 +20,14 @@ export const MAGIC_NONCE = BigInt(1738)
 
 const client = createClient(mainnet.id)
 
-const getDeployment = (admin: `0x${string}`) => {
+const getDeployment = async (admin: `0x${string}`) => {
 	const { deployment: { address: factory } } = getSocketFactory()
 	const { deployment: { address: implementation } } = getSocketImplementation()
 	const { hex: salt } = getSocketSalt(
 		MAGIC_NONCE,
 		admin as `0x${string}`,
 	)
-	const { address: socketAddress } = getSocketAddress(salt as `0x${string}`)
+	const { address: socketAddress } = await getSocketAddress(salt as `0x${string}`)
 
 	return {
 		socketAddress,
@@ -80,7 +80,7 @@ export const socket = createTRPCRouter({
 				deploymentDelegate, 
 				deploymentImplementation, 
 				deploymentSalt 
-			} = getDeployment(ctx.session.address as `0x${string}`)
+			} = await getDeployment(ctx.session.address as `0x${string}`)
 
 			socketAddress = deploymentSocketAddress
 			factory = deploymentFactory

@@ -86,10 +86,14 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 			<div className="flex flex-col gap-4">
 				{intentError || error ? (
 					<ScrollingError error={intentError?.message ?? error?.message ?? ""} />
-				) : (
+				) : !bytecode ? (
 					<p className="mx-auto max-w-[400px] text-center font-bold opacity-40">
 						Only use this for emergencies as it consumes gas not needed. You can read more in{" "}
 						<a href={routes.documentation}>our documentation</a>.
+					</p>
+				) : (
+					<p className="mx-auto max-w-[400px] text-center font-bold opacity-40">
+						This Socket has already been published you have nothing left to do here.
 					</p>
 				)}
 
@@ -143,6 +147,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 						View
 					</Button>
 					<ChainSpecificButton
+						variant={bytecode ? "primaryDisabled" : "primary"}
 						className="w-full py-4"
 						chainId={chainId}
 						onClick={handleDeploy}
