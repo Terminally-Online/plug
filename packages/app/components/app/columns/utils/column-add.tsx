@@ -106,22 +106,27 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 		return options
 	}, [getFlag])
 
-	const options = [
-		...flagOptions,
-		...OPTIONS,
-		{
-			label: "SETTINGS",
-			description: "View and manage your Plug settings.",
-			icon: <Cog size={14} className="opacity-40" />
-		},
-		socket?.admin
-			? {
-					label: "ADMIN",
-					description: "Manage administrative settings.",
-					icon: <LockIcon size={14} className="opacity-40" />
-				}
-			: {}
-	]
+
+	const options = useMemo(() => {
+		const base = [
+			...flagOptions,
+			...OPTIONS,
+			{
+				label: "SETTINGS",
+				description: "View and manage your Plug settings.",
+				icon: <Cog size={14} className="opacity-40" />
+			},
+		]
+
+		if (socket?.admin)
+			base.push({
+				label: "ADMIN",
+				description: "Manage administrative settings.",
+				icon: <LockIcon size={14} className="opacity-40" />
+			})
+
+		return base
+	}, [])
 
 	const isBody = index != columns.length - 2
 
@@ -145,7 +150,7 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 								className="pointer-events-none cursor-none opacity-0"
 								variant="secondary"
 								sizing="sm"
-								onClick={() => {}}
+								onClick={() => { }}
 							>
 								<X size={14} className="opacity-60 transition-opacity group-hover:opacity-100" />
 							</Button>
