@@ -1,5 +1,5 @@
 import { createPublicClient, extractChain, http } from "viem"
-import { base, mainnet, optimism } from "viem/chains"
+import { base, berachain, mainnet, optimism } from "viem/chains"
 
 import { env } from "@/env"
 import { Chain, RPCType } from "@/lib/types"
@@ -80,7 +80,16 @@ export const chains = {
 			...base.rpcUrls,
 			...getAppRPCs(".base-mainnet")
 		}
-	} as const satisfies Chain
+	} as const satisfies Chain,
+	[berachain.id]: {
+		...berachain,
+		color: "#451D07",
+		logo: "https://cdn.onplug.io/blockchain/bera.png",
+		rpcUrls: {
+			...berachain.rpcUrls,
+			...getAppRPCs(".berachain-mainnet")
+		}
+	} as const satisfies Chain,
 }
 
 export const chainsArray = Object.values(chains)

@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from "react"
 
 import { Chain, createClient } from "viem"
-import { base } from "viem/chains"
+import { base, berachain, mainnet, optimism } from "viem/chains"
 import { createConfig, WagmiProvider, webSocket } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
@@ -27,7 +27,7 @@ export const WALLETCONNECT_PARAMS = {
 	showQrModal: false
 }
 
-export const connectedChains = [chains[base.id]]
+export const connectedChains = [chains[mainnet.id], chains[base.id], chains[optimism.id]]
 
 export const wagmiConfig = createConfig({
 	chains: Object.values(connectedChains) as Chain[] as [Chain, ...Chain[]],

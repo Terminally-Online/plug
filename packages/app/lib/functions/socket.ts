@@ -2,6 +2,11 @@ import addresses from '@terminallyonline/plug-core/addresses.json'
 import { version } from '@terminallyonline/plug-core/package.json'
 import { bytesToHex, encodePacked, getContractAddress, Hex, toBytes } from 'viem'
 
+export const getSocketFactory = () => {
+    const versioned = addresses[version as keyof typeof addresses]
+    return versioned.contracts['Plug.Factory.sol']
+}
+
 export const getSocketImplementation = () => {
     const versioned = addresses[version as keyof typeof addresses]
     return versioned.contracts['Plug.Socket.sol']

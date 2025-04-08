@@ -53,6 +53,7 @@ Table Socket {
   updatedAt DateTime [default: `now()`, not null]
   admin Boolean [not null, default: false]
   socketAddress String [not null]
+  deploymentFactory String
   deploymentNonce Int
   deploymentDelegate String
   deploymentImplementation String

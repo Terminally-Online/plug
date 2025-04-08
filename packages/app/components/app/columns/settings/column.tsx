@@ -6,7 +6,6 @@ import {
 	CalendarCheck,
 	CalendarClock,
 	Computer,
-	Flower2,
 	Glasses,
 	Globe,
 	Handshake,
@@ -30,19 +29,13 @@ import { useBytecode } from "wagmi"
 import { base } from "viem/chains"
 import { useColumnActions } from "@/state/columns"
 import { SocketDeployFrame } from "../../frames/socket/deploy/frame"
+import { ColumnSettingsDeploymentItem } from "./deployment/item"
 
 export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
 
 	const { user, chainId } = useAccount()
 	const { socket } = useSocket()
-
-	const { frame } = useColumnActions(index)
-
-	const { data: bytecode } = useBytecode({
-		chainId: base.id,
-		address: socket.socketAddress as `0x${string}`
-	})
 
 	if (!socket) return null
 
@@ -107,19 +100,13 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 				{connectedChains.map((chain, chainIndex) => (
-					<p key={chainIndex} className="flex flex-row items-center justify-between gap-2 font-bold">
-						<ChainImage chainId={chain.id} size="xs" />
-						<span className="opacity-40">{chain.name}</span>{" "}
-						<span
-							className={cn(
-								"group ml-auto flex flex-row items-center gap-1",
-								!bytecode && "cursor-pointer"
-							)}
-							onClick={() => frame(`${chain.id}-deploy`)}
-						>
-							{bytecode ? "Published" : "Ready to Publish"}
-						</span>
-					</p>
+					<ColumnSettingsDeploymentItem 
+						key={chainIndex} 
+						index={index} 
+						chainId={chain.id} 
+						factory={socket.deploymentFactory} 
+						address={socket.socketAddress} 
+					/>
 				))}
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">

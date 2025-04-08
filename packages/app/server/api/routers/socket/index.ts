@@ -13,7 +13,7 @@ import { onboard } from "./onboard"
 import { referral } from "./referral"
 import { stats } from "./stats"
 import { env } from "@/env"
-import { getSocketAddress, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
+import { getSocketAddress, getSocketFactory, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
 
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
 export const MAGIC_NONCE = BigInt(1738)
@@ -21,6 +21,7 @@ export const MAGIC_NONCE = BigInt(1738)
 const client = createClient(mainnet.id)
 
 const getDeployment = (admin: `0x${string}`) => {
+	const { deployment: { address: factory } } = getSocketFactory()
 	const { deployment: { address: implementation } } = getSocketImplementation()
 	const { hex: salt } = getSocketSalt(
 		MAGIC_NONCE,
@@ -30,6 +31,7 @@ const getDeployment = (admin: `0x${string}`) => {
 
 	return {
 		socketAddress,
+		deploymentFactory: factory,
 		deploymentNonce: parseInt(MAGIC_NONCE.toString()),
 		deploymentDelegate: env.SOLVER_DELEGATE_ADDRESS,
 		deploymentImplementation: implementation,
@@ -64,19 +66,28 @@ export const socket = createTRPCRouter({
 		}
 
 
+		let socketAddress = ctx.session.address
+		let factory = undefined
 		let nonce = undefined
 		let delegate = undefined
-		let socketAddress = ""
-		let salt = ""
-		let implementation = ""
+		let implementation = undefined
+		let salt = undefined
 		if (ctx.session.address.startsWith("0x")) {
-			const deployment = getDeployment(ctx.session.address as `0x${string}`)
+			const { 
+				socketAddress: deploymentSocketAddress,
+				deploymentFactory,
+				deploymentNonce, 
+				deploymentDelegate, 
+				deploymentImplementation, 
+				deploymentSalt 
+			} = getDeployment(ctx.session.address as `0x${string}`)
 
-			socketAddress = deployment.socketAddress
-			nonce = deployment.deploymentNonce
-			delegate = deployment.deploymentDelegate
-			implementation = deployment.deploymentImplementation
-			salt = deployment.deploymentSalt
+			socketAddress = deploymentSocketAddress
+			factory = deploymentFactory
+			nonce = deploymentNonce
+			delegate = deploymentDelegate
+			implementation = deploymentImplementation
+			salt = deploymentSalt
 		}
 
 		await ctx.db.socket.upsert({
@@ -84,6 +95,7 @@ export const socket = createTRPCRouter({
 			create: {
 				id: ctx.session.address,
 				socketAddress,
+				deploymentFactory: factory,
 				deploymentNonce: parseInt(MAGIC_NONCE.toString()),
 				deploymentDelegate: delegate,
 				deploymentImplementation: implementation,
