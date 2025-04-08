@@ -112,83 +112,81 @@ export const TransferAmountFrame: FC<TransferAmountFrameProps> = ({ index, token
 	if (!token || !column) return null
 
 	return (
-		<>
-			<Frame
-				index={index}
-				icon={
-					<div className="relative h-8 w-10">
-						<TokenImage
-							logo={
-								token?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-							}
-							symbol={token.symbol}
-							size="sm"
+		<Frame
+			index={index}
+			icon={
+				<div className="relative h-8 w-10">
+					<TokenImage
+						logo={
+							token?.icon ||
+							`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+						}
+						symbol={token.symbol}
+						size="sm"
+					/>
+				</div>
+			}
+			label={`${index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Transfer"}`}
+			visible={isFrame}
+			handleBack={() =>
+				frame(
+					index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`
+				)
+			}
+			hasChildrenPadding={false}
+			hasOverlay
+		>
+			<div className="mb-4 flex flex-col gap-2">
+				{index !== COLUMNS.SIDEBAR_INDEX && (
+					<div className="px-6">
+						<TransferRecipient
+							address={column?.transfer?.recipient ?? ""}
+							handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
 						/>
 					</div>
-				}
-				label={`${index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Transfer"}`}
-				visible={isFrame}
-				handleBack={() =>
-					frame(
-						index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`
-					)
-				}
-				hasChildrenPadding={false}
-				hasOverlay
-			>
-				<div className="mb-4 flex flex-col gap-2">
-					{index !== COLUMNS.SIDEBAR_INDEX && (
-						<div className="px-6">
-							<TransferRecipient
-								address={column?.transfer?.recipient ?? ""}
-								handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
-							/>
-						</div>
-					)}
+				)}
 
-					<div className="flex flex-col gap-2">
-						{token.implementations.map((implementation, implementationIndex) => (
-							<TransferTokenImplementation
-								key={implementationIndex}
-								index={index}
-								implementation={implementation}
-								token={token}
-								color={color}
-							/>
-						))}
-					</div>
-
-					<div className="mx-6 mt-2 flex flex-col gap-4">
-						<ScrollingError error={error?.message ?? ""} />
-
-						<ChainSpecificButton
-							className={cn(
-								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
-								isReady === false && "transparent"
-							)}
-							style={{
-								backgroundColor: isReady ? color : "transparent",
-								color: isReady ? textColor : color,
-								borderColor: isReady ? "#FFFFFF" : color
-							}}
-							disabled={isDisabled}
-							onClick={handleTransactionOnchain}
-							chain={base}
-						>
-							{!isAuthenticated
-								? "Connect Wallet"
-								: isPending
-									? "Transferring..."
-									: isReady
-										? index === COLUMNS.SIDEBAR_INDEX
-											? "Deposit"
-											: "Send"
-										: "Enter Amount"}
-						</ChainSpecificButton>
-					</div>
+				<div className="flex flex-col gap-2">
+					{token.implementations.map((implementation, implementationIndex) => (
+						<TransferTokenImplementation
+							key={implementationIndex}
+							index={index}
+							implementation={implementation}
+							token={token}
+							color={color}
+						/>
+					))}
 				</div>
-			</Frame>
-		</>
+
+				<div className="mx-6 mt-2 flex flex-col gap-4">
+					<ScrollingError error={error?.message ?? ""} />
+
+					<ChainSpecificButton
+						className={cn(
+							"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
+							isReady === false && "transparent"
+						)}
+						style={{
+							backgroundColor: isReady ? color : "transparent",
+							color: isReady ? textColor : color,
+							borderColor: isReady ? "#FFFFFF" : color
+						}}
+						disabled={isDisabled}
+						onClick={handleTransactionOnchain}
+						chainId={base.id}
+					>
+						{!isAuthenticated
+							? "Connect Wallet"
+							: isPending
+								? "Transferring..."
+								: isReady
+									? index === COLUMNS.SIDEBAR_INDEX
+										? "Deposit"
+										: "Send"
+									: "Enter Amount"}
+					</ChainSpecificButton>
+				</div>
+			</div>
+		</Frame>
 	)
 }
