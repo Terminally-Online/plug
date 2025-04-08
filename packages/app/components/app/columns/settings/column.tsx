@@ -96,7 +96,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 					<span className="opacity-40">Implementation</span>{" "}
 					<span
 						className="group ml-auto flex cursor-pointer flex-row items-center gap-4"
-						onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
+						onClick={() => navigator.clipboard.writeText(socket?.deploymentImplementation ?? "")}
 					>
 						{socket?.deploymentImplementation ? formatAddress(socket?.deploymentImplementation) : "None"}
 					</span>
