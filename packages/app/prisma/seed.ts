@@ -38,59 +38,68 @@ const seedSockets = async () => {
 		const { bytes, hex: salt } = getSocketSalt(MAGIC_NONCE, socket.address as `0x${string}`)
 		const { address: socketAddress, implementation } = getSocketAddress(bytes)
 
+		// TODO: Need to update getSocketSalt to use the real thing and also return the proper values
+		const deployment = {
+			deploymentNonce: 123,
+			deploymentDelegate: "0x0",
+			deploymentImplementation: implementation,
+			deploymentSalt: salt
+		} as const
+
+		const createIdentity = {
+			create: {
+				ens: {
+					create: {
+						name: socket.name,
+						avatar: socket.avatar
+					}
+				},
+				approvedAt: new Date()
+			}
+		} as const
+		const upsertIndentity = {
+			upsert: {
+				create: {
+					ens: {
+						create: {
+							name: socket.name,
+							avatar: socket.avatar
+						}
+					},
+					approvedAt: new Date()
+				},
+				update: {
+					ens: {
+						upsert: {
+							create: {
+								name: socket.name,
+								avatar: socket.avatar
+							},
+							update: {
+								name: socket.name,
+								avatar: socket.avatar
+							}
+						}
+					},
+					approvedAt: new Date()
+				}
+			}
+		} as const
+
 		await prisma.socket.upsert({
 			where: { id: socket.address },
 			update: {
 				admin: true,
 				socketAddress,
-				salt,
-				implementation,
-				identity: {
-					upsert: {
-						create: {
-							ens: {
-								create: {
-									name: socket.name,
-									avatar: socket.avatar
-								}
-							},
-							approvedAt: new Date()
-						},
-						update: {
-							ens: {
-								upsert: {
-									create: {
-										name: socket.name,
-										avatar: socket.avatar
-									},
-									update: {
-										name: socket.name,
-										avatar: socket.avatar
-									}
-								}
-							},
-							approvedAt: new Date()
-						}
-					}
-				}
+				...deployment,
+				identity: upsertIndentity
 			},
 			create: {
 				id: socket.address,
 				admin: true,
 				socketAddress,
-				salt,
-				implementation,
-				identity: {
-					create: {
-						ens: {
-							create: {
-								name: socket.name,
-								avatar: socket.avatar
-							}
-						},
-						approvedAt: new Date()
-					}
-				}
+				...deployment,
+				identity: createIdentity
 			}
 		})
 	}

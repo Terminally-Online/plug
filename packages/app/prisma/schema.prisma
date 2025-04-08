@@ -115,10 +115,12 @@ model Socket {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  admin          Boolean @default(false)
-  socketAddress  String
-  salt           String?
-  implementation String?
+  admin                    Boolean @default(false)
+  socketAddress            String
+  deploymentNonce          Int?
+  deploymentDelegate       String?
+  deploymentImplementation String?
+  deploymentSalt           String?
 
   // ---------------------------------------------------------------------------
   // One-to-one

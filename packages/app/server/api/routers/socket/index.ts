@@ -53,6 +53,7 @@ export const socket = createTRPCRouter({
 		if (ctx.session.address.startsWith("0x")) {
 			const { bytes, hex } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
 			const socketDetails = getSocketAddress(bytes)
+
 			socketAddress = socketDetails.address
 			salt = hex
 			implementation = socketDetails.implementation
@@ -63,8 +64,10 @@ export const socket = createTRPCRouter({
 			create: {
 				id: ctx.session.address,
 				socketAddress,
-				salt,
-				implementation,
+				deploymentNonce: parseInt(MAGIC_NONCE.toString()),
+				deploymentAdmin: "",
+				deploymentDelegate: "",
+				deploymentImplementation: implementation,
 				identity: {
 					create: {
 						ens: {
