@@ -84,7 +84,6 @@ export const useFetchHoldingsForAddress = (address: string, enabled: boolean = t
 
 	const handleUpdatePositions = useCallback(
 		(newPositions: Balances["positions"]) => {
-			console.log('updated positions')
 			updatePositions(newPositions)
 		},
 		[updatePositions]
