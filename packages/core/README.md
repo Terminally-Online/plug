@@ -36,7 +36,7 @@ Built into the scripts are redeploy protection so if you are running a batch dep
 All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Factory.sol` and the base `Plug.Socket.sol` are all found at constant addresses across chains. The only time the address will change when a new version is deployed. This will happen most common for the Socket, but we will always keep the list updated.
 
 ```ml
-[v0.4.2]:
+[v0.4.3]:
 ├─ Mining Configuration:
 │  ├─ Leading Zeros: 4
 │  ├─ Total Zeros: 8
@@ -54,5 +54,6 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
    ├─ Plug.Rewards.sol [256] — "0x000000004234f504f1e759Cb97A4B01c35398289"
    ├─ Plug.Socket.sol [256] — "0x00000000906bb1a5fe6527c051A4C3b1c4595a8a"
    ├─ Plug.Ticket.sol [256] — "0x000000003525F8830Dbf2eaAdBCEC33cbFC3E79e"
-   └─ Plug.Token.sol [256] — "0x00000000C3970e7529189339354c7e0f4cdBBF79"
+   ├─ Plug.Token.sol [256] — "0x00000000C3970e7529189339354c7e0f4cdBBF79"
+   └─ Plug.sol [256] — "0x0000000070D55E8243BC9B94DB91028CeAaB3666"
 ```

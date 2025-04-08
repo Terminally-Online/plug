@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.4.3
+
+### Patch Changes
+
+- feat: much improved socket address calculation and handling
+
 ## 0.4.2
 
 ### Patch Changes
