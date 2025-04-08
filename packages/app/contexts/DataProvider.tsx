@@ -1,7 +1,7 @@
 import { Session } from "next-auth"
 import { createContext, FC, PropsWithChildren, useContext } from "react"
 
-import { useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 
 import { useResponse } from "@/lib/hooks/useResponse"
 import { api } from "@/server/client"
@@ -16,13 +16,13 @@ type DataContextType = {}
 export const DataContext = createContext<DataContextType>({} as DataContextType)
 
 export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = ({ children }) => {
-	const { address, isConnected, isAuthenticated } = useAccount()
+	const { address, isAuthenticated } = useAccount()
 
-	const setSocket = useSetAtom(socketModelAtom)
+	const [socket, setSocket] = useAtom(socketModelAtom)
 	const setActions = useSetAtom(actionsAtom)
 	const setPlugs = useSetAtom(plugsAtom)
 
-	const enabled = isConnected || isAuthenticated
+	const enabled = isAuthenticated
 
 	useResponse(
 		() =>
@@ -34,25 +34,25 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		() =>
 			api.solver.actions.schemas.useQuery(
 				{ chainId: 8453 },
-				{ enabled: isAuthenticated }
+				{ enabled }
 			),
 		{ onSuccess: actions => setActions(actions) }
 	)
+
+	useInitializeHoldingsFetching({
+		address,
+		enabled
+	})
+	useInitializeHoldingsFetching({
+		address: socket.socketAddress,
+		enabled
+	})
 
 	useResponse(() => api.plugs.all.useQuery({ target: "mine" }, { enabled }), {
 		onSuccess: data => setPlugs(prev => [...prev, ...data.filter(d => !prev.some(p => p.id === d.id))])
 	})
 
-	usePlugSubscriptions({ enabled: isAuthenticated })
-
-	useInitializeHoldingsFetching({
-		address,
-		enabled: isAuthenticated
-	})
-	useInitializeHoldingsFetching({
-		address,
-		enabled: isAuthenticated
-	})
+	usePlugSubscriptions({ enabled })
 
 	return <DataContext.Provider value={{}}>{children}</DataContext.Provider>
 }
