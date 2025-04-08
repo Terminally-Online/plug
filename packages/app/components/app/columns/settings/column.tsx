@@ -125,7 +125,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 							)}
 							onClick={() => frame(`${chain.id}-deploy`)}
 						>
-							{bytecode ? "Deployed" : "Ready to Deploy"}
+							{bytecode ? "Published" : "Ready to Publish"}
 						</span>
 					</p>
 				))}
