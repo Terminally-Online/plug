@@ -232,7 +232,7 @@ export const ConsoleColumn: FC<{
 								/>
 							</div>
 
-							<div className="flex-1 overflow-y-auto rounded-b-lg">
+							<div className="flex-1 overflow-y-auto overflow-x-hidden rounded-b-lg">
 								{column.key === COLUMNS.KEYS.ADD ? (
 									<ColumnAdd index={column.index} />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
