@@ -32,7 +32,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 		if (!search) return my
 
 		return my.filter(plug => plug.name.toLowerCase().includes(search.toLowerCase()))
-	}, [plugs, search])
+	}, [plugs, search, socket.id])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>

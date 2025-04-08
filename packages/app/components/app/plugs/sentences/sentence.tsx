@@ -190,7 +190,7 @@ export const Sentence: FC<SentenceProps> = ({
 				}
 			}))
 		}
-	}, [isValid, isComplete, actionSchema, actionIndex, plug, setSentenceValidState])
+	}, [item, isValid, isComplete, actionSchema, actionIndex, plug, setSentenceValidState])
 
 	const handleValue = ({ index, value }: HandleValueProps) => {
 		handleCordValueUpdate(index, value)

@@ -22,7 +22,7 @@ export const useAuthenticate = () => {
 
 	const { navigate } = useColumnActions()
 
-	const createMessage = async (address?: string) => {
+	const createMessage = useCallback(async (address?: string) => {
 		if (!address) throw new Error("No wallet connected.")
 
 		const nonce = await getCsrfToken()
@@ -44,7 +44,7 @@ export const useAuthenticate = () => {
 			expirationTime
 		})
 		return message
-	}
+	}, [account.address, chainId])
 
 	const authenticate = useCallback(
 		async (
@@ -110,9 +110,9 @@ export const useAuthenticate = () => {
 			}
 		},
 		[
-			navigate,
 			chainId,
 			account,
+			createMessage,
 			signMessage,
 			reset,
 			disconnect,
