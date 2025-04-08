@@ -1,4 +1,4 @@
-import { ChainId, formatAddress, formatTitle, getChainName } from "@/lib";
+import { ChainId, formatAddress, formatTitle, getBlockExplorerAddress, getChainName, routes } from "@/lib";
 import { FC, useCallback } from "react";
 import { Frame } from "@/components/app/frames/base";
 import { useAtom, useAtomValue } from "jotai";
@@ -11,6 +11,7 @@ import { api } from "@/server/client/api";
 import { formatEther } from "viem";
 import { ScrollingError } from "@/components/app/frames/assets/scrolling-error";
 import { ChainImage } from "@/components/app/sockets/chains/chain.image";
+import { Button } from "@/components/shared/buttons/button";
 
 export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ index, chainId }) => {
     const [column] = useAtom(columnByIndexAtom(index))
@@ -70,7 +71,7 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
             hasOverlay
         >
             <div className="flex flex-col gap-4">
-                {error ? <ScrollingError error={error?.message ?? ""} /> : <p className="text-center opacity-40 font-bold max-w-[400px] mx-auto">Please only use this for dire emergencies as it consumes gas not needed.</p>}
+                {error ? <ScrollingError error={error?.message ?? ""} /> : <p className="text-center opacity-40 font-bold max-w-[400px] mx-auto">Only use this for emergencies as it consumes gas not needed. You can read more in <a href={routes.documentation}>our documentation</a>.</p>}
 
                 <div className="flex flex-col gap-2">
                     <div className="flex flex-row items-center gap-4">
@@ -101,14 +102,24 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
                     </div>
                 </div>
 
-                <ChainSpecificButton
-                    className="py-4 w-full"
-                    chainId={chainId}
-                    onClick={handleDeploy}
-                    disabled={Boolean(bytecode)}
-                >
-                    {isPending ? "Publishing..." : bytecode ? "Already Published" : "Publish"}
-                </ChainSpecificButton>
+
+                <div className="flex flex-row gap-2">
+                    <Button
+                        variant="secondary"
+                        className="w-max"
+                        href={getBlockExplorerAddress(chainId, socket.socketAddress)}
+                    >
+                        View
+                    </Button>
+                    <ChainSpecificButton
+                        className="py-4 w-full"
+                        chainId={chainId}
+                        onClick={handleDeploy}
+                        disabled={Boolean(bytecode)}
+                    >
+                        {isPending ? "Publishing..." : bytecode ? "Already Published" : "Publish"}
+                    </ChainSpecificButton>
+                </div>
             </div>
         </Frame>
     )
