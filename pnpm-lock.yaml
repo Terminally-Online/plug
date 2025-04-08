@@ -61,8 +61,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@terminallyonline/plug-core':
-        specifier: ^0.4.1
-        version: 0.4.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
+        specifier: ^0.4.2
+        version: 0.4.2(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
       '@trpc/client':
         specifier: 11.0.0-rc.819
         version: 11.0.0-rc.819(@trpc/server@11.0.0-rc.819(typescript@5.7.3))(typescript@5.7.3)
@@ -2919,8 +2919,8 @@ packages:
   '@terminallyonline/cord@0.3.2':
     resolution: {integrity: sha512-pKKBtInlhIhVjvYrL+VlAdI58L3lHU290XYT6+p4rOO+8bK1UYGuQyY+YkQ9tF+8CBX1WVT/1WZSU1Ht1yQI7w==}
 
-  '@terminallyonline/plug-core@0.4.1':
-    resolution: {integrity: sha512-JI0xg2FF1PzgneDikvohJh7VnM95Ig3Q3D1n3TPwgn1sw66hsVEAsXhVJYQB4o8S4yp2Fp1QYeXg57Q6OEytNg==}
+  '@terminallyonline/plug-core@0.4.2':
+    resolution: {integrity: sha512-CCNKSjxOmv6vgJIsfraBFDO996Sz8L4GCRuymo2wtUkHluicaOprCQpEpqc/gbINKJ38B8HBUOCfQ+shUoI1MA==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -4069,10 +4069,6 @@ packages:
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
-
-  commander@12.1.0:
-    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
-    engines: {node: '>=18'}
 
   commander@13.1.0:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
@@ -11086,10 +11082,10 @@ snapshots:
 
   '@terminallyonline/cord@0.3.2': {}
 
-  '@terminallyonline/plug-core@0.4.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
+  '@terminallyonline/plug-core@0.4.2(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
     dependencies:
       abitype: 1.0.8(typescript@5.7.3)(zod@3.24.1)
-      commander: 12.1.0
+      commander: 13.1.0
       ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       pathe: 1.1.2
       solady: 0.1.10
@@ -12697,8 +12693,6 @@ snapshots:
       delayed-stream: 1.0.0
 
   comma-separated-tokens@2.0.3: {}
-
-  commander@12.1.0: {}
 
   commander@13.1.0: {}
 

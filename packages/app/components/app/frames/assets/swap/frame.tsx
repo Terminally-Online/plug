@@ -1,7 +1,7 @@
 import { FC, useState } from "react"
 
-import { SwapAmountFrame } from "@/components/app/frames/assets/swap.amount"
-import { SwapTokenFrame } from "@/components/app/frames/assets/swap.token"
+import { SwapAmountFrame } from "@/components/app/frames/assets/swap/amount/frame"
+import { SwapTokenFrame } from "@/components/app/frames/assets/swap/token/frame"
 import { RouterOutputs } from "@/server/client"
 
 type Token =

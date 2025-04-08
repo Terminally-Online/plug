@@ -141,7 +141,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(largestCollateralVault.vault.Asset.Hex()))
 			allIcon := fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)
-			fmt.Printf("allIcon: %s\n", allIcon)
 
 			optionsByIndex[i] = actions.Option{
 				Label: fmt.Sprintf("Account #%d", i),

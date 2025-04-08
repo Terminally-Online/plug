@@ -7,6 +7,7 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -14,9 +15,14 @@ import (
 )
 
 type BorrowRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Target string `json:"target"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Target string                           `json:"target"`
+}
+
+var BorrowFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     morpho_router.MorphoRouterMetaData,
+	FunctionName: "borrow",
 }
 
 func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, error) {
@@ -25,9 +31,17 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var amountUpdates []coil.Update
+	amount, amountUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&BorrowFunc,
+		"amount",
+		amountUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
+		return nil, err
 	}
 
 	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
@@ -35,12 +49,7 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
-	morphoAbi, err := morpho_router.MorphoRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho abi: %w", err)
-	}
-	borrowCalldata, err := morphoAbi.Pack(
-		"borrow",
+	borrowCalldata, err := BorrowFunc.GetCalldata(
 		market.Params,
 		amount,
 		big.NewInt(0),
@@ -48,11 +57,12 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		lookup.From,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack borrow calldata: %w", err)
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
-		Data: borrowCalldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		Data:    borrowCalldata,
+		Updates: amountUpdates,
 	}}, nil
 }

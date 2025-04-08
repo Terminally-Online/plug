@@ -2,14 +2,13 @@ import { useCallback, useMemo } from "react"
 
 import { useAtom } from "jotai"
 
-import { useConnect } from "@/lib"
-
 import { atomWithStorage } from "jotai/utils"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 const recipientAtom = atomWithStorage<string[]>("plug.recipients", [])
 
 export const useRecipients = (recipient: string) => {
-	const { account } = useConnect()
+	const { address } = useAccount()
 
 	const [recipients, setRecipients] = useAtom(recipientAtom)
 
@@ -17,11 +16,11 @@ export const useRecipients = (recipient: string) => {
 		(recipient: string) => {
 			if (recipient === "") return
 			setRecipients(prev => {
-				const newRecipients = [recipient, ...prev.filter(r => r !== recipient && r !== account.address)]
+				const newRecipients = [recipient, ...prev.filter(r => r !== recipient && r !== address)]
 				return newRecipients.slice(0, 10)
 			})
 		},
-		[account, setRecipients]
+		[setRecipients]
 	)
 
 	const minimizedRecipients = useMemo(() => recipients.filter(r => r !== recipient), [recipients, recipient])

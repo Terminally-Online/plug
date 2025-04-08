@@ -3,11 +3,11 @@ package actions
 import (
 	"fmt"
 	"math/big"
-	"solver/bindings/erc_20"
 	"solver/bindings/morpho_router"
 	"solver/internal/actions"
 	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -15,9 +15,14 @@ import (
 )
 
 type RepayRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Target string `json:"target"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Target string                           `json:"target"`
+}
+
+var RepayFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     morpho_router.MorphoRouterMetaData,
+	FunctionName: "repay",
 }
 
 func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error) {
@@ -26,18 +31,22 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var approvalUpdates []coil.Update
+	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approvalUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert repay amount to uint: %w", err)
+		return nil, err
 	}
 
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		references.Networks[lookup.ChainId].References["morpho"]["router"]),
-		amount,
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
+		common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		approvalAmount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -47,27 +56,38 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
-	morphoAbi, err := morpho_router.MorphoRouterMetaData.GetAbi()
+
+	var repayUpdates []coil.Update
+	repayAmount, repayUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&RepayFunc,
+		"assets",
+		repayUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho abi: %w", err)
+		return nil, err
 	}
-	repayCalldata, err := morphoAbi.Pack(
-		"repay",
+
+	repayCalldata, err := RepayFunc.GetCalldata(
 		market.Params,
-		amount,
+		repayAmount,
 		big.NewInt(0),
 		lookup.From,
 		[]byte{},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack repay calldata: %w", err)
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
+		To:      *token,
+		Data:    approveCalldata,
+		Updates: approvalUpdates,
 	}, {
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
-		Data: repayCalldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		Data:    repayCalldata,
+		Updates: repayUpdates,
 	}}, nil
 }

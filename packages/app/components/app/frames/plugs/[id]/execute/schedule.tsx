@@ -7,8 +7,9 @@ import { useAtom, useAtomValue } from "jotai"
 import { Frame } from "@/components/app/frames/base"
 import { Dropdown } from "@/components/app/inputs/dropdown"
 import { Button } from "@/components/shared/buttons/button"
-import { cn, frequencies, useConnect } from "@/lib"
+import { cn, frequencies } from "@/lib"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 const DayPicker = lazy(() => import("react-day-picker").then(mod => ({ default: mod.DayPicker })))
 
@@ -16,9 +17,7 @@ export const ScheduleFrame: FC<{
 	index: number
 	item: string
 }> = ({ index }) => {
-	const {
-		account: { isAuthenticated }
-	} = useConnect()
+	const { isAuthenticated } = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = "schedule"

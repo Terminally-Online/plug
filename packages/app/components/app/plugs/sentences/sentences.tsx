@@ -5,25 +5,24 @@ import { useAtom, useSetAtom } from "jotai"
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
-import { SchemasResponseCoils, useConnect } from "@/lib"
+import { SchemasResponseCoils } from "@/lib"
 import { api } from "@/server/client"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 type SentenceProps = { index: number }
 
 export const Sentences: FC<SentenceProps> = ({ index }) => {
-	const {
-		account: { session }
-	} = useConnect()
+	const { address } = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
 	const setPlugs = useSetAtom(plugsAtom)
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
-	const own = (plug && session && session.address === plug.socketId) || false
+	const own = (plug && address === plug.socketId) || false
 	const editPlug = useSetAtom(editPlugAtom)
 	const actionMutation = api.plugs.action.edit.useMutation({
 		onSuccess: result => editPlug(result)

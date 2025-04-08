@@ -5,13 +5,12 @@ import { Bell, Waypoints } from "lucide-react"
 import { useAtom, useAtomValue } from "jotai"
 
 import { Frame } from "@/components/app/frames/base"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-
-import { ChainImage } from "../../sockets/chains/chain.image"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]

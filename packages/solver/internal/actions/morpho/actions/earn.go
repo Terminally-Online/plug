@@ -2,9 +2,10 @@ package actions
 
 import (
 	"fmt"
-	"solver/bindings/erc_20"
+	"math/big"
 	"solver/bindings/morpho_vault"
 	"solver/internal/actions"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -12,9 +13,14 @@ import (
 )
 
 type EarnRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Vault  string `json:"vault"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Vault  string                           `json:"vault"`
+}
+
+var EarnFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     morpho_vault.MorphoVaultMetaData,
+	FunctionName: "deposit",
 }
 
 func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
@@ -23,31 +29,42 @@ func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var approveUpdates []coil.Update
+	approveAmount, approveUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approveUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert earn amount to uint: %w", err)
+		return nil, err
 	}
 
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("ERC20")
-	}
-	approveCalldata, err := erc20Abi.Pack(
-		"approve",
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
 		common.HexToAddress(lookup.Inputs.Vault),
-		amount,
+		approveAmount,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack approve calldata: %w", err)
 	}
 
-	vaultAbi, err := morpho_vault.MorphoVaultMetaData.GetAbi()
+	var depositUpdates []coil.Update
+	depositAmount, depositUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&EarnFunc,
+		"assets",
+		depositUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho vault abi: %w", err)
+		return nil, err
 	}
-	depositCalldata, err := vaultAbi.Pack(
-		"deposit",
-		amount,
+
+	depositCalldata, err := EarnFunc.GetCalldata(
+		depositAmount,
 		lookup.From,
 	)
 	if err != nil {
@@ -55,10 +72,12 @@ func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
+		To:      *token,
+		Data:    approveCalldata,
+		Updates: approveUpdates,
 	}, {
-		To:   common.HexToAddress(lookup.Inputs.Vault),
-		Data: depositCalldata,
+		To:      common.HexToAddress(lookup.Inputs.Vault),
+		Data:    depositCalldata,
+		Updates: depositUpdates,
 	}}, nil
 }

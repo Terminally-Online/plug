@@ -50,7 +50,6 @@ export const socket = createTRPCRouter({
 		let socketAddress = ""
 		let salt = ""
 		let implementation = ""
-
 		if (ctx.session.address.startsWith("0x")) {
 			const { bytes, hex } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
 			const socketDetails = getSocketAddress(bytes)

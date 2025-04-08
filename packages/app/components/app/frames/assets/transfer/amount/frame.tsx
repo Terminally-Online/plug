@@ -1,36 +1,38 @@
 import { FC, useCallback } from "react"
 
 import { getAddress, isAddress } from "viem"
+import { base } from "viem/chains"
 import { useSendTransaction } from "wagmi"
 
 import { useAtom, useAtomValue } from "jotai"
 
+import { TransferTokenImplementation } from "@/components/app/frames/assets/transfer/amount/implementation"
+import { TransferRecipient } from "@/components/app/frames/assets/transfer/recipient/recipient"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { cn, getChainId, NATIVE_TOKEN_ADDRESS, useConnect, useDebounceInline } from "@/lib"
+import { ChainSpecificButton } from "@/components/shared/buttons/authenticate"
+import { cn, getChainId, NATIVE_TOKEN_ADDRESS, useDebounceInline } from "@/lib"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
-import { TransferRecipient } from "./transfer-recipient"
-import { TransferTokenImplementation } from "./transfer-implementation"
-import { ScrollingError } from "./scrolling-error"
+import { ScrollingError } from "../../scrolling-error"
 
-
-export const TransferAmountFrame: FC<{
+type TransferAmountFrameProps = {
 	index: number
 	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 	color: string
 	textColor: string
-}> = ({ index, token, color, textColor }) => {
+}
+
+export const TransferAmountFrame: FC<TransferAmountFrameProps> = ({ index, token, color, textColor }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = `${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
-	const {
-		account: { isAuthenticated }
-	} = useConnect()
+	const { isAuthenticated } = useAccount()
 	const { socket } = useSocket()
 	const { error, sendTransaction, isPending } = useSendTransaction()
 
@@ -77,17 +79,19 @@ export const TransferAmountFrame: FC<{
 	const handleTransactionOffchain = useCallback(() => {
 		if (!intent) return
 
-		toggleSavedMutation.mutate({ id: intent.intentId }, {
-			onSuccess: () => {
-				navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
-				frame(`${intent.intentId}-activity`)
+		toggleSavedMutation.mutate(
+			{ id: intent.intentId },
+			{
+				onSuccess: () => {
+					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+					frame(`${intent.intentId}-activity`)
+				}
 			}
-		})
-
+		)
 	}, [intent])
 
 	const handleTransactionOnchain = useCallback(() => {
-		if (!column || !intent) return
+		if (!column || !intent || !isReady || isPending) return
 
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
 			sendTransaction(
@@ -100,9 +104,10 @@ export const TransferAmountFrame: FC<{
 					onSuccess: handleTransactionOffchain
 				}
 			)
-		else
-			handleTransactionOffchain()
+		else handleTransactionOffchain()
 	}, [column, intent])
+
+	const isDisabled = (intent && isPending) || isReady === false
 
 	if (!token || !column) return null
 
@@ -157,7 +162,7 @@ export const TransferAmountFrame: FC<{
 					<div className="mx-6 mt-2 flex flex-col gap-4">
 						<ScrollingError error={error?.message ?? ""} />
 
-						<button
+						<ChainSpecificButton
 							className={cn(
 								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
 								isReady === false && "transparent"
@@ -167,19 +172,20 @@ export const TransferAmountFrame: FC<{
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
-							disabled={(intent && isPending) || isReady === false}
-							onClick={intent && !isPending && isReady ? handleTransactionOnchain : () => { }}
+							disabled={isDisabled}
+							onClick={handleTransactionOnchain}
+							chain={base}
 						>
 							{!isAuthenticated
 								? "Connect Wallet"
 								: isPending
-									? "Transfering..."
+									? "Transferring..."
 									: isReady
 										? index === COLUMNS.SIDEBAR_INDEX
 											? "Deposit"
 											: "Send"
 										: "Enter Amount"}
-						</button>
+						</ChainSpecificButton>
 					</div>
 				</div>
 			</Frame>

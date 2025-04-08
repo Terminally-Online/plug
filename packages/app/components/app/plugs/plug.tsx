@@ -5,14 +5,13 @@ import { SearchIcon } from "lucide-react"
 
 import { useAtom } from "jotai"
 
-import { AuthRequiredFrame } from "@/components/app/frames/misc/auth-required"
+import { AuthRequiredFrame } from "@/components/app/frames/auth/required/frame"
 import { ActionsFrame } from "@/components/app/frames/plugs/[id]/actions"
 import { ExecuteFrame } from "@/components/app/frames/plugs/[id]/execute"
 import { ShareFrame } from "@/components/app/frames/plugs/[id]/share"
 import { Search } from "@/components/app/inputs/search"
 import { ActionView } from "@/components/app/plugs/actions/action-view"
 import { Button } from "@/components/shared/buttons/button"
-import { cn } from "@/lib"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { plugByIdAtom } from "@/state/plugs"
 

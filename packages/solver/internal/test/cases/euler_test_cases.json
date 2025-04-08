@@ -1,12 +1,12 @@
 [
   {
-    "name": "Euler Supply",
+    "name": "Euler Deposit Collateral",
     "intent": {
       "chainId": 8453,
       "inputs": [
         {
           "protocol": "euler",
-          "action": "supply",
+          "action": "deposit_collateral",
           "amount": "0.001",
           "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
@@ -43,17 +43,16 @@
     "expectOk": true
   },
   {
-    "name": "Euler Supply Collateral",
+    "name": "Euler Earn",
     "intent": {
       "chainId": 8453,
       "inputs": [
         {
           "protocol": "euler",
-          "action": "supply_collateral",
+          "action": "earn",
           "amount": "0.001",
           "vault": "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
-          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "sub-account": 5
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6"
         }
       ],
       "options": {

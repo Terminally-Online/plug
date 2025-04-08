@@ -1,5 +1,4 @@
-export * from "./analytics"
-export * from "./wallet"
+export * from "./useAnalytics"
 export * from "./useBlockchain"
 export * from "./useClient"
 export * from "./useClipboard"

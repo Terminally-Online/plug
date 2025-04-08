@@ -2,7 +2,9 @@ import { useCallback, useMemo } from "react"
 
 import { Connector } from "wagmi"
 
-import { CONNECTION, isMobileWeb, useConnect, useRecentConnectorId } from "@/lib"
+import { CONNECTION, isMobileWeb, useRecentConnectorId } from "@/lib"
+
+import { useConnect } from "./useConnect"
 
 type ConnectorID = (typeof CONNECTION)[keyof typeof CONNECTION]
 
@@ -30,7 +32,7 @@ export function getConnectorWithId(
 export function useConnectorWithId(id: ConnectorID, options: { shouldThrow: true }): Connector
 export function useConnectorWithId(id: ConnectorID): Connector | undefined
 export function useConnectorWithId(id: ConnectorID, options?: { shouldThrow: true }): Connector | undefined {
-	const { connection } = useConnect()
+	const connection = useConnect()
 	return useMemo(
 		() =>
 			options?.shouldThrow
@@ -65,7 +67,7 @@ function getInjectedConnectors(connectors: readonly Connector[]) {
 
 type InjectableConnector = Connector & { isInjected?: boolean }
 export function useOrderedConnections(excludeWalletConnectConnections = false): InjectableConnector[] {
-	const { connection } = useConnect()
+	const { connectors } = useConnect()
 	const recentConnectorId = useRecentConnectorId()
 
 	const sortByRecent = useCallback(
@@ -82,18 +84,13 @@ export function useOrderedConnections(excludeWalletConnectConnections = false): 
 	)
 
 	return useMemo(() => {
-		const { injectedConnectors: injectedConnectorsBase, isCoinbaseWalletBrowser } = getInjectedConnectors(
-			connection.connectors
-		)
+		const { injectedConnectors: injectedConnectorsBase, isCoinbaseWalletBrowser } =
+			getInjectedConnectors(connectors)
 		const injectedConnectors = injectedConnectorsBase.map(c => ({ ...c, isInjected: true }))
 
-		const coinbaseSdkConnector = getConnectorWithId(
-			connection.connectors,
-			CONNECTION.COINBASE_SDK_CONNECTOR_ID,
-			SHOULD_THROW
-		)
+		const coinbaseSdkConnector = getConnectorWithId(connectors, CONNECTION.COINBASE_SDK_CONNECTOR_ID, SHOULD_THROW)
 		const walletConnectConnector = getConnectorWithId(
-			connection.connectors,
+			connectors,
 			CONNECTION.WALLET_CONNECT_CONNECTOR_ID,
 			SHOULD_THROW
 		)
@@ -121,5 +118,5 @@ export function useOrderedConnections(excludeWalletConnectConnections = false): 
 		orderedConnectors.sort(sortByRecent)
 
 		return orderedConnectors
-	}, [connection.connectors, excludeWalletConnectConnections, sortByRecent])
+	}, [connectors, excludeWalletConnectConnections, sortByRecent])
 }

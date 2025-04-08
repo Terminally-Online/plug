@@ -1,12 +1,11 @@
 import { FC, useCallback, useRef, useState } from "react"
 
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { Image } from "@/components/app/utils/image"
 import { Counter } from "@/components/shared/utils/counter"
-import { chains, getChainId } from "@/lib"
+import { getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 
-import { ChainImage } from "../../sockets/chains/chain.image"
 
 type Token =
 	| RouterOutputs["socket"]["balances"]["positions"]["tokens"][number]

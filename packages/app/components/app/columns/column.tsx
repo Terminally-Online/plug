@@ -19,7 +19,7 @@ import { SocketCollectionList } from "@/components/app/sockets/collectibles/coll
 import { SocketPositionList } from "@/components/app/sockets/position/position-list"
 import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
 import { Button } from "@/components/shared/buttons/button"
-import { cardColors, cn, formatTitle, useConnect } from "@/lib"
+import { cardColors, cn, formatTitle } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
@@ -36,9 +36,6 @@ export const ConsoleColumn: FC<{
 }> = memo(({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const {
-		account: { session }
-	} = useConnect()
 	const { socket } = useSocket()
 
 	const [column] = useAtom(columnByIndexAtom(index))

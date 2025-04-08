@@ -20,8 +20,9 @@ import {
 
 import { useAtom, useAtomValue } from "jotai"
 
-import { TransferFrame } from "@/components/app/frames/assets/transfer"
+import { TransferFrame } from "@/components/app/frames/assets/transfer/frame"
 import { Frame } from "@/components/app/frames/base"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
 import {
 	cn,
@@ -34,8 +35,6 @@ import {
 } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-
-import { ChainImage } from "../../sockets/chains/chain.image"
 
 type Traits = Array<{ trait_type: string; value: string }>
 

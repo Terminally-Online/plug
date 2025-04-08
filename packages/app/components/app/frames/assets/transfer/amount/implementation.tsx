@@ -8,7 +8,7 @@ import { formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 
-import { ChainImage } from "../../sockets/chains/chain.image"
+import { ChainImage } from "../../../../sockets/chains/chain.image"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
