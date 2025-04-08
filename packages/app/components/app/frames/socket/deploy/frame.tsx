@@ -24,7 +24,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 
 	const { socket } = useSocket()
 
-	const { data: bytecode } = useBytecode({
+	const { data: bytecode, refetch } = useBytecode({
 		chainId,
 		address: socket.socketAddress as `0x${string}`,
 		query: { enabled: isFrame }
@@ -71,7 +71,10 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 				data: intent.transactions[0].data,
 				value: intent.transactions[0].value
 			},
-			{ onError: error => console.error(error) }
+			{ 
+				onSuccess: () => refetch(),
+				onError: error => console.error(error) 
+			}
 		)
 	}, [bytecode, intent])
 
