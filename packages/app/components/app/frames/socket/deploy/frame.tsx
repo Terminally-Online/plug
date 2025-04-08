@@ -37,7 +37,7 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
             hasOverlay
         >
             <div className="flex flex-col gap-4">
-                <p className="text-center text-sm opacity-40 font-bold">The first time your Socket sees a transaction it will automatically deploy. If you're new here, you can disregard this. Please only use this for emergencies.</p>
+                <p className="text-center text-sm opacity-40 font-bold">The first time your Socket sees a transaction it will automatically deploy. If you are new here, you can disregard this. Please only use this for emergencies.</p>
                 <ChainSpecificButton chainId={chainId} className="py-4 w-full" onClick={handleDeploy} disabled={bytecode !== undefined}>
                     {bytecode ? "Already Published" : "Publish"}
                 </ChainSpecificButton>
