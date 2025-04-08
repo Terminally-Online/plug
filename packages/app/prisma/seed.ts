@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client"
 import { MAGIC_NONCE } from "@/server/api/routers/socket"
 import { env } from "@/env"
 import { encodeAbiParameters, parseAbiParameters } from "viem"
-import { getSocketAddress, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
+import { getSocketAddress, getSocketFactory, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
 
 const prisma = new PrismaClient()
 
@@ -37,7 +37,9 @@ const seedSockets = async () => {
 	]
 
 	for (const socket of DEFAULT_SOCKETS) {
+		const { deployment: { address: factory }} = getSocketFactory()
 		const { deployment: { address: implementation } } = getSocketImplementation()
+
 		const { hex: salt } = getSocketSalt(
 			MAGIC_NONCE,
 			socket.id as `0x${string}`,
@@ -45,6 +47,7 @@ const seedSockets = async () => {
 		const { address: socketAddress } = getSocketAddress(salt as `0x${string}`)
 
 		const deployment = {
+			deploymentFactory: factory,
 			deploymentNonce: parseInt(MAGIC_NONCE.toString()),
 			deploymentDelegate: env.SOLVER_DELEGATE_ADDRESS,
 			deploymentImplementation: implementation,

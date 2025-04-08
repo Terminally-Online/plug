@@ -116,6 +116,7 @@ model Socket {
   // ---------------------------------------------------------------------------
   admin                    Boolean @default(false)
   socketAddress            String
+  deploymentFactory        String?
   deploymentNonce          Int?
   deploymentDelegate       String?
   deploymentImplementation String?

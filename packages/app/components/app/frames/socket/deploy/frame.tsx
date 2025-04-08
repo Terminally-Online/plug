@@ -3,7 +3,7 @@ import { FC, useCallback } from "react"
 import { formatEther } from "viem"
 import { useBalance, useBytecode, useSendTransaction } from "wagmi"
 
-import { CircleDollarSign, Diameter, Router, Waypoints } from "lucide-react"
+import { CircleDollarSign, Diameter, Factory, Router, Waypoints } from "lucide-react"
 
 import { useAtom, useAtomValue } from "jotai"
 
@@ -42,6 +42,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 				{
 					protocol: "plug",
 					action: "deploy",
+					factory: socket.deploymentFactory ?? "",
 					nonce: socket.deploymentNonce ?? 1738,
 					admin: socket.id ?? "",
 					delegate: socket.deploymentDelegate ?? "",
@@ -105,13 +106,13 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 					</p>
 					{intent && intent.transactions.length > 0 && <div className="w-full font-bold">
 						<p className="flex w-full flex-row items-center gap-4">
-							<Diameter size={18} className="opacity-20" />
+							<Factory size={18} className="opacity-20" />
 							<span className="mr-auto opacity-40">Factory</span>
 							<span
 								className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
-								onClick={() => navigator.clipboard.writeText(intent.transactions?.[0]?.to ?? "")}
+								onClick={() => navigator.clipboard.writeText(socket?.deploymentFactory ?? "")}
 							>
-								{formatAddress(intent.transactions?.[0]?.to)}
+								{formatAddress(socket?.deploymentFactory ?? "")}
 							</span>
 						</p>
 					</div>}
@@ -125,7 +126,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 					<div className="w-full font-bold">
 						<p className="flex w-full flex-row items-center gap-4">
 							<CircleDollarSign size={18} className="opacity-20" />
-							<span className="mr-auto opacity-40">Native Balance</span>
+							<span className="mr-auto opacity-40">Socket Balance</span>
 							{balanceData ? Number(formatEther(balanceData.value)).toFixed(6) : "0.00"} ETH
 						</p>
 					</div>
