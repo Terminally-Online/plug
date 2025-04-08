@@ -6,7 +6,7 @@ import { useAtom } from "jotai"
 
 import { Draggable } from "@hello-pangea/dnd"
 
-import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
+import { ColumnSettings } from "@/components/app/columns/settings/column"
 import { ColumnAdd, OPTIONS } from "@/components/app/columns/utils/column-add"
 import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
@@ -257,7 +257,7 @@ export const ConsoleColumn: FC<{
 								) : column.key === COLUMNS.KEYS.ADMIN ? (
 									<ConsoleAdmin index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
-									<ConsoleSettings index={column.index} className="p-4" />
+									<ColumnSettings index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (
 									<ColumnApplication index={column.index} />
 								) : (
