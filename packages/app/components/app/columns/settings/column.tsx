@@ -82,7 +82,6 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 					<span
 						className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
 						onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
-
 					>
 						{formatAddress(socket?.socketAddress)}
 					</span>
