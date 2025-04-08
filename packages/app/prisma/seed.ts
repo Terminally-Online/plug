@@ -44,7 +44,7 @@ const seedSockets = async () => {
 			MAGIC_NONCE,
 			socket.id as `0x${string}`,
 		)
-		const { address: socketAddress } = getSocketAddress(salt as `0x${string}`)
+		const { address: socketAddress } = await getSocketAddress(salt as `0x${string}`)
 
 		const deployment = {
 			deploymentFactory: factory,
