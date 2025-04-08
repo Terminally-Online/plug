@@ -1,4 +1,4 @@
-import { ChainId, formatAddress } from "@/lib";
+import { ChainId, formatAddress, formatTitle, getChainName } from "@/lib";
 import { FC, useCallback } from "react";
 import { Frame } from "@/components/app/frames/base";
 import { useAtom, useAtomValue } from "jotai";
@@ -6,10 +6,11 @@ import { columnByIndexAtom, isFrameAtom } from "@/state/columns";
 import { useBytecode, useSendTransaction, useBalance } from "wagmi";
 import { useSocket } from "@/state/authentication";
 import { ChainSpecificButton } from "@/components/shared/buttons/authenticate";
-import { CircleDollarSign, Diameter, Hash, Router } from "lucide-react";
+import { CircleDollarSign, Diameter, Hash, Router, Waypoints } from "lucide-react";
 import { api } from "@/server/client/api";
 import { formatEther } from "viem";
 import { ScrollingError } from "@/components/app/frames/assets/scrolling-error";
+import { ChainImage } from "@/components/app/sockets/chains/chain.image";
 
 export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ index, chainId }) => {
     const [column] = useAtom(columnByIndexAtom(index))
@@ -69,13 +70,21 @@ export const SocketDeployFrame: FC<{ index: number, chainId: ChainId }> = ({ ind
             hasOverlay
         >
             <div className="flex flex-col gap-4">
-                <ScrollingError error={error?.message} />
+                {error ? <ScrollingError error={error?.message ?? ""} /> : <p className="text-center opacity-40 font-bold max-w-[400px] mx-auto">Please only use this for dire emergencies as it consumes gas not needed.</p>}
 
                 <div className="flex flex-col gap-2">
                     <div className="flex flex-row items-center gap-4">
                         <p className="font-bold opacity-40">Details</p>
                         <div className="h-[2px] w-full bg-plug-green/10" />
                     </div>
+                    <p className="flex w-full flex-row items-center gap-4 font-bold">
+                        <Waypoints size={18} className="opacity-20" />
+                        <span className="mr-auto opacity-40">Chain</span>
+                        <span className="flex flex-row items-center gap-2">
+                            <ChainImage chainId={chainId} size="xs" />
+                            {formatTitle(getChainName(chainId))}
+                        </span>
+                    </p>
                     <div className="w-full font-bold">
                         <p className="flex w-full flex-row items-center gap-4">
                             <Diameter size={18} className="opacity-20" />
