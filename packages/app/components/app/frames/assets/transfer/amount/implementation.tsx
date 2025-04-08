@@ -135,6 +135,7 @@ export const TransferTokenImplementation: FC<{
 					</div>
 				</div>
 
+
 				<div className="ml-auto flex-col items-end px-2">
 					<div className="pointer-events-none relative flex h-full w-max min-w-32 flex-col items-center justify-center text-right">
 						{isPrecise && (
@@ -153,7 +154,7 @@ export const TransferTokenImplementation: FC<{
 						>
 							<Counter
 								count={
-									Number(column?.transfer?.precise ?? 0).toLocaleString("en-US", {
+									isPrecise ? column?.transfer?.precise || "0" : Number(column?.transfer?.precise ?? 0).toLocaleString("en-US", {
 										maximumFractionDigits: 18
 									}) ?? "0"
 								}

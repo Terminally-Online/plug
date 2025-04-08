@@ -6,7 +6,6 @@ import { getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 
-
 type Token =
 	| RouterOutputs["socket"]["balances"]["positions"]["tokens"][number]
 	| RouterOutputs["solver"]["tokens"]["get"][number]
@@ -47,13 +46,13 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 					const x = e.clientX - rect.left
 					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
 
-					// @ts-ignore
+					// @ts-ignore 
 					const newAmount = ((token?.balance ?? token.implementations[0]?.balance ?? 0) * percentage) / 100
 
 					const formattedAmount = newAmount.toFixed(20).replace(/\.?0+$/, "")
 					const [integerPart, decimalPart] = formattedAmount.split(".")
-					let finalAmount = integerPart
 
+					let finalAmount = integerPart
 					if (decimalPart) {
 						if (decimalPart.length <= 2) {
 							finalAmount += "." + decimalPart
@@ -155,7 +154,7 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 							>
 								<Counter
 									count={
-										Number(amounts?.precise).toLocaleString("en-US", {
+										isPrecise ? amounts.precise : Number(amounts?.precise).toLocaleString("en-US", {
 											maximumFractionDigits: 40
 										}) ?? "0"
 									}
