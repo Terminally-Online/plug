@@ -14,7 +14,7 @@ export const formatChainName = (name: string) =>
 	name.replace("Mainnet", "").replace("Testnet", "").replace("OP", "Optimism")
 
 export const formatAddress = (address: string | `0x${string}`, characters = 4) => {
-	return `${address.slice(0, characters)}...${address.slice(-characters)}`
+	return `${address.slice(0, characters + 2)}...${address.slice(-characters)}`
 }
 
 export const formatBalance = (value: string | bigint | bigint | undefined, decimals: number | undefined) => {

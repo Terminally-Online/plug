@@ -1,7 +1,4 @@
-import { useSession } from "next-auth/react"
 import { FC, HTMLAttributes } from "react"
-
-import { useChainId } from "wagmi"
 
 import {
 	BookUser,
@@ -9,7 +6,6 @@ import {
 	CalendarCheck,
 	CalendarClock,
 	Computer,
-	ExternalLink,
 	Flower2,
 	Glasses,
 	Globe,
@@ -23,52 +19,45 @@ import {
 
 import plugCore from "@terminallyonline/plug-core/package.json"
 
-import { ChainId, formatAddress, getBlockExplorerAddress, getChainName } from "@/lib"
+import { ChainId, formatAddress, getChainName } from "@/lib"
 import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
+import { useAccount } from "@/lib/hooks/account/useAccount"
+import { ChainImage } from "../../sockets/chains/chain.image"
 
-export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
+export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
-	const { data: session } = useSession()
-	const { socket } = useSocket()
 
-	const chainId = useChainId()
+	const { user, chainId } = useAccount()
+	const { socket } = useSocket()
 
 	if (!socket) return null
 
 	return (
 		<div {...props}>
 			<div className="flex flex-row items-center gap-4 font-bold">
-				<p className="opacity-40">Wallet</p>
+				<p className="opacity-40">Session</p>
 				<div className="h-[2px] w-full bg-plug-green/10" />
 			</div>
-			<p className="flex flex-row items-center justify-between gap-2 font-bold">
+			{user && <p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
-				<span className="opacity-40">Address</span>{" "}
-				<span className="group ml-auto flex flex-row items-center gap-1">
-					<span
-						className="cursor-pointer"
-						onClick={() => navigator.clipboard.writeText(session?.address ?? "")}
-					>
-						{formatAddress(session?.address ?? "")}
-					</span>
-					<ExternalLink
-						size={14}
-						className="cursor-pointer opacity-20"
-						onClick={() =>
-							window.open(getBlockExplorerAddress(chainId as ChainId, session?.address), "_blank")
-						}
-					/>
+				<span className="opacity-40">Id</span>{" "}
+				<span
+					className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
+					onClick={() => navigator.clipboard.writeText(user.id ?? "")}
+				>
+					{formatAddress(user.id)}
 				</span>
-			</p>
-			<p className="flex flex-row items-center justify-between gap-2 font-bold">
+			</p>}
+			{chainId && <p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<Waypoints size={14} className="opacity-20" />
-				<span className="opacity-40">Connected Chain</span>{" "}
-				<span className="group ml-auto flex flex-row items-center gap-4">
-					{getChainName(chainId as ChainId)} ({chainId})
+				<span className="opacity-40">Chain</span>{" "}
+				<span className="group ml-auto flex flex-row items-center gap-2">
+					<ChainImage chainId={chainId as ChainId} size="xs" />
+					{getChainName(chainId as ChainId)} (<span className="opacity-40">{chainId}</span>)
 				</span>
-			</p>
+			</p>}
 
 			<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 				<p className="opacity-40">Socket</p>
@@ -77,20 +66,12 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
-				<span className="group ml-auto flex flex-row items-center gap-1">
-					<span
-						className="cursor-pointer"
-						onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
-					>
-						{formatAddress(socket?.socketAddress)}
-					</span>
-					<ExternalLink
-						size={14}
-						className="cursor-pointer opacity-20"
-						onClick={() =>
-							window.open(getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress), "_blank")
-						}
-					/>
+				<span
+					className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
+					onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
+
+				>
+					{formatAddress(socket?.socketAddress)}
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -102,13 +83,16 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<Flower2 size={14} className="opacity-20" />
 				<span className="opacity-40">Salt</span>{" "}
 				<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-					{formatAddress(socket?.salt ?? "")}
+					{formatAddress(socket?.salt ?? "", 8)}
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<Puzzle size={14} className="opacity-20" />
 				<span className="opacity-40">Implementation</span>{" "}
-				<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
+				<span
+					className="group ml-auto flex cursor-pointer flex-row items-center gap-4"
+					onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
+				>
 					{socket?.implementation ? formatAddress(socket?.implementation) : "None"}
 				</span>
 			</p>
