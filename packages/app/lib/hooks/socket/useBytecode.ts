@@ -30,7 +30,7 @@ export const useBytecode = (address: string) => {
 		}
 
 		getCode()
-	}, [address])
+	}, [address, client])
 
 	return { bytecode, error, isLoading, isError: error !== null }
 
