@@ -81,7 +81,7 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[token, amounts, setAmounts]
+		[token, setAmounts]
 	)
 
 	const handleAmountChange = (value: string) => {

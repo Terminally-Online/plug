@@ -88,7 +88,7 @@ export const TransferAmountFrame: FC<TransferAmountFrameProps> = ({ index, token
 				}
 			}
 		)
-	}, [intent])
+	}, [intent, frame, index, navigate, toggleSavedMutation])
 
 	const handleTransactionOnchain = useCallback(() => {
 		if (!column || !intent || !isReady || isPending) return
@@ -105,7 +105,7 @@ export const TransferAmountFrame: FC<TransferAmountFrameProps> = ({ index, token
 				}
 			)
 		else handleTransactionOffchain()
-	}, [column, intent])
+	}, [column, intent, handleTransactionOffchain, isPending, isReady, sendTransaction])
 
 	const isDisabled = (intent && isPending) || isReady === false
 

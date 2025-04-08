@@ -7,7 +7,6 @@ import {
 	Calendar,
 	CircleDollarSign,
 	Eye,
-	Hash,
 	Library,
 	Pause,
 	Play,
@@ -123,7 +122,7 @@ export const RunFrame: FC<{
 				frame(`${data.id}-activity`)
 			}
 		})
-	}, [index, column, chain, queue, navigate, frame])
+	}, [index, socket.socketAddress, column, chain, queue, navigate, frame])
 
 	if (!column) return null
 

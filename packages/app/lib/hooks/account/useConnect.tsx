@@ -52,7 +52,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 		}
 
 		init()
-	}, [connection.connectors, walletConnectURI])
+	}, [connection.connectors, walletConnectURI, setWalletConnectURI])
 
 	/**
 	 * When the user had an active connection, but closes the authentication context we go ahead and

@@ -120,7 +120,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 		if (step === intent.transactions.length - 1) handleTransactionRedirect()
 		else setStep(prev => prev + 1)
-	}, [intent, step])
+	}, [intent, step, toggleSavedMutation, navigate, frame, index])
 
 
 	const handleTransactionOnchain = useCallback(async () => {
@@ -134,7 +134,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			}, {
 				onSuccess: handleTransactionOffchain
 			})
-	}, [column, intent, step])
+	}, [column, intent, step, sendTransaction, handleTransactionOffchain])
 
 	return (
 		<Frame
