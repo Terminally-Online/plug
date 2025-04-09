@@ -10,8 +10,6 @@ import { cn, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnActions } from "@/state/columns"
 
-import { ChainImage } from "../chains/chain.image"
-
 const DEFAULT_TOKEN_COLOR = "#ffffff"
 
 type SocketTokenItemProps = {

@@ -132,11 +132,6 @@ const EmptyAssets: FC<
 		isReceivable?: boolean
 	}
 > = ({ index, isEmpty, isViewing = "assets", isReceivable = false, className, ...props }) => {
-	const {
-		is: { authenticating },
-		handleSidebar
-	} = useSidebar()
-
 	if (isEmpty === false) return null
 
 	return (

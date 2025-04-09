@@ -2,10 +2,9 @@ import React, { FC, memo, useState } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { ChainId, chains, formatTitle, getChainId } from "@/lib"
+import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
-import { ChainImage } from "../chains/chain.image"
 import { SocketCollectibleGrid } from "./collectible-grid"
 
 export const SocketCollectionItem: FC<{
@@ -14,9 +13,6 @@ export const SocketCollectionItem: FC<{
 	searched?: boolean
 }> = memo(({ index, collection, searched = false }) => {
 	const [expanded, setExpanded] = useState(searched)
-	// const [error, setError] = useState(false)
-	//
-	// if (error) return null
 
 	return (
 		<Accordion
