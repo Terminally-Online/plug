@@ -384,7 +384,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						</span>
 					) : intentError || !tokenInImplementation || !tokenOutImplementation ? (
 						"Route could not be found"
-					) : isEOA && intent && intent.transactions.length > 1 && step === 0? (
+					) : isEOA && intent && intent.transactions.length > 1 && step === 0 ? (
 						"Approve"
 					) : (
 						"Swap"
