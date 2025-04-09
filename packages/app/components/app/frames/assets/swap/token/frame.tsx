@@ -8,7 +8,7 @@ import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { getChainId, useDebounce } from "@/lib"
+import { getChainId, greenGradientStyle, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 
@@ -85,16 +85,18 @@ export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handl
 										symbol={token?.symbol}
 									/>
 								)}
-								<div className="flex flex-col text-left">
-									<p className="flex flex-row items-center gap-2 font-bold">
-										{token.name}
-										{token.flags.verified && (
-											<div className="group rounded-full bg-plug-green text-plug-yellow">
-												<BadgeCheck size={14} className="opacity-60" />
-											</div>
-										)}
-									</p>
-									<p className="text-sm font-bold opacity-60">{token.symbol}</p>
+
+								<div className="w-full flex flex-row justify-between gap-2 items-center">
+									<div className="flex flex-col text-left w-full">
+										<p className="font-bold">{token.name}</p>
+										<p className="text-sm font-bold opacity-60">{token.symbol}</p>
+									</div>
+
+									{token.flags.verified && (
+										<p className="font-bold text-sm" style={{ ...greenGradientStyle }}>
+											Verified
+										</p>
+									)}
 								</div>
 							</div>
 						</Accordion>
