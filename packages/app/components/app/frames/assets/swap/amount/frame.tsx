@@ -299,7 +299,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 								)}
 							>
 								{meta?.slippage > 0 && "+"}
-								<Counter count={meta?.slippage} />%
+								<Counter count={meta?.slippage ?? "-"} />%
 							</span>
 						</span>
 					</span>
@@ -323,7 +323,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 								)}
 							>
 								{meta?.priceImpact > 0 && "+"}
-								<Counter count={meta?.priceImpact * 100} />%
+								<Counter count={meta?.priceImpact ? meta.priceImpact * 100 : "-"} />%
 							</span>
 						</span>
 					</span>
@@ -349,7 +349,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						<span className="opacity-40">Approval</span>
 					</span>{" "}
 					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-						{isApproved ? "Sufficient" : "Insufficient"}
+						{tokenOutImplementation?.contract === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" || isApproved ? "Sufficient" : "Insufficient"}
 					</span>
 				</p>
 
