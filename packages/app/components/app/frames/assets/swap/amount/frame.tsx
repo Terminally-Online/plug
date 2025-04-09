@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react"
 
 import { formatUnits, getAddress } from "viem"
 
-import { ArrowRight, Bell, CircleDollarSign, Loader, TriangleRight, Waypoints } from "lucide-react"
+import { ArrowRight, Bell, CheckCircle, CircleDollarSign, Loader, TriangleRight, Waypoints } from "lucide-react"
 
 import { useAtom, useAtomValue } from "jotai"
 
@@ -345,7 +345,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 				<p className="flex flex-row justify-between font-bold">
 					<span className="flex w-full flex-row items-center gap-4">
-						<CircleDollarSign size={18} className="opacity-20" />
+						<CheckCircle size={18} className="opacity-20" />
 						<span className="opacity-40">Approval</span>
 					</span>{" "}
 					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
