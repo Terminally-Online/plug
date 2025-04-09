@@ -60,8 +60,8 @@ jobs:
             const { data: pr } = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'feat: Merge staging into main',
-              body: 'This PR was automatically created to merge changes from staging into main.\n\nThese changes have already been deployed to staging and are ready for production.',
+              title: 'chore: staging to main',
+              body: 'This PR was automatically created to merge changes from staging into main.',
               head: 'staging',
               base: 'main'
             });
