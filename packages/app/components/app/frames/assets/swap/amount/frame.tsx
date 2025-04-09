@@ -18,6 +18,7 @@ import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/sta
 import { useSendTransaction } from "wagmi"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { ScrollingError } from "../../scrolling-error"
+import { useAllowance } from "@/lib/hooks/chain/useApproval"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -65,6 +66,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
 	const isEOA = column && column.index === COLUMNS.SIDEBAR_INDEX
+	const from = socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : ""
 	const request = useDebounceInline<{
 		chainId: number,
 		from: string | `0x${string}`
@@ -75,7 +77,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		}>, options?: { isEOA?: boolean, simulate?: boolean }
 	}>({
 		chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
-		from: socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : "",
+		from,
 		inputs: [
 			{
 				protocol: "plug",
@@ -103,9 +105,13 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 	const isReady =
 		amounts[tokenOut.symbol].precise !== "0" && !intentError && !isLoading && isSufficientBalance && !isPending
-	// TODO: This is using a magic lookup that is just because I know the meta is on the last swap transaction. This
-	//       will need to change when there is a standardized way of handling metadata of the action being run.
 	const meta = intent ? intent.transactions[intent.transactions.length - 1].meta : null
+
+	const { approval } = useAllowance({
+		token: getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS),
+		owner: from,
+		spender: meta?.settlementAddress
+	})
 
 	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
 	const handleTransactionOffchain = useCallback(async () => {
@@ -123,18 +129,21 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	}, [intent, step, toggleSavedMutation, navigate, frame, index])
 
 
+	const isApproved = approval > BigInt(meta?.sellTokens[getAddress(tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")]?.amount ?? "0")
 	const handleTransactionOnchain = useCallback(async () => {
 		if (!column || !intent) return
 
+		const transactionAtStep = isApproved && intent.transactions.length > 1 ? 1 : step
+
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
 			sendTransaction({
-				to: intent.transactions[step].to,
-				data: intent.transactions[step].data,
-				value: intent.transactions[step].value
+				to: intent.transactions[transactionAtStep].to,
+				data: intent.transactions[transactionAtStep].data,
+				value: intent.transactions[transactionAtStep].value
 			}, {
 				onSuccess: handleTransactionOffchain
 			})
-	}, [column, intent, step, sendTransaction, handleTransactionOffchain])
+	}, [column, intent, step, isApproved, sendTransaction, handleTransactionOffchain])
 
 	return (
 		<Frame
@@ -266,63 +275,59 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				</div>
 			</div>
 
-			<div className="px-6">
+			<div className="px-6 pt-2">
 				<div className="mb-2 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Details</p>
 					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 
-				{meta && (
-					<>
-						<p className="flex flex-row justify-between font-bold tabular-nums">
-							<span className="flex w-full flex-row items-center gap-4">
-								<TriangleRight size={18} className="opacity-20" />
-								<span className="opacity-40">Slippage</span>
-							</span>{" "}
-							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<span className="ml-auto flex flex-row items-center gap-1 pl-2">
-									<span
-										className={cn(
-											"flex flex-row items-center whitespace-nowrap group-hover:hidden",
-											meta?.slippage === undefined
-												? "opacity-40"
-												: meta?.priceImpact >= 0
-													? ""
-													: "text-red-500"
-										)}
-									>
-										{meta?.slippage > 0 && "+"}
-										<Counter count={meta?.slippage} />%
-									</span>
-								</span>
+				<p className="flex flex-row justify-between font-bold tabular-nums">
+					<span className="flex w-full flex-row items-center gap-4">
+						<TriangleRight size={18} className="opacity-20" />
+						<span className="opacity-40">Slippage</span>
+					</span>{" "}
+					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+						<span className="ml-auto flex flex-row items-center gap-1 pl-2">
+							<span
+								className={cn(
+									"flex flex-row items-center whitespace-nowrap group-hover:hidden",
+									meta?.slippage === undefined
+										? "opacity-40"
+										: meta?.priceImpact >= 0
+											? ""
+											: "text-red-500"
+								)}
+							>
+								{meta?.slippage > 0 && "+"}
+								<Counter count={meta?.slippage} />%
 							</span>
-						</p>
+						</span>
+					</span>
+				</p>
 
-						<p className="flex flex-row justify-between font-bold tabular-nums">
-							<span className="flex w-full flex-row items-center gap-4">
-								<Bell size={18} className="opacity-20" />
-								<span className="opacity-40">Price Impact</span>
-							</span>{" "}
-							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<span className="ml-auto flex flex-row items-center gap-1 pl-2">
-									<span
-										className={cn(
-											"flex flex-row items-center whitespace-nowrap group-hover:hidden",
-											meta?.priceImpact === undefined
-												? "opacity-40"
-												: meta?.priceImpact >= 0
-													? ""
-													: "text-red-500"
-										)}
-									>
-										{meta?.priceImpact > 0 && "+"}
-										<Counter count={meta?.priceImpact * 100} />%
-									</span>
-								</span>
+				<p className="flex flex-row justify-between font-bold tabular-nums">
+					<span className="flex w-full flex-row items-center gap-4">
+						<Bell size={18} className="opacity-20" />
+						<span className="opacity-40">Price Impact</span>
+					</span>{" "}
+					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+						<span className="ml-auto flex flex-row items-center gap-1 pl-2">
+							<span
+								className={cn(
+									"flex flex-row items-center whitespace-nowrap group-hover:hidden",
+									meta?.priceImpact === undefined
+										? "opacity-40"
+										: meta?.priceImpact >= 0
+											? ""
+											: "text-red-500"
+								)}
+							>
+								{meta?.priceImpact > 0 && "+"}
+								<Counter count={meta?.priceImpact * 100} />%
 							</span>
-						</p>
-					</>
-				)}
+						</span>
+					</span>
+				</p>
 
 				{tokenOutImplementation?.chain && (
 					<p className="flex flex-row justify-between font-bold">
@@ -336,6 +341,17 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						</span>
 					</p>
 				)}
+
+
+				<p className="flex flex-row justify-between font-bold">
+					<span className="flex w-full flex-row items-center gap-4">
+						<CircleDollarSign size={18} className="opacity-20" />
+						<span className="opacity-40">Approval</span>
+					</span>{" "}
+					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+						{isApproved ? "Sufficient" : "Insufficient"}
+					</span>
+				</p>
 
 				<p className="flex flex-row justify-between font-bold">
 					<span className="flex w-full flex-row items-center gap-4">
@@ -384,7 +400,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						</span>
 					) : intentError || !tokenInImplementation || !tokenOutImplementation ? (
 						"Route could not be found"
-					) : isEOA && intent && intent.transactions.length > 1 && step === 0 ? (
+					) : isEOA && intent && intent.transactions.length > 1 && step === 0 && !isApproved ? (
 						"Approve"
 					) : (
 						"Swap"
