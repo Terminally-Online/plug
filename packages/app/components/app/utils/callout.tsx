@@ -142,28 +142,19 @@ const EmptyAssets: FC<
 	return (
 		<>
 			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				className="pointer-events-none absolute left-0 right-0 top-0 h-2/3 bg-gradient-to-b"
 				style={{
 					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
+			<div className="pointer-events-none absolute left-0 right-0 top-2/3 h-1/3 bg-plug-white" />
 
 			<Base
 				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
 				title="Nothing to see here, yet."
-				description={`When this account has ${isViewing} they will appear here.`}
+				description={`When this Socket is holding ${isViewing} they automatically will appear here.`}
 				{...props}
-			>
-				{isReceivable && (
-					<Button
-						variant={authenticating ? "primaryDisabled" : "primary"}
-						sizing="sm"
-						onClick={() => handleSidebar("authenticating")}
-					>
-						{authenticating ? "Depositing..." : "Deposit"}
-					</Button>
-				)}
-			</Base>
+			/>
 		</>
 	)
 }
