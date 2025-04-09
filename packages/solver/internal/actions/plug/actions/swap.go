@@ -3,6 +3,8 @@ package actions
 import (
 	"fmt"
 	"math/big"
+	"net/url"
+	"os"
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
 	"solver/internal/actions"
@@ -116,7 +118,6 @@ type BebopQuoteResponse struct {
 	PartialFillOffset int    `json:"partialFillOffset"`
 }
 
-
 func handleWrap(lookup *actions.SchemaLookup[SwapRequest], wethAddress string) ([]signature.Plug, error) {
 	isEthToWeth := common.HexToAddress(lookup.Inputs.TokenIn) == utils.NativeTokenAddress &&
 		strings.EqualFold(lookup.Inputs.Token, wethAddress)
@@ -208,30 +209,41 @@ func handleWrap(lookup *actions.SchemaLookup[SwapRequest], wethAddress string) (
 					PriceBeforeFee: ethPrice,
 				},
 			},
-			Warnings:           []interface{}{},
-			RequiredSignatures: []interface{}{},
+			Warnings:           []any{},
+			RequiredSignatures: []any{},
 			SettlementAddress:  wethAddress,
 			PartnerFeeNative:   "0",
 		},
 	}}, nil
 }
 
-func handleSwap(lookup *actions.SchemaLookup[SwapRequest]) ([]signature.Plug, error) {
-	// TODO: Right now 'base' is hard-coded as the intended chain for swapping. This should
-	//       consume the chain id provided in the params.
-	bebopApiUrl := fmt.Sprintf(
-		"https://api.bebop.xyz/pmm/base/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
-		lookup.Inputs.TokenIn,
-		lookup.Inputs.Token,
-		lookup.Inputs.Amount,
-		lookup.From,
-	)
+// https://api.bebop.xyz/pmm/arbitrum/docs#/
+func getBebopQuoteURL(lookup *actions.SchemaLookup[SwapRequest]) string {
+	baseURL := "https://api.bebop.xyz/pmm/base/v3/quote"
 
+	u, _ := url.Parse(baseURL)
+	q := u.Query()
+
+	q.Set("buy_tokens", lookup.Inputs.TokenIn)
+	q.Set("sell_tokens", lookup.Inputs.Token)
+	q.Set("sell_amounts", lookup.Inputs.Amount)
+	q.Set("taker_address", lookup.From.String())
+	q.Set("source", os.Getenv("BEBOP_SOURCE")) // This was given by the Bebop team to identify us.
+	q.Set("gasless", "false")                  // Is equivalent of defining it as 'self-execute'.
+	q.Set("approval_type", "Standard")
+	q.Set("skip_validation", "true")
+
+	u.RawQuery = q.Encode()
+	return u.String()
+}
+
+func handleSwap(lookup *actions.SchemaLookup[SwapRequest]) ([]signature.Plug, error) {
 	quoteResponse, err := utils.MakeHTTPRequest(
-		bebopApiUrl,
+		getBebopQuoteURL(lookup),
 		"GET",
 		map[string]string{
 			"Content-Type": "application/json",
+			"source-auth":  os.Getenv("BEBOP_SOURCE_AUTH"),
 		},
 		nil,
 		nil,
@@ -267,6 +279,8 @@ func handleSwap(lookup *actions.SchemaLookup[SwapRequest]) ([]signature.Plug, er
 		},
 	}}
 
+	// NOTE: If value is zero it means we are transferring an ERC20 and need to have
+	//       the appropriate approval appended first.
 	if value.Cmp(big.NewInt(0)) == 0 {
 		erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 		if err != nil {
