@@ -49,7 +49,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 	})
 
 	useResponse(() => api.plugs.all.useQuery({ target: "mine" }, { enabled }), {
-		onSuccess: data => setPlugs(prev => [...prev, ...data.filter(d => !prev.some(p => p.id === d.id))])
+		onSuccess: setPlugs
 	})
 
 	usePlugSubscriptions({ enabled })

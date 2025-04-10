@@ -13,6 +13,7 @@ import { cn, useSearch } from "@/lib"
 import { COLUMNS } from "@/state/columns"
 import { plugsAtom } from "@/state/plugs"
 import { useSocket } from "@/state/authentication"
+import { PLACEHOLDER_PLUGS } from "@/lib/constants/placeholder/plugs"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -27,9 +28,11 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	const visiblePlugs = useMemo(() => {
 		const my = plugs.filter(plug => plug.socketId === socket.id)
 
-		if (!my || my.length === 0) return Array(12).fill(undefined)
+		if (search !== "" && my.length == 0) return Array(12).fill(undefined)
 
-		if (!search) return my
+		if (!my || my.length === 0) return PLACEHOLDER_PLUGS
+
+		if (search) return my
 
 		return my.filter(plug => plug.name.toLowerCase().includes(search.toLowerCase()))
 	}, [plugs, search, socket.id])
