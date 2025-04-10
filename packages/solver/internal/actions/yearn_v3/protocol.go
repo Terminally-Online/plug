@@ -32,7 +32,7 @@ func New() actions.Protocol {
 					actions.IsEmptyOnchainFunc,
 				),
 				actions.ActionRedeem: actions.NewActionDefinition(
-					"Redeem {0<amount:float>} {1<vault:address:uint8>}",
+					"Redeem {0<amount:float>} from {1<gauge:address:uint8>}",
 					yearn_actions.Redeem,
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,
@@ -40,7 +40,7 @@ func New() actions.Protocol {
 					actions.IsEmptyOnchainFunc,
 				),
 				actions.ActionStake: actions.NewActionDefinition(
-					"Stake {0<amount:float>} {1<token:address:uint8>}",
+					"Stake {0<amount:float>} {1<token:address:uint8>} into {1=>2<gauge:address:uint8>}",
 					yearn_actions.Stake,
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,

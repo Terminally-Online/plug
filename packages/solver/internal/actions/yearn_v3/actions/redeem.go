@@ -1,45 +1,56 @@
 package actions
 
 import (
+	"fmt"
+	"math/big"
+	"solver/bindings/yearn_v3_gauge"
 	"solver/internal/actions"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 )
 
 type RedeemRequest struct {
-	Amount string `json:"amount"`
-	Gauge  string `json:"gauge"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Gauge  string                           `json:"gauge"`
 }
 
-// TODO: I don't think this sentence makes sense? How should this actually be used?
-// TODO Mason: agreed this doesn't make sense. will come back to it when I start testing everything
+var RedeemFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     yearn_v3_gauge.YearnV3GaugeMetaData,
+	FunctionName: "redeem",
+}
+
 func Redeem(lookup *actions.SchemaLookup[RedeemRequest]) ([]signature.Plug, error) {
-	// // TODO: Need to update the options to set the guage address (vault.Staking.Address)
-	// //	     as the value in the options for this action. Right now it is setting
-	// //	     the vault address which it should not be.
-	// gauge, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Gauge)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
-	// }
+	gauge, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Gauge)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
 
-	// // TODO: Should not run this if we are using linked inputs.
-	// amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to convert redeem amount to uint: %w", err)
-	// }
+	var redeemUpdates []coil.Update
+	redeemAmount, redeemUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&RedeemFunc,
+		"_assets",
+		redeemUpdates,
+		lookup.PreviousActionDefinition,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-	// gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
-	// if err != nil {
-	// 	return nil, utils.ErrABI("YearnV3Gauge")
-	// }
+	redeemCalldata, err := RedeemFunc.GetCalldata(
+		redeemAmount,
+		lookup.From,
+		lookup.From,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
 
-	// calldata, err := gaugeAbi.Pack("redeem", amount, lookup.From, lookup.From)
-	// if err != nil {
-	// 	return nil, utils.ErrTransaction(err.Error())
-	// }
-
-	// return []signature.Plug{{
-	// 	To:   *gauge,
-	// 	Data: calldata,
-	// }}, nil
-	return nil, nil
+	return []signature.Plug{{
+		To:      *gauge,
+		Data:    redeemCalldata,
+		Updates: redeemUpdates,
+	}}, nil
 }
