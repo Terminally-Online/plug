@@ -5,11 +5,13 @@ type CreatePlaceholderTokenProps = Pick<
 	"name"
 > & { icon: string }
 const createPlaceholderCollection = ({ name, icon }: CreatePlaceholderTokenProps) => {
+	const collectibles = Array.from({ length: Math.floor(Math.random() * 7) + 1 }).fill({ collectionAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", tokenId: 1 })
+
 	return {
 		iconUrl: icon.startsWith('http') ? icon : `https://cdn.zerion.io/${icon}.png`,
 		name,
 		chain: "base",
-		collectibles: [{ collectionAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", tokenId: 1 }]
+		collectibles
 	}
 }
 
@@ -35,9 +37,9 @@ const PLACEHOLDER_MILADY = createPlaceholderCollection({
 })
 
 export const PLACEHOLDER_COLLECTIONS = [
-	PLACEHOLDER_COOLCATS,
-	PLACEHOLDER_CHONKS,
+	PLACEHOLDER_MILADY,
 	PLACEHOLDER_CHROMIE,
 	PLACEHOLDER_PENGUIN,
-	PLACEHOLDER_MILADY,
+	PLACEHOLDER_CHONKS,
+	PLACEHOLDER_COOLCATS,
 ]
