@@ -8,10 +8,13 @@ import (
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type UnstakeRequest struct {
 	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
 	Gauge  string                           `json:"gauge"`
 }
 
@@ -20,8 +23,8 @@ var UnstakeFunc = actions.ActionOnchainFunctionResponse{
 	FunctionName: "redeem",
 }
 
-func Redeem(lookup *actions.SchemaLookup[UnstakeRequest]) ([]signature.Plug, error) {
-	gauge, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Gauge)
+func Unstake(lookup *actions.SchemaLookup[UnstakeRequest]) ([]signature.Plug, error) {
+	_, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
@@ -49,7 +52,7 @@ func Redeem(lookup *actions.SchemaLookup[UnstakeRequest]) ([]signature.Plug, err
 	}
 
 	return []signature.Plug{{
-		To:      *gauge,
+		To:      common.HexToAddress(lookup.Inputs.Gauge),
 		Data:    redeemCalldata,
 		Updates: redeemUpdates,
 	}}, nil

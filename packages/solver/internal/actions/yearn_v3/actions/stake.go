@@ -8,6 +8,8 @@ import (
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type StakeRequest struct {
@@ -27,11 +29,6 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	stakingAddress, _, err := utils.ParseAddressAndDecimals(lookup.Inputs.Gauge)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse staking address with decimals: %w", err)
-	}
-
 	var approvalUpdates []coil.Update
 	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -45,7 +42,7 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 		return nil, err
 	}
 	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
-		*stakingAddress,
+		common.HexToAddress(lookup.Inputs.Gauge),
 		approvalAmount,
 	)
 	if err != nil {
@@ -75,7 +72,7 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 		Data:    approveCalldata,
 		Updates: approvalUpdates,
 	}, {
-		To:      *stakingAddress,
+		To:      common.HexToAddress(lookup.Inputs.Gauge),
 		Data:    stakeCalldata,
 		Updates: stakeUpdates,
 	}}, nil

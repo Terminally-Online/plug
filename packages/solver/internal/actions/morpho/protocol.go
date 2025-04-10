@@ -35,7 +35,7 @@ func New() actions.Protocol {
 					actions.IsEmptyOnchainFunc,
 				),
 				ActionBorrow: actions.NewActionDefinition(
-					"Borrow {0<amount:float>} {1<token:address:uint8>} from {1=>2<market:string>}",
+					"Borrow {0<amount:float>} {1<token:address:uint8>} from {1=>2<market:string:string:string:string:string:string>}",
 					morpho_actions.Borrow,
 					morpho_options.BorrowTokenToMarketOptions,
 					actions.IsGlobal,

@@ -32,15 +32,15 @@ func New() actions.Protocol {
 					actions.IsEmptyOnchainFunc,
 				),
 				actions.ActionUnstake: actions.NewActionDefinition(
-					"Unstake {0<amount:float>} from {1<gauge:address:uint8>}",
-					yearn_actions.Redeem,
+					"Unstake {0<amount:float>} {1<token:address:uint8>} from {1=>2<gauge:address>}",
+					yearn_actions.Unstake,
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,
 					actions.IsDynamic,
 					actions.IsEmptyOnchainFunc,
 				),
 				actions.ActionStake: actions.NewActionDefinition(
-					"Stake {0<amount:float>} {1<token:address:uint8>} into {1=>2<gauge:address:uint8>}",
+					"Stake {0<amount:float>} {1<token:address:uint8>} into {1=>2<gauge:address>}",
 					yearn_actions.Stake,
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,
