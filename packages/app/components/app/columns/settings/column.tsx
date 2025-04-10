@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useState } from "react"
 
 import {
 	BookUser,
@@ -12,30 +12,41 @@ import {
 	Hash,
 	MessageCircleIcon,
 	Puzzle,
+	Sigma,
 	User,
 	Waypoints
 } from "lucide-react"
 
 import plugCore from "@terminallyonline/plug-core/package.json"
 
-import { ChainId, cn, formatAddress, getChainName } from "@/lib"
+import { ChainId, formatAddress, getChainName } from "@/lib"
 import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
 import { useAccount } from "@/lib/hooks/account/useAccount"
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { connectedChains } from "@/contexts"
-import { useBytecode } from "wagmi"
-import { base } from "viem/chains"
-import { useColumnActions } from "@/state/columns"
 import { SocketDeployFrame } from "../../frames/socket/deploy/frame"
 import { ColumnSettingsDeploymentItem } from "./deployment/item"
+import { useResponse } from "@/lib/hooks/useResponse"
+import { api } from "@/server/client"
 
 export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
 
 	const { user, chainId } = useAccount()
 	const { socket } = useSocket()
+
+	const [killed, setKilled] = useState(false)
+
+	const { isLoading } = useResponse(() => api.solver.killer.killed.useQuery(undefined), {
+		onSuccess: data => setKilled(data.killed)
+	})
+
+	const toggleSolverMutation = api.solver.killer.kill.useMutation({
+		onMutate: () => setKilled(!killed),
+		onSuccess: data => setKilled(data.killed)
+	})
 
 	if (!socket) return null
 
@@ -99,6 +110,13 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 					<p className="opacity-40">Status</p>
 					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
+				<p className="flex flex-row items-center justify-between gap-2 font-bold">
+					<span className="opacity-40">Solver</span>
+					<span className="group ml-auto flex flex-row items-center gap-4">
+						{killed ? "Halted" : "Operational"}
+					</span>
+				</p>
+
 				{connectedChains.map((chain, chainIndex) => (
 					<ColumnSettingsDeploymentItem 
 						key={chainIndex} 
