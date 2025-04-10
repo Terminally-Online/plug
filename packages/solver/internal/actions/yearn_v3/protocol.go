@@ -31,8 +31,8 @@ func New() actions.Protocol {
 					actions.IsDynamic,
 					actions.IsEmptyOnchainFunc,
 				),
-				actions.ActionRedeem: actions.NewActionDefinition(
-					"Redeem {0<amount:float>} from {1<gauge:address:uint8>}",
+				actions.ActionUnstake: actions.NewActionDefinition(
+					"Unstake {0<amount:float>} from {1<gauge:address:uint8>}",
 					yearn_actions.Redeem,
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,

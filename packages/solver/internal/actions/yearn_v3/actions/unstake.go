@@ -10,17 +10,17 @@ import (
 	"solver/internal/utils"
 )
 
-type RedeemRequest struct {
+type UnstakeRequest struct {
 	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
 	Gauge  string                           `json:"gauge"`
 }
 
-var RedeemFunc = actions.ActionOnchainFunctionResponse{
+var UnstakeFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     yearn_v3_gauge.YearnV3GaugeMetaData,
 	FunctionName: "redeem",
 }
 
-func Redeem(lookup *actions.SchemaLookup[RedeemRequest]) ([]signature.Plug, error) {
+func Redeem(lookup *actions.SchemaLookup[UnstakeRequest]) ([]signature.Plug, error) {
 	gauge, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Gauge)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
@@ -30,7 +30,7 @@ func Redeem(lookup *actions.SchemaLookup[RedeemRequest]) ([]signature.Plug, erro
 	redeemAmount, redeemUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
-		&RedeemFunc,
+		&UnstakeFunc,
 		"_assets",
 		redeemUpdates,
 		lookup.PreviousActionDefinition,
@@ -39,7 +39,7 @@ func Redeem(lookup *actions.SchemaLookup[RedeemRequest]) ([]signature.Plug, erro
 		return nil, err
 	}
 
-	redeemCalldata, err := RedeemFunc.GetCalldata(
+	redeemCalldata, err := UnstakeFunc.GetCalldata(
 		redeemAmount,
 		lookup.From,
 		lookup.From,

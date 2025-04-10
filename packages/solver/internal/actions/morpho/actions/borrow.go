@@ -49,6 +49,7 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
+	// TODO MASON: is there anyway to get rid of this read? I don't think it can be removed as far as I can tell, but we could cache the market to reduce build time.
 	borrowCalldata, err := BorrowFunc.GetCalldata(
 		market.Params,
 		amount,
