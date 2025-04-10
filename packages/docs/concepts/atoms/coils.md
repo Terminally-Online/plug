@@ -1,6 +1,6 @@
 # Coils
 
-<span style="color: rgba(0,0,0,0.6)">[Coils](/concepts/coils) are a proprietary piece of the protocol that enables a vm-like experience at the smart contract level and during transaction execution. With this in place you and every other user has the freedom to do things not possible anywhere else.</span>
+<span style="color: rgba(0,0,0,0.6)">[Coils](/concepts/atoms/coils) are a proprietary piece of the protocol that enables a vm-like experience at the smart contract level and during transaction execution. With this in place you and every other user has the freedom to do things not possible anywhere else.</span>
 
 ## State of The Tech
 
@@ -16,7 +16,7 @@ On Ethereum there has been several updates to the data contained inside of a tra
 }
 ```
 
-> The [actions](/concepts/actions) living inside each Plug are defined to mirror the singular definition of a transaction with additional metadata to power specific feature sets.
+> The [actions](/concepts/atoms/actions) living inside each Plug are defined to mirror the singular definition of a transaction with additional metadata to power specific feature sets.
 
 Because of this, typical EOA experiences have required running multiple transactions any time the user wants to do something more than transferring ETH. Of course, that means upwards of 99% of transactions are multi-step experiences.
 
@@ -58,7 +58,7 @@ With Multicall this cannot be safely done because we do not know the amount that
 
 ## Coils
 
-With the introduction of [coils](/concepts/coils) a new paradigm is introduced where transactions can respond in realtime during execution.
+With the introduction of [coils](/concepts/atoms/coils) a new paradigm is introduced where transactions can respond in realtime during execution.
 
 Inspired by [Multicall](https://github.com/mds1/multicall3) and [Weiroll](https://github.com/weiroll/weiroll), Coils are designed to slice a piece of source data and insert it into yet to be executed transaction data. This means that instead of having to know every piece of data before executing your transaction with Multicall, the data needed for your transaction can be dynamically filled in as your transaction executes. 
 
