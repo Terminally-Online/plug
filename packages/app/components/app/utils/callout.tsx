@@ -19,7 +19,7 @@ const Base: FC<
 	}
 > = ({ title, description, children, className }) => (
 	<motion.div
-		className={cn("relative z-[9999] flex h-full flex-col items-center justify-center gap-2 text-center font-bold", className)}
+		className={cn("flex h-full flex-col items-center justify-center gap-2 text-center font-bold", className)}
 		initial={{ opacity: 0 }}
 		animate={{ opacity: 1 }}
 		transition={{ duration: 0.2 }}
@@ -126,7 +126,7 @@ const EmptySearch: FC<
 
 const EmptyOverlay = () => <>
 	<div
-		className="z-[9999] pointer-events-none absolute left-0 right-0 top-0 h-2/3 bg-gradient-to-b"
+		className="pointer-events-none absolute left-0 right-0 top-0 h-2/3 bg-gradient-to-b"
 		style={{
 			backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 		}}
@@ -193,7 +193,7 @@ const EmptyPlugs: FC<
 			<EmptyOverlay />
 
 			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0 z-[9999]", className)}
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
 				title="Nothing to see here, yet."
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}
