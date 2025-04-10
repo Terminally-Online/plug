@@ -8,8 +8,6 @@ created: 04/08/2025
 author: nftchance
 ---
 
-[COMMENT: add section about incentivized order flow - Layer 3 quests, Boost, Divvi]
-
 # Economics of Blockchain Orderflow
 
 TLDR: In blockchain markets, value extraction follows a hierarchical pattern where those closest to users (wallets) can squeeze margins from every layer below them. This creates a recurring market structure where aggregators compress margins for protocols, resulting in commoditization at the protocol level. Understanding this market structure is crucial for builders and investors to strategically position products where value actually accrues, rather than just building "better technology" in a vacuum.
@@ -18,13 +16,15 @@ TLDR: In blockchain markets, value extraction follows a hierarchical pattern whe
 
 When someone makes a swap in crypto, they're participating in a complex value extraction system that most users never see. The question of who captures value in this system isn't just academic—it dictates which products become sustainable businesses and which are relegated to commodity status.
 
-In traditional finance, we've seen decades of evolution where market makers pay for retail order flow through brokers like Robinhood. This same pattern is emerging in crypto, though with unique characteristics shaped by the open and permissionless nature of blockchains.
+In traditional finance, we've seen decades of evolution where market makers pay for retail orderflow through brokers like Robinhood. This same pattern is emerging in crypto, though with unique characteristics shaped by the open and permissionless nature of blockchains.
 
 What makes this particularly fascinating is the recursive nature of the squeeze. Each layer in the stack extracts maximum value from all layers beneath it, with those at the top enjoying the most favorable position. The market forces at work here aren't crypto-specific—they're manifestations of universal economic principles around commoditization and value capture that we've seen play out across industries for centuries.
 
 Let's break down where value actually accrues in crypto markets today:
 
 ![Value Extraction Hierarchy](https://cdn.onplug.io/posts/economics-of-blockchain-orderflow/value-extraction-hierarchy.png)
+
+We'll cover how wallets benefit from their relationship with the users, how aggregators create better prices for users while driving commoditization among protocols, mechanisms to incentivize protocol usage, and the MEV pipeline. We also share how builders, investors, and users are impacted and may want to position themselves within this reality.
 
 ## The Wallet Advantage
 
@@ -76,6 +76,16 @@ Some protocols attempt to escape this trap through tokenomics or liquidity incen
 
 The protocols that will survive this commoditization pressure are those that can create genuine moats—unique liquidity profiles that can't be easily replicated or specialized functionality that serves niche use cases better than general-purpose alternatives.
 
+## Incentivized Protocol Usage
+
+In addition to the market forces created by wallets, aggregators, and protocols there is a class of offerings that incentivize certain usage of specific protocols. 
+
+- [Layer3](https://layer3.xyz/): Protocols use Layer3 to establish quests that users can complete to earn rewards.
+- [Boost](https://www.boost.xyz/): Using the Boost protocol, users can add an incentive to specific actions to be completed by end users.
+- [Divvi](https://www.divvi.xyz/): By collaborating with protocols, Divvi seeks application layer teams that can develop new experiences to interact with [supported underlying protocols](https://docs.divvi.xyz/protocol/rewards) (Aerodrome, Beefy, etc)
+
+These incentive additive meta-protocols provide ecosystem teams and application builders another mechanism to direct and participate in revenue streams. By launching quests of Layer3 or Boost, protocol aligned individuals can offer users a reward for using their interface rather than a protocol's dedicated frontend. Builders using Divvi can develop new application frontends and compete with existing application interfaces on the convenience and experience level. 
+
 ## The MEV Pipeline
 
 Maximal Extractable Value (MEV) forms another layer in this value hierarchy. MEV represents the profit that can be extracted by reordering, including, or excluding transactions within a block. In the context of swaps, this often manifests as the value captured by block builders and searchers who identify profitable opportunities from pending transactions.
@@ -105,9 +115,7 @@ The implications are profound: platforms that successfully attract retail users 
 
 What makes this particularly interesting is how it inverts the usual dynamic in financial markets. In traditional markets, institutional trading is often seen as more prestigious and profitable than retail. In crypto, the opposite can be true—retail orderflow often commands a premium because it's more predictable and less likely to cause losses for market makers.
 
-[COMMENT: isn't institutional trading sort of like being the market maker that consolidates the user orders? I think you're trying to get across the idea: Non-toxic retail order flow is more preferred by market makers than privliged whales who may cause market maker losses -- ie: Robinhood generates retail order flow and sells it to Citadel who trades at an institutional level]
-
-This dynamic creates interesting incentives for wallets and applications to focus on simplicity and accessibility rather than catering to sophisticated users with complex feature sets. The most valuable customers [COMMENT: most valuable for who?] might not be the whales with millions in assets, but everyday users making small, predictable trades.
+This dynamic creates interesting incentives for wallets and applications to focus on simplicity and accessibility rather than catering to sophisticated users with complex feature sets. The most valuable customers to a market maker might not be the whales with millions in assets, but everyday users making small, predictable trades.
 
 ## Intent Markets: The Next Evolution
 
@@ -119,7 +127,7 @@ This shifts the dynamics in several ways:
 2. Wallets can extract value by auctioning these intents
 3. The competitive market for intent solving drives efficiency
 
-As one participant noted, this dynamic should theoretically resemble the Robinhood model, where retail intents are particularly valuable. However, the market for crypto intents remains nascent, making current value flows less predictable than established models.
+As one investor noted, this dynamic should theoretically resemble the Robinhood model, where retail intents are particularly valuable. However, the market for crypto intents remains nascent, making current value flows less predictable than established models.
 
 What makes intent-based markets particularly fascinating is how they abstract away even more complexity from users. In a traditional transaction, users specify exactly how they want to execute a trade. With intents, they simply specify what they want to achieve, leaving the how to competitive solvers.
 
@@ -141,7 +149,7 @@ Understanding this market structure has profound implications for where builders
 
 This doesn't mean there isn't opportunity at every layer. A protocol that can create a genuine liquidity moat or an aggregator with significantly better execution can still build a sustainable business. However, they'll likely capture less value than similarly positioned projects higher in the stack.
 
-As one participant eloquently noted:
+As one founder eloquently noted:
 
 > "If I am a solo founder with no VC, I'd rather own the aggregator than the DEX for this specific market structure."
 
@@ -195,7 +203,7 @@ What's particularly interesting is how quickly crypto markets converge on these 
 
 Perhaps the most important insight from this analysis is that technical excellence alone doesn't guarantee success in crypto markets. Building the "best" DEX or the most efficient aggregator won't necessarily create the most valuable business if your position in the market structure limits your ability to capture value.
 
-As one participant reflected:
+As one developer reflected:
 
 > "My inclination as a dev is the same—my first instinct is to build the best tech, but if I want people to depend on me for livelihood it would be irresponsible to not learn about business."
 
@@ -216,48 +224,6 @@ Liquidity monopolies can and do exist in crypto, but they're typically transient
 However, network effects around liquidity are real. The more liquidity a protocol attracts, the better prices it can offer, attracting more volume, which attracts more liquidity. This virtuous cycle creates natural tendencies toward concentration, even in an open ecosystem.
 
 The evolution of these dynamics over time will be fascinating to watch. As markets mature, we might see increasing specialization, with different protocols dominating different niches rather than competing for the same general-purpose liquidity pools.
-
-## ERC-7702 and the Disruption of Wallet Lock-in
-
-[COMMENT: its starting feel long at this point and like we are going into a new line of thinking which is more technical than anything above. Should 7702 stuff be it's own piece?]
-
-A significant disruption to the current orderflow market structure is on the horizon with the implementation of ERC-7702 and its companion standard ERC-7779. These Ethereum standards, expected to launch with the Pectra upgrade in Q1 2025, have the potential to fundamentally alter the dynamics of value capture in the crypto ecosystem.
-
-### Breaking the Wallet Monopoly
-
-Currently, wallets sit at the top of the value extraction hierarchy largely because of user lock-in. Once a user creates an EOA (Externally Owned Account) wallet, migrating to another wallet means either transferring all assets (incurring gas fees) or importing the private key to another application (creating security concerns). This friction creates sticky user relationships that wallets leverage to extract value.
-
-ERC-7702 changes this dynamic by allowing EOAs to temporarily execute as smart contract wallets for single transactions without requiring users to migrate to an entirely new wallet. This capability is further enhanced by ERC-7779, which creates a standardized framework for wallet interoperability, allowing users to seamlessly switch between wallet providers while maintaining all their advanced functionality.
-
-The implications for the current value extraction hierarchy are profound:
-
-1. **Reduced Wallet Leverage**: When users can migrate between wallets in one click without sacrificing functionality or paying gas fees, wallets lose their position of power. The ability to extract fees will face competitive pressure as switching costs approach zero.
-
-2. **Value Shift to User Experience**: Without lock-in as a moat, wallets will need to compete on genuine user experience and feature innovation, potentially shifting value to those who can create the most intuitive and powerful interfaces rather than those who simply acquired users first.
-
-3. **Protocol Resurgence**: As wallet monopolies weaken, protocols may regain some negotiating power, potentially allowing them to retain more of the value they create rather than seeing it all captured by the layers above.
-
-### Cross-Chain Implications
-
-The disruption extends beyond just wallet switching. With ERC-7702 and ERC-7779, users can leverage "chain abstraction" and execute seamless transactions across multiple chains without manually switching networks in their wallet. This creates a new paradigm where multi-chain strategies become accessible to everyday users, further breaking down the walled gardens that have fragmented liquidity.
-
-In this new landscape, the ability to optimize across chains becomes a competitive advantage. Aggregators that can identify the best opportunities across multiple chains will gain prominence, potentially displacing single-chain wallets as the primary interface for users.
-
-### The New Competitive Landscape
-
-The traditional hierarchy may be replaced by a more complex ecosystem where:
-
-1. **Composable Middleware**: Components that work across multiple wallets and chains could capture significant value by being universally accessible.
-
-2. **Interoperable Smart Accounts**: The ease with which users can switch between implementations creates pressure for wallet developers to focus on genuine innovation rather than lock-in.
-
-3. **Cross-Chain Aggregators**: Services that can optimize across chains may emerge as the new power centers, replacing single-chain wallets at the top of the hierarchy.
-
-4. **Open Intent Marketplaces**: Intent-based systems that operate independently of specific wallets could flourish, creating new dynamics for value capture.
-
-What's particularly fascinating is how these standards could effectively democratize the wallet layer, forcing competition on features rather than user acquisition, and potentially redistributing value across the stack in ways that are more aligned with actual utility creation.
-
-[COMMENT: I see how this is related to breaking down the power that we've established Wallets have by owning the relationship with the user]
 
 ## The Mature State of Crypto Markets
 
