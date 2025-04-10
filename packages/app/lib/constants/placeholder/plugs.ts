@@ -52,7 +52,7 @@ export const createPlaceholderPlug = ({ name, color, views, forks }: CreatePlace
 	}
 }
 
-const PLACEHOLDER_MINT_BASEPAINT = createPlaceholderPlug({ name: "Mint Daily Basepaint", color: 'basepaint', views: 1234, forks: 1234 })
+const PLACEHOLDER_MINT_BASEPAINT = createPlaceholderPlug({ name: "Mint Daily Basepaint", color: 'basepaint', views: 16293, forks: 3014 })
 const PLACEHOLDER_TREASURY_GAS = createPlaceholderPlug({ name: "Refill Treasury Gas", color: "plug", views: 24781, forks: 9 })
 const PLACEHOLDER_LIQUIDATE_THE_LEVERAGE = createPlaceholderPlug({ name: "Liquidiate the Leverage", color: "morpho", views: 71920, forks: 152 })
 const PLACEHOLDER_COVER_HEALTH_FACTOR = createPlaceholderPlug({ name: "Protect Health Factor", color: "aave", views: 37014, forks: 591 })
