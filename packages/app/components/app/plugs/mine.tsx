@@ -50,16 +50,15 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
 
+			<Container>
+				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
+			</Container>
+
 			<Callout.EmptySearch
 				isEmpty={(search !== "" || tag !== "") && visiblePlugs && visiblePlugs.length === 0}
 				search={search || tag}
 				handleSearch={handleSearch}
 			/>
-
-			<Container>
-				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
-			</Container>
-
 			<Callout.EmptyPlugs index={index} isEmpty={(search === "" && plugs && plugs.length === 0) || false} />
 		</div>
 	)

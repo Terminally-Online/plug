@@ -1,10 +1,11 @@
 import { colors } from "../colors"
 
-type CreatePlaceholderTokenProps = { status: string, name: string, days: number, color: keyof typeof colors }
 const createDate = (days: number) => {
     const daysInMilliseconds = days * 86400000;
     return new Date(Date.now() + daysInMilliseconds);
 };
+
+type CreatePlaceholderTokenProps = { status: string, name: string, days: number, color: keyof typeof colors }
 const createPlaceholderActivity = ({ status, name, days, color }: CreatePlaceholderTokenProps) => {
 	const createdAt = createDate(days)
 	const endAt = Math.random() > 0.5 ? undefined : createDate(90)

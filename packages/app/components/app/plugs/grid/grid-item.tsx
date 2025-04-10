@@ -100,41 +100,6 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 									{plug ? (plug.name === "" ? "Untitled Plug" : formatTitle(plug.name)) : "."}
 								</p>
 							</div>
-
-							{plug?.socketId !== socket?.id && (
-								<div className="relative ml-auto h-6 w-6 min-w-6 shrink-0">
-									<div className="relative z-[21] h-6 w-6">
-										{plug?.socket?.identity?.ens?.avatar ? (
-											<Image
-												src={plug?.socket.identity.ens.avatar ?? ""}
-												alt="ENS Avatar"
-												width={64}
-												height={64}
-												className="h-full w-full rounded-sm"
-											/>
-										) : (
-											<div className="h-full w-full rounded-sm">
-												<Avatar name={plug?.socketId ?? ""} />
-											</div>
-										)}
-									</div>
-									<div className="absolute -right-4 -top-4 z-20 h-16 w-16">
-										{plug?.socket?.identity?.ens?.avatar ? (
-											<Image
-												src={plug?.socket.identity.ens.avatar ?? ""}
-												alt="ENS Avatar"
-												width={64}
-												height={64}
-												className="h-full w-full rounded-sm blur-[60px] filter"
-											/>
-										) : (
-											<div className="h-full w-full rounded-sm blur-[60px] filter">
-												<Avatar name={plug?.socketId ?? ""} />
-											</div>
-										)}
-									</div>
-								</div>
-							)}
 						</div>
 					</>
 				)}
