@@ -1,5 +1,7 @@
 import { motion } from "framer-motion"
 
+import { InfiniteQueryObserver } from "@tanstack/react-query"
+
 import { cn } from "@/lib"
 
 export const postAnimations = {
@@ -101,8 +103,8 @@ export const postAnimations = {
 						key={index}
 						className={cn("h-full w-full", index % 2 == 0 ? "bg-plug-green/10" : "")}
 						animate={{
-							y: [-2, 2, -2],
-							x: [-1, 1, -1]
+							y: [-4, 4, -4],
+							x: [-2, 2, -2]
 						}}
 						transition={{
 							duration: 2,
@@ -336,6 +338,57 @@ export const postAnimations = {
 						}}
 					/>
 				</g>
+			</svg>
+		</div>
+	),
+	"a-truly-gasless-experience": (
+		<div className="relative h-1/2 w-full">
+			<svg className="h-full w-full" viewBox="-100 -100 400 220" style={{ scale: 1.5 }}>
+				<path d="M 10 90 A 90 90 0 0 1 190 90 L 190 200 L 10 200 Z" fill="#D2F38A" />
+				<path d="M 10 90 A 90 90 0 0 1 100 0 L 100 90 L 10 90 Z" fill="#F3908A" />
+				<path d="M 10 90 A 90 90 0 0 1 190 90" fill="none" stroke="rgba(200, 200, 200, 0.3)" strokeWidth="4" />
+
+				<text
+					x="50"
+					y="70"
+					fill="rgba(100, 100, 100, 0.8)"
+					fontSize="24"
+					fontWeight="bold"
+					textAnchor="middle"
+					opacity="0.4"
+				>
+					E
+				</text>
+				<text
+					x="150"
+					y="70"
+					fill="rgba(100, 100, 100, 0.8)"
+					fontSize="24"
+					fontWeight="bold"
+					textAnchor="middle"
+					opacity="0.4"
+				>
+					F
+				</text>
+
+				<motion.g
+					initial={{ rotate: 80 }}
+					animate={{ rotate: -80 }}
+					transition={{ duration: 5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
+					style={{ originX: "100px", originY: "90px" }}
+				>
+					<line
+						x1="100"
+						y1="90"
+						x2="100"
+						y2="10"
+						stroke="rgba(100, 100, 100, 0.8)"
+						strokeWidth="3"
+						strokeLinecap="round"
+						strokeDasharray="6"
+					/>
+				</motion.g>
+				<circle cx="100" cy="90" r="6" fill="rgba(100, 100, 100, 0.8)" />
 			</svg>
 		</div>
 	)
