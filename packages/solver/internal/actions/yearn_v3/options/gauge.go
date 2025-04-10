@@ -35,21 +35,14 @@ func GetAvailableTokenToStakingGaugeOptions(chainId uint64) (tokenOptions []acti
 
 		var gaugeApr string
 		if len(vault.Staking.Rewards) > 0 {
-			gaugeAprFloat := vault.APR.NetAPR
-			gaugeApr = fmt.Sprintf("%.2f%%", gaugeAprFloat)
+			gaugeAprFloat := vault.Staking.Rewards[0].APR
+			gaugeApr = fmt.Sprintf("%.2f%%", gaugeAprFloat*10)
 		} else {
 			gaugeApr = "0.0%"
 		}
 
-		fmt.Printf("1 %s", vault.Name)
-		fmt.Printf("2 %s", vault.Staking.Source)
-		fmt.Printf("3 %s", vault.Symbol)
-		fmt.Printf("4 %s", vault.DisplayName)
-		fmt.Printf("4 %s", vault.DisplaySymbol)
-		fmt.Printf("4 %s", vault.FormattedSymbol)
-
 		gaugeOption := actions.Option{
-			Label: vault.Staking.Source,
+			Label: vault.Name,
 			Name:  vault.DisplayName,
 			Value: vault.Staking.Address,
 			Info:  &actions.OptionInfo{Label: "Gauge APR", Value: gaugeApr},
