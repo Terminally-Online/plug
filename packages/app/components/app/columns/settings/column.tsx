@@ -39,12 +39,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 
 	const [killed, setKilled] = useState(false)
 
-	const { isLoading } = useResponse(() => api.solver.killer.killed.useQuery(undefined), {
-		onSuccess: data => setKilled(data.killed)
-	})
-
-	const toggleSolverMutation = api.solver.killer.kill.useMutation({
-		onMutate: () => setKilled(!killed),
+	useResponse(() => api.solver.killer.killed.useQuery(undefined), {
 		onSuccess: data => setKilled(data.killed)
 	})
 
