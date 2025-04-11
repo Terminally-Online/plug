@@ -16,45 +16,9 @@ contract PlugDeployment is Script {
         uint256 privateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(privateKey);
 
-        if (PlugEtcherLib.PLUG_ASSERT_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_ASSERT_SALT, PlugEtcherLib.PLUG_ASSERT_INITCODE
-            );
-        }
-
-        if (PlugEtcherLib.PLUG_BOOLEAN_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_BOOLEAN_SALT, PlugEtcherLib.PLUG_BOOLEAN_INITCODE
-            );
-        }
-
-        if (PlugEtcherLib.PLUG_COERCION_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_COERCION_SALT, PlugEtcherLib.PLUG_COERCION_INITCODE
-            );
-        }
-
-        if (PlugEtcherLib.PLUG_DATABASE_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_DATABASE_SALT, PlugEtcherLib.PLUG_DATABASE_INITCODE
-            );
-        }
-
-        if (PlugEtcherLib.PLUG_EVM_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_EVM_SALT, PlugEtcherLib.PLUG_EVM_INITCODE
-            );
-        }
-
         if (PlugEtcherLib.PLUG_FACTORY_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
                 PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
-            );
-        }
-
-        if (PlugEtcherLib.PLUG_MATH_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_MATH_SALT, PlugEtcherLib.PLUG_MATH_INITCODE
             );
         }
 
