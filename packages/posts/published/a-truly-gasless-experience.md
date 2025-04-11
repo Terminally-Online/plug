@@ -40,7 +40,7 @@ This structure made sense in early markets, but creates limitations for user exp
 
 ## The Game Changers: New Incentive Mechanisms
 
-So what's changed? Nothing, overnight. Instead, momentum has been quietly been building over the last few years and is now starting to peak. 
+So what's changed? Nothing, overnight. Instead, momentum has been quietly been building over the last few years and is now starting to peak.
 
 This movement has resulted in an increase in builders' ability to negate blockchain fees, thanks to three distinct models:
 
@@ -56,7 +56,7 @@ The newest kid on the block, Divvi brings something entirely new to the market. 
 
 Divvi makes this possible by letting protocols define what they care about (TVL, transaction volume, unique users) and then automatically rewarding the interfaces that move those metrics. All tracked and verified on-chain.
 
--- INSERT NICE PICTURE OF VALUE FLOW --
+[Flow chart demonstrating how Divvi helps Web3 builders earn by directing activity to protocols](https://cdn.onplug.io/posts/a-truly-gasless-experience/value-flow-divvi.png)
 
 When a transaction created in our application is directed through a Divvi supported protocol, we're compensated. This seemingly simple vehicle allows us to internalize the costs of using the blockchain without charging you, the user a gas fee, much less a platform fee.
 
@@ -72,9 +72,9 @@ Think of it as the first real marketplace for user actions. Protocols list exact
 
 Notably here, both the deposit and stake are happening in the same transaction. At the same time, you have markets like: [Deposit xUSD for 30 days](https://app.royco.org/market/146/0/0xfcd798abefe4f9784e8f7ce3019c5e567e85687235ce0ce61c27271ba97d26cd) where the liquidity deposited cannot be moved for the agreed upon time or you will forfeit rewards.
 
-These actions can be fulfilled by users (or through interfaces like ours) who can then claim the rewards. 
+These actions can be fulfilled by users (or through interfaces like ours) who can then claim the rewards.
 
--- INSERT NICE PICTURE OF MARKETPLACE --
+[Flow chart demonstrating how Royco's Intent Action Markets can be used by Plug to decrease user costs](https://cdn.onplug.io/posts/a-truly-gasless-experience/value-flow-royco.png)
 
 Incentives are explicit and have specific stipulations that must be followed. It's right there on-chain - "We'll pay X for Y action" - and that transparency changes everything about how we can build user experiences.
 
@@ -88,7 +88,7 @@ Unlike the newer incentive systems, quest platforms like Boost and Layer3 have b
 
 What many don't realize is how perfectly suited these platforms are for subsidizing transaction costs. While they were originally designed for user acquisition, we've transformed them into a core component of our zero-fee infrastructure.
 
--- INSERT NICE PICTURE OF QUEST REWARDS FLOW --
+[Flow chart demonstrating how Boost and Layer3 quest products can be used by Plug to decrease user costs](https://cdn.onplug.io/posts/a-truly-gasless-experience/value-flow-boost.png)
 
 Where questing platforms truly shine for Plug's zero-fee model is their immediate and stackable rewards. While a single quest reward might seem small, our system automatically identifies and claims all eligible quests for every transaction you make. This creates an instant pool of rewards that we use to cover your gas costs on the spot.
 
@@ -110,15 +110,16 @@ This isn't theoretical. We've built a system where the protocols themselves are 
 
 The great thing is in practice it is as simple as it sounds! Let me break down a simple example where you want to swap Token A for Token B.
 
-**Traditional path:** 
-   1. You pay gas + app fees + slippage
-   2. You get Token B
+**Traditional path:**
 
+1.  You pay gas + app fees + slippage
+2.  You get Token B
 
 **Plug path:**
-   1. We route your transaction through Protocol Y, which pays us an incentive
-   2. We use part of that incentive to cover your gas
-   3. You get Token B without paying any fees
+
+1.  We route your transaction through Protocol Y, which pays us an incentive
+2.  We use part of that incentive to cover your gas
+3.  You get Token B without paying any fees
 
 The technical implementation has a few nuances, but who cares about that? The beauty is that everyone wins. You get free transactions. Protocols get the user activity they want. And we have the ability to generate constant onchain activity that's more economically viable than anywhere else.
 
