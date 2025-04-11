@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/morpho_router"
 	"solver/internal/actions"
-	"solver/internal/actions/morpho/reads"
+	"solver/internal/actions/morpho/types"
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
@@ -31,6 +31,11 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
+	actionParams, err := types.DeserializeFromCompactString(lookup.Inputs.Target)
+	if err != nil {
+		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
+	}
+
 	var amountUpdates []coil.Update
 	amount, amountUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -44,14 +49,8 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, err
 	}
 
-	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get market: %w", err)
-	}
-
-	// TODO MASON: is there anyway to get rid of this read? I don't think it can be removed as far as I can tell, but we could cache the market to reduce build time.
 	borrowCalldata, err := BorrowFunc.GetCalldata(
-		market.Params,
+		actionParams.MarketParams,
 		amount,
 		big.NewInt(0),
 		lookup.From,
