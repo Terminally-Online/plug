@@ -8,6 +8,7 @@ import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS } from "@/state/columns"
+import { PLACEHOLDER_ACTIVITIES } from "@/lib/constants/placeholder/activity"
 
 const SocketActivityList: FC<{
 	activities: any[] | undefined
@@ -53,12 +54,14 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 		return column?.frame.split(prefix)[0]
 	}, [column?.frame])
 
+	const visibleActivities = !isAnonymous && activities?.length === 0 ? PLACEHOLDER_ACTIVITIES : activities
+
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
+			<SocketActivityList activities={visibleActivities} index={index} simulationId={simulationId} />
+
 			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
 			<Callout.EmptyActivity index={index} isEmpty={!isAnonymous && activities?.length === 0} />
-
-			<SocketActivityList activities={activities} index={index} simulationId={simulationId} />
 		</div>
 	)
 }

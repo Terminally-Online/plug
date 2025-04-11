@@ -1,91 +1,44 @@
 import { FC } from "react"
 
-import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle, Loader, Pause, Play, XCircle } from "lucide-react"
 
 import { ExecutionFrame } from "@/components/app/frames/activity/execution/frame"
 import { SimulationFrame } from "@/components/app/frames/activity/simulation/frame"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
-import { cardColors, ChainId, formatTitle } from "@/lib"
+import { ChainId, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../chains/chain.image"
 
+const STATUS_CONFIG: Record<
+	string,
+	{ color: string; Icon: FC<{ className?: string; size?: number }> }
+> = {
+	upcoming: { color: "text-blue-400", Icon: Loader },
+	completed: { color: "text-blue-400", Icon: CheckCircle },
+	active: { color: "text-blue-400", Icon: Play },
+	paused: { color: "text-plug-green", Icon: Pause },
+	success: { color: "text-plug-green", Icon: CheckCircle },
+	failure: { color: "text-plug-red", Icon: XCircle },
+	default: { color: "text-yellow-400", Icon: AlertCircle },
+}
+
 export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
-	switch (status) {
-		case "upcoming":
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
-					<Loader
-						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
-						size={16}
-					/>
-				</div>
-			)
-		case "completed":
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
-					<CheckCircle
-						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
-						size={16}
-					/>
-				</div>
-			)
-		case "active":
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-plug-green blur-2xl filter" />
-					<CheckCircle
-						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-plug-green"
-						size={16}
-					/>
-				</div>
-			)
-		case "paused":
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="bg-text-plug-green/20 absolute mt-8 h-48 w-10 rounded-full blur-2xl filter" />
-					<Pause
-						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-plug-green/20"
-						size={16}
-					/>
-				</div>
-			)
-		case "success":
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-plug-green blur-2xl filter" />
-					<CheckCircle
-						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-plug-green"
-						size={16}
-					/>
-				</div>
-			)
-		case "failure":
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-plug-red blur-2xl filter" />
-					<XCircle
-						className="absolute top-1/2 h-4 w-6 -translate-y-1/2 text-center text-plug-red"
-						size={16}
-					/>
-				</div>
-			)
-		default:
-			return (
-				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-yellow-400 blur-2xl filter" />
-					<AlertCircle
-						className="absolute top-1/2 h-4 w-6 -translate-y-1/2 text-center text-yellow-400"
-						size={16}
-					/>
-				</div>
-			)
-	}
+	const { color, Icon } = STATUS_CONFIG[status] ?? STATUS_CONFIG.default
+	const bgColor = color.replace("text-", "bg-")
+
+	return (
+		<div className="relative h-10 min-w-12">
+			<div className={`absolute mt-8 h-48 w-16 rounded-full ${bgColor} blur-2xl filter`} />
+			<Icon
+				className={`-ml-1 absolute top-1/2 left-1/2 h-4 w-6 -translate-y-1/2 -translate-x-1/2 text-center ${color}`}
+				size={16}
+			/>
+		</div>
+	)
 }
 
 export const ActivityItem: FC<{
@@ -106,13 +59,6 @@ export const ActivityItem: FC<{
 				) : (
 					<div className="flex w-full flex-row items-center">
 						<ActivityIcon status={activity.status} />
-
-						<div
-							className="mr-4 h-10 w-10 min-w-10 rounded-sm bg-plug-green/10"
-							style={{
-								backgroundImage: activity.plug?.color ? cardColors[activity.plug.color] : cardColors['plug']
-							}}
-						/>
 
 						<div className="relative flex w-full flex-col overflow-hidden">
 							<div className="flex flex-row items-center justify-between gap-2 font-bold">

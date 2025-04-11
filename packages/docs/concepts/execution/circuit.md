@@ -2,8 +2,8 @@
 
 In partnership with [Othentic](https://www.othentic.xyz/) and [EigenLayer](https://www.eigenlayer.xyz/) we have designed Circuit, the AVS powering Plug execution with the key principles of:
 
-- **Event-Driven Architecture:** To respond as quickly as possible to market changes and execute precisely on [schedule](../execution/schedules.md) our system is constantly simulating the state of intents and looking for a valid route.
-- **Collaborative Solving:** With the streaming of upcoming executions the Plug Solver works to treat [each action](../concepts/actions.md) as an atomic unit to enable for the most efficient execution of [declarative intents](../concepts/actions.html#declarative) like swaps.
+- **Event-Driven Architecture:** To respond as quickly as possible to market changes and execute precisely on [schedule](/concepts/execution/schedules) our system is constantly simulating the state of intents and looking for a valid route.
+- **Collaborative Solving:** With the streaming of upcoming executions the Plug Solver works to treat [each action](/concepts/atoms/actions) as an atomic unit to enable for the most efficient execution of [declarative intents](/concepts/atoms/actions#declarative) like swaps.
 - **Efficient Leader Elections:** Until now most existing intent orderflow has been swap and bridge based making it exceptionally capital dependent. With the introduction of non-swap actions it is more important than ever to have a robust election process for intent solving and execution rights.
 - **Massively Redundant Execution Trees:** The worst thing that could happen is having a valid route, but never using it onchain. With a dense pool of Operators everything is in place to ensure your intent is successfully fulfilled.
 - **Onchain Validation:** Upon successful onchain execution of a Plug, the Attesters will verify the results onchain and come to shared consensus on the validity of the proof provided by the actively elected Performer.
@@ -63,14 +63,14 @@ The Aggregator listens to events from the [Attester](#attester) nodes and monito
 
 ## Tasks
 
-Understanding who [Operators](./operators.md) are is an important first step. Now, we must cover what work is actually being performed. In Circuit, all atomic units of work are broken down into measurable Tasks.
+Understanding who [Operators](#operators) are is an important first step. Now, we must cover what work is actually being performed. In Circuit, all atomic units of work are broken down into measurable Tasks.
 
 - Plug execution, a task.
 - Onchain state validation, a task.
 - Stake weight syncing, a task.
 - Operator maintenace, a task.
 
-All work needed from the AVS is streamed to the [Aggregator](./operators/#aggregator) as a Task that is then routed to the appropriate parties ([Performers](./operators/#performer) and/or [Attesters](./operators#attester)) with the needed data.
+All work needed from the AVS is streamed to the [Aggregator](#aggregator) as a Task that is then routed to the appropriate parties ([Performers](#performer) and/or [Attesters](#attester)) with the needed data.
 
 ### Leader Election
 

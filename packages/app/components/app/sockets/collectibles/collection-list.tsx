@@ -10,6 +10,7 @@ import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
+import { PLACEHOLDER_COLLECTIONS } from "@/lib/constants/placeholder/collectibles"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -28,8 +29,11 @@ export const SocketCollectionList: FC<
 	const [search, handleSearch] = useState("")
 
 	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
-		if (collectibles === undefined || isAnonymous || (search === "" && collectibles.length === 0))
+		if (search !== "" && collectibles.length === 0)
 			return Array(5).fill(undefined)
+
+		if (collectibles === undefined || isAnonymous || (search === "" && collectibles.length === 0))
+			return PLACEHOLDER_COLLECTIONS
 
 		const filteredCollectibles = collectibles.filter(
 			collectible =>

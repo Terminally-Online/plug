@@ -1,5 +1,7 @@
 import { motion } from "framer-motion"
 
+import { InfiniteQueryObserver } from "@tanstack/react-query"
+
 import { cn } from "@/lib"
 
 export const postAnimations = {
@@ -101,8 +103,8 @@ export const postAnimations = {
 						key={index}
 						className={cn("h-full w-full", index % 2 == 0 ? "bg-plug-green/10" : "")}
 						animate={{
-							y: [-2, 2, -2],
-							x: [-1, 1, -1]
+							y: [-4, 4, -4],
+							x: [-2, 2, -2]
 						}}
 						transition={{
 							duration: 2,
@@ -336,6 +338,48 @@ export const postAnimations = {
 						}}
 					/>
 				</g>
+			</svg>
+		</div>
+	),
+	"a-truly-gasless-experience": (
+		<div className="relative h-full w-full overflow-hidden">
+			<svg viewBox="0 0 1000 500" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
+				{/* Single animated wave with fill */}
+				<motion.path
+					d="M 0 500 L 1000 500 L 1000 80 Q 750 40, 500 80 Q 250 120, 0 80 L 0 500 Z"
+					fill="#D2F38A"
+					initial={{ opacity: 0.9 }}
+					animate={{ 
+						d: [
+							"M 0 500 L 1000 500 L 1000 80 Q 750 40, 500 80 Q 250 120, 0 80 L 0 500 Z",
+							"M 0 500 L 1000 500 L 1000 60 Q 750 100, 500 60 Q 250 20, 0 60 L 0 500 Z",
+							"M 0 500 L 1000 500 L 1000 80 Q 750 40, 500 80 Q 250 120, 0 80 L 0 500 Z"
+						]
+					}}
+					transition={{
+						duration: 3,
+						repeat: Infinity,
+						ease: "easeInOut",
+						times: [0, 0.5, 1]
+					}}
+				/>
+
+				{/* Simple highlight effect */}
+				<motion.circle
+					r="8"
+					fill="white"
+					opacity="0.2"
+					initial={{ cx: 100, cy: 80 }}
+					animate={{
+						cx: [100, 900, 100],
+						cy: [80, 60, 80]
+					}}
+					transition={{
+						duration: 8,
+						repeat: Infinity,
+						ease: "easeInOut"
+					}}
+				/>
 			</svg>
 		</div>
 	)

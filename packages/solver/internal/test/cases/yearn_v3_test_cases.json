@@ -42,13 +42,13 @@
     "expectOk": true
   },
   {
-    "name": "Yearn V3 Redeem",
+    "name": "Yearn V3 Unstake",
     "intent": {
       "chainId": 8453,
       "inputs": [
         {
           "protocol": "yearn_v3",
-          "action": "redeem",
+          "action": "unstake",
           "amount": "0.001",
           "token": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18"
         }

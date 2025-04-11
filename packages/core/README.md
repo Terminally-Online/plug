@@ -44,16 +44,16 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
 │  └─ Quick Mode: Yes
 │
 └─ Contracts:
-   ├─ Plug.Assert.sol [256] — "0x0000000035F357c2f503DA504B0B7dBDC534539C"
-   ├─ Plug.Boolean.sol [256] — "0x000000000cAF2bfe5bbe3F7BBD5e70aCDCA6D1FE"
-   ├─ Plug.Coercion.sol [256] — "0x0000000034E10d8cA2843b56453A0A373023b792"
-   ├─ Plug.Database.sol [256] — "0x000000002Cea9833a9D2dc60e35846Cbb7fC1442"
-   ├─ Plug.EVM.sol [4217] — "0x000000001B2147E34d7A00925B016e6bC697C9DC"
-   ├─ Plug.Factory.sol [256] — "0x00000000026dF9927AE0fB3CFB5f4ce0298f6C45"
-   ├─ Plug.Math.sol [65536] — "0x0000000000269af70428b90fEC44d94f56b43d21"
-   ├─ Plug.Rewards.sol [256] — "0x000000004234f504f1e759Cb97A4B01c35398289"
-   ├─ Plug.Socket.sol [256] — "0x00000000906bb1a5fe6527c051A4C3b1c4595a8a"
-   ├─ Plug.Ticket.sol [256] — "0x000000003525F8830Dbf2eaAdBCEC33cbFC3E79e"
-   ├─ Plug.Token.sol [256] — "0x00000000C3970e7529189339354c7e0f4cdBBF79"
-   └─ Plug.sol [256] — "0x0000000070D55E8243BC9B94DB91028CeAaB3666"
+   ├─ Plug.Assert.sol [256] — "0x000000004495c796bAeC14fddc116a116abA24E4"
+   ├─ Plug.Boolean.sol [256] — "0x000000003BDBD95cb81c235016C29051e72Bc07d"
+   ├─ Plug.Coercion.sol [256] — "0x00000000BC31055eBF956Fcc852ee8E3B670a3dD"
+   ├─ Plug.Database.sol [256] — "0x0000000027b917cAFf88faa8Bd4EFcaa79e721c4"
+   ├─ Plug.EVM.sol [256] — "0x00000000036A1FDee391c0A4f91f73fEDdE23FB1"
+   ├─ Plug.Factory.sol [256] — "0x00000000E8d0C003F601472E5d94FA7bCCdD5EC2"
+   ├─ Plug.Math.sol [256] — "0x00000000Ece4344bc88D5aac9029499dc6F089fC"
+   ├─ Plug.Rewards.sol [256] — "0x00000000521807eAa08E92E42B139d87992b0376"
+   ├─ Plug.Socket.sol [256] — "0x000000004321f57fFC6649F6b03b8a4FBbFa1EEA"
+   ├─ Plug.Ticket.sol [256] — "0x00000000615370671ee8cBe545585D8CFbE7c834"
+   ├─ Plug.Token.sol [256] — "0x00000000CB92316643CD22fF3F782f4B75866a34"
+   └─ Plug.sol [256] — "0x000000008114350aa81CaE0153A8615e2578F462"
 ```
