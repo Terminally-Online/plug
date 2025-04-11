@@ -23,6 +23,8 @@ contract PlugTicket is Initializable, Ownable, ERC721 {
 
     uint256 public totalSupply;
 
+    string public baseURI = "https://onplug.io/canvas/nft/";
+
     // @dev Initialize to address(1) to prevent hostile takeover of implementation.
     constructor() {
         _initializeOwner(address(1));
@@ -73,23 +75,31 @@ contract PlugTicket is Initializable, Ownable, ERC721 {
     }
 
     /**
-     * See {ERC721-name}
+     * @notice Adjust the base endpoint for the token metadata.
+     * @param $baseURI The appropriate http endpoint for metadata.
+     */
+    function setBaseURI(string memory $baseURI) public onlyOwner {
+        baseURI = $baseURI;
+    }
+
+    /**
+     * @dev See {ERC721-name}
      */
     function name() public pure override returns (string memory) {
         return "Plug: Ticket";
     }
 
     /**
-     * See {ERC721-symbol}
+     * @dev See {ERC721-symbol}
      */
     function symbol() public pure override returns (string memory) {
         return "TICKET";
     }
 
     /**
-     * See {ERC721-tokenURI}
+     * @dev See {ERC721-tokenURI}
      */
-    function tokenURI(uint256 $id) public pure override returns (string memory) {
-        return string.concat("https://onplug.io/canvas/nft/", $id.toString());
+    function tokenURI(uint256 $id) public view override returns (string memory) {
+        return string.concat(baseURI, $id.toString());
     }
 }

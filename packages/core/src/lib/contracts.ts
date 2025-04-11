@@ -2130,6 +2130,19 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "baseURI",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
                 "name": "cancelOwnershipHandover",
                 "inputs": [],
                 "outputs": [],
@@ -2354,6 +2367,19 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "setBaseURI",
+                "inputs": [
+                    {
+                        "name": "$baseURI",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
                 "name": "supportsInterface",
                 "inputs": [
                     {
@@ -2401,7 +2427,7 @@ export const contracts = [
                         "internalType": "string"
                     }
                 ],
-                "stateMutability": "pure"
+                "stateMutability": "view"
             },
             {
                 "type": "function",
