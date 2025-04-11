@@ -2350,18 +2350,7 @@ export const contracts = [
         "abi": [
             {
                 "type": "constructor",
-                "inputs": [
-                    {
-                        "name": "$owner",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$token",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
+                "inputs": [],
                 "stateMutability": "nonpayable"
             },
             {
@@ -2500,6 +2489,13 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "initialize",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
                 "name": "owner",
                 "inputs": [],
                 "outputs": [
@@ -2634,6 +2630,19 @@ export const contracts = [
             },
             {
                 "type": "event",
+                "name": "Initialized",
+                "inputs": [
+                    {
+                        "name": "version",
+                        "type": "uint64",
+                        "indexed": false,
+                        "internalType": "uint64"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
                 "name": "NewRewardPeriod",
                 "inputs": [
                     {
@@ -2739,6 +2748,11 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "InvalidInitialization",
+                "inputs": []
+            },
+            {
+                "type": "error",
                 "name": "InvalidMerkleProof",
                 "inputs": []
             },
@@ -2750,6 +2764,11 @@ export const contracts = [
             {
                 "type": "error",
                 "name": "NoHandoverRequest",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NotInitializing",
                 "inputs": []
             },
             {
@@ -4302,13 +4321,7 @@ export const contracts = [
         "abi": [
             {
                 "type": "constructor",
-                "inputs": [
-                    {
-                        "name": "$owner",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
+                "inputs": [],
                 "stateMutability": "nonpayable"
             },
             {
@@ -4344,6 +4357,19 @@ export const contracts = [
                         "name": "result",
                         "type": "uint256",
                         "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "baseURI",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string",
+                        "internalType": "string"
                     }
                 ],
                 "stateMutability": "view"
@@ -4386,6 +4412,13 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "initialize",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "nonpayable"
             },
             {
                 "type": "function",
@@ -4567,10 +4600,10 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "setBase",
+                "name": "setBaseURI",
                 "inputs": [
                     {
-                        "name": "$uri",
+                        "name": "$baseURI",
                         "type": "string",
                         "internalType": "string"
                     }
@@ -4625,6 +4658,19 @@ export const contracts = [
                         "name": "",
                         "type": "string",
                         "internalType": "string"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "totalSupply",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "view"
@@ -4711,6 +4757,19 @@ export const contracts = [
                         "type": "bool",
                         "indexed": false,
                         "internalType": "bool"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "Initialized",
+                "inputs": [
+                    {
+                        "name": "version",
+                        "type": "uint64",
+                        "indexed": false,
+                        "internalType": "uint64"
                     }
                 ],
                 "anonymous": false
@@ -4812,6 +4871,11 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "InvalidInitialization",
+                "inputs": []
+            },
+            {
+                "type": "error",
                 "name": "NewOwnerIsZeroAddress",
                 "inputs": []
             },
@@ -4823,6 +4887,11 @@ export const contracts = [
             {
                 "type": "error",
                 "name": "NonTransferableToken",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NotInitializing",
                 "inputs": []
             },
             {
@@ -4879,6 +4948,19 @@ export const contracts = [
                         "name": "result",
                         "type": "bytes32",
                         "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "TOTAL_SUPPLY",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "view"
@@ -5035,23 +5117,7 @@ export const contracts = [
             {
                 "type": "function",
                 "name": "initialize",
-                "inputs": [
-                    {
-                        "name": "$unlock",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$owner",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$totalSupply",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
+                "inputs": [],
                 "outputs": [],
                 "stateMutability": "nonpayable"
             },
