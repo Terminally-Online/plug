@@ -342,53 +342,44 @@ export const postAnimations = {
 		</div>
 	),
 	"a-truly-gasless-experience": (
-		<div className="relative h-1/2 w-full">
-			<svg className="h-full w-full" viewBox="-100 -100 400 220" style={{ scale: 1.5 }}>
-				<path d="M 10 90 A 90 90 0 0 1 190 90 L 190 200 L 10 200 Z" fill="#D2F38A" />
-				<path d="M 10 90 A 90 90 0 0 1 100 0 L 100 90 L 10 90 Z" fill="#F3908A" />
-				<path d="M 10 90 A 90 90 0 0 1 190 90" fill="none" stroke="rgba(200, 200, 200, 0.3)" strokeWidth="4" />
+		<div className="relative h-full w-full overflow-hidden">
+			<svg viewBox="0 0 1000 500" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
+				{/* Single animated wave with fill */}
+				<motion.path
+					d="M 0 500 L 1000 500 L 1000 80 Q 750 40, 500 80 Q 250 120, 0 80 L 0 500 Z"
+					fill="#D2F38A"
+					initial={{ opacity: 0.9 }}
+					animate={{ 
+						d: [
+							"M 0 500 L 1000 500 L 1000 80 Q 750 40, 500 80 Q 250 120, 0 80 L 0 500 Z",
+							"M 0 500 L 1000 500 L 1000 60 Q 750 100, 500 60 Q 250 20, 0 60 L 0 500 Z",
+							"M 0 500 L 1000 500 L 1000 80 Q 750 40, 500 80 Q 250 120, 0 80 L 0 500 Z"
+						]
+					}}
+					transition={{
+						duration: 3,
+						repeat: Infinity,
+						ease: "easeInOut",
+						times: [0, 0.5, 1]
+					}}
+				/>
 
-				<text
-					x="50"
-					y="70"
-					fill="rgba(100, 100, 100, 0.8)"
-					fontSize="24"
-					fontWeight="bold"
-					textAnchor="middle"
-					opacity="0.4"
-				>
-					E
-				</text>
-				<text
-					x="150"
-					y="70"
-					fill="rgba(100, 100, 100, 0.8)"
-					fontSize="24"
-					fontWeight="bold"
-					textAnchor="middle"
-					opacity="0.4"
-				>
-					F
-				</text>
-
-				<motion.g
-					initial={{ rotate: 80 }}
-					animate={{ rotate: -80 }}
-					transition={{ duration: 5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
-					style={{ originX: "100px", originY: "90px" }}
-				>
-					<line
-						x1="100"
-						y1="90"
-						x2="100"
-						y2="10"
-						stroke="rgba(100, 100, 100, 0.8)"
-						strokeWidth="3"
-						strokeLinecap="round"
-						strokeDasharray="6"
-					/>
-				</motion.g>
-				<circle cx="100" cy="90" r="6" fill="rgba(100, 100, 100, 0.8)" />
+				{/* Simple highlight effect */}
+				<motion.circle
+					r="8"
+					fill="white"
+					opacity="0.2"
+					initial={{ cx: 100, cy: 80 }}
+					animate={{
+						cx: [100, 900, 100],
+						cy: [80, 60, 80]
+					}}
+					transition={{
+						duration: 8,
+						repeat: Infinity,
+						ease: "easeInOut"
+					}}
+				/>
 			</svg>
 		</div>
 	)
