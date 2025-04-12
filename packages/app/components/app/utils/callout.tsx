@@ -8,8 +8,7 @@ import { useAtom } from "jotai"
 import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { usePlugActions } from "@/state/plugs"
+import { columnByIndexAtom, } from "@/state/columns"
 import { useSidebar } from "@/state/sidebar"
 
 const Base: FC<
@@ -124,6 +123,17 @@ const EmptySearch: FC<
 		</>
 	)
 }
+
+const EmptyOverlay = () => <>
+	<div
+		className="pointer-events-none absolute left-0 right-0 top-0 h-2/3 bg-gradient-to-b"
+		style={{
+			backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
+		}}
+	/>
+	<div className="pointer-events-none absolute left-0 right-0 top-2/3 h-1/3 bg-plug-white" />
+</>
+
 const EmptyAssets: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
@@ -132,72 +142,62 @@ const EmptyAssets: FC<
 		isReceivable?: boolean
 	}
 > = ({ index, isEmpty, isViewing = "assets", isReceivable = false, className, ...props }) => {
-	const {
-		is: { authenticating },
-		handleSidebar
-	} = useSidebar()
-
 	if (isEmpty === false) return null
 
 	return (
 		<>
-			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
-				style={{
-					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
-				}}
-			/>
+			<EmptyOverlay />
 
 			<Base
 				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
 				title="Nothing to see here, yet."
-				description={`When this account has ${isViewing} they will appear here.`}
+				description={`When this Socket has ${isViewing} they will automatically appear here.`}
 				{...props}
-			>
-				{isReceivable && (
-					<Button
-						variant={authenticating ? "primaryDisabled" : "primary"}
-						sizing="sm"
-						onClick={() => handleSidebar("authenticating")}
-					>
-						{authenticating ? "Depositing..." : "Deposit"}
-					</Button>
-				)}
-			</Base>
+			/>
 		</>
 	)
 }
+
+const EmptyActivity: FC<
+	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
+		index: number
+		isEmpty: boolean
+	}
+> = ({ index, isEmpty, className, ...props }) => {
+	if (isEmpty === false) return null
+
+	return (
+		<>
+			<EmptyOverlay />
+
+			<Base
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				title="Nothing to see here, yet."
+				description="When you create and run Plugs, their activity will appear here."
+				{...props}
+			/>
+		</>
+	)
+}
+
 const EmptyPlugs: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const [column] = useAtom(columnByIndexAtom(index))
-
-	const { add } = usePlugActions()
-
-	if (!column || isEmpty === false) return null
+	if (isEmpty === false) return null
 
 	return (
 		<>
-			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 z-[9999] h-full bg-gradient-to-b"
-				style={{
-					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
-				}}
-			/>
+			<EmptyOverlay />
 
 			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0 z-[9999]", className)}
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
 				title="Nothing to see here, yet."
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}
-			>
-				<Button sizing="sm" onClick={() => add({ index, from: column.key })}>
-					Create
-				</Button>
-			</Base>
+			/>
 		</>
 	)
 }
@@ -219,6 +219,7 @@ const EmptyPlug: FC<
 		/>
 	)
 }
+
 const EmptyPage: FC<PropsWithChildren> = () => (
 	<Base
 		title="Oh no! We could not find the page you were looking for."
@@ -232,38 +233,7 @@ const EmptyPage: FC<PropsWithChildren> = () => (
 		</div>
 	</Base>
 )
-const EmptyActivity: FC<
-	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
-		index: number
-		isEmpty: boolean
-	}
-> = ({ index, isEmpty, className, ...props }) => {
-	const { navigate } = useColumnActions(index)
 
-	if (isEmpty === false) return null
-
-	return (
-		<>
-			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
-				style={{
-					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
-				}}
-			/>
-
-			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
-				title="No activity to show yet."
-				description="When you create and run Plugs, their activity will appear here."
-				{...props}
-			>
-				<Button sizing="sm" onClick={() => navigate({ index, key: COLUMNS.KEYS.DISCOVER })}>
-					Discover
-				</Button>
-			</Base>
-		</>
-	)
-}
 export const Callout = Object.assign(Base, {
 	Anonymous,
 	Loading,

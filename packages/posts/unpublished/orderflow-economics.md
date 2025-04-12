@@ -8,6 +8,8 @@ created: 04/08/2025
 author: nftchance
 ---
 
+[COMMENT: add section about incentivized order flow - Layer 3 quests, Boost, Divvi]
+
 # Economics of Blockchain Orderflow
 
 TLDR: In blockchain markets, value extraction follows a hierarchical pattern where those closest to users (wallets) can squeeze margins from every layer below them. This creates a recurring market structure where aggregators compress margins for protocols, resulting in commoditization at the protocol level. Understanding this market structure is crucial for builders and investors to strategically position products where value actually accrues, rather than just building "better technology" in a vacuum.
@@ -16,7 +18,7 @@ TLDR: In blockchain markets, value extraction follows a hierarchical pattern whe
 
 When someone makes a swap in crypto, they're participating in a complex value extraction system that most users never see. The question of who captures value in this system isn't just academic—it dictates which products become sustainable businesses and which are relegated to commodity status.
 
-In traditional finance, we've seen decades of evolution where market makers pay for retail orderflow (PFOF) through brokers like Robinhood. This same pattern is emerging in crypto, though with unique characteristics shaped by the open and permissionless nature of blockchains.
+In traditional finance, we've seen decades of evolution where market makers pay for retail order flow through brokers like Robinhood. This same pattern is emerging in crypto, though with unique characteristics shaped by the open and permissionless nature of blockchains.
 
 What makes this particularly fascinating is the recursive nature of the squeeze. Each layer in the stack extracts maximum value from all layers beneath it, with those at the top enjoying the most favorable position. The market forces at work here aren't crypto-specific—they're manifestations of universal economic principles around commoditization and value capture that we've seen play out across industries for centuries.
 
@@ -103,7 +105,9 @@ The implications are profound: platforms that successfully attract retail users 
 
 What makes this particularly interesting is how it inverts the usual dynamic in financial markets. In traditional markets, institutional trading is often seen as more prestigious and profitable than retail. In crypto, the opposite can be true—retail orderflow often commands a premium because it's more predictable and less likely to cause losses for market makers.
 
-This dynamic creates interesting incentives for wallets and applications to focus on simplicity and accessibility rather than catering to sophisticated users with complex feature sets. The most valuable customers might not be the whales with millions in assets, but everyday users making small, predictable trades.
+[COMMENT: isn't institutional trading sort of like being the market maker that consolidates the user orders? I think you're trying to get across the idea: Non-toxic retail order flow is more preferred by market makers than privliged whales who may cause market maker losses -- ie: Robinhood generates retail order flow and sells it to Citadel who trades at an institutional level]
+
+This dynamic creates interesting incentives for wallets and applications to focus on simplicity and accessibility rather than catering to sophisticated users with complex feature sets. The most valuable customers [COMMENT: most valuable for who?] might not be the whales with millions in assets, but everyday users making small, predictable trades.
 
 ## Intent Markets: The Next Evolution
 
@@ -121,7 +125,7 @@ What makes intent-based markets particularly fascinating is how they abstract aw
 
 This abstraction creates new layers of potential value extraction:
 
-1. Interfaces where users express intents (likely wallets)
+1. Interfaces where users express intents 
 2. Marketplaces where these intents are auctioned
 3. Solvers who compete to fulfill intents efficiently
 
@@ -169,7 +173,7 @@ What would a genuinely disruptive model look like? Perhaps a system where users 
 
 The possibilities are endless, but the key insight remains: the biggest opportunities won't come from playing the existing game better, but from changing the game entirely.
 
-The Solana ecosystem offers a fascinating case study here. While currently charging what many consider excessive fees (around 3%), the ecosystem remains in early stages. As markets mature, we should expect competition to drive these fees down, just as it did in traditional finance. The market that eventually emerges will likely be more efficient, with razor-thin margins for most participants and concentrated value capture for those who own the user relationship.
+The Solana ecosystem offers a fascinating case study here. While currently charging what many consider excessive fees (around 3%) [COMMENT: Who is charging this fee?], the ecosystem remains in early stages. As markets mature, we should expect competition to drive these fees down, just as it did in traditional finance. The market that eventually emerges will likely be more efficient, with razor-thin margins for most participants and concentrated value capture for those who own the user relationship.
 
 ## Lessons from Adjacent Industries
 
@@ -215,6 +219,8 @@ The evolution of these dynamics over time will be fascinating to watch. As marke
 
 ## ERC-7702 and the Disruption of Wallet Lock-in
 
+[COMMENT: its starting feel long at this point and like we are going into a new line of thinking which is more technical than anything above. Should 7702 stuff be it's own piece?]
+
 A significant disruption to the current orderflow market structure is on the horizon with the implementation of ERC-7702 and its companion standard ERC-7779. These Ethereum standards, expected to launch with the Pectra upgrade in Q1 2025, have the potential to fundamentally alter the dynamics of value capture in the crypto ecosystem.
 
 ### Breaking the Wallet Monopoly
@@ -251,6 +257,8 @@ The traditional hierarchy may be replaced by a more complex ecosystem where:
 
 What's particularly fascinating is how these standards could effectively democratize the wallet layer, forcing competition on features rather than user acquisition, and potentially redistributing value across the stack in ways that are more aligned with actual utility creation.
 
+[COMMENT: I see how this is related to breaking down the power that we've established Wallets have by owning the relationship with the user]
+
 ## The Mature State of Crypto Markets
 
 As crypto markets mature, we should expect:
@@ -273,6 +281,8 @@ The end state might resemble today's financial markets, where:
 Standards like ERC-7702, ERC-7779, and continued evolution of intent-based trading will reshape these dynamics, potentially creating a more user-centric ecosystem where value flows more equitably to those creating genuine utility rather than simply occupying privileged positions in the value extraction hierarchy.
 
 ## Implications for the Future
+
+[COMMENT: Feel like we're doing this list for a second time, further making me think this could be a follow on piece that is more technically inclined]
 
 The market structure insights we've explored have significant implications for how crypto evolves:
 
