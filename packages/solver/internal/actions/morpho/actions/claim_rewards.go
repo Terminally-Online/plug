@@ -18,6 +18,7 @@ var ClaimRewardsFunc = actions.ActionOnchainFunctionResponse{
 }
 
 func ClaimRewards(lookup *actions.SchemaLookup[any]) ([]signature.Plug, error) {
+	// TODO MASON: this is the last build time read I need to figure out how to get rid of.. Would love some input here as I don't want to pack an arbitrary amount of distributions into the option value
 	distributions, err := reads.GetDistributions(lookup.From, lookup.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get distributions: %w", err)

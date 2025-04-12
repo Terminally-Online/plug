@@ -6,7 +6,7 @@ import (
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
 	"solver/internal/actions"
-	"solver/internal/actions/morpho/reads"
+	"solver/internal/actions/morpho/types"
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
@@ -37,8 +37,13 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
+	actionParams, err := types.DeserializeFromCompactString(lookup.Inputs.Target)
+	if err != nil {
+		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
+	}
+
 	// Differentiate handling for vault and market
-	if len(lookup.Inputs.Target) == 42 {
+	if len(actionParams.TargetId) == 42 {
 		var amountUpdates []coil.Update
 		amount, amountUpdates, err := actions.GetAndUpdate(
 			&lookup.Inputs.Amount,
@@ -52,11 +57,6 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 			return nil, err
 		}
 
-		_, err = reads.GetVault(lookup.Inputs.Target, lookup.ChainId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get vault: %w", err)
-		}
-
 		withdrawCalldata, err := WithdrawVaultFunc.GetCalldata(
 			amount,
 			lookup.From,
@@ -66,16 +66,15 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 			return nil, utils.ErrTransaction(err.Error())
 		}
 
+		if len(actionParams.TargetId) != 42 {
+			return nil, fmt.Errorf("vault address was pro")
+		}
+
 		return []signature.Plug{{
-			To:      common.HexToAddress(lookup.Inputs.Target),
+			To:      common.HexToAddress(actionParams.TargetId),
 			Data:    withdrawCalldata,
 			Updates: amountUpdates,
 		}}, nil
-	}
-
-	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
 	var amountUpdates []coil.Update
@@ -92,7 +91,7 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	}
 
 	withdrawCalldata, err := WithdrawMarketFunc.GetCalldata(
-		market.Params,
+		actionParams.MarketParams,
 		amount,
 		big.NewInt(0),
 		lookup.From,
