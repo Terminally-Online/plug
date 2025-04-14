@@ -232,12 +232,11 @@ contract PlugSocket is
 		uint256 length = $plugs.plugs.length;
 		bool success;
 		bytes[] memory results = new bytes[](length);
-
-		for (uint8 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			PlugTypesLib.Plug calldata state = $plugs.plugs[i];
 			bytes memory data = state.data;
 			uint8 updatesLength = uint8($plugs.plugs[i].updates.length);
-			for (uint8 ii = 0; ii < updatesLength; ii++) {
+			for (uint256 ii; ii < updatesLength; ii++) {
 				PlugTypesLib.Update calldata update = state.updates[ii];
 				PlugTypesLib.Slice calldata slice = update.slice;
 				bytes memory coil = results[slice.index];
