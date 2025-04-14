@@ -13,6 +13,7 @@ import {LibBytes} from 'solady/utils/LibBytes.sol';
 import {PlugSocketInterface} from '../interfaces/Plug.Socket.Interface.sol';
 import {PlugTypes} from '../abstracts/Plug.Types.sol';
 import {PlugLib, PlugTypesLib} from '../libraries/Plug.Lib.sol';
+import {PlugCoilLib} from '../libraries/Plug.Coil.Lib.sol';
 
 /**
  * @title PlugSocket
@@ -30,8 +31,8 @@ contract PlugSocket is
 {
 	using ECDSA for bytes32;
 	using LibBitmap for LibBitmap.Bitmap;
+	using PlugCoilLib for bytes;
 
-	uint256 private constant WORD = 32;
 	uint256 private constant TYPE_CALL = 0x00;
 	uint256 private constant TYPE_DELEGATECALL = 0x01;
 	uint256 private constant TYPE_CALL_WITH_VALUE = 0x02;
@@ -214,93 +215,6 @@ contract PlugSocket is
 	}
 
 	/**
-	 * @notice Coil the data for the given update.
-	 * @param $i The index of the Plug.
-	 * @param $update The update to coil the data for.
-	 * @param $data The data to coil the data for.
-	 * @param $coil The coil to coil the data for.
-	 * @return $charge The charged data.
-	 */
-	function _coil(
-		uint256 $i,
-		PlugTypesLib.Update calldata $update,
-		bytes memory $data,
-		bytes memory $coil
-	) internal pure returns (bytes memory) {
-		bytes memory charge;
-		uint256 area;
-
-		if ($update.slice.typeId == 0) {
-			if ($update.slice.start + $update.slice.length > $coil.length) {
-				revert PlugLib.PlugFailed($i, 'PlugCore:out-of-bounds');
-			}
-			charge = LibBytes.slice(
-				$coil,
-				$update.slice.start,
-				$update.slice.start + $update.slice.length
-			);
-			if ($update.start + $update.slice.length > $data.length) {
-				revert PlugLib.PlugFailed($i, 'PlugCore:would-overflow');
-			}
-			area = $update.start + $update.slice.length;
-		} else {
-			uint256 start = $update.start;
-			uint256 dataOffset;
-			assembly {
-				dataOffset := mload(add($coil, add(start, WORD)))
-			}
-			if (dataOffset >= $coil.length) {
-				revert PlugLib.PlugFailed($i, 'PlugCore:invalid-offset');
-			}
-			uint256 dataLength;
-			assembly {
-				dataLength := mload(add($coil, add(dataOffset, WORD)))
-			}
-			if (dataOffset + WORD + dataLength > $coil.length) {
-				revert PlugLib.PlugFailed($i, 'PlugCore:invalid-length');
-			}
-
-			if ($update.slice.typeId == 1 || $update.slice.typeId == 4) {
-				uint256 arrayLength;
-				assembly {
-					arrayLength := mload(add($coil, add(dataOffset, WORD)))
-				}
-				if (arrayLength * 32 > dataLength) {
-					revert PlugLib.PlugFailed(
-						$i,
-						'PlugCore:array-length-invalid'
-					);
-				}
-			} else if ($update.slice.typeId == 3) {
-				if (dataLength < 32) {
-					revert PlugLib.PlugFailed($i, 'PlugCore:struct-too-small');
-				}
-			} else if ($update.slice.typeId == 5 && dataLength < 64) {
-				revert PlugLib.PlugFailed($i, 'PlugCore:key-value-too-small');
-			}
-			charge = LibBytes.slice(
-				$coil,
-				dataOffset + WORD,
-				dataOffset + WORD + dataLength
-			);
-
-			if (start + WORD + dataLength > $data.length) {
-				revert PlugLib.PlugFailed($i, 'PlugCore:would-overflow');
-			}
-			area = start + WORD + dataLength;
-		}
-
-		return
-			LibBytes.concat(
-				LibBytes.concat(
-					LibBytes.slice($data, 0, $update.start),
-					charge
-				),
-				LibBytes.slice($data, area, $data.length)
-			);
-	}
-
-	/**
 	 * @notice Submit the next transaction with the appropriate call-type that
 	 *         will result in the proper side effects and responses.
 	 * @param $plug The Plugs to execute containing the bundle and side effects.
@@ -345,11 +259,10 @@ contract PlugSocket is
 					coil = results[$plugs.plugs[i].updates[ii].slice.index];
 				else coil = inputs[$plugs.plugs[i].updates[ii].slice.index];
 
-				inputs[i] = _coil(
+				inputs[i] = coil.insert(
 					i,
 					$plugs.plugs[i].updates[ii],
-					inputs[i],
-					coil
+					inputs[i]
 				);
 			}
 
@@ -361,10 +274,9 @@ contract PlugSocket is
 	/**
 	 * @notice See { Ownable._guardInitializeOwner }
 	 */
-	function _guardInitializeOwner()
+	function _guardInitializeOwnership()
 		internal
 		pure
-		override
 		returns (bool $guard)
 	{
 		$guard = true;
