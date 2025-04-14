@@ -16,9 +16,7 @@ It's not a small endeavour, but it has an extreme payoff. Thankfully though, in 
 
 By working teams that live and breathe "transaction incentives" we have been able to build a system where value flows instantly and respectively. 
 
-A new market structure for transaction execution has been realized: Zero user-side fees at all.
-
-With the new incentive vehicles in place, apps are finally equipped with everything needed to adjust the way value flows through their ecosystem. A world where users do not have to pay exorbitant fees is achievable.
+A new market structure for transaction execution has been realized: Zero user-side fees at all. With the new incentive vehicles in place, apps are finally equipped with everything needed to adjust the way value flows through their ecosystem. A world where users do not have to pay exorbitant fees is achievable.
 
 Let's dive in.
 
@@ -50,13 +48,13 @@ The nature of the three are incredibly unique from one another. But, in a fully 
 
 ### Divvi: The Automatic Rewards Distributor
 
-The newest kid on the block, Divvi brings something entirely new to the market. Direct impact valuation and compensation.
+The newest kid on the block, [Divvi brings something entirely new to the market](https://www.divvi.xyz/blog/apps): Direct impact valuation and compensation.
 
 Divvi makes this possible by letting protocols define what they care about (TVL, transaction volume, unique users) and then automatically rewarding the interfaces that move those metrics. All tracked and verified on-chain.
 
 ![Flow chart demonstrating how Divvi helps Web3 builders earn by directing activity to protocols](https://cdn.onplug.io/posts/a-truly-gasless-experience/value-flow-divvi.png)
 
-When a transaction created in our application is directed through a Divvi supported protocol, we're compensated. This seemingly simple vehicle allows us to internalize the costs of using the blockchain without charging you, the user a gas fee, much less a platform fee.
+[When a transaction created in our application is directed through a Divvi supported protocol](https://docs.divvi.xyz/protocol/rewards), we're compensated. This seemingly simple vehicle allows us to internalize the costs of using the blockchain without charging you, the user a gas fee, much less a platform fee.
 
 "Protocols now automatically pay the apps that bring them users" is not something I expected to be able to say this year, but here we are.
 
@@ -82,7 +80,7 @@ Where Royco and IAMs really start to provide value to Plug users, is the systems
 
 ### Boost & Layer3: The Transaction-Level Reward Engine
 
-Unlike the newer incentive systems, quest platforms like Boost and Layer3 have been around longer, quietly perfecting completionist rewards for specific actions.
+Unlike the newer incentive systems, quest platforms like [Boost](https://boost.xyz/) and [Layer3](https://app.layer3.xyz/quests) have been around longer, quietly perfecting completionist rewards for specific actions.
 
 What many don't realize is how perfectly suited these platforms are for subsidizing transaction costs. While they were originally designed for user acquisition, we've transformed them into a core component of our zero-fee infrastructure.
 
@@ -117,8 +115,8 @@ This isn't theoretical. We've built a system where the protocols themselves are 
 2.  We use part of that incentive to cover your gas
 3.  You get Token B without paying any fees
 
-The technical implementation has a few nuances, but who really cares about that? The beauty is that everyone wins. You get free transactions. Protocols get the user activity they want. And we have the ability to generate constant onchain activity that's more economically viable than anywhere else.
-
 The future we're building isn't just about eliminating fees. The future we're creating brings an entirely new way for blockchain interactions to work as smoothly as Web2, but with all the benefits of Web3.
+
+The technical implementation has a few nuances and additional mechanisms are needed for this to work at scale, but who cares about that? The point is that everyone wins. You get free transactions. Protocols get the user activity they want. And we have the ability to generate constant onchain activity that's more economically viable than anywhere else.
 
 No more worrying about gas. No more fee shock. Just seamless transactions that happen exactly when you want them to. The future isn't just close, it is here.

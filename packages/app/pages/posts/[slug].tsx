@@ -91,10 +91,10 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 							h4: ({ children }) => <h4 className="mt-8 text-[2rem] font-black">{children}</h4>,
 							h5: ({ children }) => <h5 className="mt-8 text-[1.5rem] font-black">{children}</h5>,
 							h6: ({ children }) => <h6 className="mt-8 text-[1.25rem] font-black">{children}</h6>,
-							p: ({ children }) => <p className="break-words opacity-80">{children}</p>,
-							ul: ({ children }) => <ul className="ml-6 list-disc break-words opacity-60">{children}</ul>,
+							p: ({ children }) => <p className="break-words">{children}</p>,
+							ul: ({ children }) => <ul className="ml-6 list-disc break-words opacity-80">{children}</ul>,
 							ol: ({ children }) => (
-								<ol className="ml-6 list-decimal break-words opacity-60">{children}</ol>
+								<ol className="ml-6 list-decimal break-words opacity-80">{children}</ol>
 							),
 							li: ({ children }) => <li className="mb-2 ml-2 list-item">{children}</li>,
 							a: ({ children, ...props }) => {
