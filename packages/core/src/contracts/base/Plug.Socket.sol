@@ -230,34 +230,20 @@ contract PlugSocket is
 		returns (PlugTypesLib.Result memory $results)
 	{
 		uint256 length = $plugs.plugs.length;
-		PlugTypesLib.Plug calldata currentPlug;
-		bytes memory data;
-
 		bool success;
 		bytes[] memory results = new bytes[](length);
 
-		uint256 updatesLength;
-		uint256 ii;
-
-		PlugTypesLib.Update calldata update;
-		PlugTypesLib.Slice calldata slice;
-		bytes memory coil;
-		bytes memory charge;
-		uint256 start;
-		uint256 dataOffset;
-		uint256 dataLength;
-		uint256 area;
-		uint256 arrayLength;
-
 		for (uint8 i; i < length; i++) {
-			currentPlug = $plugs.plugs[i];
-			data = currentPlug.data;
-			updatesLength = currentPlug.updates.length;
+			PlugTypesLib.Plug calldata state = $plugs.plugs[i];
+			bytes memory data = state.data;
+			uint8 updatesLength = uint8($plugs.plugs[i].updates.length);
+			for (uint8 ii = 0; ii < updatesLength; ii++) {
+				PlugTypesLib.Update calldata update = state.updates[ii];
+				PlugTypesLib.Slice calldata slice = update.slice;
+				bytes memory coil = results[slice.index];
 
-			for (ii = 0; ii < updatesLength; ii++) {
-				update = currentPlug.updates[ii];
-				slice = update.slice;
-				coil = results[slice.index];
+				bytes memory charge;
+				uint256 area;
 
 				if (slice.typeId == 0) {
 					if (slice.start + slice.length > coil.length) {
@@ -273,8 +259,9 @@ contract PlugSocket is
 					}
 					area = update.start + slice.length;
 				} else {
-					start = update.start;
+					uint256 start = update.start;
 
+					uint256 dataOffset;
 					assembly {
 						dataOffset := mload(add(coil, add(start, WORD)))
 					}
@@ -282,6 +269,7 @@ contract PlugSocket is
 						revert PlugLib.PlugFailed(i, 'PlugCore:invalid-offset');
 					}
 
+					uint256 dataLength;
 					assembly {
 						dataLength := mload(add(coil, add(dataOffset, WORD)))
 					}
@@ -290,6 +278,7 @@ contract PlugSocket is
 					}
 
 					if (slice.typeId == 1 || slice.typeId == 4) {
+						uint256 arrayLength;
 						assembly {
 							arrayLength := mload(
 								add(coil, add(dataOffset, WORD))
@@ -336,7 +325,7 @@ contract PlugSocket is
 				);
 			}
 
-			(success, results[i]) = _call(currentPlug, data);
+			(success, results[i]) = _call($plugs.plugs[i], data);
 			if (!success) revert PlugLib.PlugFailed(i, 'PlugCore:plug-failed');
 		}
 
