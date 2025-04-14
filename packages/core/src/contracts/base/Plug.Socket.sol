@@ -192,6 +192,89 @@ contract PlugSocket is
 		return getLivePlugsHash($livePlugs);
 	}
 
+    /**
+     *
+     */
+	function _coil(
+        uint256 $i,
+		PlugTypesLib.Update calldata $update,
+		bytes memory $data,
+		bytes memory $coil
+	) internal pure returns (bytes memory) {
+		bytes memory charge;
+		uint256 area;
+
+		if ($update.slice.typeId == 0) {
+			if ($update.slice.start + $update.slice.length > $coil.length) {
+				revert PlugLib.PlugFailed($i, 'PlugCore:out-of-bounds');
+			}
+			charge = LibBytes.slice(
+				$coil,
+				$update.slice.start,
+				$update.slice.start + $update.slice.length
+			);
+			if ($update.start + $update.slice.length > $data.length) {
+				revert PlugLib.PlugFailed($i, 'PlugCore:would-overflow');
+			}
+			area = $update.start + $update.slice.length;
+		} else {
+			uint256 start = $update.start;
+			uint256 dataOffset;
+			assembly {
+				dataOffset := mload(add($coil, add(start, WORD)))
+			}
+			if (dataOffset >= $coil.length) {
+				revert PlugLib.PlugFailed($i, 'PlugCore:invalid-offset');
+			}
+			uint256 dataLength;
+			assembly {
+				dataLength := mload(add($coil, add(dataOffset, WORD)))
+			}
+			if (dataOffset + WORD + dataLength > $coil.length) {
+				revert PlugLib.PlugFailed($i, 'PlugCore:invalid-length');
+			}
+
+			if ($update.slice.typeId == 1 || $update.slice.typeId == 4) {
+				uint256 arrayLength;
+				assembly {
+					arrayLength := mload(add($coil, add(dataOffset, WORD)))
+				}
+				if (arrayLength * 32 > dataLength) {
+					revert PlugLib.PlugFailed(
+						$i,
+						'PlugCore:array-length-invalid'
+					);
+				}
+			} else if ($update.slice.typeId == 3) {
+				if (dataLength < 32) {
+					revert PlugLib.PlugFailed($i, 'PlugCore:struct-too-small');
+				}
+			} else if ($update.slice.typeId == 5 && dataLength < 64) {
+				revert PlugLib.PlugFailed($i, 'PlugCore:key-value-too-small');
+			}
+			charge = LibBytes.slice(
+				$coil,
+				dataOffset + WORD,
+				dataOffset + WORD + dataLength
+			);
+
+			if (start + WORD + dataLength > $data.length) {
+				revert PlugLib.PlugFailed($i, 'PlugCore:would-overflow');
+			}
+			area = start + WORD + dataLength;
+		}
+
+		return
+			LibBytes.concat(
+				LibBytes.concat(
+					LibBytes.slice($data, 0, $update.start),
+					charge
+				),
+				LibBytes.slice($data, area, $data.length)
+			);
+	}
+
+
 	/**
 	 * @notice Submit the next transaction with the appropriate call-type that
 	 *         will result in the proper side effects and responses.
@@ -237,91 +320,8 @@ contract PlugSocket is
 			bytes memory data = state.data;
 			uint8 updatesLength = uint8($plugs.plugs[i].updates.length);
 			for (uint256 ii; ii < updatesLength; ii++) {
-				PlugTypesLib.Update calldata update = state.updates[ii];
-				PlugTypesLib.Slice calldata slice = update.slice;
-				bytes memory coil = results[slice.index];
-
-				bytes memory charge;
-				uint256 area;
-
-				if (slice.typeId == 0) {
-					if (slice.start + slice.length > coil.length) {
-						revert PlugLib.PlugFailed(i, 'PlugCore:out-of-bounds');
-					}
-					charge = LibBytes.slice(
-						coil,
-						slice.start,
-						slice.start + slice.length
-					);
-					if (update.start + slice.length > data.length) {
-						revert PlugLib.PlugFailed(i, 'PlugCore:would-overflow');
-					}
-					area = update.start + slice.length;
-				} else {
-					uint256 start = update.start;
-
-					uint256 dataOffset;
-					assembly {
-						dataOffset := mload(add(coil, add(start, WORD)))
-					}
-					if (dataOffset >= coil.length) {
-						revert PlugLib.PlugFailed(i, 'PlugCore:invalid-offset');
-					}
-
-					uint256 dataLength;
-					assembly {
-						dataLength := mload(add(coil, add(dataOffset, WORD)))
-					}
-					if (dataOffset + WORD + dataLength > coil.length) {
-						revert PlugLib.PlugFailed(i, 'PlugCore:invalid-length');
-					}
-
-					if (slice.typeId == 1 || slice.typeId == 4) {
-						uint256 arrayLength;
-						assembly {
-							arrayLength := mload(
-								add(coil, add(dataOffset, WORD))
-							)
-						}
-						if (arrayLength * 32 > dataLength) {
-							revert PlugLib.PlugFailed(
-								i,
-								'PlugCore:array-length-invalid'
-							);
-						}
-					} else if (slice.typeId == 3) {
-						if (dataLength < 32) {
-							revert PlugLib.PlugFailed(
-								i,
-								'PlugCore:struct-too-small'
-							);
-						}
-					} else if (slice.typeId == 5 && dataLength < 64) {
-						revert PlugLib.PlugFailed(
-							i,
-							'PlugCore:key-value-too-small'
-						);
-					}
-
-					charge = LibBytes.slice(
-						coil,
-						dataOffset + WORD,
-						dataOffset + WORD + dataLength
-					);
-
-					if (start + WORD + dataLength > data.length) {
-						revert PlugLib.PlugFailed(i, 'PlugCore:would-overflow');
-					}
-					area = start + WORD + dataLength;
-				}
-
-				data = LibBytes.concat(
-					LibBytes.concat(
-						LibBytes.slice(data, 0, update.start),
-						charge
-					),
-					LibBytes.slice(data, area, data.length)
-				);
+				bytes memory coil = results[state.updates[ii].slice.index];
+				data = _coil(i, state.updates[ii], data, coil);
 			}
 
 			(success, results[i]) = _call($plugs.plugs[i], data);
