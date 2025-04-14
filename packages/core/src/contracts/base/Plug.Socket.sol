@@ -46,7 +46,7 @@ contract PlugSocket is
 
 	/**
 	 * @notice Modifier to enforce the signer of the transaction.
-	 * @dev Apply to this to functions that are designed to execute a bundle
+	 * @dev Apply this to functions that are designed to execute a bundle
 	 *      of Plugs regardless of whether through a Router or or direct access.
 	 * @param $input The LivePlugs the definition of execution as well as the
 	 *               signature used to verify the execution permission.
@@ -63,7 +63,7 @@ contract PlugSocket is
 
 	/**
 	 * @notice Modifier to enforce the sender of the transaction.
-	 * @dev Apply to this to functions that are designed to execute a bundle
+	 * @dev Apply this to functions that are designed to execute a bundle
 	 *      of Plugs directly from the sender or a recursive call from the contract.
 	 */
 	modifier enforceSender() {
@@ -72,6 +72,41 @@ contract PlugSocket is
 				type(uint8).max,
 				'PlugCore:sender-invalid'
 			);
+		}
+		_;
+	}
+
+	/**
+	 * @notice Modifier to enforce the validity of the solver proof provided.
+	 * @param $proof The encoded data that defines the solver.
+	 * @param $solver The address of the alleged solver running the transaction.
+	 */
+	modifier enforceSolver(bytes calldata $proof, address $solver) {
+		if ($proof.length != 0) {
+			if ($proof.length < 0x40) {
+				revert PlugLib.PlugFailed(
+					type(uint8).max,
+					'PlugCore:solver-malformed'
+				);
+			}
+			if (
+				uint256(LibBytes.loadCalldata($proof, 0x00)) < block.timestamp
+			) {
+				revert PlugLib.PlugFailed(
+					type(uint8).max,
+					'PlugCore:solver-expired'
+				);
+			}
+			if (
+				address(
+					uint160(uint256(LibBytes.loadCalldata($proof, 0x20)))
+				) != $solver
+			) {
+				revert PlugLib.PlugFailed(
+					type(uint8).max,
+					'PlugCore:solver-invalid'
+				);
+			}
 		}
 		_;
 	}
@@ -159,21 +194,22 @@ contract PlugSocket is
 
 	/**
 	 * @notice Submit the next transaction with the appropriate call-type that
-     *         will result in the proper side effects and responses.
+	 *         will result in the proper side effects and responses.
 	 * @param $plug The Plugs to execute containing the bundle and side effects.
 	 * @param $data The transaction data that has been post update application.
 	 * @return $success The results of the execution.
 	 * @return $result The results of the execution.
 	 */
-	function _call(PlugTypesLib.Plug calldata $plug, bytes memory $data) internal returns (bool $success, bytes memory $result) {
+	function _call(
+		PlugTypesLib.Plug calldata $plug,
+		bytes memory $data
+	) internal returns (bool $success, bytes memory $result) {
 		if ($plug.selector == TYPE_DELEGATECALL) {
 			($success, $result) = $plug.to.delegatecall($data);
 		} else if ($plug.selector == TYPE_CALL) {
 			($success, $result) = $plug.to.call($data);
 		} else if ($plug.selector == TYPE_CALL_WITH_VALUE) {
-			($success, $result) = $plug.to.call{
-				value: $plug.value
-			}($data);
+			($success, $result) = $plug.to.call{value: $plug.value}($data);
 		} else if ($plug.selector == TYPE_STATICCALL) {
 			($success, $result) = $plug.to.staticcall($data);
 		}
@@ -188,35 +224,11 @@ contract PlugSocket is
 	function _plug(
 		PlugTypesLib.Plugs calldata $plugs,
 		address $solver
-	) internal returns (PlugTypesLib.Result memory $results) {
-		if ($plugs.solver.length != 0) {
-			if ($plugs.solver.length < 0x40) {
-				revert PlugLib.PlugFailed(
-					type(uint8).max,
-					'PlugCore:solver-malformed'
-				);
-			}
-			if (
-				uint256(LibBytes.loadCalldata($plugs.solver, 0x00)) <
-				block.timestamp
-			) {
-				revert PlugLib.PlugFailed(
-					type(uint8).max,
-					'PlugCore:solver-expired'
-				);
-			}
-			if (
-				address(
-					uint160(uint256(LibBytes.loadCalldata($plugs.solver, 0x20)))
-				) != $solver
-			) {
-				revert PlugLib.PlugFailed(
-					type(uint8).max,
-					'PlugCore:solver-invalid'
-				);
-			}
-		}
-
+	)
+		internal
+		enforceSolver($plugs.solver, $solver)
+		returns (PlugTypesLib.Result memory $results)
+	{
 		uint256 length = $plugs.plugs.length;
 		PlugTypesLib.Plug calldata currentPlug;
 		bytes memory data;
@@ -324,7 +336,7 @@ contract PlugSocket is
 				);
 			}
 
-            (success, results[i]) = _call(currentPlug, data);
+			(success, results[i]) = _call(currentPlug, data);
 			if (!success) revert PlugLib.PlugFailed(i, 'PlugCore:plug-failed');
 		}
 
