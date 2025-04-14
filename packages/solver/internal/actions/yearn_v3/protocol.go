@@ -29,7 +29,7 @@ func New() actions.Protocol {
 					yearn_options.UnderlyingAssetToVaultOptions,
 					actions.IsGlobal,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&yearn_actions.DepositFunc,
 				),
 				actions.ActionUnstake: actions.NewActionDefinition(
 					"Unstake {0<amount:float>} {1<token:address:uint8>} from {1=>2<gauge:address>}",
@@ -37,7 +37,7 @@ func New() actions.Protocol {
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&yearn_actions.UnstakeFunc,
 				),
 				actions.ActionStake: actions.NewActionDefinition(
 					"Stake {0<amount:float>} {1<token:address:uint8>} into {1=>2<gauge:address>}",
@@ -45,7 +45,7 @@ func New() actions.Protocol {
 					yearn_options.AvailableStakingGaugeOptions,
 					actions.IsGlobal,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&yearn_actions.StakeFunc,
 				),
 				actions.ActionWithdraw: actions.NewActionDefinition(
 					"Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}",
@@ -53,7 +53,7 @@ func New() actions.Protocol {
 					yearn_options.UnderlyingAssetToVaultOptions,
 					actions.IsGlobal,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&yearn_actions.WithdrawFunc,
 				),
 			},
 		},
