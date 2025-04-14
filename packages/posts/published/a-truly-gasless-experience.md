@@ -14,7 +14,7 @@ I myself have paid over $250,000 real United States Dollars purely for gas over 
 
 It's not a small endeavour, but it has an extreme payoff. Thankfully though, in the last six months we have had the insight, knowledge and expertise of the industry leading experts on incentives.
 
-By working teams that live and breathe "transaction incentives" we have been able to build a system where value flows instantly and respectively. 
+By working with teams that live and breathe "transaction incentives" we have been able to build a system where value flows instantly and respectively. 
 
 A new market structure for transaction execution has been realized: Zero user-side fees at all. With the new incentive vehicles in place, apps are finally equipped with everything needed to adjust the way value flows through their ecosystem. A world where users do not have to pay exorbitant fees is achievable.
 
@@ -76,7 +76,7 @@ Incentives are explicit and have specific stipulations that must be followed. It
 
 Want users to provide liquidity? Bridge assets? Try your new feature? Put it on the marketplace with a clear price tag. No more guessing what actions are valuable - the market establishes that in real-time. It's a beautiful system where there is opportunity outside of typical yield mechanisms such as borrow and lend markets.
 
-Where Royco and IAMs really start to provide value to Plug users, is the systems ability to route transactions through Royco. When you're performing an action and it's possible to get increased rewards, the Solver automatically routes your transaction through the appropriate market to maximize incentive exposure.
+Where Royco and IAMs really start to provide value to Plug users, is the system's ability to route transactions through Royco. When you're performing an action and it's possible to get increased rewards, the Solver automatically routes your transaction through the appropriate market to maximize incentive exposure.
 
 ### Boost & Layer3: The Transaction-Level Reward Engine
 
