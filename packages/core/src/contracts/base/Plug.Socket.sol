@@ -192,11 +192,21 @@ contract PlugSocket is
 		return getLivePlugsHash($livePlugs);
 	}
 
-    /**
-     *
-     */
+	/**
+	 * @notice Build the transaction data for the next action using the provided
+	 *         coil update instructions.
+	 * @dev This function is the only function in the entire protocol that is not
+	 *      easily understood without a significant amount of EVM knowledge and
+	 *      protocol context. If you are a developer reading this, please reach out
+	 *      to us if you have any questions about what is going on here.
+	 * @param $i The index of the Plug in the Plugs array.
+	 * @param $update The coil update instructions.
+	 * @param $data The transaction data.
+	 * @param $coil The coil data.
+	 * @return $data The updated transaction data.
+	 */
 	function _coil(
-        uint256 $i,
+		uint256 $i,
 		PlugTypesLib.Update calldata $update,
 		bytes memory $data,
 		bytes memory $coil
@@ -274,7 +284,6 @@ contract PlugSocket is
 			);
 	}
 
-
 	/**
 	 * @notice Submit the next transaction with the appropriate call-type that
 	 *         will result in the proper side effects and responses.
@@ -314,17 +323,26 @@ contract PlugSocket is
 	{
 		uint256 length = $plugs.plugs.length;
 		bool success;
+		bytes[] memory inputs = new bytes[](length);
 		bytes[] memory results = new bytes[](length);
 		for (uint256 i; i < length; i++) {
-			PlugTypesLib.Plug calldata state = $plugs.plugs[i];
-			bytes memory data = state.data;
 			uint8 updatesLength = uint8($plugs.plugs[i].updates.length);
+			inputs[i] = $plugs.plugs[i].data;
 			for (uint256 ii; ii < updatesLength; ii++) {
-				bytes memory coil = results[state.updates[ii].slice.index];
-				data = _coil(i, state.updates[ii], data, coil);
+				bytes memory coil;
+				if ($plugs.plugs[i].updates[ii].slice.typeId >> 4 == 0)
+					coil = results[$plugs.plugs[i].updates[ii].slice.index];
+				else coil = inputs[$plugs.plugs[i].updates[ii].slice.index];
+
+				inputs[i] = _coil(
+					i,
+					$plugs.plugs[i].updates[ii],
+					inputs[i],
+					coil
+				);
 			}
 
-			(success, results[i]) = _call($plugs.plugs[i], data);
+			(success, results[i]) = _call($plugs.plugs[i], inputs[i]);
 			if (!success) revert PlugLib.PlugFailed(i, 'PlugCore:plug-failed');
 		}
 
