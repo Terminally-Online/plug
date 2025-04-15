@@ -48,7 +48,7 @@ func New() actions.Protocol {
 					&euler_actions.DepositFunc,
 				),
 				actions.ReadHealthFactor: actions.NewActionDefinition(
-					"Get gealth factor for {0<sub-account:uint8>}",
+					"Get health factor for {0<sub-account:uint8>}",
 					euler_actions.HealthFactor,
 					euler_options.PositionOptions,
 					actions.IsUser,
