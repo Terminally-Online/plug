@@ -83,18 +83,12 @@ library PlugTypesLib {
      *         decode Plug data from a hash.
      *
      * @dev Plug extends EIP712<{
-     * 		{ name: 'selector', type: 'uint8' }
-     * 		{ name: 'to', type: 'address' }
      * 		{ name: 'data', type: 'bytes' }
-     * 		{ name: 'value', type: 'uint256' }
      * 		{ name: 'updates', type: 'Update[]' }
      * }>
      */
     struct Plug {
-        uint8 selector;
-        address to;
         bytes data;
-        uint256 value;
         Update[] updates;
     }
 
@@ -191,15 +185,12 @@ abstract contract PlugTypes {
      * @notice Type hash representing the Plug data type providing EIP-712
      *         compatability for encoding and decoding.
      * @dev PLUG_TYPEHASH extends TypeHash<EIP712<{
-     *      { name: 'selector', type: 'uint8' }
-     *      { name: 'to', type: 'address' }
      *      { name: 'data', type: 'bytes' }
-     *      { name: 'value', type: 'uint256' }
      *      { name: 'updates', type: 'Update[]' }
      * }>>
      */
     bytes32 constant PLUG_TYPEHASH =
-        0x8adbed414e194dcdb13ff4e505a6ab838020fe2e144c9d773a6a63b399104584;
+        0x7cae6e9d732b3307b20040708ed6876bf34aeb91eb6bcfbfd18581cb0376b60b;
 
     /**
      * @notice Type hash representing the Plugs data type providing EIP-712
@@ -212,7 +203,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant PLUGS_TYPEHASH =
-        0xad37dd17963f530e0696a34fb50e96c004ad0a3380a5e9c1dc82de9eb692b5d9;
+        0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2;
 
     /**
      * @notice Type hash representing the LivePlugs data type providing EIP-712
@@ -223,7 +214,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant LIVE_PLUGS_TYPEHASH =
-        0x4223462a204a553d0ecb26b955c1f59fcf6a0662da793ddfd0d17a33c99b97f2;
+        0x858fa8b1b482c729dcb5ae30adab7db7ed354ebaba182da4ff91412001f7fd45;
 
     /**
      * @notice Initialize the contract with the name and version of the protocol.
@@ -390,14 +381,7 @@ abstract contract PlugTypes {
         returns (bytes32 $typeHash)
     {
         $typeHash = keccak256(
-            abi.encode(
-                PLUG_TYPEHASH,
-                $input.selector,
-                $input.to,
-                keccak256($input.data),
-                $input.value,
-                getUpdateArrayHash($input.updates)
-            )
+            abi.encode(PLUG_TYPEHASH, keccak256($input.data), getUpdateArrayHash($input.updates))
         );
     }
 

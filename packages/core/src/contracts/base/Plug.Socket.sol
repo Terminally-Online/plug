@@ -55,7 +55,7 @@ contract PlugSocket is
 		if (_enforceSignature($input) == false) {
 			revert PlugLib.PlugFailed(
 				type(uint8).max,
-				'PlugCore:signature-invalid'
+				PlugLib.PlugCoreSignatureInvalid
 			);
 		}
 		_;
@@ -68,7 +68,7 @@ contract PlugSocket is
 		if (_enforceSender(msg.sender) == false) {
 			revert PlugLib.PlugFailed(
 				type(uint8).max,
-				'PlugCore:sender-invalid'
+				PlugLib.PlugCoreSenderInvalid
 			);
 		}
 		_;
@@ -84,7 +84,7 @@ contract PlugSocket is
 			if ($proof.length < 0x40) {
 				revert PlugLib.PlugFailed(
 					type(uint8).max,
-					'PlugCore:solver-malformed'
+					PlugLib.PlugCoreSolverMalformed
 				);
 			}
 			if (
@@ -92,7 +92,7 @@ contract PlugSocket is
 			) {
 				revert PlugLib.PlugFailed(
 					type(uint8).max,
-					'PlugCore:solver-expired'
+					PlugLib.PlugCoreSolverExpired
 				);
 			}
 			if (
@@ -102,7 +102,7 @@ contract PlugSocket is
 			) {
 				revert PlugLib.PlugFailed(
 					type(uint8).max,
-					'PlugCore:solver-invalid'
+					PlugLib.PlugCoreSolverInvalid
 				);
 			}
 		}
@@ -193,7 +193,7 @@ contract PlugSocket is
 		if (nonces.get(nonce) == true) {
 			revert PlugLib.PlugFailed(
 				type(uint8).max,
-				'PlugCore:nonce-invalid'
+				PlugLib.PlugCoreNonceInvalid
 			);
 		}
 		nonces.set(nonce);
@@ -217,23 +217,24 @@ contract PlugSocket is
 	/**
 	 * @notice Submit the next transaction with the appropriate call-type that
 	 *         will result in the proper side effects and responses.
-	 * @param $plug The Plugs to execute containing the bundle and side effects.
-	 * @param $data The transaction data that has been post update application.
+	 * @param $plug The transaction data that has been post update application.
 	 * @return $success The results of the execution.
 	 * @return $result The results of the execution.
 	 */
 	function _call(
-		PlugTypesLib.Plug calldata $plug,
-		bytes memory $data
+		bytes memory $plug
 	) internal returns (bool $success, bytes memory $result) {
-		if ($plug.selector == TYPE_DELEGATECALL) {
-			($success, $result) = $plug.to.delegatecall($data);
-		} else if ($plug.selector == TYPE_CALL) {
-			($success, $result) = $plug.to.call($data);
-		} else if ($plug.selector == TYPE_CALL_WITH_VALUE) {
-			($success, $result) = $plug.to.call{value: $plug.value}($data);
-		} else if ($plug.selector == TYPE_STATICCALL) {
-			($success, $result) = $plug.to.staticcall($data);
+		(uint8 selector, address to, uint256 value, bytes memory data) = $plug
+			.decode();
+
+		if (selector == TYPE_DELEGATECALL) {
+			($success, $result) = to.delegatecall(data);
+		} else if (selector == TYPE_CALL) {
+			($success, $result) = to.call(data);
+		} else if (selector == TYPE_CALL_WITH_VALUE) {
+			($success, $result) = to.call{value: value}(data);
+		} else if (selector == TYPE_STATICCALL) {
+			($success, $result) = to.staticcall(data);
 		}
 	}
 
@@ -248,37 +249,25 @@ contract PlugSocket is
 	) internal enforceSolver($plugs.solver, $solver) {
 		uint256 length = $plugs.plugs.length;
 		bool success;
-		bytes[] memory inputs = new bytes[](length);
-		bytes[] memory results = new bytes[](length);
-		for (uint256 i; i < length; i++) {
-			uint8 updatesLength = uint8($plugs.plugs[i].updates.length);
-			inputs[i] = $plugs.plugs[i].data;
-			for (uint256 ii; ii < updatesLength; ii++) {
-				bytes memory coil;
-				if ($plugs.plugs[i].updates[ii].slice.typeId >> 4 == 0)
-					coil = results[$plugs.plugs[i].updates[ii].slice.index];
-				else coil = inputs[$plugs.plugs[i].updates[ii].slice.index];
+		bytes[] memory state = new bytes[](length * 2);
 
-				inputs[i] = coil.insert(
-					i,
-					$plugs.plugs[i].updates[ii],
-					inputs[i]
-				);
+		for (uint256 i; i < length; i++) {
+			state[i] = $plugs.plugs[i].data;
+			for (uint256 ii; ii < $plugs.plugs[i].updates.length; ii++) {
+				state[i] = state[$plugs.plugs[i].updates[ii].slice.index]
+					.transform(i, $plugs.plugs[i].updates[ii], state[i]);
 			}
 
-			(success, results[i]) = _call($plugs.plugs[i], inputs[i]);
-			if (!success) revert PlugLib.PlugFailed(i, 'PlugCore:plug-failed');
+			(success, state[i + 1]) = _call(state[i]);
+			if (!success)
+				revert PlugLib.PlugFailed(i, PlugLib.PlugCorePlugFailed);
 		}
 	}
 
 	/**
 	 * @notice See { Ownable._guardInitializeOwner }
 	 */
-	function _guardInitializeOwnership()
-		internal
-		pure
-		returns (bool $guard)
-	{
+	function _guardInitializeOwnership() internal pure returns (bool $guard) {
 		$guard = true;
 	}
 

@@ -41,6 +41,27 @@ library PlugLib {
 	error TypeInvalid(uint8 $reality);
 	error CompensationFailed(address $recipient, uint256 $value);
 
+	string internal constant PlugCoreSignatureInvalid =
+		'PlugCore:signature-invalid';
+	string internal constant PlugCoreSenderInvalid = 'PlugCore:sender-invalid';
+	string internal constant PlugCoreSolverMalformed =
+		'PlugCore:solver-malformed';
+	string internal constant PlugCoreSolverExpired = 'PlugCore:solver-expired';
+	string internal constant PlugCoreSolverInvalid = 'PlugCore:solver-invalid';
+	string internal constant PlugCoreNonceInvalid = 'PlugCore:nonce-invalid';
+	string internal constant PlugCorePlugFailed = 'PlugCore:plug-failed';
+	string internal constant PlugCoreOutOfBounds = 'PlugCore:out-of-bounds';
+	string internal constant PlugCoreWouldOverflow = 'PlugCore:would-overflow';
+	string internal constant PlugCoreInvalidOffset = 'PlugCore:invalid-offset';
+	string internal constant PlugCoreInvalidLength = 'PlugCore:invalid-length';
+	string internal constant PlugCoreArrayLengthInvalid =
+		'PlugCore:array-length-invalid';
+	string internal constant PlugCoreStructTooSmall =
+		'PlugCore:struct-too-small';
+	string internal constant PlugCoreKeyValueTooSmall =
+		'PlugCore:key-value-too-small';
+	string internal constant PlugCoreTypeInvalid = 'PlugCore:type-invalid';
+
 	/////////////////////////////////////////////////
 	//                   REWARDS                   //
 	/////////////////////////////////////////////////
