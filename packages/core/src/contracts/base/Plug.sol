@@ -4,7 +4,9 @@ pragma solidity ^0.8.26;
 
 import { PlugInterface } from "../interfaces/Plug.Interface.sol";
 
-import { PlugLib, PlugTypesLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
+import {
+    PlugLib, PlugTypesLib, PlugAddressesLib
+} from "../libraries/Plug.Lib.sol";
 
 import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
@@ -22,20 +24,30 @@ import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 contract Plug is PlugInterface {
     /// @dev Define the reference to the factory that enables counterfactual
     ///      deployment through having a presigned bundle of Plugs.
-    PlugFactoryInterface factory = PlugFactoryInterface(PlugAddressesLib.PLUG_FACTORY_ADDRESS);
+    PlugFactoryInterface factory =
+        PlugFactoryInterface(PlugAddressesLib.PLUG_FACTORY_ADDRESS);
 
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs) external payable virtual {
-        (PlugTypesLib.Result memory results, bytes32 livePlugsHash) = _plug($livePlugs, msg.sender);
+    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
+        external
+        payable
+        virtual
+    {
+        (PlugTypesLib.Result memory results, bytes32 livePlugsHash) =
+            _plug($livePlugs, msg.sender);
         emit PlugLib.PlugResult(0, livePlugsHash, results);
     }
 
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs) external payable virtual {
+    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
+        external
+        payable
+        virtual
+    {
         PlugTypesLib.Result memory results;
         bytes32 livePlugsHash;
         for (uint8 i; i < $livePlugs.length; i++) {
@@ -74,7 +86,9 @@ contract Plug is PlugInterface {
         if (socketAddress.code.length == 0) {
             (, address $socketAddress) = factory.deploy($livePlugs.plugs.salt);
             if (socketAddress != $socketAddress) {
-                revert PlugLib.SocketAddressInvalid(socketAddress, $socketAddress);
+                revert PlugLib.SocketAddressInvalid(
+                    socketAddress, $socketAddress
+                );
             }
         }
         $socket = PlugSocketInterface(socketAddress);
@@ -96,9 +110,13 @@ contract Plug is PlugInterface {
         PlugSocketInterface socket = _socket($livePlugs);
         $livePlugsHash = socket.hash($livePlugs);
         try socket.plug($livePlugs, $sender) {
-            $results = PlugTypesLib.Result({ index: type(uint8).max, error: "" });
+            $results =
+                PlugTypesLib.Result({ index: type(uint8).max, error: "" });
         } catch Error(string memory reason) {
-            $results = PlugTypesLib.Result({ index: type(uint8).max - 1, error: reason });
+            $results = PlugTypesLib.Result({
+                index: type(uint8).max - 1,
+                error: reason
+            });
         } catch Panic(uint256 errorCode) {
             $results = PlugTypesLib.Result({
                 index: type(uint8).max - 2,
@@ -107,7 +125,10 @@ contract Plug is PlugInterface {
         } catch (bytes memory data) {
             if (data.length < 4) {
                 return (
-                    PlugTypesLib.Result({ index: type(uint8).max - 4, error: "Plug:empty-data" }),
+                    PlugTypesLib.Result({
+                        index: type(uint8).max - 4,
+                        error: "Plug:empty-data"
+                    }),
                     $livePlugsHash
                 );
             }
@@ -129,12 +150,13 @@ contract Plug is PlugInterface {
                 mstore(slicedData, errLength)
                 let srcPtr := add(data, 0x24)
                 let destPtr := add(slicedData, 0x20)
-                for { let offset := 0 } lt(offset, errLength) { offset := add(offset, 0x20) } {
-                    mstore(add(destPtr, offset), mload(add(srcPtr, offset)))
-                }
+                for { let offset := 0 } lt(offset, errLength) {
+                    offset := add(offset, 0x20)
+                } { mstore(add(destPtr, offset), mload(add(srcPtr, offset))) }
                 mstore(0x40, add(slicedData, add(0x20, errLength)))
             }
-            (uint8 index, string memory reason) = abi.decode(slicedData, (uint8, string));
+            (uint8 index, string memory reason) =
+                abi.decode(slicedData, (uint8, string));
 
             $results = PlugTypesLib.Result({ index: index, error: reason });
         }

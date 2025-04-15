@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.26;
 
-import {ECDSA} from 'solady/utils/ECDSA.sol';
+import { ECDSA } from "solady/utils/ECDSA.sol";
 
 /**
  * @title Plug:PlugTypes
@@ -18,46 +18,46 @@ import {ECDSA} from 'solady/utils/ECDSA.sol';
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 library PlugTypesLib {
-	struct Result {
-		uint8 index;
-		string error;
-	}
+    struct Result {
+        uint8 index;
+        string error;
+    }
 
-	struct EIP712Domain {
-		string name;
-		string version;
-		uint256 chainId;
-		address verifyingContract;
-	}
+    struct EIP712Domain {
+        string name;
+        string version;
+        uint256 chainId;
+        address verifyingContract;
+    }
 
-	struct Slice {
-		uint8 index;
-		uint256 start;
-		uint256 length;
-		uint8 typeId;
-	}
+    struct Slice {
+        uint8 index;
+        uint256 start;
+        uint256 length;
+        uint8 typeId;
+    }
 
-	struct Update {
-		uint256 start;
-		Slice slice;
-	}
+    struct Update {
+        uint256 start;
+        Slice slice;
+    }
 
-	struct Plug {
-		bytes data;
-		Update[] updates;
-	}
+    struct Plug {
+        bytes data;
+        Update[] updates;
+    }
 
-	struct Plugs {
-		address socket;
-		Plug[] plugs;
-		bytes solver;
-		bytes salt;
-	}
+    struct Plugs {
+        address socket;
+        Plug[] plugs;
+        bytes solver;
+        bytes salt;
+    }
 
-	struct LivePlugs {
-		Plugs plugs;
-		bytes signature;
-	}
+    struct LivePlugs {
+        Plugs plugs;
+        bytes signature;
+    }
 }
 
 /**
@@ -73,317 +73,345 @@ library PlugTypesLib {
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 abstract contract PlugTypes {
-	/// @notice Use the ECDSA library for signature verification.
-	using ECDSA for bytes32;
+    /// @notice Use the ECDSA library for signature verification.
+    using ECDSA for bytes32;
 
-	/// @notice The hash of the domain separator used in the EIP712 domain hash.
-	bytes32 public domainHash;
+    /// @notice The hash of the domain separator used in the EIP712 domain hash.
+    bytes32 public domainHash;
 
-	/**
-	 * @notice Type hash representing the EIP712Domain data type providing EIP-712
-	 *         compatability for encoding and decoding.
-	 * @dev EIP712_DOMAIN_TYPEHASH extends TypeHash<EIP712<{
-	 *      { name: 'name', type: 'string' }
-	 *      { name: 'version', type: 'string' }
-	 *      { name: 'chainId', type: 'uint256' }
-	 *      { name: 'verifyingContract', type: 'address' }
-	 * }>>
-	 */
-	bytes32 constant EIP712_DOMAIN_TYPEHASH =
-		0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+    /**
+     * @notice Type hash representing the EIP712Domain data type providing EIP-712
+     *         compatability for encoding and decoding.
+     * @dev EIP712_DOMAIN_TYPEHASH extends TypeHash<EIP712<{
+     *      { name: 'name', type: 'string' }
+     *      { name: 'version', type: 'string' }
+     *      { name: 'chainId', type: 'uint256' }
+     *      { name: 'verifyingContract', type: 'address' }
+     * }>>
+     */
+    bytes32 constant EIP712_DOMAIN_TYPEHASH =
+        0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
-	/**
-	 * @notice Type hash representing the Slice data type providing EIP-712
-	 *         compatability for encoding and decoding.
-	 * @dev SLICE_TYPEHASH extends TypeHash<EIP712<{
-	 *      { name: 'index', type: 'uint8' }
-	 *      { name: 'start', type: 'uint256' }
-	 *      { name: 'length', type: 'uint256' }
-	 *      { name: 'typeId', type: 'uint8' }
-	 * }>>
-	 */
-	bytes32 constant SLICE_TYPEHASH =
-		0xf8939514938e0a800705081290e2e4c7efcf49061b28bf5b38f457c851eb82ac;
+    /**
+     * @notice Type hash representing the Slice data type providing EIP-712
+     *         compatability for encoding and decoding.
+     * @dev SLICE_TYPEHASH extends TypeHash<EIP712<{
+     *      { name: 'index', type: 'uint8' }
+     *      { name: 'start', type: 'uint256' }
+     *      { name: 'length', type: 'uint256' }
+     *      { name: 'typeId', type: 'uint8' }
+     * }>>
+     */
+    bytes32 constant SLICE_TYPEHASH =
+        0xf8939514938e0a800705081290e2e4c7efcf49061b28bf5b38f457c851eb82ac;
 
-	/**
-	 * @notice Type hash representing the Update data type providing EIP-712
-	 *         compatability for encoding and decoding.
-	 * @dev UPDATE_TYPEHASH extends TypeHash<EIP712<{
-	 *      { name: 'start', type: 'uint256' }
-	 *      { name: 'slice', type: 'Slice' }
-	 * }>>
-	 */
-	bytes32 constant UPDATE_TYPEHASH =
-		0x85c9aec0e14ad33e63489c03355fa65515340a998cc26cd360d11267b451b6fd;
+    /**
+     * @notice Type hash representing the Update data type providing EIP-712
+     *         compatability for encoding and decoding.
+     * @dev UPDATE_TYPEHASH extends TypeHash<EIP712<{
+     *      { name: 'start', type: 'uint256' }
+     *      { name: 'slice', type: 'Slice' }
+     * }>>
+     */
+    bytes32 constant UPDATE_TYPEHASH =
+        0x85c9aec0e14ad33e63489c03355fa65515340a998cc26cd360d11267b451b6fd;
 
-	/**
-	 * @notice Type hash representing the Plug data type providing EIP-712
-	 *         compatability for encoding and decoding.
-	 * @dev PLUG_TYPEHASH extends TypeHash<EIP712<{
-	 *      { name: 'data', type: 'bytes' }
-	 *      { name: 'updates', type: 'Update[]' }
-	 * }>>
-	 */
-	bytes32 constant PLUG_TYPEHASH =
-		0x7cae6e9d732b3307b20040708ed6876bf34aeb91eb6bcfbfd18581cb0376b60b;
+    /**
+     * @notice Type hash representing the Plug data type providing EIP-712
+     *         compatability for encoding and decoding.
+     * @dev PLUG_TYPEHASH extends TypeHash<EIP712<{
+     *      { name: 'data', type: 'bytes' }
+     *      { name: 'updates', type: 'Update[]' }
+     * }>>
+     */
+    bytes32 constant PLUG_TYPEHASH =
+        0x7cae6e9d732b3307b20040708ed6876bf34aeb91eb6bcfbfd18581cb0376b60b;
 
-	/**
-	 * @notice Type hash representing the Plugs data type providing EIP-712
-	 *         compatability for encoding and decoding.
-	 * @dev PLUGS_TYPEHASH extends TypeHash<EIP712<{
-	 *      { name: 'socket', type: 'address' }
-	 *      { name: 'plugs', type: 'Plug[]' }
-	 *      { name: 'solver', type: 'bytes' }
-	 *      { name: 'salt', type: 'bytes' }
-	 * }>>
-	 */
-	bytes32 constant PLUGS_TYPEHASH =
-		0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2;
+    /**
+     * @notice Type hash representing the Plugs data type providing EIP-712
+     *         compatability for encoding and decoding.
+     * @dev PLUGS_TYPEHASH extends TypeHash<EIP712<{
+     *      { name: 'socket', type: 'address' }
+     *      { name: 'plugs', type: 'Plug[]' }
+     *      { name: 'solver', type: 'bytes' }
+     *      { name: 'salt', type: 'bytes' }
+     * }>>
+     */
+    bytes32 constant PLUGS_TYPEHASH =
+        0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2;
 
-	/**
-	 * @notice Type hash representing the LivePlugs data type providing EIP-712
-	 *         compatability for encoding and decoding.
-	 * @dev LIVE_PLUGS_TYPEHASH extends TypeHash<EIP712<{
-	 *      { name: 'plugs', type: 'Plugs' }
-	 *      { name: 'signature', type: 'bytes' }
-	 * }>>
-	 */
-	bytes32 constant LIVE_PLUGS_TYPEHASH =
-		0x858fa8b1b482c729dcb5ae30adab7db7ed354ebaba182da4ff91412001f7fd45;
+    /**
+     * @notice Type hash representing the LivePlugs data type providing EIP-712
+     *         compatability for encoding and decoding.
+     * @dev LIVE_PLUGS_TYPEHASH extends TypeHash<EIP712<{
+     *      { name: 'plugs', type: 'Plugs' }
+     *      { name: 'signature', type: 'bytes' }
+     * }>>
+     */
+    bytes32 constant LIVE_PLUGS_TYPEHASH =
+        0x858fa8b1b482c729dcb5ae30adab7db7ed354ebaba182da4ff91412001f7fd45;
 
-	/**
-	 * @notice Initialize the contract with the name and version of the protocol.
-	 * @dev The chainId is pulled from the block and the verifying contract is set
-	 *	    to the address of the contract.
-	 */
-	function _initializePlug() internal virtual {
-		if (domainHash != 0x0) revert('PlugTypes:already-initialized');
+    /**
+     * @notice Initialize the contract with the name and version of the protocol.
+     * @dev The chainId is pulled from the block and the verifying contract is set
+     *	    to the address of the contract.
+     */
+    function _initializePlug() internal virtual {
+        if (domainHash != 0x0) revert("PlugTypes:already-initialized");
 
-		/// @dev Sets the domain hash for the contract.
-		domainHash = getEIP712DomainHash(
-			PlugTypesLib.EIP712Domain({
-				name: name(),
-				version: version(),
-				chainId: block.chainid,
-				verifyingContract: address(this)
-			})
-		);
-	}
+        /// @dev Sets the domain hash for the contract.
+        domainHash = getEIP712DomainHash(
+            PlugTypesLib.EIP712Domain({
+                name: name(),
+                version: version(),
+                chainId: block.chainid,
+                verifyingContract: address(this)
+            })
+        );
+    }
 
-	/**
-	 * @notice Name used for the domain separator.
-	 * @dev This is implemented this way so that it is easy
-	 *      to retrieve the value and sign the built message.
-	 * @return $name The name of the contract.
-	 */
-	function name() public pure virtual returns (string memory $name);
+    /**
+     * @notice Name used for the domain separator.
+     * @dev This is implemented this way so that it is easy
+     *      to retrieve the value and sign the built message.
+     * @return $name The name of the contract.
+     */
+    function name() public pure virtual returns (string memory $name);
 
-	/**
-	 * @notice Symbol used for metadata surfacing.
-	 * @dev This is implemented this way so that it is easy
-	 *      to retrieve the value and sign the built message.
-	 * @return $symbol The symbol of the contract.
-	 */
-	function symbol() public pure virtual returns (string memory $symbol);
+    /**
+     * @notice Symbol used for metadata surfacing.
+     * @dev This is implemented this way so that it is easy
+     *      to retrieve the value and sign the built message.
+     * @return $symbol The symbol of the contract.
+     */
+    function symbol() public pure virtual returns (string memory $symbol);
 
-	/**
-	 * @notice Version used for the domain separator.
-	 * @dev This is implemented this way so that it is easy
-	 *      to retrieve the value and sign the built message.
-	 * @return $version The version of the contract.
-	 */
-	function version() public pure virtual returns (string memory $version);
+    /**
+     * @notice Version used for the domain separator.
+     * @dev This is implemented this way so that it is easy
+     *      to retrieve the value and sign the built message.
+     * @return $version The version of the contract.
+     */
+    function version() public pure virtual returns (string memory $version);
 
-	/**
-	 * @notice This will use the name() and version() functions that you override
-	 *         when you inherit this contract to create a deployable Socket making
-	 *         retrieval of the domain used to sign much easier.
-	 * @dev When signing a message it is simplest to just call this function
-	 *      to retrieve the domain separator for the EIP-712 signature.
-	 * @return $domain The domain separator for EIP-712.
-	 */
-	function domain()
-		public
-		view
-		virtual
-		returns (PlugTypesLib.EIP712Domain memory $domain)
-	{
-		$domain = PlugTypesLib.EIP712Domain({
-			name: name(),
-			version: version(),
-			chainId: block.chainid,
-			verifyingContract: address(this)
-		});
-	}
+    /**
+     * @notice This will use the name() and version() functions that you override
+     *         when you inherit this contract to create a deployable Socket making
+     *         retrieval of the domain used to sign much easier.
+     * @dev When signing a message it is simplest to just call this function
+     *      to retrieve the domain separator for the EIP-712 signature.
+     * @return $domain The domain separator for EIP-712.
+     */
+    function domain()
+        public
+        view
+        virtual
+        returns (PlugTypesLib.EIP712Domain memory $domain)
+    {
+        $domain = PlugTypesLib.EIP712Domain({
+            name: name(),
+            version: version(),
+            chainId: block.chainid,
+            verifyingContract: address(this)
+        });
+    }
 
-	/**
-	 * @notice Encode EIP712Domain data into a packet hash and verify decoded
-	 *         EIP712Domain data from a packet hash to verify type compliance.
-	 * @param $input The EIP712Domain data to encode.
-	 * @return $typeHash The packet hash of the encoded EIP712Domain data.
-	 */
-	function getEIP712DomainHash(
-		PlugTypesLib.EIP712Domain memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		$typeHash = keccak256(
-			abi.encode(
-				EIP712_DOMAIN_TYPEHASH,
-				keccak256(bytes($input.name)),
-				keccak256(bytes($input.version)),
-				$input.chainId,
-				$input.verifyingContract
-			)
-		);
-	}
+    /**
+     * @notice Encode EIP712Domain data into a packet hash and verify decoded
+     *         EIP712Domain data from a packet hash to verify type compliance.
+     * @param $input The EIP712Domain data to encode.
+     * @return $typeHash The packet hash of the encoded EIP712Domain data.
+     */
+    function getEIP712DomainHash(PlugTypesLib.EIP712Domain memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        $typeHash = keccak256(
+            abi.encode(
+                EIP712_DOMAIN_TYPEHASH,
+                keccak256(bytes($input.name)),
+                keccak256(bytes($input.version)),
+                $input.chainId,
+                $input.verifyingContract
+            )
+        );
+    }
 
-	/**
-	 * @notice Encode Slice data into a packet hash and verify decoded
-	 *         Slice data from a packet hash to verify type compliance.
-	 * @param $input The Slice data to encode.
-	 * @return $typeHash The packet hash of the encoded Slice data.
-	 */
-	function getSliceHash(
-		PlugTypesLib.Slice memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		$typeHash = keccak256(
-			abi.encode(
-				SLICE_TYPEHASH,
-				$input.index,
-				$input.start,
-				$input.length,
-				$input.typeId
-			)
-		);
-	}
+    /**
+     * @notice Encode Slice data into a packet hash and verify decoded
+     *         Slice data from a packet hash to verify type compliance.
+     * @param $input The Slice data to encode.
+     * @return $typeHash The packet hash of the encoded Slice data.
+     */
+    function getSliceHash(PlugTypesLib.Slice memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        $typeHash = keccak256(
+            abi.encode(
+                SLICE_TYPEHASH,
+                $input.index,
+                $input.start,
+                $input.length,
+                $input.typeId
+            )
+        );
+    }
 
-	/**
-	 * @notice Encode Update data into a packet hash and verify decoded
-	 *         Update data from a packet hash to verify type compliance.
-	 * @param $input The Update data to encode.
-	 * @return $typeHash The packet hash of the encoded Update data.
-	 */
-	function getUpdateHash(
-		PlugTypesLib.Update memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		$typeHash = keccak256(
-			abi.encode(
-				UPDATE_TYPEHASH,
-				$input.start,
-				getSliceHash($input.slice)
-			)
-		);
-	}
+    /**
+     * @notice Encode Update data into a packet hash and verify decoded
+     *         Update data from a packet hash to verify type compliance.
+     * @param $input The Update data to encode.
+     * @return $typeHash The packet hash of the encoded Update data.
+     */
+    function getUpdateHash(PlugTypesLib.Update memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        $typeHash = keccak256(
+            abi.encode(
+                UPDATE_TYPEHASH, $input.start, getSliceHash($input.slice)
+            )
+        );
+    }
 
-	/**
-	 * @notice Encode Plug data into a packet hash and verify decoded
-	 *         Plug data from a packet hash to verify type compliance.
-	 * @param $input The Plug data to encode.
-	 * @return $typeHash The packet hash of the encoded Plug data.
-	 */
-	function getPlugHash(
-		PlugTypesLib.Plug memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		$typeHash = keccak256(
-			abi.encode(
-				PLUG_TYPEHASH,
-				keccak256($input.data),
-				getUpdateArrayHash($input.updates)
-			)
-		);
-	}
+    /**
+     * @notice Encode Plug data into a packet hash and verify decoded
+     *         Plug data from a packet hash to verify type compliance.
+     * @param $input The Plug data to encode.
+     * @return $typeHash The packet hash of the encoded Plug data.
+     */
+    function getPlugHash(PlugTypesLib.Plug memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        $typeHash = keccak256(
+            abi.encode(
+                PLUG_TYPEHASH,
+                keccak256($input.data),
+                getUpdateArrayHash($input.updates)
+            )
+        );
+    }
 
-	/**
-	 * @notice Encode Update[] data into hash and verify the
-	 *         decoded Update[] data from a packet hash to verify type compliance.
-	 * @param $input The Update[] data to encode.
-	 * @return $typeHash The packet hash of the encoded Update[] data.
-	 */
-	function getUpdateArrayHash(
-		PlugTypesLib.Update[] memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		bytes memory encoded;
-		for (uint256 i; i < $input.length; i++) {
-			encoded = bytes.concat(encoded, getUpdateHash($input[i]));
-		}
-		return keccak256(encoded);
-	}
+    /**
+     * @notice Encode Update[] data into hash and verify the
+     *         decoded Update[] data from a packet hash to verify type compliance.
+     * @param $input The Update[] data to encode.
+     * @return $typeHash The packet hash of the encoded Update[] data.
+     */
+    function getUpdateArrayHash(PlugTypesLib.Update[] memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        bytes memory encoded;
+        for (uint256 i; i < $input.length; i++) {
+            encoded = bytes.concat(encoded, getUpdateHash($input[i]));
+        }
+        return keccak256(encoded);
+    }
 
-	/**
-	 * @notice Encode Plugs data into a packet hash and verify decoded
-	 *         Plugs data from a packet hash to verify type compliance.
-	 * @param $input The Plugs data to encode.
-	 * @return $typeHash The packet hash of the encoded Plugs data.
-	 */
-	function getPlugsHash(
-		PlugTypesLib.Plugs memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		$typeHash = keccak256(
-			abi.encode(
-				PLUGS_TYPEHASH,
-				$input.socket,
-				getPlugArrayHash($input.plugs),
-				keccak256($input.solver),
-				keccak256($input.salt)
-			)
-		);
-	}
+    /**
+     * @notice Encode Plugs data into a packet hash and verify decoded
+     *         Plugs data from a packet hash to verify type compliance.
+     * @param $input The Plugs data to encode.
+     * @return $typeHash The packet hash of the encoded Plugs data.
+     */
+    function getPlugsHash(PlugTypesLib.Plugs memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        $typeHash = keccak256(
+            abi.encode(
+                PLUGS_TYPEHASH,
+                $input.socket,
+                getPlugArrayHash($input.plugs),
+                keccak256($input.solver),
+                keccak256($input.salt)
+            )
+        );
+    }
 
-	/**
-	 * @notice Encode Plug[] data into hash and verify the
-	 *         decoded Plug[] data from a packet hash to verify type compliance.
-	 * @param $input The Plug[] data to encode.
-	 * @return $typeHash The packet hash of the encoded Plug[] data.
-	 */
-	function getPlugArrayHash(
-		PlugTypesLib.Plug[] memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		bytes memory encoded;
-		for (uint256 i; i < $input.length; i++) {
-			encoded = bytes.concat(encoded, getPlugHash($input[i]));
-		}
-		return keccak256(encoded);
-	}
+    /**
+     * @notice Encode Plug[] data into hash and verify the
+     *         decoded Plug[] data from a packet hash to verify type compliance.
+     * @param $input The Plug[] data to encode.
+     * @return $typeHash The packet hash of the encoded Plug[] data.
+     */
+    function getPlugArrayHash(PlugTypesLib.Plug[] memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        bytes memory encoded;
+        for (uint256 i; i < $input.length; i++) {
+            encoded = bytes.concat(encoded, getPlugHash($input[i]));
+        }
+        return keccak256(encoded);
+    }
 
-	/**
-	 * @notice Encode LivePlugs data into a packet hash and verify decoded
-	 *         LivePlugs data from a packet hash to verify type compliance.
-	 * @param $input The LivePlugs data to encode.
-	 * @return $typeHash The packet hash of the encoded LivePlugs data.
-	 */
-	function getLivePlugsHash(
-		PlugTypesLib.LivePlugs memory $input
-	) public pure virtual returns (bytes32 $typeHash) {
-		$typeHash = keccak256(
-			abi.encode(
-				LIVE_PLUGS_TYPEHASH,
-				getPlugsHash($input.plugs),
-				keccak256($input.signature)
-			)
-		);
-	}
+    /**
+     * @notice Encode LivePlugs data into a packet hash and verify decoded
+     *         LivePlugs data from a packet hash to verify type compliance.
+     * @param $input The LivePlugs data to encode.
+     * @return $typeHash The packet hash of the encoded LivePlugs data.
+     */
+    function getLivePlugsHash(PlugTypesLib.LivePlugs memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $typeHash)
+    {
+        $typeHash = keccak256(
+            abi.encode(
+                LIVE_PLUGS_TYPEHASH,
+                getPlugsHash($input.plugs),
+                keccak256($input.signature)
+            )
+        );
+    }
 
-	/**
-	 * @notice Encode Plugs data into a digest hash that has been
-	 *         localized to the domain of the contract.
-	 * @param $input The Plugs data to encode.
-	 * @return $digest The digest hash of the encoded Plugs data.
-	 */
-	function getPlugsDigest(
-		PlugTypesLib.Plugs memory $input
-	) public view virtual returns (bytes32 $digest) {
-		$digest = keccak256(
-			bytes.concat('\x19\x01', domainHash, getPlugsHash($input))
-		);
-	}
+    /**
+     * @notice Encode Plugs data into a digest hash that has been
+     *         localized to the domain of the contract.
+     * @param $input The Plugs data to encode.
+     * @return $digest The digest hash of the encoded Plugs data.
+     */
+    function getPlugsDigest(PlugTypesLib.Plugs memory $input)
+        public
+        view
+        virtual
+        returns (bytes32 $digest)
+    {
+        $digest = keccak256(
+            bytes.concat("\x19\x01", domainHash, getPlugsHash($input))
+        );
+    }
 
-	/**
-	 * @notice Get the signer of a LivePlugs data type.
-	 * @param $input The LivePlugs data to encode.
-	 * @return $signer The signer of the LivePlugs data.
-	 */
-	function getLivePlugsSigner(
-		PlugTypesLib.LivePlugs memory $input
-	) public view virtual returns (address $signer) {
-		$signer = getPlugsDigest($input.plugs).recover($input.signature);
-	}
+    /**
+     * @notice Get the signer of a LivePlugs data type.
+     * @param $input The LivePlugs data to encode.
+     * @return $signer The signer of the LivePlugs data.
+     */
+    function getLivePlugsSigner(PlugTypesLib.LivePlugs memory $input)
+        public
+        view
+        virtual
+        returns (address $signer)
+    {
+        $signer = getPlugsDigest($input.plugs).recover($input.signature);
+    }
 }

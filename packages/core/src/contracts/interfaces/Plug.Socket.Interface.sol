@@ -29,7 +29,12 @@ interface PlugSocketInterface {
      * @param $livePlugs The Plug bundle to execute.
      * @param $solver The address of the Solver.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs, address $solver) external payable;
+    function plug(
+        PlugTypesLib.LivePlugs calldata $livePlugs,
+        address $solver
+    )
+        external
+        payable;
 
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.

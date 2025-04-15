@@ -179,16 +179,14 @@ library PlugCoilLib {
 		uint256 $i,
 		PlugTypesLib.Update calldata $update,
 		bytes memory $data
-	) internal pure returns (bytes memory $charge) {
-		uint256 area;
-
-		if ($update.slice.typeId == TYPE_STATIC)
-			($charge, area) = _static($coil, $i, $update, $data);
-		else ($charge, area) = _dynamic($coil, $i, $update, $data);
+	) internal pure returns (bytes memory $charge, uint256 $area) {
+		($charge, $area) = $update.slice.typeId == TYPE_STATIC
+			? _static($coil, $i, $update, $data)
+			: _dynamic($coil, $i, $update, $data);
 
 		$charge = LibBytes.concat(
 			LibBytes.concat(LibBytes.slice($data, 0, $update.start), $charge),
-			LibBytes.slice($data, area, $data.length)
+			LibBytes.slice($data, $area, $data.length)
 		);
 	}
 

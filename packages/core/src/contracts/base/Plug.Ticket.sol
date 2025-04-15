@@ -92,7 +92,12 @@ contract PlugTicket is Ownable, ERC721 {
     /**
      * See {ERC721-tokenURI}
      */
-    function tokenURI(uint256 $id) public view override returns (string memory) {
+    function tokenURI(uint256 $id)
+        public
+        view
+        override
+        returns (string memory)
+    {
         return string.concat(base, $id.toString());
     }
 }
