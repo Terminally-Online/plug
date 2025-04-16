@@ -257,12 +257,14 @@ contract PlugSocket is
 		bool success;
 		bytes[] memory state = new bytes[]($plugs.plugs.length * 2);
 		for (uint256 i; i < $plugs.plugs.length; i++) {
-			state[i] = $plugs.plugs[i].data;
+			uint256 input = i * 2;
+			state[input] = $plugs.plugs[i].data;
 			for (uint256 ii; ii < $plugs.plugs[i].updates.length; ii++) {
-				(state[i], ) = state[$plugs.plugs[i].updates[ii].slice.index]
-					.transform(i, $plugs.plugs[i].updates[ii], state[i]);
+				(state[input], ) = state[
+					$plugs.plugs[i].updates[ii].slice.index
+				].transform(i, $plugs.plugs[i].updates[ii], state[input]);
 			}
-			(success, state[i + 1]) = _call(state[i]);
+			(success, state[input + 1]) = _call(state[input]);
 			if (!success) {
 				revert PlugLib.PlugFailed(i, PlugLib.PlugCorePlugFailed);
 			}

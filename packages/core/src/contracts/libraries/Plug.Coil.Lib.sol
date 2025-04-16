@@ -18,6 +18,8 @@ import {PlugLib, PlugTypesLib} from './Plug.Lib.sol';
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 library PlugCoilLib {
+	using LibBytes for bytes;
+
 	uint256 private constant WORD = 32;
 
 	/**
@@ -210,8 +212,7 @@ library PlugCoilLib {
 		if ($update.slice.start + $update.slice.length > $coil.length) {
 			revert PlugLib.PlugFailed($i, PlugLib.PlugCoreOutOfBounds);
 		}
-		$charge = LibBytes.slice(
-			$coil,
+		$charge = $coil.slice(
 			$update.slice.start,
 			$update.slice.start + $update.slice.length
 		);
