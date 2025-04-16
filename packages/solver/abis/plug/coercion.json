@@ -1,0 +1,458 @@
+[
+    {
+        "type": "function",
+        "name": "addressToUint160",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint160",
+                "internalType": "uint160"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "boolToInt",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "boolToUint",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "bytes32ToBytes",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "bytes32ToUint",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "bytesToBytes32",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "intToBool",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toInt128",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int128",
+                "internalType": "int128"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toInt16",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int16",
+                "internalType": "int16"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toInt256",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toInt32",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int32",
+                "internalType": "int32"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toInt64",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int64",
+                "internalType": "int64"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toInt8",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "int8",
+                "internalType": "int8"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint128",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint128",
+                "internalType": "uint128"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint16",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint16",
+                "internalType": "uint16"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint160",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint160",
+                "internalType": "uint160"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint256",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "int256",
+                "internalType": "int256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint32",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint32",
+                "internalType": "uint32"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint64",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint64",
+                "internalType": "uint64"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint8",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint8",
+                "internalType": "uint8"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "toUint96",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "uint96",
+                "internalType": "uint96"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "uint160ToAddress",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint160",
+                "internalType": "uint160"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "uintToBool",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "uintToBytes32",
+        "inputs": [
+            {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "z",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "pure"
+    }
+]
