@@ -29,7 +29,7 @@ func New() actions.Protocol {
 					plug_options.PriceOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc, // TODO: Need to figure out how to handle offchain stuff.
+					&plug_actions.PriceFunc, // TODO: Need to figure out how to handle offchain stuff.
 				),
 				actions.ActionSwap: actions.NewActionDefinition(
 					"Swap {0<amount:float>} {1<token:address:uint256:uint256>} for {2<tokenIn:address:uint256:uint256>}",
@@ -45,9 +45,8 @@ func New() actions.Protocol {
 					plug_options.TransferOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&plug_actions.TransferFunc,
 				),
-
 				actions.ActionDeploy: actions.NewActionDefinition(
 					"Deploy Socket on {0<factory:address>} with {1<nonce:uint64>} for {2<admin:address>} with a delegate of {3<delegate:address>} with {4<implementation:address>}",
 					plug_actions.Deploy,

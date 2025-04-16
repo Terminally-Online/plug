@@ -5,10 +5,18 @@ import (
 	"solver/internal/actions"
 	"solver/internal/helpers/llama"
 	"solver/internal/solver/signature"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 type PriceRequest struct {
 	Token string `json:"token"`
+}
+
+var PriceFunc = actions.ActionOnchainFunctionResponse{
+	Arguments: abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 256}},
+	},
 }
 
 func Price(lookup *actions.SchemaLookup[PriceRequest]) ([]signature.Plug, error) {

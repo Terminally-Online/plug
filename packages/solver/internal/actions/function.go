@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"solver/internal/coil"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
 
@@ -17,6 +18,7 @@ type ActionOnchainFunctionResponse struct {
 	ActionOnchainFunctionInterface
 	Metadata     *bind.MetaData
 	FunctionName string
+	Arguments    abi.Arguments
 }
 
 func (r *ActionOnchainFunctionResponse) GetCalldata(inputs ...any) ([]byte, error) {
