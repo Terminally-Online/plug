@@ -52,8 +52,8 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
    ├─ Plug.Factory.sol [256] — "0x00000000026dF9927AE0fB3CFB5f4ce0298f6C45"
    ├─ Plug.Math.sol [65536] — "0x0000000000269af70428b90fEC44d94f56b43d21"
    ├─ Plug.Rewards.sol [256] — "0x000000004234f504f1e759Cb97A4B01c35398289"
-   ├─ Plug.Socket.sol [256] — "0x00000000906bb1a5fe6527c051A4C3b1c4595a8a"
+   ├─ Plug.Socket.sol [256] — "0x00000000a0C0e8b03FE11be22Fe8073202E75d64"
    ├─ Plug.Ticket.sol [256] — "0x000000003525F8830Dbf2eaAdBCEC33cbFC3E79e"
    ├─ Plug.Token.sol [256] — "0x00000000C3970e7529189339354c7e0f4cdBBF79"
-   └─ Plug.sol [256] — "0x0000000070D55E8243BC9B94DB91028CeAaB3666"
+   └─ Plug.sol [256] — "0x00000000Eb573fC340f1a4e84d487BD9F48069a8"
 ```
