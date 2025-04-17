@@ -79,14 +79,15 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs map[string]signature.LivePlugs) ([]signature.Result, error) {
+func (c *Client) Plug(livePlugs *signature.LivePlugs) ([]signature.Result, error) {
 	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
-	var lps []plug_router.PlugTypesLibLivePlugs
-	for _, livePlug := range livePlugs {
-		l, err := livePlug.Wrap()
-		if err != nil { return nil, err }
-		lps = append(lps, *l)
+
+	l, err := livePlugs.Wrap()
+	if err != nil {
+		return nil, err
 	}
+
+	lps := []plug_router.PlugTypesLibLivePlugs{*l}
 
 	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {
