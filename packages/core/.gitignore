@@ -185,6 +185,7 @@ typechain-types
 # Smart contract files
 cache
 artifacts
+broadcast
 create2crunch
 --branch-coverage
 report
