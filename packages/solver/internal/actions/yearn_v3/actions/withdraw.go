@@ -5,9 +5,11 @@ import (
 	"math/big"
 	"solver/bindings/yearn_v3_pool"
 	"solver/internal/actions"
+	"solver/internal/actions/yearn_v3/reads"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -24,7 +26,7 @@ var WithdrawFunc = actions.ActionOnchainFunctionResponse{
 }
 
 func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, error) {
-	_, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
+	token, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
@@ -40,6 +42,14 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	targetVault, err := reads.GetVault(lookup.ChainId, lookup.Inputs.Vault)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
+	if !strings.EqualFold(token.Hex(), targetVault.Token.Address) {
+		return nil, fmt.Errorf("asset %s cannot be used in vault: %s", token, lookup.Inputs.Vault)
 	}
 
 	withdrawCalldata, err := WithdrawFunc.GetCalldata(amount, lookup.From, lookup.From)

@@ -2,12 +2,9 @@
 
 pragma solidity ^0.8.26;
 
-import { ERC721 } from "solady/tokens/ERC721.sol";
-import { Initializable } from "solady/utils/Initializable.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
+import { ERC721 } from "solady/tokens/ERC721.sol";
 import { LibString } from "solady/utils/LibString.sol";
-
-import { PlugLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
 
 /**
  * @title Plug Ticket
@@ -18,26 +15,18 @@ import { PlugLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
  * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
-contract PlugTicket is Initializable, Ownable, ERC721 {
+contract PlugTicket is Ownable, ERC721 {
     using LibString for uint256;
 
-    uint256 public totalSupply;
+    error AlreadyMinted();
+    error NonTransferableToken();
+    error CallerMustBeContract();
 
-    string public baseURI = "https://onplug.io/canvas/nft/";
+    string private base;
+    uint256 private nextId;
 
-    // @dev Initialize to address(1) to prevent hostile takeover of implementation.
-    constructor() {
-        _initializeOwner(address(1));
-    }
-
-    /**
-     * @notice Initializes the token with a given unlock time, owner, and total supply.
-     * @dev The complete total supply is instantly minted to the treasury for safe
-     *      holding, distribution, and start-to-finish audit trails to verify the
-     *      the supply distribution every step along the way.
-     */
-    function initialize() public initializer {
-        _initializeOwner(PlugAddressesLib.PLUG_OWNER_ADDRESS);
+    constructor(address $owner) {
+        _initializeOwner($owner);
     }
 
     /**
@@ -46,10 +35,13 @@ contract PlugTicket is Initializable, Ownable, ERC721 {
      *      Each address can only mint one token, and tokens are minted sequentially.
      */
     function mint() public {
-        if (msg.sender.code.length == 0) revert PlugLib.CallerMustBeContract();
-        if (balanceOf(msg.sender) != 0) revert PlugLib.AlreadyMinted();
+        if (msg.sender.code.length == 0) revert CallerMustBeContract();
 
-        _mint(msg.sender, totalSupply++);
+        address user = Ownable(msg.sender).owner();
+
+        if (balanceOf(user) != 0) revert AlreadyMinted();
+
+        _mint(user, nextId++);
     }
 
     /**
@@ -71,33 +63,34 @@ contract PlugTicket is Initializable, Ownable, ERC721 {
             super.transferFrom($from, $to, $id);
             return;
         }
-        revert PlugLib.NonTransferableToken();
+        revert NonTransferableToken();
     }
 
     /**
-     * @notice Adjust the base endpoint for the token metadata.
-     * @param $baseURI The appropriate http endpoint for metadata.
+     * @notice Sets the base URI for computing {tokenURI}
+     * @dev Only callable by contract owner
+     * @param $uri The new base URI to be used for all tokens
      */
-    function setBaseURI(string memory $baseURI) public onlyOwner {
-        baseURI = $baseURI;
+    function setBase(string memory $uri) public onlyOwner {
+        base = $uri;
     }
 
     /**
-     * @dev See {ERC721-name}
+     * See {ERC721-name}
      */
     function name() public pure override returns (string memory) {
         return "Plug: Ticket";
     }
 
     /**
-     * @dev See {ERC721-symbol}
+     * See {ERC721-symbol}
      */
     function symbol() public pure override returns (string memory) {
-        return "TICKET";
+        return "PLUGT";
     }
 
     /**
-     * @dev See {ERC721-tokenURI}
+     * See {ERC721-tokenURI}
      */
     function tokenURI(uint256 $id)
         public

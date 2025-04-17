@@ -8,6 +8,7 @@ import { Draggable } from "@hello-pangea/dnd"
 
 import { ColumnSettings } from "@/components/app/columns/settings/column"
 import { ColumnAdd, OPTIONS } from "@/components/app/columns/utils/column-add"
+import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
 import { Header } from "@/components/app/layout/header"
 import { PlugsDiscover } from "@/components/app/plugs/discover"
@@ -253,6 +254,8 @@ export const ConsoleColumn: FC<{
 									<SocketCollectionList index={column.index} expanded={true} className="p-4" />
 								) : column.key === COLUMNS.KEYS.POSITIONS ? (
 									<SocketPositionList index={column.index} className="p-4" />
+								) : column.key === COLUMNS.KEYS.ADMIN ? (
+									<ConsoleAdmin index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
 									<ColumnSettings index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (

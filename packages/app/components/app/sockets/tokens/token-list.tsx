@@ -11,10 +11,8 @@ import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
 
 import { ErrorFrame } from "../../frames/plugs/[id]/execute/error"
-import { PLACEHOLDER_TOKENS } from "@/lib/constants/placeholder/tokens"
 
 type Tokens = RouterOutputs["socket"]["balances"]["positions"]["tokens"] | RouterOutputs["solver"]["tokens"]["get"]
-
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -38,12 +36,8 @@ export const SocketTokenList: FC<
 	})
 
 	const visibleTokens = useMemo(() => {
-		if (search !== "" && tokens.length === 0) {
-			return Array(5).fill(undefined)
-		}
-
 		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0)) {
-			return PLACEHOLDER_TOKENS
+			return Array(5).fill(undefined)
 		}
 
 		const filteredTokens = tokens.filter(

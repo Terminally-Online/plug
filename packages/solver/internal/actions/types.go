@@ -36,7 +36,6 @@ const (
 	ActionSwap               string = "swap"
 	ActionRoute              string = "route"
 	ActionStake              string = "stake"
-	ActionUnstake            string = "unstake"
 	ActionBuy                string = "buy"
 	ActionBid                string = "bid"
 	ActionRenew              string = "renew"

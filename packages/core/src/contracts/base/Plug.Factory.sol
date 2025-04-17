@@ -29,7 +29,6 @@ contract PlugFactory is PlugFactoryInterface {
         returns (bool $alreadyDeployed, address $socketAddress)
     {
         if ($salt.length < 0x80) revert("PlugCore:salt-malformed");
-
         uint96 nonce = uint96(uint256(LibBytes.loadCalldata($salt, 0x00)));
         address admin =
             address(uint160(uint256(LibBytes.loadCalldata($salt, 0x20))));

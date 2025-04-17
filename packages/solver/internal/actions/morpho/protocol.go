@@ -40,7 +40,7 @@ func New() actions.Protocol {
 					morpho_options.BorrowTokenToMarketOptions,
 					actions.IsGlobal,
 					actions.IsStatic,
-					&morpho_actions.BorrowFunc,
+					actions.IsEmptyOnchainFunc,
 				),
 				ActionClaimRewards: actions.NewActionDefinition(
 					"Claim all reward distributions",
@@ -48,7 +48,7 @@ func New() actions.Protocol {
 					nil,
 					actions.IsGlobal,
 					actions.IsStatic,
-					&morpho_actions.ClaimRewardsFunc,
+					actions.IsEmptyOnchainFunc,
 				),
 				ActionEarn: actions.NewActionDefinition(
 					"Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:string>}",
@@ -56,7 +56,7 @@ func New() actions.Protocol {
 					morpho_options.SupplyTokenToVaultOptions,
 					actions.IsGlobal,
 					actions.IsStatic,
-					&morpho_actions.EarnFunc,
+					actions.IsEmptyOnchainFunc,
 				),
 				actions.ReadHealthFactor: actions.NewActionDefinition(
 					"Get health factor in {0<market:string>}",
@@ -72,7 +72,7 @@ func New() actions.Protocol {
 					morpho_options.BorrowTokenToMarketOptions,
 					actions.IsGlobal,
 					actions.IsStatic,
-					&morpho_actions.RepayFunc,
+					actions.IsEmptyOnchainFunc,
 				),
 				ActionSupplyCollateral: actions.NewActionDefinition(
 					"Supply {0<amount:float>} {1<token:address:uint8>} as collateral to {1=>2<market:string>}",
@@ -80,7 +80,7 @@ func New() actions.Protocol {
 					morpho_options.CollateralTokenToMarketOptions,
 					actions.IsGlobal,
 					actions.IsStatic,
-					&morpho_actions.SupplyCollateralFunc,
+					actions.IsEmptyOnchainFunc,
 				),
 				ActionWithdraw: actions.NewActionDefinition(
 					"Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<target:string>}",
@@ -88,7 +88,7 @@ func New() actions.Protocol {
 					morpho_options.SupplyAndCollateralTokenToMarketOptions,
 					actions.IsGlobal,
 					actions.IsStatic,
-					&morpho_actions.WithdrawMarketFunc, // TODO MASON: we have two different return function signatures here if we do actually support vaults through this.
+					actions.IsEmptyOnchainFunc,
 				),
 			},
 		},

@@ -3,11 +3,9 @@
 pragma solidity ^0.8.26;
 
 import { SuperchainERC20 } from "op/SuperchainERC20.sol";
-import { PredeployAddresses } from "op/libraries/PredeployAddresses.sol";
 import { Initializable } from "solady/utils/Initializable.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
-
-import { PlugAddressesLib } from "../libraries/Plug.Lib.sol";
+import { PredeployAddresses } from "op/libraries/PredeployAddresses.sol";
 
 /**
  * @title PlugToken
@@ -16,9 +14,8 @@ import { PlugAddressesLib } from "../libraries/Plug.Lib.sol";
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 contract PlugToken is Initializable, Ownable, SuperchainERC20 {
-    uint256 public constant TOTAL_SUPPLY = 9_000_000 ether;
-    uint32 public transferUnlock = type(uint32).max;
-    uint32 public bridgeUnlock = type(uint32).max;
+    uint32 public transferUnlock;
+    uint32 public bridgeUnlock;
 
     // @dev Mapping tracking which addresses have been given permission to transfer
     //      tokens prior to unlock. This is to be used by things such as onchain
@@ -35,6 +32,9 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
      * @dev The complete total supply is instantly minted to the treasury for safe
      *      holding, distribution, and start-to-finish audit trails to verify the
      *      the supply distribution every step along the way.
+     * @param $unlock The unlock time for both transfers and bridge operations.
+     * @param $owner The owner of the token.
+     * @param $totalSupply The total supply of the token.
      */
     function initialize(
         uint32 $unlock,

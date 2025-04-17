@@ -10,7 +10,6 @@ import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
 import { COLUMNS } from "@/state/columns"
-import { PLACEHOLDER_PLUGS } from "@/lib/constants/placeholder/plugs"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -24,7 +23,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 
 	const visiblePlugs = useMemo(() => {
 		if (plugs === undefined || plugs.length === 0) {
-			return PLACEHOLDER_PLUGS
+			return Array(12).fill(undefined)
 		}
 
 		return plugs.filter(plug => {
@@ -49,15 +48,16 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 
 			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
 
-			<Container>
-				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.DISCOVER} plugs={visiblePlugs} />
-			</Container>
-
 			<Callout.EmptySearch
 				isEmpty={(search !== "" && plugs && plugs.length === 0) || false}
 				search={search}
 				handleSearch={handleSearch}
 			/>
+
+			<Container>
+				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.DISCOVER} plugs={visiblePlugs} />
+			</Container>
+
 			<Callout.EmptyPlugs index={index} isEmpty={(search === "" && plugs && plugs.length === 0) || false} />
 		</div>
 	)

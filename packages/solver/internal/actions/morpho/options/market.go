@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"solver/internal/actions"
 	"solver/internal/actions/morpho/reads"
-	"solver/internal/actions/morpho/types"
 )
 
 func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
@@ -19,7 +18,6 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 
 	for _, market := range markets {
 		collateralAddress := fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals)
-
 		if !seenCollateral[collateralAddress] {
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
@@ -30,18 +28,12 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 			seenCollateral[collateralAddress] = true
 		}
 
-		targetParams := types.MorphoTargetParams{
-			TargetId:     market.UniqueKey,
-			MarketParams: market.Params,
-		}
-		targetParamsString := targetParams.SerializeToCompactString()
-
 		tokenToMarketOptions[collateralAddress] = append(
 			tokenToMarketOptions[collateralAddress],
 			actions.Option{
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
-				Value: targetParamsString,
+				Value: market.UniqueKey,
 				Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
 				Info:  &actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
 			},
@@ -96,16 +88,10 @@ func GetBorrowTokenToMarketOptions[T any](lookup *actions.SchemaLookup[T]) ([]ac
 			seenLoanAssets[loanAssetAddress] = true
 		}
 
-		targetParams := types.MorphoTargetParams{
-			TargetId:     market.UniqueKey,
-			MarketParams: market.Params,
-		}
-		targetParamsString := targetParams.SerializeToCompactString()
-
 		tokenToMarketOptions[loanAssetAddress] = append(tokenToMarketOptions[loanAssetAddress], actions.Option{
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
-			Value: targetParamsString,
+			Value: market.UniqueKey,
 			Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
 			Info:  &actions.OptionInfo{Label: "Borrow APY", Value: fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100)},
 		})
@@ -152,18 +138,12 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 			seenToken[collateralAssetAddress] = true
 		}
 
-		targetParams := types.MorphoTargetParams{
-			TargetId:     market.UniqueKey,
-			MarketParams: market.Params,
-		}
-		targetParamsString := targetParams.SerializeToCompactString()
-
 		tokenToMarketAndVaultOptions[collateralAssetAddress] = append(
 			tokenToMarketAndVaultOptions[collateralAssetAddress],
 			actions.Option{
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
-				Value: targetParamsString,
+				Value: market.UniqueKey,
 				Icon:  &actions.OptionIcon{Default: market.Metadata.Icon},
 				Info:  &actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
 			},
@@ -185,7 +165,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 		tokenToMarketAndVaultOptions[vaultAssetAddress] = append(tokenToMarketAndVaultOptions[vaultAssetAddress], actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
-			Value: fmt.Sprintf("%s:%s", vault.Address, "{}"),
+			Value: vault.Address,
 			Icon:  &actions.OptionIcon{Default: vault.Metadata.Image},
 		})
 	}

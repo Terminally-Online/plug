@@ -8,8 +8,6 @@ import (
 	"os"
 	"time"
 
-	"context"
-
 	"github.com/go-redis/redis/v8"
 )
 
@@ -41,9 +39,4 @@ func GenerateCacheKey(v any) (string, error) {
 		hash := sha256.Sum256(jsonBytes)
 		return hex.EncodeToString(hash[:32]), nil
 	}
-}
-
-// ClearCache flushes all keys in the cache database
-func ClearCache(ctx context.Context) error {
-	return CacheRedis.FlushDB(ctx).Err()
 }

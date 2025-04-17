@@ -113,6 +113,13 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 			...OPTIONS,
 		]
 
+		if (socket?.admin)
+			base.push({
+				label: "ADMIN",
+				description: "Manage administrative settings.",
+				icon: <LockIcon size={14} className="opacity-40" />
+			})
+
 		return base
 	}, [])
 

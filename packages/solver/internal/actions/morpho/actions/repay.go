@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/morpho_router"
 	"solver/internal/actions"
-	"solver/internal/actions/morpho/types"
+	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
@@ -31,11 +31,6 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	actionParams, err := types.DeserializeFromCompactString(lookup.Inputs.Target)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
-	}
-
 	var approvalUpdates []coil.Update
 	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -57,6 +52,11 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get market: %w", err)
+	}
+
 	var repayUpdates []coil.Update
 	repayAmount, repayUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -71,7 +71,7 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 	}
 
 	repayCalldata, err := RepayFunc.GetCalldata(
-		actionParams.MarketParams,
+		market.Params,
 		repayAmount,
 		big.NewInt(0),
 		lookup.From,

@@ -32,6 +32,7 @@ files
 				if (initcode == '') return
 
 				const initcodeHash = keccak256(`0x${initcode}`)
+
 				const init = JSON.stringify({
 					initcode,
 					initcodeHash: `${initcodeHash}`

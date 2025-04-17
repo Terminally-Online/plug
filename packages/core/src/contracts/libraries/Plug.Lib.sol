@@ -76,12 +76,4 @@ library PlugLib {
     error RewardsAlreadyClaimed();
     error InsufficientRewardBalance();
     error ZeroAmount();
-
-    /////////////////////////////////////////////////
-    //                   TICKET                    //
-    /////////////////////////////////////////////////
-
-    error AlreadyMinted();
-    error NonTransferableToken();
-    error CallerMustBeContract();
 }
