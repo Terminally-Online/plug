@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: BUSL-1.1
-
 pragma solidity ^0.8.26;
 
 /**
@@ -88,7 +87,14 @@ contract PlugMath {
      * @param exponent The exponent (must be non-negative)
      * @return result The base raised to the exponent
      */
-    function power(int256 base, uint256 exponent) public pure returns (int256 result) {
+    function power(
+        int256 base,
+        uint256 exponent
+    )
+        public
+        pure
+        returns (int256 result)
+    {
         // Handle edge cases
         if (exponent == 0) return 1;
         if (base == 0) return 0;

@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.26;
 
-import { Initializable } from "solady/utils/Initializable.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
 import { MerkleProofLib } from "solady/utils/MerkleProofLib.sol";
 import { SafeTransferLib } from "solady/utils/SafeTransferLib.sol";
+import { FixedPointMathLib } from "solady/utils/FixedPointMathLib.sol";
 
-import { PlugLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
+import { PlugLib } from "../libraries/Plug.Lib.sol";
 
 /**
  * @title Plug Rewards
@@ -18,24 +18,33 @@ import { PlugLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
  * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
-contract PlugRewards is Initializable, Ownable {
+contract PlugRewards is Ownable {
+    using FixedPointMathLib for uint256;
+
+    /// @dev The ERC20 token used for rewards
     address public immutable rewardToken;
 
+    /// @dev Tracks the merkle root for each reward period
     mapping(uint256 period => bytes32 merkleRoot) public periodMerkleRoots;
+
+    /// @dev Tracks the total amount allocated for each reward period
     mapping(uint256 period => uint256 amount) public periodTotalAmounts;
-    mapping(uint256 period => mapping(address user => bool claimed)) public rewardClaimed;
+
+    /// @dev Tracks whether an address has claimed rewards for a specific period
+    mapping(uint256 period => mapping(address user => bool claimed)) public
+        rewardClaimed;
 
     uint256 public currentPeriod;
 
     /**
      * @notice Initializes the rewards contract with an owner and reward token
+     * @param $owner The owner of the contract
+     * @param $token The ERC20 token used for rewards
      */
-    constructor() {
-        _initializeOwner(address(1));
-    }
+    constructor(address $owner, address $token) {
+        _initializeOwner($owner);
 
-    function initialize() public {
-        _initializeOwner(PlugAddressesLib.PLUG_OWNER_ADDRESS);
+        rewardToken = $token;
     }
 
     /**
@@ -45,7 +54,13 @@ contract PlugRewards is Initializable, Ownable {
      * @param $merkleRoot The merkle root of the reward distribution tree
      * @param $totalAmount Total amount of rewards allocated for this period
      */
-    function createRewardPeriod(bytes32 $merkleRoot, uint256 $totalAmount) external onlyOwner {
+    function createRewardPeriod(
+        bytes32 $merkleRoot,
+        uint256 $totalAmount
+    )
+        external
+        onlyOwner
+    {
         if ($totalAmount == 0) revert PlugLib.ZeroAmount();
 
         uint256 period = ++currentPeriod;
@@ -63,7 +78,9 @@ contract PlugRewards is Initializable, Ownable {
      */
     function fundRewards(uint256 $amount) external onlyOwner {
         if ($amount == 0) revert PlugLib.ZeroAmount();
-        SafeTransferLib.safeTransferFrom(rewardToken, msg.sender, address(this), $amount);
+        SafeTransferLib.safeTransferFrom(
+            rewardToken, msg.sender, address(this), $amount
+        );
     }
 
     /**

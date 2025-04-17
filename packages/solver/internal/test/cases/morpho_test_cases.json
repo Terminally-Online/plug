@@ -28,9 +28,9 @@
         {
           "protocol": "morpho",
           "action": "supply_collateral",
-          "amount": "0.1",
-          "token": "0x004626A008B1aCdC4c74ab51644093b155e59A23:18",
-          "target": "0x592517a07d8bad6e0467661583d3c15a1fee06b7b7506ac14dba250568f67b4c:eyJMb2FuVG9rZW4iOiIweDAwMDAyMDYzMjliOTdkYjM3OWQ1ZTFiZjU4NmJiZGI5NjljNjMyNzQiLCJDb2xsYXRlcmFsVG9rZW4iOiIweDAwNDYyNmEwMDhiMWFjZGM0Yzc0YWI1MTY0NDA5M2IxNTVlNTlhMjMiLCJPcmFjbGUiOiIweDhmZDdkMjExZjFkNjg3MGFmMmEzMjhlMjNhMGU1NjNiMDllMTNiMzkiLCJJcm0iOiIweDQ2NDE1OTk4NzY0YzI5YWIyYTI1Y2JlYTYyNTQxNDZkNTBkMjI2ODciLCJMbHR2Ijo4NjAwMDAwMDAwMDAwMDAwMDB9"
+          "amount": "0.001",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -42,7 +42,7 @@
     "expectOk": true
   },
   {
-    "name": "Morpho Withdraw Market",
+    "name": "Morpho Withdraw",
     "intent": {
       "chainId": 8453,
       "inputs": [
@@ -50,29 +50,8 @@
           "protocol": "morpho",
           "action": "withdraw",
           "amount": "0.001",
-          "token": "0x004626A008B1aCdC4c74ab51644093b155e59A23:18",
-          "target": "0xd1892032c68f94d2650238b363195c6c3c142ba80c0c71269d14f8ea42c0abdf:eyJMb2FuVG9rZW4iOiIweDgzMzU4OWZjZDZlZGI2ZTA4ZjRjN2MzMmQ0ZjcxYjU0YmRhMDI5MTMiLCJDb2xsYXRlcmFsVG9rZW4iOiIweDRlNzRkNGRiNmMwNzI2Y2NkZWQ0NjU2ZDBiY2U0NDg4NzZiYjRjN2EiLCJPcmFjbGUiOiIweGY2OTBkODY5YzYyNWRmNTI2ZGVmNTgxODc5MzEwOTUxMWM0NTFhNTUiLCJJcm0iOiIweDQ2NDE1OTk4NzY0YzI5YWIyYTI1Y2JlYTYyNTQxNDZkNTBkMjI2ODciLCJMbHR2Ijo4NjAwMDAwMDAwMDAwMDAwMDB9"
-        }
-      ],
-      "options": {
-        "isEOA": false,
-        "simulate": false,
-        "submit": false
-      }
-    },
-    "expectOk": true
-  },
-    {
-    "name": "Morpho Withdraw Vault",
-    "intent": {
-      "chainId": 8453,
-      "inputs": [
-        {
-          "protocol": "morpho",
-          "action": "withdraw",
-          "amount": "0.001",
-          "token": "0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42:6",
-          "target": "0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42:{}"
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -92,8 +71,8 @@
           "protocol": "morpho",
           "action": "borrow",
           "amount": "0.001",
-          "token": "0x004626A008B1aCdC4c74ab51644093b155e59A23:18",
-          "target": "0xd1892032c68f94d2650238b363195c6c3c142ba80c0c71269d14f8ea42c0abdf:eyJMb2FuVG9rZW4iOiIweDgzMzU4OWZjZDZlZGI2ZTA4ZjRjN2MzMmQ0ZjcxYjU0YmRhMDI5MTMiLCJDb2xsYXRlcmFsVG9rZW4iOiIweDRlNzRkNGRiNmMwNzI2Y2NkZWQ0NjU2ZDBiY2U0NDg4NzZiYjRjN2EiLCJPcmFjbGUiOiIweGY2OTBkODY5YzYyNWRmNTI2ZGVmNTgxODc5MzEwOTUxMWM0NTFhNTUiLCJJcm0iOiIweDQ2NDE1OTk4NzY0YzI5YWIyYTI1Y2JlYTYyNTQxNDZkNTBkMjI2ODciLCJMbHR2Ijo4NjAwMDAwMDAwMDAwMDAwMDB9"
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -113,8 +92,8 @@
           "protocol": "morpho",
           "action": "repay",
           "amount": "0.001",
-          "token": "0x004626A008B1aCdC4c74ab51644093b155e59A23:18",
-          "target": "0xd1892032c68f94d2650238b363195c6c3c142ba80c0c71269d14f8ea42c0abdf:eyJMb2FuVG9rZW4iOiIweDgzMzU4OWZjZDZlZGI2ZTA4ZjRjN2MzMmQ0ZjcxYjU0YmRhMDI5MTMiLCJDb2xsYXRlcmFsVG9rZW4iOiIweDRlNzRkNGRiNmMwNzI2Y2NkZWQ0NjU2ZDBiY2U0NDg4NzZiYjRjN2EiLCJPcmFjbGUiOiIweGY2OTBkODY5YzYyNWRmNTI2ZGVmNTgxODc5MzEwOTUxMWM0NTFhNTUiLCJJcm0iOiIweDQ2NDE1OTk4NzY0YzI5YWIyYTI1Y2JlYTYyNTQxNDZkNTBkMjI2ODciLCJMbHR2Ijo4NjAwMDAwMDAwMDAwMDAwMDB9"
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {

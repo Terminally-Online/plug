@@ -25,10 +25,7 @@ export const UpdateSchema = z.object({
 export type Update = z.infer<typeof UpdateSchema>
 
 export const PlugSchema = z.object({
-	selector: z.bigint(),
-	to: AddressSchema,
 	data: BytesSchema,
-	value: z.bigint(),
 	updates: z.array(UpdateSchema)
 })
 export type Plug = z.infer<typeof PlugSchema>

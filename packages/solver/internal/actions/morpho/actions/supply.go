@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/morpho_router"
 	"solver/internal/actions"
-	"solver/internal/actions/morpho/types"
+	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
@@ -31,11 +31,6 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	targetParams, err := types.DeserializeFromCompactString(lookup.Inputs.Target)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
-	}
-
 	var approvalUpdates []coil.Update
 	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -47,6 +42,11 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
 	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
@@ -71,7 +71,7 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 	}
 
 	supplyCollateralCalldata, err := SupplyCollateralFunc.GetCalldata(
-		targetParams.MarketParams,
+		market.Params,
 		supplyAmount,
 		lookup.From,
 		[]byte{},

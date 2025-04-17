@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/yearn_v3_gauge"
 	"solver/internal/actions"
+	"solver/internal/actions/yearn_v3/reads"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
@@ -15,7 +16,6 @@ import (
 type StakeRequest struct {
 	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
 	Token  string                           `json:"token"`
-	Gauge  string                           `json:"vault"`
 }
 
 var StakeFunc = actions.ActionOnchainFunctionResponse{
@@ -27,6 +27,14 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 	token, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	targetVault, err := reads.GetVault(lookup.ChainId, token.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %v", err)
+	}
+	if !targetVault.Staking.Available {
+		return nil, fmt.Errorf("staking not available for vault: %s", lookup.Inputs.Token)
 	}
 
 	var approvalUpdates []coil.Update
@@ -42,12 +50,9 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 		return nil, err
 	}
 	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
-		common.HexToAddress(lookup.Inputs.Gauge),
+		common.HexToAddress(targetVault.Staking.Address),
 		approvalAmount,
 	)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
 
 	var stakeUpdates []coil.Update
 	stakeAmount, stakeUpdates, err := actions.GetAndUpdate(
@@ -58,9 +63,6 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 		stakeUpdates,
 		lookup.PreviousActionDefinition,
 	)
-	if err != nil {
-		return nil, err
-	}
 
 	stakeCalldata, err := StakeFunc.GetCalldata(stakeAmount, lookup.From)
 	if err != nil {
@@ -72,7 +74,7 @@ func Stake(lookup *actions.SchemaLookup[StakeRequest]) ([]signature.Plug, error)
 		Data:    approveCalldata,
 		Updates: approvalUpdates,
 	}, {
-		To:      common.HexToAddress(lookup.Inputs.Gauge),
+		To:      common.HexToAddress(targetVault.Staking.Address),
 		Data:    stakeCalldata,
 		Updates: stakeUpdates,
 	}}, nil

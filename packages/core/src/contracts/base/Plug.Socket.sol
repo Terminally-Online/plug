@@ -2,16 +2,18 @@
 
 pragma solidity ^0.8.26;
 
-import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
-import { PlugTypes } from "../abstracts/Plug.Types.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
 import { Receiver } from "solady/accounts/Receiver.sol";
 import { UUPSUpgradeable } from "solady/utils/UUPSUpgradeable.sol";
 import { ReentrancyGuard } from "solady/utils/ReentrancyGuard.sol";
 import { LibBitmap } from "solady/utils/LibBitmap.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
 import { LibBytes } from "solady/utils/LibBytes.sol";
+
+import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
+import { PlugTypes } from "../abstracts/Plug.Types.sol";
+import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
+import { PlugCoilLib } from "../libraries/Plug.Coil.Lib.sol";
 
 /**
  * @title PlugSocket
@@ -29,8 +31,8 @@ contract PlugSocket is
 {
     using ECDSA for bytes32;
     using LibBitmap for LibBitmap.Bitmap;
+    using PlugCoilLib for bytes;
 
-    uint256 private constant WORD = 32;
     uint256 private constant TYPE_CALL = 0x00;
     uint256 private constant TYPE_DELEGATECALL = 0x01;
     uint256 private constant TYPE_CALL_WITH_VALUE = 0x02;
@@ -46,32 +48,62 @@ contract PlugSocket is
 
     /**
      * @notice Modifier to enforce the signer of the transaction.
-     * @dev Apply to this to functions that are designed to execute a bundle
-     *      of Plugs regardless of whether through a Router or or direct access.
      * @param $input The LivePlugs the definition of execution as well as the
      *               signature used to verify the execution permission.
      */
     modifier enforceSignature(PlugTypesLib.LivePlugs calldata $input) {
         if (_enforceSignature($input) == false) {
-            revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:signature-invalid");
+            revert PlugLib.PlugFailed(
+                type(uint8).max, PlugLib.PlugCoreSignatureInvalid
+            );
         }
         _;
     }
 
     /**
      * @notice Modifier to enforce the sender of the transaction.
-     * @dev Apply to this to functions that are designed to execute a bundle
-     *      of Plugs directly from the sender or a recursive call from the contract.
      */
     modifier enforceSender() {
         if (_enforceSender(msg.sender) == false) {
-            revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:sender-invalid");
+            revert PlugLib.PlugFailed(
+                type(uint8).max, PlugLib.PlugCoreSenderInvalid
+            );
         }
         _;
     }
 
     /**
-     * See {PlugSocketInterface-initialize}.
+     * @notice Modifier to enforce the validity of the solver proof provided.
+     * @param $proof The encoded data that defines the solver.
+     * @param $solver The address of the alleged solver running the transaction.
+     */
+    modifier enforceSolver(bytes calldata $proof, address $solver) {
+        if ($proof.length != 0) {
+            if ($proof.length < 0x40) {
+                revert PlugLib.PlugFailed(
+                    type(uint8).max, PlugLib.PlugCoreSolverMalformed
+                );
+            }
+            if (uint256(LibBytes.loadCalldata($proof, 0x00)) < block.timestamp)
+            {
+                revert PlugLib.PlugFailed(
+                    type(uint8).max, PlugLib.PlugCoreSolverExpired
+                );
+            }
+            if (
+                address(uint160(uint256(LibBytes.loadCalldata($proof, 0x20))))
+                    != $solver
+            ) {
+                revert PlugLib.PlugFailed(
+                    type(uint8).max, PlugLib.PlugCoreSolverInvalid
+                );
+            }
+        }
+        _;
+    }
+
+    /**
+     * @notice See {PlugSocketInterface-initialize}.
      */
     function initialize(address $owner, address $oneClicker) public {
         _initializeOwner($owner);
@@ -82,7 +114,7 @@ contract PlugSocket is
     }
 
     /**
-     * See {PlugSocketInterface-plug}.
+     * @notice See {PlugSocketInterface-plug}.
      */
     function plug(
         PlugTypesLib.LivePlugs calldata $livePlugs,
@@ -93,13 +125,12 @@ contract PlugSocket is
         virtual
         nonReentrant
         enforceSignature($livePlugs)
-        returns (PlugTypesLib.Result memory $results)
     {
-        $results = _plug($livePlugs.plugs, $solver);
+        _plug($livePlugs.plugs, $solver);
     }
 
     /**
-     * See {PlugSocketInterface-plug}.
+     * @notice See {PlugSocketInterface-plug}.
      */
     function plug(PlugTypesLib.Plugs calldata $plugs)
         external
@@ -107,9 +138,8 @@ contract PlugSocket is
         virtual
         nonReentrant
         enforceSender
-        returns (PlugTypesLib.Result memory $results)
     {
-        $results = _plug($plugs, address(0));
+        _plug($plugs, address(0));
     }
 
     /**
@@ -131,21 +161,28 @@ contract PlugSocket is
     }
 
     /**
-     * See { PlugSocket-name }
+     * @notice See { PlugSocket-name }
      */
     function name() public pure override returns (string memory $name) {
         $name = "Plug Socket";
     }
 
     /**
-     * See { PlugSocket-version }
+     * @notice See { PlugSocket-symbol }
+     */
+    function symbol() public pure override returns (string memory $symbol) {
+        $symbol = "PLUGS";
+    }
+
+    /**
+     * @notice See { PlugSocket-version }
      */
     function version() public pure override returns (string memory $version) {
         $version = "0.0.1";
     }
 
     /**
-     * See { PlugSocket-hash }
+     * @notice See { PlugSocket-hash }
      */
     function hash(PlugTypesLib.LivePlugs calldata $livePlugs)
         public
@@ -154,135 +191,6 @@ contract PlugSocket is
         returns (bytes32 $livePlugsHash)
     {
         return getLivePlugsHash($livePlugs);
-    }
-
-    /**
-     * @notice Execute a set of Plugs.
-     * @param $plugs The Plugs to execute containing the bundle and side effects.
-     * @param $solver Encoded data defining the Solver and compensation.
-     * @return $results The results of the execution.
-     */
-    function _plug(
-        PlugTypesLib.Plugs calldata $plugs,
-        address $solver
-    )
-        internal
-        returns (PlugTypesLib.Result memory $results)
-    {
-        if ($plugs.solver.length != 0) {
-            if ($plugs.solver.length < 0x40) {
-                revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-malformed");
-            }
-            if (uint256(LibBytes.loadCalldata($plugs.solver, 0x00)) < block.timestamp) {
-                revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-expired");
-            }
-            if (address(uint160(uint256(LibBytes.loadCalldata($plugs.solver, 0x20)))) != $solver) {
-                revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-invalid");
-            }
-        }
-
-        uint256 length = $plugs.plugs.length;
-        PlugTypesLib.Plug calldata currentPlug;
-        bytes memory data;
-
-        bool success;
-        bytes[] memory results = new bytes[](length);
-
-        uint256 updatesLength;
-        uint256 ii;
-
-        PlugTypesLib.Update calldata update;
-        PlugTypesLib.Slice calldata slice;
-        bytes memory coil;
-        bytes memory charge;
-        uint256 start;
-        uint256 dataOffset;
-        uint256 dataLength;
-        uint256 area;
-        uint256 arrayLength;
-
-        for (uint8 i; i < length; i++) {
-            currentPlug = $plugs.plugs[i];
-            data = currentPlug.data;
-            updatesLength = currentPlug.updates.length;
-
-            for (ii = 0; ii < updatesLength; ii++) {
-                update = currentPlug.updates[ii];
-                slice = update.slice;
-                coil = results[slice.index];
-
-                if (slice.typeId == 0) {
-                    if (slice.start + slice.length > coil.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:out-of-bounds");
-                    }
-                    charge = LibBytes.slice(coil, slice.start, slice.start + slice.length);
-                    if (update.start + slice.length > data.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
-                    }
-                    area = update.start + slice.length;
-                } else {
-                    start = update.start;
-
-                    assembly {
-                        dataOffset := mload(add(coil, add(start, WORD)))
-                    }
-                    if (dataOffset >= coil.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-offset");
-                    }
-
-                    assembly {
-                        dataLength := mload(add(coil, add(dataOffset, WORD)))
-                    }
-                    if (dataOffset + WORD + dataLength > coil.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-length");
-                    }
-
-                    if (slice.typeId == 1 || slice.typeId == 4) {
-                        assembly {
-                            arrayLength := mload(add(coil, add(dataOffset, WORD)))
-                        }
-                        if (arrayLength * 32 > dataLength) {
-                            revert PlugLib.PlugFailed(i, "PlugCore:array-length-invalid");
-                        }
-                    } else if (slice.typeId == 3) {
-                        if (dataLength < 32) {
-                            revert PlugLib.PlugFailed(i, "PlugCore:struct-too-small");
-                        }
-                    } else if (slice.typeId == 5 && dataLength < 64) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:key-value-too-small");
-                    }
-
-                    charge = LibBytes.slice(coil, dataOffset + WORD, dataOffset + WORD + dataLength);
-
-                    if (start + WORD + dataLength > data.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
-                    }
-                    area = start + WORD + dataLength;
-                }
-
-                // More efficient data concatenation using a single memory allocation strategy
-                // would be preferable, but we're constrained by LibBytes implementation
-                data = LibBytes.concat(
-                    LibBytes.concat(LibBytes.slice(data, 0, update.start), charge),
-                    LibBytes.slice(data, area, data.length)
-                );
-            }
-
-            // Execute the appropriate call type based on selector
-            if (currentPlug.selector == TYPE_DELEGATECALL) {
-                (success, results[i]) = currentPlug.to.delegatecall(data);
-            } else if (currentPlug.selector == TYPE_CALL) {
-                (success, results[i]) = currentPlug.to.call(data);
-            } else if (currentPlug.selector == TYPE_CALL_WITH_VALUE) {
-                (success, results[i]) = currentPlug.to.call{ value: currentPlug.value }(data);
-            } else if (currentPlug.selector == TYPE_STATICCALL) {
-                (success, results[i]) = currentPlug.to.staticcall(data);
-            }
-
-            if (!success) revert PlugLib.PlugFailed(i, "PlugCore:plug-failed");
-        }
-
-        $results = PlugTypesLib.Result({ index: type(uint8).max, error: "" });
     }
 
     /**
@@ -302,7 +210,9 @@ contract PlugSocket is
         address signer = getPlugsDigest($input.plugs).recover($input.signature);
         uint256 nonce = uint256(uint96(bytes12($input.plugs.salt)));
         if (nonces.get(nonce) == true) {
-            revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:nonce-invalid");
+            revert PlugLib.PlugFailed(
+                type(uint8).max, PlugLib.PlugCoreNonceInvalid
+            );
         }
         nonces.set(nonce);
         $allowed = oneClickersToAllowed[signer] || owner() == signer;
@@ -316,19 +226,77 @@ contract PlugSocket is
      * @param $sender The sender of the transaction.
      * @return $allowed True if the sender is allowed, false otherwise.
      */
-    function _enforceSender(address $sender) internal view virtual returns (bool $allowed) {
+    function _enforceSender(address $sender)
+        internal
+        view
+        virtual
+        returns (bool $allowed)
+    {
         $allowed = $sender == owner() || $sender == address(this);
     }
 
     /**
-     * See { PlugTrading._guardInitializeOwnership }
+     * @notice Submit the next transaction with the appropriate call-type that
+     *         will result in the proper side effects and responses.
+     * @param $plug The transaction data that has been post update application.
+     * @return $success The results of the execution.
+     * @return $result The results of the execution.
      */
-    function _guardInitializeOwnership() internal pure virtual returns (bool $guard) {
+    function _call(bytes memory $plug)
+        internal
+        returns (bool $success, bytes memory $result)
+    {
+        (uint8 selector, address to, uint256 value, bytes memory data) =
+            $plug.decode();
+
+        if (selector == TYPE_DELEGATECALL) {
+            ($success, $result) = to.delegatecall(data);
+        } else if (selector == TYPE_CALL) {
+            ($success, $result) = to.call(data);
+        } else if (selector == TYPE_CALL_WITH_VALUE) {
+            ($success, $result) = to.call{ value: value }(data);
+        } else if (selector == TYPE_STATICCALL) {
+            ($success, $result) = to.staticcall(data);
+        }
+    }
+
+    /**
+     * @notice Execute a set of Plugs.
+     * @param $plugs The Plugs to execute containing the bundle and side effects.
+     * @param $solver Encoded data defining the Solver and compensation.
+     */
+    function _plug(
+        PlugTypesLib.Plugs calldata $plugs,
+        address $solver
+    )
+        internal
+        enforceSolver($plugs.solver, $solver)
+    {
+        bool success;
+        bytes[] memory state = new bytes[]($plugs.plugs.length * 2);
+        for (uint256 i; i < $plugs.plugs.length; i++) {
+            uint256 input = i * 2;
+            state[input] = $plugs.plugs[i].data;
+            for (uint256 ii; ii < $plugs.plugs[i].updates.length; ii++) {
+                (state[input],) = state[$plugs.plugs[i].updates[ii].slice.index]
+                    .transform(i, $plugs.plugs[i].updates[ii], state[input]);
+            }
+            (success, state[input + 1]) = _call(state[input]);
+            if (!success) {
+                revert PlugLib.PlugFailed(i, PlugLib.PlugCorePlugFailed);
+            }
+        }
+    }
+
+    /**
+     * @notice See { Ownable._guardInitializeOwner }
+     */
+    function _guardInitializeOwnership() internal pure returns (bool $guard) {
         $guard = true;
     }
 
     /**
-     * See { UUPSUpgradeable._authorizeUpgrade }
+     * @notice See { UUPSUpgradeable._authorizeUpgrade }
      */
     function _authorizeUpgrade(address) internal virtual override onlyOwner { }
 }

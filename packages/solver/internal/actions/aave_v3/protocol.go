@@ -28,7 +28,7 @@ func New() actions.Protocol {
 				aave_options.BorrowOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
-				&aave_actions.BorrowFunc,
+				actions.IsEmptyOnchainFunc,
 			),
 			actions.ActionDeposit: actions.NewActionDefinition(
 				"Deposit {0<amount:float>} {1<token:address:uint8>}",
@@ -36,7 +36,7 @@ func New() actions.Protocol {
 				aave_options.CollateralOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
-				&aave_actions.DepositFunc,
+				actions.IsEmptyOnchainFunc,
 			),
 			actions.ReadHealthFactor: actions.NewActionDefinition(
 				"Get health factor",
@@ -52,7 +52,7 @@ func New() actions.Protocol {
 				aave_options.BorrowOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
-				&aave_actions.RepayFunc,
+				actions.IsEmptyOnchainFunc,
 			),
 			actions.ActionWithdraw: actions.NewActionDefinition(
 				"Withdraw {0<amount:float>} {1<token:address:uint8>}",
@@ -60,7 +60,7 @@ func New() actions.Protocol {
 				aave_options.CollateralOptions,
 				actions.IsStatic,
 				actions.IsGlobal,
-				&aave_actions.WithdrawFunc,
+				actions.IsEmptyOnchainFunc,
 			),
 		},
 	})

@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/morpho_router"
 	"solver/internal/actions"
-	"solver/internal/actions/morpho/types"
+	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
@@ -31,11 +31,6 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	actionParams, err := types.DeserializeFromCompactString(lookup.Inputs.Target)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
-	}
-
 	var amountUpdates []coil.Update
 	amount, amountUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
@@ -49,8 +44,13 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, err
 	}
 
+	market, err := reads.GetMarket(lookup.Inputs.Target, lookup.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get market: %w", err)
+	}
+
 	borrowCalldata, err := BorrowFunc.GetCalldata(
-		actionParams.MarketParams,
+		market.Params,
 		amount,
 		big.NewInt(0),
 		lookup.From,

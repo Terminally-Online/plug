@@ -10,7 +10,6 @@ import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
-import { PLACEHOLDER_POSITIONS } from "@/lib/constants/placeholder/positions"
 
 export const SocketPositionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -28,11 +27,8 @@ export const SocketPositionList: FC<
 	const [search, handleSearch] = useState("")
 
 	const visibilePositions = useMemo(() => {
-		if (search !== "" && protocols.length === 0) 
+		if (isAnonymous || protocols === undefined || (search === "" && protocols.length === 0))
 			return Array(5).fill(undefined)
-
-		if (isAnonymous || protocols === undefined || protocols.length == 0)
-			return PLACEHOLDER_POSITIONS
 
 		const filteredProtocols = protocols.filter(
 			protocol =>

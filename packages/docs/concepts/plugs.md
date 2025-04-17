@@ -1,6 +1,6 @@
 # Plugs
 
-<span style="color: rgba(0,0,0,0.6)">When you combine [constraints](/concepts/atoms/constraints) and [actions](/concepts/atoms/actions), you have a Plug. Plugs are intents that can be used to execute transactions across multiple protocols and blockchains in one go.</span>
+<span style="color: rgba(0,0,0,0.6)">When you combine [constraints](/concepts/constraints) and [actions](/concepts/actions), you have a Plug. Plugs are intents that can be used to execute transactions across multiple protocols and blockchains in one go.</span>
 
 ## Discovering a Plug
 
