@@ -1,6 +1,6 @@
 # Actions
 
-<span style="color: rgba(0,0,0,0.6)">By combining comprehensive [constraints](/concepts/constraints) with targeted [actions](/concepts/actions), Plug empowers users to have full control over both the execution process and its results, significantly optimizing the transaction experience across multiple blockchain environments.</span>
+<span style="color: rgba(0,0,0,0.6)">By combining comprehensive [constraints](/concepts/atoms/constraints) with targeted [actions](/concepts/atoms/actions), Plug empowers users to have full control over both the execution process and its results, significantly optimizing the transaction experience across multiple blockchain environments.</span>
 
 ## Types of Actions
 

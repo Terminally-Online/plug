@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"solver/internal/api/middleware"
 	"solver/internal/api/routes/api_key"
+	"solver/internal/api/routes/cache"
 	"solver/internal/api/routes/health"
 	"solver/internal/api/routes/intent"
 	"solver/internal/api/routes/kill"
@@ -35,6 +36,8 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 
 	admin.Handle("/solver/kill", kill.Get(s)).Methods(http.MethodGet)
 	admin.Handle("/solver/kill", kill.Post(s)).Methods(http.MethodPost)
+
+	admin.Handle("/solver/cache/clear", cache.Clear()).Methods(http.MethodPost)
 
 	protected := r.PathPrefix("").Subrouter()
 	protected.Use(m.ApiKey)

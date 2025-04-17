@@ -8,11 +8,13 @@ import { PlugToken } from "./Plug.Token.sol";
 import { PredeployAddresses } from "op/libraries/PredeployAddresses.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
 
+import { PlugLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
+
 contract PlugTokenTest is Test {
     PlugToken internal token;
     address internal owner;
     uint32 internal unlockTime;
-    uint256 internal constant TOTAL_SUPPLY = 1_000_000 ether;
+    uint256 internal constant TOTAL_SUPPLY = 9_000_000 ether;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event CrosschainMint(
@@ -20,10 +22,11 @@ contract PlugTokenTest is Test {
     );
 
     function setUp() public virtual {
-        owner = _randomNonZeroAddress();
-        unlockTime = uint32(block.timestamp + 1 days);
+        owner = PlugAddressesLib.PLUG_OWNER_ADDRESS;
+        unlockTime = type(uint32).max;
+
         token = new PlugToken();
-        token.initialize(unlockTime, owner, TOTAL_SUPPLY);
+        token.initialize();
     }
 
     function test_name() public {
@@ -73,7 +76,11 @@ contract PlugTokenTest is Test {
         uint256 amount = 100 ether;
         vm.prank(owner);
         token.transfer(address(this), amount);
-        vm.warp(unlockTime + 1);
+
+        uint32 newUnlockTime = uint32(block.timestamp - 1);
+        vm.prank(owner);
+        token.setTransferUnlock(newUnlockTime);
+
         vm.expectEmit(true, true, false, true);
         emit Transfer(address(this), recipient, amount);
         token.transfer(recipient, amount);
@@ -96,7 +103,7 @@ contract PlugTokenTest is Test {
 
     function testRevert_initialize_Twice() public {
         vm.expectRevert();
-        token.initialize(unlockTime, owner, TOTAL_SUPPLY);
+        token.initialize();
     }
 
     function test_constructor() public {
@@ -146,7 +153,11 @@ contract PlugTokenTest is Test {
         uint256 amount = 100 ether;
         vm.prank(owner);
         token.transfer(address(this), amount);
-        vm.warp(unlockTime + 1);
+
+        uint32 newUnlockTime = uint32(block.timestamp - 1);
+        vm.prank(owner);
+        token.setTransferUnlock(newUnlockTime);
+
         vm.expectEmit(true, true, false, true);
         emit Transfer(address(this), recipient, amount);
         superchainToken.transfer(recipient, amount);
