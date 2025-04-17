@@ -23,7 +23,10 @@ contract PlugRewards is Initializable, Ownable {
 
     mapping(uint256 period => bytes32 merkleRoot) public periodMerkleRoots;
     mapping(uint256 period => uint256 amount) public periodTotalAmounts;
-    mapping(uint256 period => mapping(address user => bool claimed)) public rewardClaimed;
+
+    /// @dev Tracks whether an address has claimed rewards for a specific period
+    mapping(uint256 period => mapping(address user => bool claimed)) public
+        rewardClaimed;
 
     uint256 public currentPeriod;
 
@@ -45,7 +48,13 @@ contract PlugRewards is Initializable, Ownable {
      * @param $merkleRoot The merkle root of the reward distribution tree
      * @param $totalAmount Total amount of rewards allocated for this period
      */
-    function createRewardPeriod(bytes32 $merkleRoot, uint256 $totalAmount) external onlyOwner {
+    function createRewardPeriod(
+        bytes32 $merkleRoot,
+        uint256 $totalAmount
+    )
+        external
+        onlyOwner
+    {
         if ($totalAmount == 0) revert PlugLib.ZeroAmount();
 
         uint256 period = ++currentPeriod;
@@ -63,7 +72,9 @@ contract PlugRewards is Initializable, Ownable {
      */
     function fundRewards(uint256 $amount) external onlyOwner {
         if ($amount == 0) revert PlugLib.ZeroAmount();
-        SafeTransferLib.safeTransferFrom(rewardToken, msg.sender, address(this), $amount);
+        SafeTransferLib.safeTransferFrom(
+            rewardToken, msg.sender, address(this), $amount
+        );
     }
 
     /**

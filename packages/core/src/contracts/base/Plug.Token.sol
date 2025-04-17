@@ -62,7 +62,13 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
      * @param $sender The sender to set the allowed status for.
      * @param $allowed The allowed status to set for the sender.
      */
-    function setSenderAllowed(address $sender, bool $allowed) external onlyOwner {
+    function setSenderAllowed(
+        address $sender,
+        bool $allowed
+    )
+        external
+        onlyOwner
+    {
         senderToAllowed[$sender] = $allowed;
     }
 
@@ -83,7 +89,15 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
     /**
      * @notice See {ERC20-_beforeTokenTransfer}.
      */
-    function _beforeTokenTransfer(address $from, address $to, uint256) internal virtual override {
+    function _beforeTokenTransfer(
+        address $from,
+        address $to,
+        uint256
+    )
+        internal
+        virtual
+        override
+    {
         /// @dev If the bridge is engaging in an operation, we must check the bridge unlock
         //      first the following branch is determined by the variable allowance here.
         if (msg.sender == PredeployAddresses.SUPERCHAIN_TOKEN_BRIDGE) {
@@ -97,7 +111,10 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
 
         /// @dev If the transfer is not yet unlocked and the sender is not allowed,
         //      or the sender is not the owner, revert.
-        if (block.timestamp < transferUnlock && !senderToAllowed[$from] && $from != owner()) {
+        if (
+            block.timestamp < transferUnlock && !senderToAllowed[$from]
+                && $from != owner()
+        ) {
             revert("PlugToken:transfer-locked");
         }
     }

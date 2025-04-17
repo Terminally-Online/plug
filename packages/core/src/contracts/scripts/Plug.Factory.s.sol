@@ -18,7 +18,8 @@ contract PlugFactoryDeployment is Script {
 
         if (PlugEtcherLib.PLUG_FACTORY_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
+                PlugEtcherLib.PLUG_FACTORY_SALT,
+                PlugEtcherLib.PLUG_FACTORY_INITCODE
             );
         }
 

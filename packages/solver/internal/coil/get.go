@@ -73,6 +73,11 @@ func GetCoilSlices(abi *abi.ABI, functionName string, outputName *string, output
 // GetInputPosition analyzes a function's inputs and returns the position where a specific
 // input parameter should be placed in the transaction data.
 //
+// The position calculation automatically accounts for the function selector that
+// will always come from the ABI that is defined inside the action function. We DO NOT
+// slide the position over to account for the encoding that takes place when building the
+// final transaction data.
+//
 // Parameters:
 //   - abi: The parsed ABI containing the function definition
 //   - functionName: The name of the function whose inputs we want to analyze
@@ -82,15 +87,35 @@ func GetCoilSlices(abi *abi.ABI, functionName string, outputName *string, output
 // Returns:
 //   - *big.Int: The starting position for the specified input
 //   - error: Any error encountered during analysis
-func GetCoilPosition(abi *abi.ABI, functionName string, inputName *string, inputIndex *string) (*big.Int, error) {
+func GetABICoilPosition(abi *abi.ABI, functionName string, inputName *string, inputIndex *string) (*big.Int, error) {
 	fn, exists := abi.Methods[functionName]
 	if !exists {
 		return nil, fmt.Errorf("function %s not found in ABI", functionName)
 	}
 
-	var currentPos uint = 4 // Start at 4 to account for function selector
+	var currentPos uint = 4
 
 	for i, input := range fn.Inputs {
+		if (inputName != nil && input.Name == *inputName) ||
+			(inputIndex != nil && fmt.Sprint(i) == *inputIndex) {
+			return big.NewInt(int64(currentPos)), nil
+		}
+
+		typeInfo := GetTypeInfo(input.Type)
+		currentPos += typeInfo.Length
+	}
+
+	return nil, fmt.Errorf("input parameter not found")
+}
+
+func GetArgumentsCoilPosition(arguments *abi.Arguments, inputName *string, inputIndex *string) (*big.Int, error) {
+	if arguments == nil {
+		return nil, fmt.Errorf("arguments cannot be nil")
+	}
+
+	var currentPos uint = 0 // No function selector (4 bytes) for Arguments
+
+	for i, input := range *arguments {
 		if (inputName != nil && input.Name == *inputName) ||
 			(inputIndex != nil && fmt.Sprint(i) == *inputIndex) {
 			return big.NewInt(int64(currentPos)), nil
