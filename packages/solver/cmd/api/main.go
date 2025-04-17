@@ -33,7 +33,7 @@ func main() {
 	useCache := flag.Bool("cache", true, "Enable or disable caching (default: true)")
 	flag.Parse()
 	if !*useCache {
-		cache.Period = 1 * time.Nanosecond
+		cache.Period = 1 * time.Millisecond
 		cache.UseStale = false
 		cache.StaleBuffer = 0
 	} else {
