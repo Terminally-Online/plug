@@ -7,7 +7,6 @@ import (
 	"solver/internal/bindings/references"
 )
 
-// TODO MASON: the function signature of most of these actions differ, meaning we can't yet define a return type without wrappers
 var (
 	ActionTransferSentence = "Transfer {0<amount:float>} {1<token:address:uint256:uint256>} to {2<recipient:string>}"
 	ActionSwapSentence     = "Swap {0<amount:float>} {1<token:address:uint256:uint256>} for {2<tokenIn:address:uint256:uint256>}"
