@@ -18,7 +18,8 @@ contract PlugDatabaseDeployment is Script {
 
         if (PlugEtcherLib.PLUG_DATABASE_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_DATABASE_SALT, PlugEtcherLib.PLUG_DATABASE_INITCODE
+                PlugEtcherLib.PLUG_DATABASE_SALT,
+                PlugEtcherLib.PLUG_DATABASE_INITCODE
             );
         }
 

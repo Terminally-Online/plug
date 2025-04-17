@@ -61,8 +61,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@terminallyonline/plug-core':
-        specifier: ^0.4.3
-        version: 0.4.3(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
+        specifier: ^0.5.0
+        version: 0.5.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
       '@trpc/client':
         specifier: 11.0.0-rc.819
         version: 11.0.0-rc.819(@trpc/server@11.0.0-rc.819(typescript@5.7.3))(typescript@5.7.3)
@@ -2919,8 +2919,8 @@ packages:
   '@terminallyonline/cord@0.3.2':
     resolution: {integrity: sha512-pKKBtInlhIhVjvYrL+VlAdI58L3lHU290XYT6+p4rOO+8bK1UYGuQyY+YkQ9tF+8CBX1WVT/1WZSU1Ht1yQI7w==}
 
-  '@terminallyonline/plug-core@0.4.3':
-    resolution: {integrity: sha512-KaTTaQLuIWhhDsFsIgJZVt+n5whQ8dvY5BN5L6BiZZ8AQ5WEJDc1ov4Qk+8nERPe24XlUAiHXOoLJTP6Oq5XJw==}
+  '@terminallyonline/plug-core@0.5.0':
+    resolution: {integrity: sha512-ZxsexadrZfpEExwAuAm1zl0EXA0lq2DX0Xi2P6IBd7pdd4VGScBtLoBR/CPxhuC7fBc03+sODZU/98XvW6h3Nw==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -11086,7 +11086,7 @@ snapshots:
 
   '@terminallyonline/cord@0.3.2': {}
 
-  '@terminallyonline/plug-core@0.4.3(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
+  '@terminallyonline/plug-core@0.5.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
     dependencies:
       abitype: 1.0.8(typescript@5.7.3)(zod@3.24.1)
       commander: 13.1.0
