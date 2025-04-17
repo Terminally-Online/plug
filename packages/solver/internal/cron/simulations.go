@@ -41,13 +41,17 @@ func SubmitToAVS(solution *solver.Solution) error {
 	return nil
 }
 
-func SubmitToMempool(solution *solver.Solution) (error) {
+func SubmitToMempool(solution *solver.Solution) error {
 	return nil
 }
 
 func Submit(solution *solver.Solution, err error) error {
 	if err != nil {
 		return err
+	}
+
+	if !config.UseExecution {
+		return nil
 	}
 
 	if config.UseAVS {
@@ -87,12 +91,10 @@ func Simulations(s *solver.Solver) {
 
 		if intent.Locked {
 			if err := Submit(s.RebuildSolutionFromModels(&intent)); err != nil {
-				log.Printf("failed to submit intent execution task to avs")
+				log.Printf("failed to submit intent execution")
 			}
 		} else if err := Submit(s.Solve(&intent, true, true)); err != nil {
 			log.Printf("failed to submit intent execution")
-		} else {
-			log.Printf("failed to simulate intent")
 		}
 	}
 }
