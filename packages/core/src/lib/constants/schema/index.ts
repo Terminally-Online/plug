@@ -19,7 +19,10 @@ export const LIVE_PLUGS_TYPES = {
 		{ name: 'slice', type: 'Slice' }
 	],
 	Plug: [
+		{ name: 'selector', type: 'uint8' },
+		{ name: 'to', type: 'address' },
 		{ name: 'data', type: 'bytes' },
+		{ name: 'value', type: 'uint256' },
 		{ name: 'updates', type: 'Update[]' }
 	],
 	Plugs: [

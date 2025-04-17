@@ -29,7 +29,7 @@ func New() actions.Protocol {
 					euler_options.BorrowTokenToVaultOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&euler_actions.BorrowFunc,
 				),
 				actions.ActionDepositCollateral: actions.NewActionDefinition(
 					"Deposit collateral {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}",
@@ -37,7 +37,7 @@ func New() actions.Protocol {
 					euler_options.SupplyTokenToVaultToPositionsOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&euler_actions.DepositCollateralFunc,
 				),
 				actions.ActionEarn: actions.NewActionDefinition(
 					"Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}",
@@ -45,7 +45,7 @@ func New() actions.Protocol {
 					euler_options.SupplyTokenToVaultOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&euler_actions.DepositFunc,
 				),
 				actions.ReadHealthFactor: actions.NewActionDefinition(
 					"Get health factor for {0<sub-account:uint8>}",
@@ -61,7 +61,7 @@ func New() actions.Protocol {
 					euler_options.BorrowTokenToVaultOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&euler_actions.RepayFunc,
 				),
 				actions.ReadTimeToLiquidiation: actions.NewActionDefinition(
 					"Get time to liquidation for {0<sub-account:uint8>} in minutes",
@@ -77,7 +77,7 @@ func New() actions.Protocol {
 					euler_options.SupplyTokenToVaultOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&euler_actions.WithdrawFunc,
 				),
 				actions.ActionWithdrawCollateral: actions.NewActionDefinition(
 					"Withdraw collateral {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>} using {3<sub-account:uint8>}",
@@ -85,7 +85,7 @@ func New() actions.Protocol {
 					euler_options.SupplyTokenToVaultToPositionsOptions,
 					actions.IsUser,
 					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
+					&euler_actions.WithdrawFunc,
 				),
 			},
 		},

@@ -34,8 +34,5 @@ interface PlugFactoryInterface {
      * @dev This is used to mine vanity addresses.
      * @return $initCodeHash The init code hash of the vaults.
      */
-    function initCodeHash(address $implementation)
-        external
-        view
-        returns (bytes32 $initCodeHash);
+    function initCodeHash(address $implementation) external view returns (bytes32 $initCodeHash);
 }

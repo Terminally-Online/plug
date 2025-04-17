@@ -3,9 +3,11 @@
 pragma solidity ^0.8.26;
 
 import { SuperchainERC20 } from "op/SuperchainERC20.sol";
+import { PredeployAddresses } from "op/libraries/PredeployAddresses.sol";
 import { Initializable } from "solady/utils/Initializable.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
-import { PredeployAddresses } from "op/libraries/PredeployAddresses.sol";
+
+import { PlugAddressesLib } from "../libraries/Plug.Lib.sol";
 
 /**
  * @title PlugToken
@@ -14,8 +16,9 @@ import { PredeployAddresses } from "op/libraries/PredeployAddresses.sol";
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 contract PlugToken is Initializable, Ownable, SuperchainERC20 {
-    uint32 public transferUnlock;
-    uint32 public bridgeUnlock;
+    uint256 public constant TOTAL_SUPPLY = 9_000_000 ether;
+    uint32 public transferUnlock = type(uint32).max;
+    uint32 public bridgeUnlock = type(uint32).max;
 
     // @dev Mapping tracking which addresses have been given permission to transfer
     //      tokens prior to unlock. This is to be used by things such as onchain
@@ -32,23 +35,10 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
      * @dev The complete total supply is instantly minted to the treasury for safe
      *      holding, distribution, and start-to-finish audit trails to verify the
      *      the supply distribution every step along the way.
-     * @param $unlock The unlock time for both transfers and bridge operations.
-     * @param $owner The owner of the token.
-     * @param $totalSupply The total supply of the token.
      */
-    function initialize(
-        uint32 $unlock,
-        address $owner,
-        uint256 $totalSupply
-    )
-        public
-        initializer
-    {
-        transferUnlock = $unlock;
-        bridgeUnlock = $unlock;
-
-        _initializeOwner($owner);
-        _mint($owner, $totalSupply);
+    function initialize() public initializer {
+        _initializeOwner(PlugAddressesLib.PLUG_OWNER_ADDRESS);
+        _mint(PlugAddressesLib.PLUG_OWNER_ADDRESS, TOTAL_SUPPLY);
     }
 
     /**
@@ -72,13 +62,7 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
      * @param $sender The sender to set the allowed status for.
      * @param $allowed The allowed status to set for the sender.
      */
-    function setSenderAllowed(
-        address $sender,
-        bool $allowed
-    )
-        external
-        onlyOwner
-    {
+    function setSenderAllowed(address $sender, bool $allowed) external onlyOwner {
         senderToAllowed[$sender] = $allowed;
     }
 
@@ -99,15 +83,7 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
     /**
      * @notice See {ERC20-_beforeTokenTransfer}.
      */
-    function _beforeTokenTransfer(
-        address $from,
-        address $to,
-        uint256
-    )
-        internal
-        virtual
-        override
-    {
+    function _beforeTokenTransfer(address $from, address $to, uint256) internal virtual override {
         /// @dev If the bridge is engaging in an operation, we must check the bridge unlock
         //      first the following branch is determined by the variable allowance here.
         if (msg.sender == PredeployAddresses.SUPERCHAIN_TOKEN_BRIDGE) {
@@ -121,10 +97,7 @@ contract PlugToken is Initializable, Ownable, SuperchainERC20 {
 
         /// @dev If the transfer is not yet unlocked and the sender is not allowed,
         //      or the sender is not the owner, revert.
-        if (
-            block.timestamp < transferUnlock && !senderToAllowed[$from]
-                && $from != owner()
-        ) {
+        if (block.timestamp < transferUnlock && !senderToAllowed[$from] && $from != owner()) {
             revert("PlugToken:transfer-locked");
         }
     }

@@ -5,9 +5,7 @@ import (
 )
 
 var (
-	Period      = 5 * time.Minute
-	UseStale    = false
-	StaleBuffer = 10 * time.Minute
+	CachePeriod = 5 * time.Minute
 )
 
 type CacheOptions struct {
@@ -20,9 +18,9 @@ type CacheOption func(*CacheOptions)
 
 func defaultCacheOptions() *CacheOptions {
 	return &CacheOptions{
-		duration:    Period,
-		useStale:    UseStale,
-		staleBuffer: StaleBuffer,
+		duration:    CachePeriod,
+		useStale:    false,
+		staleBuffer: 10 * time.Minute,
 	}
 }
 
@@ -47,3 +45,4 @@ func WithStaleBuffer(buffer time.Duration) CacheOption {
 		o.staleBuffer = buffer
 	}
 }
+

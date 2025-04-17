@@ -48,9 +48,11 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		enabled
 	})
 
-	useResponse(() => api.plugs.all.useQuery({ target: "mine" }, { enabled }), {
-		onSuccess: data => setPlugs(prev => [...prev, ...data.filter(d => !prev.some(p => p.id === d.id))])
-	})
+	useResponse(() => api.plugs.all.useQuery(
+		{ target: "mine" },
+		{ enabled, refetchOnWindowFocus: true }),
+		{ onSuccess: setPlugs }
+	)
 
 	usePlugSubscriptions({ enabled })
 

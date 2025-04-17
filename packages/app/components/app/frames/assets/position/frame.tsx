@@ -48,6 +48,7 @@ export const PositionFrame: FC<{
 
 	const keys = useMemo(() => {
 		return positions
+			.filter(position => Boolean(position.fungible))
 			.map(position => {
 				const contract =
 					position.fungible.implementations.find(implementation => implementation.chain === position.chain)
@@ -109,6 +110,8 @@ export const PositionFrame: FC<{
 
 							<div className="flex flex-col gap-2">
 								{groupedPositions[type].map((position, positionIndex) => {
+									if (!position.fungible) return null
+
 									const implementation = position.fungible.implementations.find(
 										implementation => implementation.chain === position.chain
 									)

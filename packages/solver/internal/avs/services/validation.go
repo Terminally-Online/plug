@@ -67,7 +67,7 @@ func Validate(proofOfTask string, data string) (bool, error) {
 			continue
 		}
 
-		if common.HexToHash(data) == plugResults.PlugsHash {
+		if common.HexToHash(data) == plugResults.LivePlugsHash {
 			found = true
 			break
 		}

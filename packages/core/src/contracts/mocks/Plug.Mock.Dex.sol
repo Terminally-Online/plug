@@ -21,17 +21,13 @@ contract PlugMockDex {
     );
 
     /// @dev Event emitted when the swap rate is configured
-    event SwapRateConfigured(
-        address indexed tokenIn, address indexed tokenOut, uint256 rate
-    );
+    event SwapRateConfigured(address indexed tokenIn, address indexed tokenOut, uint256 rate);
 
     /// @dev Mapping to store swap rates between token pairs
-    mapping(address tokenIn => mapping(address tokenOut => uint256 rate)) public
-        swapRates;
+    mapping(address tokenIn => mapping(address tokenOut => uint256 rate)) public swapRates;
 
     /// @dev Mapping to store fixed amount returns regardless of input
-    mapping(address tokenIn => mapping(address tokenOut => uint256 fixedReturn))
-        public fixedReturns;
+    mapping(address tokenIn => mapping(address tokenOut => uint256 fixedReturn)) public fixedReturns;
 
     /**
      * @notice Configure the swap rate between two tokens
@@ -39,13 +35,7 @@ contract PlugMockDex {
      * @param tokenOut The output token address
      * @param rate The rate multiplied by 1e18 (e.g., 2e18 means 2 tokenOut per 1 tokenIn)
      */
-    function setSwapRate(
-        address tokenIn,
-        address tokenOut,
-        uint256 rate
-    )
-        external
-    {
+    function setSwapRate(address tokenIn, address tokenOut, uint256 rate) external {
         swapRates[tokenIn][tokenOut] = rate;
         emit SwapRateConfigured(tokenIn, tokenOut, rate);
     }
@@ -56,13 +46,7 @@ contract PlugMockDex {
      * @param tokenOut The output token address
      * @param amount The fixed amount to return
      */
-    function setFixedReturn(
-        address tokenIn,
-        address tokenOut,
-        uint256 amount
-    )
-        external
-    {
+    function setFixedReturn(address tokenIn, address tokenOut, uint256 amount) external {
         fixedReturns[tokenIn][tokenOut] = amount;
     }
 
@@ -90,9 +74,7 @@ contract PlugMockDex {
             // Calculate the amount out based on the configured rate
             uint256 rate = swapRates[tokenIn][tokenOut];
             if (rate == 0) {
-                revert PlugLib.PlugFailed(
-                    type(uint8).max, "PlugMockDex: rate not set"
-                );
+                revert PlugLib.PlugFailed(type(uint8).max, "PlugMockDex: rate not set");
             }
 
             // Calculate amountOut: amountIn * rate / 1e18
@@ -101,15 +83,12 @@ contract PlugMockDex {
 
         // Check slippage
         if (amountOut < minAmountOut) {
-            revert PlugLib.PlugFailed(
-                type(uint8).max, "PlugMockDex: insufficient output amount"
-            );
+            revert PlugLib.PlugFailed(type(uint8).max, "PlugMockDex: insufficient output amount");
         }
 
         // Transfer tokens (in a real DEX but simulated here)
         if (tokenIn != address(0)) {
-            try ERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn)
-            {
+            try ERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn) {
                 // Successfully transferred tokenIn
             } catch {
                 // If we can't transfer, we'll just simulate the swap for testing
@@ -152,9 +131,7 @@ contract PlugMockDex {
         // Calculate the amount out based on the configured rate
         uint256 rate = swapRates[tokenIn][tokenOut];
         if (rate == 0) {
-            revert PlugLib.PlugFailed(
-                type(uint8).max, "PlugMockDex: rate not set"
-            );
+            revert PlugLib.PlugFailed(type(uint8).max, "PlugMockDex: rate not set");
         }
 
         // Calculate amountOut: amountIn * rate / 1e18

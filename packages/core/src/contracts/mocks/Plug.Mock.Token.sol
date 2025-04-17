@@ -18,14 +18,7 @@ contract MockPlugToken is Initializable, Ownable, ERC20 {
         _initializeOwner(address(1));
     }
 
-    function initialize(
-        uint32 $unlock,
-        address $owner,
-        uint256 $totalSupply
-    )
-        public
-        initializer
-    {
+    function initialize(uint32 $unlock, address $owner, uint256 $totalSupply) public initializer {
         transferUnlock = $unlock;
         _initializeOwner($owner);
         _mint($owner, $totalSupply);
@@ -35,13 +28,7 @@ contract MockPlugToken is Initializable, Ownable, ERC20 {
         transferUnlock = $unlock;
     }
 
-    function setSenderAllowed(
-        address $sender,
-        bool $allowed
-    )
-        external
-        onlyOwner
-    {
+    function setSenderAllowed(address $sender, bool $allowed) external onlyOwner {
         senderToAllowed[$sender] = $allowed;
     }
 
@@ -57,24 +44,13 @@ contract MockPlugToken is Initializable, Ownable, ERC20 {
         _mint($to, $amount);
     }
 
-    function _beforeTokenTransfer(
-        address $from,
-        address $to,
-        uint256
-    )
-        internal
-        virtual
-        override
-    {
+    function _beforeTokenTransfer(address $from, address $to, uint256) internal virtual override {
         // Skip checks for minting/burning
         if ($from == address(0) || $to == address(0)) return;
 
         // If the transfer is not yet unlocked and the sender is not allowed,
         // or the sender is not the owner, revert.
-        if (
-            block.timestamp < transferUnlock && !senderToAllowed[$from]
-                && $from != owner()
-        ) {
+        if (block.timestamp < transferUnlock && !senderToAllowed[$from] && $from != owner()) {
             revert("PlugToken:transfer-locked");
         }
     }

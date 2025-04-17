@@ -27,11 +27,7 @@ contract PlugMockDynamicData {
      * @param length The length of the array to return
      * @return values The array with 1 to length values
      */
-    function returnUintArray(uint256 length)
-        external
-        pure
-        returns (uint256[] memory values)
-    {
+    function returnUintArray(uint256 length) external pure returns (uint256[] memory values) {
         values = new uint256[](length);
         for (uint256 i = 0; i < length; i++) {
             values[i] = i + 1;
@@ -60,11 +56,7 @@ contract PlugMockDynamicData {
      * @param text The string to return
      * @return The input string
      */
-    function returnString(string calldata text)
-        external
-        pure
-        returns (string memory)
-    {
+    function returnString(string calldata text) external pure returns (string memory) {
         return text;
     }
 
@@ -73,11 +65,7 @@ contract PlugMockDynamicData {
      * @param data The bytes to return
      * @return The input bytes
      */
-    function returnBytes(bytes calldata data)
-        external
-        pure
-        returns (bytes memory)
-    {
+    function returnBytes(bytes calldata data) external pure returns (bytes memory) {
         return data;
     }
 
@@ -135,10 +123,7 @@ contract PlugMockDynamicData {
      * @param values The array to process
      * @return The sum of all values in the array
      */
-    function processUintArray(uint256[] calldata values)
-        external
-        returns (uint256)
-    {
+    function processUintArray(uint256[] calldata values) external returns (uint256) {
         emit ArrayReceived(values);
 
         uint256 sum = 0;
@@ -173,10 +158,7 @@ contract PlugMockDynamicData {
      * @param data The struct to process
      * @return The id from the struct
      */
-    function processStruct(ComplexData calldata data)
-        external
-        returns (uint256)
-    {
+    function processStruct(ComplexData calldata data) external returns (uint256) {
         emit StructReceived(data.id, data.name, data.values);
         return data.id;
     }
@@ -186,10 +168,7 @@ contract PlugMockDynamicData {
      * @param values The nested array to process
      * @return The count of all elements
      */
-    function processNestedArray(uint256[][] calldata values)
-        external
-        returns (uint256)
-    {
+    function processNestedArray(uint256[][] calldata values) external returns (uint256) {
         emit NestedArrayReceived(values);
 
         uint256 elementCount = 0;

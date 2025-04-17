@@ -86,35 +86,15 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 									{children}
 								</h1>
 							),
-							h2: ({ children }) => (
-								<h2 className="mt-8 text-[36px] font-black md:text-[32px] lg:text-[60px] xl:text-[72px]">
-									{children}
-								</h2>
-							),
-							h3: ({ children }) => (
-								<h3 className="mt-8 text-[28px] font-black md:text-[28px] lg:text-[48px] xl:text-[56px]">
-									{children}
-								</h3>
-							),
-							h4: ({ children }) => (
-								<h4 className="mt-8 text-[24px] font-black md:text-[24px] lg:text-[36px] xl:text-[42px]">
-									{children}
-								</h4>
-							),
-							h5: ({ children }) => (
-								<h5 className="mt-8 text-[20px] font-black md:text-[18px] lg:text-[28px] xl:text-[32px]">
-									{children}
-								</h5>
-							),
-							h6: ({ children }) => (
-								<h6 className="mt-8 text-[16px] font-black md:text-[14px] lg:text-[20px] xl:text-[24px]">
-									{children}
-								</h6>
-							),
-							p: ({ children }) => <p className="break-words opacity-80">{children}</p>,
-							ul: ({ children }) => <ul className="ml-6 list-disc break-words opacity-60">{children}</ul>,
+							h2: ({ children }) => <h2 className="mt-8 text-[2.5rem] font-black">{children}</h2>,
+							h3: ({ children }) => <h3 className="mt-8 text-[2.25rem] font-black">{children}</h3>,
+							h4: ({ children }) => <h4 className="mt-8 text-[2rem] font-black">{children}</h4>,
+							h5: ({ children }) => <h5 className="mt-8 text-[1.5rem] font-black">{children}</h5>,
+							h6: ({ children }) => <h6 className="mt-8 text-[1.25rem] font-black">{children}</h6>,
+							p: ({ children }) => <p className="break-words">{children}</p>,
+							ul: ({ children }) => <ul className="ml-6 list-disc break-words opacity-80">{children}</ul>,
 							ol: ({ children }) => (
-								<ol className="ml-6 list-decimal break-words opacity-60">{children}</ol>
+								<ol className="ml-6 list-decimal break-words opacity-80">{children}</ol>
 							),
 							li: ({ children }) => <li className="mb-2 ml-2 list-item">{children}</li>,
 							a: ({ children, ...props }) => {

@@ -9,24 +9,12 @@ import { SafeTransferLib } from "solady/utils/SafeTransferLib.sol";
 
 // Mock SuperchainERC20 implementation
 abstract contract SuperchainERC20 is ERC20 {
-    function crosschainMint(
-        address $to,
-        uint256 $amount
-    )
-        external
-        returns (bool)
-    {
+    function crosschainMint(address $to, uint256 $amount) external returns (bool) {
         _mint($to, $amount);
         return true;
     }
 
-    function crosschainBurn(
-        address $from,
-        uint256 $amount
-    )
-        external
-        returns (bool)
-    {
+    function crosschainBurn(address $from, uint256 $amount) external returns (bool) {
         _burn($from, $amount);
         return true;
     }

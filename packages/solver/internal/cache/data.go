@@ -13,24 +13,27 @@ type CacheData struct {
 }
 
 func WithCache[T any](key string, options []CacheOption, fn func() (T, error)) (T, error) {
-	defaultCacheOptions := defaultCacheOptions()
-	for _, option := range options {
-		option(defaultCacheOptions)
+	opts := defaultCacheOptions()
+
+	for _, opt := range options {
+		opt(opts)
 	}
 
 	data, err := redis.CacheRedis.Get(context.Background(), key).Bytes()
+
 	if err == nil {
 		var cachedData CacheData
 		if err := json.Unmarshal(data, &cachedData); err == nil {
 			var result T
 			if err := json.Unmarshal(cachedData.Value, &result); err == nil {
-				if time.Since(cachedData.CreatedAt) <= defaultCacheOptions.duration {
+				if time.Since(cachedData.CreatedAt) <= opts.duration {
 					return result, nil
 				}
 
-				if defaultCacheOptions.useStale {
+				if opts.useStale {
+
 					go func() {
-						updateCache(context.Background(), key, fn, defaultCacheOptions)
+						updateCache(context.Background(), key, fn, opts)
 					}()
 					return result, nil
 				}
@@ -39,7 +42,7 @@ func WithCache[T any](key string, options []CacheOption, fn func() (T, error)) (
 
 	}
 
-	return updateCache(context.Background(), key, fn, defaultCacheOptions)
+	return updateCache(context.Background(), key, fn, opts)
 }
 
 func updateCache[T any](ctx context.Context, key string, fn func() (T, error), opts *CacheOptions) (T, error) {
