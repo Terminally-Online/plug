@@ -7,6 +7,58 @@ import (
 	"solver/internal/bindings/references"
 )
 
+// TODO MASON: the function signature of most of these actions differ, meaning we can't yet define a return type without wrappers
+var (
+	ActionTransferSentence = "Transfer {0<amount:float>} {1<token:address:uint256:uint256>} to {2<recipient:string>}"
+	ActionSwapSentence     = "Swap {0<amount:float>} {1<token:address:uint256:uint256>} for {2<tokenIn:address:uint256:uint256>}"
+	ActionDeploySentence   = "Deploy Socket on {0<factory:address>} with {1<nonce:uint64>} for {2<admin:address>} with a delegate of {3<delegate:address>} with {4<implementation:address>}"
+
+	ReadBalanceSentence = "Get balance of {0<token:address:uint256:uint256>} held by {1<holder:string>}"
+	ReadPriceSentence   = "Get price of {0<token:string>}"
+
+	ActionTransfer = actions.NewActionDefinition(
+		ActionTransferSentence,
+		plug_actions.Transfer,
+		plug_options.TransferOptions,
+		actions.IsUser,
+		actions.IsDynamic,
+		actions.IsEmptyOnchainFunc,
+	)
+	ActionSwap = actions.NewActionDefinition(
+		ActionSwapSentence,
+		plug_actions.Swap,
+		plug_options.SwapOptions,
+		actions.IsUser,
+		actions.IsDynamic,
+		actions.IsEmptyOnchainFunc,
+	)
+	ActionDeploy = actions.NewActionDefinition(
+		ActionDeploySentence,
+		plug_actions.Deploy,
+		nil,
+		actions.IsGlobal,
+		actions.IsStatic,
+		actions.IsEmptyOnchainFunc,
+	)
+	ReadBalance = actions.NewActionDefinition(
+		ReadBalanceSentence,
+		plug_actions.Balance,
+		plug_options.BalanceOptions,
+		actions.IsUser,
+		actions.IsDynamic,
+		&plug_actions.BalanceFunc,
+	)
+	ReadPrice = actions.NewActionDefinition(
+		ReadPriceSentence,
+		plug_actions.Price,
+		plug_options.PriceOptions,
+		actions.IsUser,
+		actions.IsDynamic,
+		actions.IsEmptyOnchainFunc,
+		// &coil_actions.EchoUint256,
+	)
+)
+
 func New() actions.Protocol {
 	return actions.NewProtocol(
 		actions.Protocol{
@@ -15,47 +67,11 @@ func New() actions.Protocol {
 			Tags:   []string{"defi"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				actions.ReadBalance: actions.NewActionDefinition(
-					"Get balance of {0<token:address:uint256:uint256>} held by {1<holder:string>}",
-					plug_actions.Balance,
-					plug_options.BalanceOptions,
-					actions.IsUser,
-					actions.IsDynamic,
-					&plug_actions.BalanceFunc,
-				),
-				actions.ReadPrice: actions.NewActionDefinition(
-					"Get price of {0<token:address:uint256:uint256>}",
-					plug_actions.Price,
-					plug_options.PriceOptions,
-					actions.IsUser,
-					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc, // TODO: Need to figure out how to handle offchain stuff.
-				),
-				actions.ActionSwap: actions.NewActionDefinition(
-					"Swap {0<amount:float>} {1<token:address:uint256:uint256>} for {2<tokenIn:address:uint256:uint256>}",
-					plug_actions.Swap,
-					plug_options.SwapOptions,
-					actions.IsUser,
-					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
-				),
-				actions.ActionTransfer: actions.NewActionDefinition(
-					"Transfer {0<amount:float>} {1<token:address:uint256:uint256>} to {2<recipient:string>}",
-					plug_actions.Transfer,
-					plug_options.TransferOptions,
-					actions.IsUser,
-					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
-				),
-
-				actions.ActionDeploy: actions.NewActionDefinition(
-					"Deploy Socket on {0<factory:address>} with {1<nonce:uint64>} for {2<admin:address>} with a delegate of {3<delegate:address>} with {4<implementation:address>}",
-					plug_actions.Deploy,
-					nil,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
+				actions.ActionSwap:     ActionSwap,
+				actions.ActionTransfer: ActionTransfer,
+				actions.ActionDeploy:   ActionDeploy,
+				actions.ReadBalance:    ReadBalance,
+				actions.ReadPrice:      ReadPrice,
 			},
 		},
 	)

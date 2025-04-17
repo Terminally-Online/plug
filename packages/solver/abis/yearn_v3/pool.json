@@ -802,7 +802,7 @@
     "name": "deposit",
     "outputs": [
       {
-        "name": "",
+        "name": "shares",
         "type": "uint256"
       }
     ],
@@ -877,7 +877,7 @@
     "name": "withdraw",
     "outputs": [
       {
-        "name": "",
+        "name": "shares",
         "type": "uint256"
       }
     ],
