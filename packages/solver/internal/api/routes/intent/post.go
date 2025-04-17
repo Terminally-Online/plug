@@ -3,14 +3,15 @@ package intent
 import (
 	"encoding/json"
 	"net/http"
+	"solver/internal/api/middleware"
 	"solver/internal/api/routes"
-	"solver/internal/cache"
 	"solver/internal/database"
 	"solver/internal/database/models"
+	"solver/internal/redis"
 	"solver/internal/solver"
 	"solver/internal/utils"
 
-	"github.com/go-redis/redis/v8"
+	redisv8 "github.com/go-redis/redis/v8"
 	"github.com/swaggest/openapi-go"
 )
 
@@ -41,10 +42,10 @@ func PostContext(oc openapi.OperationContext) error {
 	return nil
 }
 
-func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
+func PostRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *solver.Solver) {
 	var intent *models.Intent
 	if err := json.NewDecoder(r.Body).Decode(&intent); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.RespondWithError(w, utils.ErrInvalidRequestBody(err))
 		return
 	}
 
@@ -53,19 +54,27 @@ func PostRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *sol
 
 	intent, err = intent.GetOrCreate(database.DB)
 	if err != nil {
-		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to initialize intent: "+err.Error()))
 		return
 	}
 
-	if solution, err := s.Solve(intent, true, false); err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+	// Wrap solver call with metrics tracking
+	var solution interface{}
+	err = middleware.TrackSolverMetrics(func() error {
+		var solveErr error
+		solution, solveErr = s.Solve(intent, true, false)
+		return solveErr
+	})
+	
+	if err != nil {
+		utils.RespondWithError(w, utils.ErrInternal("failed to solve intent: "+err.Error()))
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {
-			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+			utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		}
 	}
 }
 
 func Post(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(PostRequest, PostContext, cache.Redis, s)
+	return routes.NewRouteHandler(PostRequest, PostContext, redis.CacheRedis, s)
 }

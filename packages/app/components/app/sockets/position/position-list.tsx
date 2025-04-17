@@ -2,7 +2,7 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { PositionFrame } from "@/components/app/frames/assets/position"
+import { PositionFrame } from "@/components/app/frames/assets/position/frame"
 import { Search } from "@/components/app/inputs/search"
 import { SocketPositionItem } from "@/components/app/sockets/position/position-item"
 import { Callout } from "@/components/app/utils/callout"

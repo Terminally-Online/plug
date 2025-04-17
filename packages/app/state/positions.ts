@@ -102,7 +102,7 @@ export const useFetchHoldingsForAddress = (address: string, enabled: boolean = t
 				refetchInterval: CACHE_DURATION,
 				staleTime: CACHE_DURATION
 			}),
-		{ onSuccess: handleUpdatePositions }
+		{ onSuccess: handleUpdatePositions, onError: error => console.error('error', error) }
 	)
 
 	const {

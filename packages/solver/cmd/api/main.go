@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net/http"
 	"solver/internal/api"
 	"solver/internal/cache"
 	"solver/internal/cron"
+	"solver/internal/redis"
 	"solver/internal/solver"
 	"solver/internal/utils"
 	"time"
@@ -28,13 +30,21 @@ var (
 )
 
 func main() {
+	useCache := flag.Bool("cache", true, "Enable or disable caching (default: true)")
+	flag.Parse()
+	if !*useCache {
+		cache.Period = 1 * time.Nanosecond
+		cache.UseStale = false
+		cache.StaleBuffer = 0
+	} else {
+		if _, err := redis.CacheRedis.Ping(context.Background()).Result(); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
-	}
-
-	if _, err := cache.Redis.Ping(context.Background()).Result(); err != nil {
-		log.Fatal(err)
 	}
 
 	for _, job := range CronJobs {
@@ -50,7 +60,5 @@ func main() {
 	router := api.SetupRouter(Solver)
 
 	log.Println("Started server on http://localhost:8080")
-	log.Println("OpenAPI specification available at: http://localhost:8080/openapi.json")
-	log.Println("API Documentation UI available at: http://localhost:8080/docs")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

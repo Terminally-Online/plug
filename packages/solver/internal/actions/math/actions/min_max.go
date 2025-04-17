@@ -6,59 +6,111 @@ import (
 	"solver/bindings/plug_math"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type MinMaxRequest struct {
-	A *big.Int `json:"a"`
-	B *big.Int `json:"b"`
+	A coil.CoilInput[*big.Int, *big.Int] `json:"a"`
+	B coil.CoilInput[*big.Int, *big.Int] `json:"b"`
+}
+
+var MinFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     plug_math.PlugMathMetaData,
+	FunctionName: "min",
+}
+
+var MaxFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     plug_math.PlugMathMetaData,
+	FunctionName: "max",
 }
 
 func Min(lookup *actions.SchemaLookup[MinMaxRequest]) ([]signature.Plug, error) {
-	if lookup.Inputs.A == nil || lookup.Inputs.B == nil {
+	if lookup.Inputs.A.GetValue() == nil || lookup.Inputs.B.GetValue() == nil {
 		return nil, fmt.Errorf("a and b values must be provided")
 	}
 
-	mathContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["math"])
-	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	var aUpdates []coil.Update
+	a, aUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.A,
+		lookup.Inputs.A.GetValueWithError,
+		&MinFunc,
+		"a",
+		aUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+		return nil, fmt.Errorf("failed to get a value: %w", err)
 	}
 
-	calldata, err := mathAbi.Pack("min", lookup.Inputs.A, lookup.Inputs.B)
+	var bUpdates []coil.Update
+	b, bUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.B,
+		lookup.Inputs.B.GetValueWithError,
+		&MinFunc,
+		"b",
+		bUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack min calldata: %w", err)
+		return nil, fmt.Errorf("failed to get b value: %w", err)
+	}
+
+	calldata, err := MinFunc.GetCalldata(a, b)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get calldata for min function: %w", err)
 	}
 
 	return []signature.Plug{{
-		To:    mathContract,
-		Data:  calldata,
-		Value: nil,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["math"]),
+		Data:    calldata,
+		Value:   nil,
+		Updates: append(aUpdates, bUpdates...),
 	}}, nil
 }
 
 func Max(lookup *actions.SchemaLookup[MinMaxRequest]) ([]signature.Plug, error) {
-	if lookup.Inputs.A == nil || lookup.Inputs.B == nil {
+	if lookup.Inputs.A.GetValue() == nil || lookup.Inputs.B.GetValue() == nil {
 		return nil, fmt.Errorf("a and b values must be provided")
 	}
 
-	mathContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["math"])
-	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	var aUpdates []coil.Update
+	a, aUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.A,
+		lookup.Inputs.A.GetValueWithError,
+		&MaxFunc,
+		"a",
+		aUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+		return nil, fmt.Errorf("failed to get a value: %w", err)
 	}
 
-	calldata, err := mathAbi.Pack("max", lookup.Inputs.A, lookup.Inputs.B)
+	var bUpdates []coil.Update
+	b, bUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.B,
+		lookup.Inputs.B.GetValueWithError,
+		&MaxFunc,
+		"b",
+		bUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack max calldata: %w", err)
+		return nil, fmt.Errorf("failed to get b value: %w", err)
+	}
+
+	calldata, err := MaxFunc.GetCalldata(a, b)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get calldata for max function: %w", err)
 	}
 
 	return []signature.Plug{{
-		To:    mathContract,
-		Data:  calldata,
-		Value: nil,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["math"]),
+		Data:    calldata,
+		Value:   nil,
+		Updates: append(aUpdates, bUpdates...),
 	}}, nil
 }
-

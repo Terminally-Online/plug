@@ -2,19 +2,15 @@ package actions
 
 import (
 	"fmt"
-	"solver/bindings/erc_20"
+	"math/big"
 	"solver/bindings/yearn_v3_pool"
 	"solver/internal/actions"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
-
-var ApproveFunc = actions.ActionOnchainFunctionResponse{
-	Metadata:     erc_20.Erc20MetaData,
-	FunctionName: "approve",
-}
 
 var DepositFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     yearn_v3_pool.YearnV3PoolMetaData,
@@ -22,9 +18,9 @@ var DepositFunc = actions.ActionOnchainFunctionResponse{
 }
 
 type DepositRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Vault  string `json:"vault"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Vault  string                           `json:"vault"`
 }
 
 func Deposit(lookup *actions.SchemaLookup[DepositRequest]) ([]signature.Plug, error) {
@@ -33,26 +29,55 @@ func Deposit(lookup *actions.SchemaLookup[DepositRequest]) ([]signature.Plug, er
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var approvalUpdates []coil.Update
+	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approvalUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
+		return nil, err
 	}
 
-	approveCalldata, err := ApproveFunc.GetCalldata(lookup.Inputs.Vault, amount)
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
+		common.HexToAddress(lookup.Inputs.Vault),
+		approvalAmount,
+	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	depositCalldata, err := DepositFunc.GetCalldata(amount, lookup.From)
+	var depositUpdates []coil.Update
+	depositAmount, depositUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&DepositFunc,
+		"assets",
+		depositUpdates,
+		lookup.PreviousActionDefinition,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	depositCalldata, err := DepositFunc.GetCalldata(
+		depositAmount,
+		lookup.From,
+	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
+		To:      *token,
+		Data:    approveCalldata,
+		Updates: approvalUpdates,
 	}, {
-		To:   common.HexToAddress(lookup.Inputs.Vault),
-		Data: depositCalldata,
+		To:      common.HexToAddress(lookup.Inputs.Vault),
+		Data:    depositCalldata,
+		Updates: depositUpdates,
 	}}, nil
 }

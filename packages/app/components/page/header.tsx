@@ -8,9 +8,9 @@ import { Container } from "@/components/app/layout/container"
 import { Header } from "@/components/app/layout/header"
 import { Button } from "@/components/shared/buttons/button"
 import { cardColors } from "@/lib"
-import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
+import { useDisconnect } from "@/lib/hooks/account/useDisconnect"
 
 const PlugHeader = () => {
 	const { data: session } = useSession()

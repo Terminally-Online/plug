@@ -2,12 +2,14 @@ package actions
 
 import (
 	"fmt"
+	"log"
 	"math/big"
+	"net/url"
+	"os"
 	"solver/bindings/erc_20"
-	"solver/bindings/weth_address"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
-	"solver/internal/helpers/llama"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -26,11 +28,11 @@ type BebopTransactionMeta struct {
 	Expiry             int64                                  `json:"expiry"`
 	Slippage           float64                                `json:"slippage"`
 	PriceImpact        float64                                `json:"priceImpact"`
-	Warnings           []interface{}                          `json:"warnings"`
+	Warnings           []any                                  `json:"warnings"`
 	BuyTokens          map[string]BebopQuoteResponseBuyTokens `json:"buyTokens"`
 	SellTokens         map[string]BebopQuoteResponseToken     `json:"sellTokens"`
 	SettlementAddress  string                                 `json:"settlementAddress"`
-	RequiredSignatures []interface{}                          `json:"requiredSignatures"`
+	RequiredSignatures []any                                  `json:"requiredSignatures"`
 	PartnerFeeNative   string                                 `json:"partnerFeeNative"`
 }
 
@@ -63,11 +65,7 @@ type BebopQuoteResponseToSign struct {
 	PackedCommands string `json:"packed_commands"`
 }
 
-type BebopQuoteResponse struct {
-	Error struct {
-		ErrorCode int    `json:"errorCode"`
-		Message   string `json:"message"`
-	} `json:"error,omitempty"`
+type BebopQuote struct {
 	Type         string  `json:"type"`
 	Status       string  `json:"status"`
 	QuoteId      string  `json:"quoteId"`
@@ -86,10 +84,10 @@ type BebopQuoteResponse struct {
 	SellTokens         map[string]BebopQuoteResponseToken     `json:"sellTokens"`
 	SettlementAddress  string                                 `json:"settlementAddress"`
 	ApprovalTarget     string                                 `json:"approvalTarget"`
-	RequiredSignatures []interface{}                          `json:"requiredSignatures"`
+	RequiredSignatures []any                                  `json:"requiredSignatures"`
 	PriceImpact        float64                                `json:"priceImpact"`
 	PartnerFeeNative   string                                 `json:"partnerFeeNative"`
-	Warnings           []interface{}                          `json:"warnings"`
+	Warnings           []any                                  `json:"warnings"`
 	Tx                 struct {
 		To       string `json:"to"`
 		Value    string `json:"value"`
@@ -116,122 +114,51 @@ type BebopQuoteResponse struct {
 	PartialFillOffset int    `json:"partialFillOffset"`
 }
 
+type BebopQuoteRoute struct {
+	Type  string     `json:"type"`
+	Quote BebopQuote `json:"quote"`
+}
+type BebopQuoteResponse struct {
+	Error struct {
+		ErrorCode int    `json:"errorCode"`
+		Message   string `json:"message"`
+	} `json:"error,omitempty"`
+	Routes []BebopQuoteRoute `json:"routes"`
+	Link   string            `json:"link"`
+}
 
-func handleWrap(lookup *actions.SchemaLookup[SwapRequest], wethAddress string) ([]signature.Plug, error) {
-	isEthToWeth := common.HexToAddress(lookup.Inputs.TokenIn) == utils.NativeTokenAddress &&
-		strings.EqualFold(lookup.Inputs.Token, wethAddress)
-	isWethToEth := strings.EqualFold(lookup.Inputs.TokenIn, wethAddress) &&
-		common.HexToAddress(lookup.Inputs.Token) == utils.NativeTokenAddress
+// https://api.bebop.xyz/router/ethereum/docs#/v1/get_quote_v1_quote_get
+func getBebopQuoteURL(lookup *actions.SchemaLookup[SwapRequest]) string {
+	chainName := client.GetChainName(lookup.ChainId)
 
-	if !isEthToWeth && !isWethToEth {
-		return nil, nil
-	}
+	baseURL := fmt.Sprintf("https://api.bebop.xyz/router/%s/v1/quote", chainName)
 
-	amountOut, ok := new(big.Int).SetString(lookup.Inputs.Amount, 10)
-	if !ok {
-		return nil, fmt.Errorf("failed to parse amountOut: %s", lookup.Inputs.Amount)
-	}
+	u, _ := url.Parse(baseURL)
+	q := u.Query()
 
-	wethAbi, err := weth_address.WethAddressMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("WETH")
-	}
+	q.Set("buy_tokens", lookup.Inputs.TokenIn)
+	q.Set("sell_tokens", lookup.Inputs.Token)
+	q.Set("sell_amounts", lookup.Inputs.Amount)
+	q.Set("taker_address", lookup.From.String())
+	q.Set("source", os.Getenv("BEBOP_SOURCE"))
+	q.Set("gasless", "false") // Is equivalent of defining it as 'self-execute'.
+	q.Set("approval_type", "Standard")
+	q.Set("skip_validation", "true")
+	q.Set("skip_taker_checks", "true")
 
-	var tx signature.Plug
-	if isEthToWeth {
-		calldata, err := wethAbi.Pack("deposit")
-		if err != nil {
-			return nil, utils.ErrTransaction(err.Error())
-		}
-		tx = signature.Plug{
-			To:    common.HexToAddress(wethAddress),
-			Data:  calldata,
-			Value: amountOut,
-		}
-	} else {
-		calldata, err := wethAbi.Pack("withdraw", amountOut)
-		if err != nil {
-			return nil, utils.ErrTransaction(err.Error())
-		}
-		tx = signature.Plug{
-			To:   common.HexToAddress(wethAddress),
-			Data: calldata,
-		}
-	}
-
-	var ethPrice float64
-	ethPrices, err := llama.GetPrices([]string{"ethereum:0x0000000000000000000000000000000000000000"})
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch ETH price: %v", err)
-	}
-	if _, ok := ethPrices["ethereum:0x0000000000000000000000000000000000000000"]; !ok {
-		return nil, fmt.Errorf("ETH price not found in API response")
-	}
-	ethPrice = ethPrices["ethereum:0x0000000000000000000000000000000000000000"].Price
-
-	buySymbol := "ETH"
-	sellSymbol := "WETH"
-	if isEthToWeth {
-		buySymbol = "WETH"
-		sellSymbol = "ETH"
-	}
-
-	return []signature.Plug{{
-		To:    tx.To,
-		Data:  tx.Data,
-		Value: tx.Value,
-		Meta: BebopTransactionMeta{
-			Expiry:      0,
-			Slippage:    0.0,
-			PriceImpact: 0.0,
-			BuyTokens: map[string]BebopQuoteResponseBuyTokens{
-				common.HexToAddress(lookup.Inputs.TokenIn).Hex(): {
-					BebopQuoteResponseToken: BebopQuoteResponseToken{
-						Amount:         lookup.Inputs.Amount,
-						Decimals:       18,
-						PriceUsd:       ethPrice,
-						Symbol:         buySymbol,
-						Price:          ethPrice,
-						PriceBeforeFee: ethPrice,
-					},
-					AmountBeforeFee:   lookup.Inputs.Amount,
-					DeltaFromExpected: 0,
-				},
-			},
-			SellTokens: map[string]BebopQuoteResponseToken{
-				common.HexToAddress(lookup.Inputs.Token).Hex(): {
-					Amount:         lookup.Inputs.Amount,
-					Decimals:       18,
-					PriceUsd:       ethPrice,
-					Symbol:         sellSymbol,
-					Price:          ethPrice,
-					PriceBeforeFee: ethPrice,
-				},
-			},
-			Warnings:           []interface{}{},
-			RequiredSignatures: []interface{}{},
-			SettlementAddress:  wethAddress,
-			PartnerFeeNative:   "0",
-		},
-	}}, nil
+	u.RawQuery = q.Encode()
+	return u.String()
 }
 
 func handleSwap(lookup *actions.SchemaLookup[SwapRequest]) ([]signature.Plug, error) {
-	// TODO: Right now 'base' is hard-coded as the intended chain for swapping. This should
-	//       consume the chain id provided in the params.
-	bebopApiUrl := fmt.Sprintf(
-		"https://api.bebop.xyz/pmm/base/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
-		lookup.Inputs.TokenIn,
-		lookup.Inputs.Token,
-		lookup.Inputs.Amount,
-		lookup.From,
-	)
-
-	quoteResponse, err := utils.MakeHTTPRequest(
-		bebopApiUrl,
+	bebopUrl := getBebopQuoteURL(lookup)
+	log.Println(bebopUrl)
+	bebopResponse, err := utils.MakeHTTPRequest(
+		bebopUrl,
 		"GET",
 		map[string]string{
 			"Content-Type": "application/json",
+			"source-auth":  os.Getenv("BEBOP_SOURCE_AUTH"), // This was given by the Bebop team to identify us.
 		},
 		nil,
 		nil,
@@ -241,8 +168,31 @@ func handleSwap(lookup *actions.SchemaLookup[SwapRequest]) ([]signature.Plug, er
 		return nil, err
 	}
 
-	if quoteResponse.Error.ErrorCode != 0 {
-		return nil, fmt.Errorf("bebop api error: %s", quoteResponse.Error.Message)
+	if bebopResponse.Error.ErrorCode != 0 {
+		return nil, fmt.Errorf("bebop api error: %s", bebopResponse.Error.Message)
+	}
+
+	if len(bebopResponse.Routes) == 0 {
+		return nil, fmt.Errorf("could not find route")
+	}
+
+	var quoteResponse *BebopQuote
+	var bestAmountIn *big.Int
+	for _, route := range bebopResponse.Routes {
+		amountIn := new(big.Int)
+		amountIn, success := amountIn.SetString(route.Quote.BuyTokens[lookup.Inputs.TokenIn].Amount, 10)
+		if !success {
+			log.Println("not success")
+			continue
+		}
+
+		if quoteResponse == nil || amountIn.Cmp(bestAmountIn) > 0 {
+			quoteResponse = &route.Quote
+			bestAmountIn = amountIn
+		}
+	}
+	if quoteResponse == nil {
+		return nil, fmt.Errorf("failed to find route")
 	}
 
 	value, ok := new(big.Int).SetString(strings.TrimPrefix(quoteResponse.Tx.Value, "0x"), 16)
@@ -267,6 +217,8 @@ func handleSwap(lookup *actions.SchemaLookup[SwapRequest]) ([]signature.Plug, er
 		},
 	}}
 
+	// NOTE: If value is zero it means we are transferring an ERC20 and need to have
+	//       the appropriate approval appended first.
 	if value.Cmp(big.NewInt(0)) == 0 {
 		erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 		if err != nil {

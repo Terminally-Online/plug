@@ -1,19 +1,19 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { Cat, ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
-
-import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
-import { ColumnCompanion } from "@/components/app/columns/utils/column-companion"
+import { ChartBar, LogOut, Plus, ScanFace, Settings, Wallet, X } from "lucide-react"
 import { ColumnStats } from "@/components/app/columns/utils/column-stats"
 import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
 import { Header } from "@/components/app/layout/header"
 import { Avatar } from "@/components/app/sockets/profile"
 import { Image } from "@/components/app/utils/image"
-import { cn, useConnect } from "@/lib"
-import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
+import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { usePlugActions } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
+import { useAccount } from "@/lib/hooks/account/useAccount"
+import { useDisconnect } from "@/lib/hooks/account/useDisconnect"
+import { ColumnAuthenticate } from "@/components/app/columns/authenticate/column"
+import { ColumnSettings } from "../columns/settings/column"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
@@ -34,11 +34,12 @@ const ConsoleSidebarAction: FC<
 		)}
 		{...props}
 	>
-		<div className="opacity-60">{icon}</div>
+		<div className={cn(!isActive && "opacity-80")}>{icon}</div>
 
 		<p
 			className={cn(
-				"mr-auto whitespace-nowrap font-bold opacity-80 transition-all duration-200 ease-in-out",
+				"mr-auto whitespace-nowrap font-bold transition-all duration-200 ease-in-out",
+				!isActive && "opacity-80",
 				isExpanded === false ? "hidden" : "group-hover:opacity-100"
 			)}
 		>
@@ -81,7 +82,7 @@ export const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || is.stats || is.companion || is.searching) && (
+			{(is.authenticating || is.stats || is.searching || is.settings) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="relative mr-0 flex flex-col overflow-hidden"
@@ -92,9 +93,8 @@ export const ConsoleSidebarPane = () => {
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4">
 							<Header
 								label={
-									is.companion
-										? "Companion"
-										: is.stats
+									is.settings ? "Settings" :
+										is.stats
 											? "Stats"
 											: socket.id.startsWith("0x")
 												? "Wallet"
@@ -102,7 +102,13 @@ export const ConsoleSidebarPane = () => {
 								}
 								size="md"
 								icon={
-									is.stats ? (
+									is.settings ? (
+										<Settings
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+
+									) : is.stats ? (
 										<ChartBar
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -126,10 +132,10 @@ export const ConsoleSidebarPane = () => {
 						</div>
 
 						<div className="h-full overflow-y-scroll">
-							{is.stats ? (
+							{is.settings ? (
+								<ColumnSettings index={0} className="px-6 py-4" />
+							) : is.stats ? (
 								<ColumnStats index={0} />
-							) : is.companion ? (
-								<ColumnCompanion index={0} />
 							) : socket.id.startsWith("0x") ? (
 								<ColumnWallet index={0} />
 							) : socket.id.startsWith("0x") === false ? (
@@ -156,10 +162,9 @@ export const ConsoleSidebarPane = () => {
 }
 
 export const ConsoleSidebar = () => {
-	const {
-		account: { address }
-	} = useConnect()
+	const { address } = useAccount()
 	const { disconnect } = useDisconnect(true)
+
 	const { is, handleSidebar: sidebar } = useSidebar()
 	const { socket, avatar } = useSocket()
 	const { add } = usePlugActions()
@@ -171,7 +176,7 @@ export const ConsoleSidebar = () => {
 			<div className="flex h-full flex-col items-center border-r-[1px] border-plug-green/10 p-2 pt-2">
 				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
-						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						className="relative mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
 						onClick={() => sidebar("authenticating")}
 					>
 						{avatar ? (
@@ -214,37 +219,40 @@ export const ConsoleSidebar = () => {
 								isActive={is.stats}
 								onClick={() => sidebar("stats")}
 							/>
-
-							<ConsoleSidebarAction
-								icon={
-									<Cat
-										size={14}
-										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-									/>
-								}
-								title="Companion"
-								isExpanded={is.expanded}
-								isActive={is.companion}
-								onClick={() => sidebar("companion")}
-							/>
 						</>
 					)}
 				</div>
 
 				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
 					{(socket || address) && (
-						<ConsoleSidebarAction
-							className={cn(is.expanded && "pr-16")}
-							icon={
-								<LogOut
-									size={14}
-									className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-								/>
-							}
-							title="Logout"
-							isExpanded={is.expanded}
-							onClick={() => disconnect()}
-						/>
+						<>
+							<ConsoleSidebarAction
+								className={cn(is.expanded && "pr-16")}
+								icon={
+									<Settings
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Settings"
+								isExpanded={is.expanded}
+								isActive={is.settings}
+								onClick={() => sidebar("settings")}
+							/>
+
+							<ConsoleSidebarAction
+								className={cn(is.expanded && "pr-16")}
+								icon={
+									<LogOut
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Logout"
+								isExpanded={is.expanded}
+								onClick={() => disconnect()}
+							/>
+						</>
 					)}
 				</div>
 			</div>

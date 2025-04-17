@@ -53,11 +53,13 @@ func (p *Protocol) GetSchema(chainId uint64, from common.Address, search map[int
 	}
 
 	if definition.GetOptions() != nil {
-		if !definition.GetIsUserSpecific() {
+		if definition.GetIsUserSpecific() && from == utils.ZeroAddress {
+			return nil, utils.ErrMissingField("from")
+		} else if !definition.GetIsUserSpecific() {
 			from = utils.ZeroAddress
 		}
 
-		lookup, err := NewSchemaLookup[any](chainId, from, search, nil)
+		lookup, err := NewSchemaLookup[any](chainId, from, search, nil, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create schema lookup: %w", err)
 		}

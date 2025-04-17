@@ -3,19 +3,25 @@ package actions
 import (
 	"fmt"
 	"math/big"
-	"solver/bindings/erc_20"
 	"solver/bindings/euler_evault_implementation"
 	"solver/internal/actions"
-	"solver/internal/actions/euler/reads"
 	euler_utils "solver/internal/actions/euler/utils"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type EarnRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Vault  string `json:"vault"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Vault  string                           `json:"vault"`
+}
+
+var DepositFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     euler_evault_implementation.EulerEvaultImplementationMetaData,
+	FunctionName: "deposit",
 }
 
 func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
@@ -24,57 +30,62 @@ func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
+	var approveUpdates []coil.Update
+	approveAmount, approveUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&actions.Erc20ApprovalFunc,
+		"_value",
+		approveUpdates,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert earn amount to uint: %w", err)
+		return nil, err
 	}
 
-	vault, err := reads.GetVault(lookup.Inputs.Vault, lookup.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault: %w", err)
-	}
-
-	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("EulerEvaultImplementation")
-	}
-
-	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("Erc20")
-	}
-
-	approveCalldata, err := erc20Abi.Pack(
-		"approve",
-		vault.Vault,
-		amount,
+	approveCalldata, err := actions.Erc20ApprovalFunc.GetCalldata(
+		common.HexToAddress(lookup.Inputs.Vault),
+		approveAmount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	depositCalldata, err := vaultAbi.Pack(
-		"deposit",
-		amount,
-		lookup.From,
+	depositAmount, depositUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&DepositFunc,
+		"amount",
+		approveUpdates,
+		lookup.PreviousActionDefinition,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	depositCalldata, err := DepositFunc.GetCalldata(
+		depositAmount,
+		common.HexToAddress(lookup.Inputs.Vault),
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
-	depositCall, err := euler_utils.WrapEVCCall(
+
+	wrappedDepositCall, err := euler_utils.WrapEVCCall(
 		lookup.ChainId,
-		vault.Vault,
+		common.HexToAddress(lookup.Inputs.Vault),
 		lookup.From,
 		big.NewInt(0),
 		depositCalldata,
-		nil,
+		depositUpdates,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
 	}
 
 	return []signature.Plug{{
-		To:   *token,
-		Data: approveCalldata,
-	}, depositCall}, nil
+		To:      *token,
+		Data:    approveCalldata,
+		Updates: approveUpdates,
+	}, wrappedDepositCall}, nil
 }

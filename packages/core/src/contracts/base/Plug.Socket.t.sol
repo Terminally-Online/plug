@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import {
     Test,
@@ -24,7 +24,7 @@ contract PlugSocketTest is Test {
     }
 
     function test_symbol() public {
-        assertEq(socket.symbol(), "PS");
+        assertEq(socket.symbol(), "PLUGS");
     }
 
     function testRevert_Initialize_Again() public {

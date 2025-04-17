@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
 
@@ -30,9 +30,12 @@ contract PlugFactory is PlugFactoryInterface {
     {
         if ($salt.length < 0x80) revert("PlugCore:salt-malformed");
         uint96 nonce = uint96(uint256(LibBytes.loadCalldata($salt, 0x00)));
-        address admin = address(uint160(uint256(LibBytes.loadCalldata($salt, 0x20))));
-        address oneClicker = address(uint160(uint256(LibBytes.loadCalldata($salt, 0x40))));
-        address implementation = address(uint160(uint256(LibBytes.loadCalldata($salt, 0x60))));
+        address admin =
+            address(uint160(uint256(LibBytes.loadCalldata($salt, 0x20))));
+        address oneClicker =
+            address(uint160(uint256(LibBytes.loadCalldata($salt, 0x40))));
+        address implementation =
+            address(uint160(uint256(LibBytes.loadCalldata($salt, 0x60))));
         if (implementation == address(0) || admin == address(0)) {
             revert PlugLib.SaltInvalid(implementation, admin);
         }
@@ -57,7 +60,9 @@ contract PlugFactory is PlugFactoryInterface {
         view
         returns (address $vault)
     {
-        $vault = LibClone.predictDeterministicAddressERC1967($implementation, $salt, address(this));
+        $vault = LibClone.predictDeterministicAddressERC1967(
+            $implementation, $salt, address(this)
+        );
     }
 
     /**

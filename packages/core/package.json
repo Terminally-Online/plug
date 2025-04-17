@@ -1,6 +1,6 @@
 {
   "name": "@terminallyonline/plug-core",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "author": "🔌 Plug <hello@onplug.io> (https://onplug.io)",
   "maintainers": [
     "🟠 CHANCE <chance@onplug.io> (https://onplug.io)"
@@ -11,14 +11,14 @@
     "prebuild:package": "pnpm build:lint && rm -rf ./dist",
     "prebuild:schema": "pnpm plug:schema",
     "prebuild:zod": "pnpm plug:zod",
-    "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23 && pnpm tsx src/lib/functions/core/artifacts.ts",
+    "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.26 && pnpm tsx src/lib/functions/core/artifacts.ts",
     "prebuild:etcher": "pnpm tsx src/lib/functions/core/etcher.ts",
     "prebuild:mine": "pnpm prebuild:etcher",
     "prebuild:lint": "tsc --noEmit",
     "prebuild:format": "prettier --write .",
     "prebuild": "run-s prebuild:*",
     "build:contracts": "forge fmt && pnpm prebuild:artifacts",
-    "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
+    "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.26",
     "build:format": "pnpm prettier --write .",
     "build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts && pnpm prebuild:etcher && forge test",
     "build:mine:quick": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts --quick --leading=4 --total=8 --seconds=300",
@@ -58,7 +58,7 @@
     "ethers": "^6.13.2",
     "pathe": "^1.1.2",
     "solady": "^0.1.10",
-    "viem": "^2.23.6",
+    "viem": "^2.27.0",
     "zod": "^3.23.8"
   },
   "repository": {

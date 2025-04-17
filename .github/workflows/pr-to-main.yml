@@ -38,20 +38,21 @@ jobs:
       - name: Check for existing PR
         if: steps.check-branches.outputs.needs_pr == 'true'
         id: check_pr
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        with:
-          script: |
-            const { data: pulls } = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              head: 'staging',
-              base: 'main'
-            });
-            return { exists: pulls.length > 0, number: pulls.length > 0 ? pulls[0].number : null };
+        run: |
+          # Use GitHub CLI to check for PRs
+          PR_COUNT=$(gh pr list --head staging --base main --state open --json number | jq length)
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "PR already exists from staging to main"
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "No PR exists from staging to main"
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create PR
-        if: steps.check-branches.outputs.needs_pr == 'true' && steps.check_pr.outputs.result.exists == 'false'
+        if: steps.check-branches.outputs.needs_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -59,8 +60,8 @@ jobs:
             const { data: pr } = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'Sync: Merge staging into main',
-              body: 'This PR was automatically created to merge changes from staging into main.\n\nThese changes have already been deployed to staging and are ready for production.',
+              title: 'chore: staging to main',
+              body: 'This PR was automatically created to merge changes from staging into main.',
               head: 'staging',
               base: 'main'
             });

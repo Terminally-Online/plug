@@ -2,6 +2,9 @@ package coil
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/big"
+	"solver/internal/utils"
 	"strings"
 )
 
@@ -30,14 +33,14 @@ func (c *CoilInput[T, R]) UnmarshalJSON(data []byte) error {
 			return json.Unmarshal(data, &c.decoded)
 		}
 	}
-	
+
 	c.raw = raw
-	
+
 	if strings.HasPrefix(raw, CoilPrefix) && strings.HasSuffix(raw, CoilSuffix) {
 		trimmed := strings.TrimPrefix(strings.TrimSuffix(raw, CoilSuffix), CoilPrefix)
-		return json.Unmarshal([]byte(trimmed), &c.decoded)
+		return json.Unmarshal([]byte(`"`+trimmed+`"`), &c.decoded)
 	}
-	
+
 	return json.Unmarshal([]byte(`"`+raw+`"`), &c.decoded)
 }
 
@@ -59,24 +62,24 @@ func (c *CoilInput[T, R]) Get(valueFunc func() (R, error)) (R, error) {
 	return response, err
 }
 
-type ValueFunc[R any] func() (R, error)
-
-type FunctionResponseInterface interface {
-	GetCoilUpdate(string) (*Update, error)
+func (c *CoilInput[T, R]) GetLinkedReturnKey() string {
+	return strings.TrimPrefix(strings.TrimSuffix(c.raw, CoilSuffix), CoilPrefix)
 }
 
-func (c *CoilInput[T, R]) GetAndUpdate(valueFunc ValueFunc[R], coilFunc FunctionResponseInterface, param string, updates []Update) (R, []Update, error) {
-	response, err := valueFunc()
-	if err != nil {
-		return response, nil, err
-	}
+// Returns a function that parses a float amount with variable decimals that can
+// be directly passed to GetAndUpdate to cut down on boilerplate. Will throw if the CoilInput
+// decoded value is not a string. If it's a linked input, it will return 0.
+func (c *CoilInput[T, R]) GetUintFromFloatFunc(decimals uint8) func() (*big.Int, error) {
+	return func() (*big.Int, error) {
+		if c.GetIsLinked() {
+			return big.NewInt(0), nil
+		}
 
-	if update, err := coilFunc.GetCoilUpdate(param); update != nil {
-		updates = append(updates, *update)
-		return response, updates, err
-	} else if err != nil {
-		return response, nil, err
-	}
+		stringValue, ok := interface{}(c.GetValue()).(string)
+		if !ok {
+			return nil, fmt.Errorf("cannot get value from float: expected string value, got %T", c.GetValue())
+		}
 
-	return response, nil, err
+		return utils.StringToUint(stringValue, decimals)
+	}
 }

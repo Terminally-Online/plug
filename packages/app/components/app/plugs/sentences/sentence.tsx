@@ -13,7 +13,6 @@ import {
 	SchemasRequestAction,
 	SchemasRequestValue,
 	SchemasResponseCoils,
-	useConnect,
 	useCordStateless
 } from "@/lib"
 import { api } from "@/server/client"
@@ -23,6 +22,7 @@ import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { sentenceValidStateAtom } from "@/state/sentences"
 
 import { HandleValueProps, Part } from "./part"
+import { useAccount } from "wagmi"
 
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
@@ -57,15 +57,13 @@ export const Sentence: FC<SentenceProps> = ({
 	className,
 	...props
 }) => {
-	const {
-		account: { session }
-	} = useConnect()
+	const { address } = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const { frame } = useColumnActions(index)
 
 	const [plug] = useAtom(plugByIdAtom(item ?? ""))
-	const own = (plug && session && session.address === plug.socketId) || false
+	const own = (plug && address === plug.socketId) || false
 
 	const editPlug = useSetAtom(editPlugAtom)
 	const actionMutation = api.plugs.action.edit.useMutation({
@@ -192,7 +190,7 @@ export const Sentence: FC<SentenceProps> = ({
 				}
 			}))
 		}
-	}, [isValid, isComplete, actionSchema, actionIndex, plug, setSentenceValidState])
+	}, [item, isValid, isComplete, actionSchema, actionIndex, plug, setSentenceValidState])
 
 	const handleValue = ({ index, value }: HandleValueProps) => {
 		handleCordValueUpdate(index, value)

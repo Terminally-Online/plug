@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { ERC1155 } from "solady/tokens/ERC1155.sol";
 
@@ -12,12 +12,24 @@ contract PlugMockERC1155 is ERC1155 {
         uris.push($uri);
     }
 
-    function mint(address $to, uint256 $tokenId, uint256 $amount, bytes memory $data) public {
+    function mint(
+        address $to,
+        uint256 $tokenId,
+        uint256 $amount,
+        bytes memory $data
+    )
+        public
+    {
         /// @dev Mint the token.
         _mint($to, $tokenId, $amount, $data);
     }
 
-    function uri(uint256 $tokenId) public view override returns (string memory) {
+    function uri(uint256 $tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
         /// @dev Return the token URI.
         return uris[$tokenId];
     }

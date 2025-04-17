@@ -1,5 +1,7 @@
 package actions
 
+import "solver/bindings/erc_20"
+
 const (
 	TypeAction     string = "action"
 	TypeConstraint string = "constraint"
@@ -38,6 +40,7 @@ const (
 	ActionBid                string = "bid"
 	ActionRenew              string = "renew"
 	ActionMint               string = "mint"
+	ActionDeploy             string = "deploy"
 
 	ReadBalance            string = "balance"
 	ReadPrice              string = "price"
@@ -55,4 +58,9 @@ const (
 
 var (
 	IsEmptyOnchainFunc *ActionOnchainFunctionResponse = nil
+
+	Erc20ApprovalFunc = ActionOnchainFunctionResponse{
+		Metadata:     erc_20.Erc20MetaData,
+		FunctionName: "approve",
+	}
 )

@@ -74,7 +74,13 @@ directories
 				)
 
 				const mined =
-					addresses[currentVersion].contracts[directory].deployment
+					addresses[currentVersion].contracts[directory]?.deployment
+
+				if (!mined) {
+					console.log('skipping with: ', currentVersion)
+					console.log('directory: ', directory)
+					console.log(addresses[currentVersion].contracts[directory])
+				}
 
 				variables.push(
 					`bytes internal constant ${variableName}_INITCODE = hex"${json.initcode}";`

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { DateTimeLib } from "solady/utils/DateTimeLib.sol";
 
@@ -106,7 +106,14 @@ contract PlugBoolean {
      * @param threshold Second value to compare
      * @return result True if the values are equal
      */
-    function isEqual(uint256 value, uint256 threshold) public pure returns (bool result) {
+    function isEqual(
+        uint256 value,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value == threshold;
     }
 
@@ -116,7 +123,14 @@ contract PlugBoolean {
      * @param threshold Second value to compare
      * @return result True if the values are not equal
      */
-    function isNotEqual(uint256 value, uint256 threshold) public pure returns (bool result) {
+    function isNotEqual(
+        uint256 value,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value != threshold;
     }
 
@@ -126,7 +140,14 @@ contract PlugBoolean {
      * @param threshold The threshold to compare against
      * @return result True if value > threshold
      */
-    function isGreaterThan(uint256 value, uint256 threshold) public pure returns (bool result) {
+    function isGreaterThan(
+        uint256 value,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value > threshold;
     }
 
@@ -153,7 +174,14 @@ contract PlugBoolean {
      * @param threshold The threshold to compare against
      * @return result True if value < threshold
      */
-    function isLessThan(uint256 value, uint256 threshold) public pure returns (bool result) {
+    function isLessThan(
+        uint256 value,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value < threshold;
     }
 
@@ -181,7 +209,15 @@ contract PlugBoolean {
      * @param max The maximum threshold (inclusive)
      * @return result True if min <= value <= max
      */
-    function isBetween(uint256 value, uint256 min, uint256 max) public pure returns (bool result) {
+    function isBetween(
+        uint256 value,
+        uint256 min,
+        uint256 max
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value >= min && value <= max;
     }
 
@@ -191,7 +227,14 @@ contract PlugBoolean {
      * @param threshold The threshold timestamp to compare against
      * @return result True if time < threshold
      */
-    function isBeforeTime(uint256 time, uint256 threshold) public pure returns (bool result) {
+    function isBeforeTime(
+        uint256 time,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = time < threshold;
     }
 
@@ -201,7 +244,14 @@ contract PlugBoolean {
      * @param threshold The threshold timestamp to compare against
      * @return result True if time > threshold
      */
-    function isAfterTime(uint256 time, uint256 threshold) public pure returns (bool result) {
+    function isAfterTime(
+        uint256 time,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = time > threshold;
     }
 
@@ -230,9 +280,18 @@ contract PlugBoolean {
      * @param timestamp2 Second timestamp to check
      * @return result True if the timestamps are on the same calendar day
      */
-    function isSameDay(uint256 timestamp1, uint256 timestamp2) public pure returns (bool result) {
-        (uint256 year1, uint256 month1, uint256 day1) = DateTimeLib.timestampToDate(timestamp1);
-        (uint256 year2, uint256 month2, uint256 day2) = DateTimeLib.timestampToDate(timestamp2);
+    function isSameDay(
+        uint256 timestamp1,
+        uint256 timestamp2
+    )
+        public
+        pure
+        returns (bool result)
+    {
+        (uint256 year1, uint256 month1, uint256 day1) =
+            DateTimeLib.timestampToDate(timestamp1);
+        (uint256 year2, uint256 month2, uint256 day2) =
+            DateTimeLib.timestampToDate(timestamp2);
 
         result = year1 == year2 && month1 == month2 && day1 == day2;
     }

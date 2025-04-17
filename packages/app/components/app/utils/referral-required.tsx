@@ -5,8 +5,9 @@ import { Asterisk } from "lucide-react"
 
 import { Search } from "@/components/app/inputs/search"
 import { Button } from "@/components/shared/buttons/button"
-import { cn, useConnect } from "@/lib"
+import { cn } from "@/lib"
 import { api } from "@/server/client"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 const TWEET_TEMPLATES = [
 	`Just discovered @onplug_io - a game-changing platform for automated trading. Can't wait to get access!`,
@@ -20,7 +21,7 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 
 export const ReferralRequired: FC = () => {
 	const searchParams = useSearchParams()
-	const { account } = useConnect()
+	const account = useAccount()
 
 	const { mutate, error, isPending, isError, isSuccess } = api.socket.referral.submit.useMutation({
 		onSuccess: () => {

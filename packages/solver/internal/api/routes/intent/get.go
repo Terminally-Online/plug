@@ -6,13 +6,17 @@ import (
 	"net/http"
 	"slices"
 	"solver/internal/actions"
+	"solver/internal/api/middleware"
 	"solver/internal/api/routes"
 	"solver/internal/cache"
+	"solver/internal/redis"
 	"solver/internal/solver"
 	"solver/internal/utils"
+	"sort"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/go-redis/redis/v8"
+	redisv8 "github.com/go-redis/redis/v8"
 	"github.com/gorilla/schema"
 	"github.com/swaggest/openapi-go"
 )
@@ -140,9 +144,26 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 		searchMap[param.Index] = param.Value
 	}
 
-	chainSchema, err := handler.GetSchema(chainId, from, searchMap, action)
-	if err != nil {
-		return nil, err
+	var chainSchema actions.ChainSchema
+	var chainSchemaErr error
+
+	middleware.TrackOptionsBuildTime(protocol, chainId, action, func() error {
+		schemaResults, err := handler.GetSchema(chainId, from, searchMap, action)
+		if err != nil {
+			chainSchemaErr = err
+			return err
+		}
+		if schemaResults != nil {
+			chainSchema = *schemaResults
+		} else {
+			chainSchemaErr = fmt.Errorf("schema results is nil")
+			return chainSchemaErr
+		}
+		return nil
+	})
+
+	if chainSchemaErr != nil {
+		return nil, chainSchemaErr
 	}
 
 	response[protocol] = actions.ProtocolSchema{
@@ -155,39 +176,72 @@ func GetActionSchema(handler *actions.Protocol, protocol string, action string, 
 	return response, nil
 }
 
-func GetRequest(w http.ResponseWriter, r *http.Request, c *redis.Client, s *solver.Solver) {
-	var params SchemaQueryParams
-	if err := Decoder.Decode(&params, r.URL.Query()); err != nil {
-		utils.MakeHttpError(w, fmt.Sprintf("invalid parameters: %v", err), http.StatusBadRequest)
-		return
+func getCacheKey(params SchemaQueryParams) string {
+	cacheKey := fmt.Sprintf("schema:%d:%s:%s:%s", params.ChainId, params.Protocol, params.Action, params.From.Hex())
+	paramKeyParts := make([]string, len(params.Search))
+	for i, param := range params.Search {
+		paramKeyParts[i] = fmt.Sprintf("%d:%s", param.Index, param.Value)
 	}
 
-	protocol, exists := s.Protocols[params.Protocol]
+	sort.Strings(paramKeyParts)
 
+	if len(paramKeyParts) != 0 {
+		cacheKey = fmt.Sprintf("%s:%s", cacheKey, strings.Join(paramKeyParts, ":"))
+	}
+
+	return cacheKey
+}
+
+func GetRequest(s *solver.Solver, params SchemaQueryParams) (map[string]actions.ProtocolSchema, error) {
 	var result map[string]actions.ProtocolSchema
 	var err error
+
 	switch {
 	case params.Protocol == "":
 		result, err = GetAllSchemas(s, params.ChainId)
-	case exists && params.Action == "":
-		result, err = GetProtocolSchema(&protocol, params.Protocol, params.ChainId)
-	case exists && params.Action != "":
-		result, err = GetActionSchema(&protocol, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
+	case params.Protocol != "" && params.Action == "":
+		handler, exists := s.Protocols[params.Protocol]
+		if !exists {
+			return nil, fmt.Errorf("unsupported protocol")
+		}
+		result, err = GetProtocolSchema(&handler, params.Protocol, params.ChainId)
+	case params.Protocol != "" && params.Action != "":
+		handler, exists := s.Protocols[params.Protocol]
+		if !exists {
+			return nil, fmt.Errorf("unsupported protocol")
+		}
+		result, err = GetActionSchema(&handler, params.Protocol, params.Action, params.ChainId, params.From, params.Search)
 	default:
-		utils.MakeHttpError(w, "invalid protocol", http.StatusBadRequest)
-		return
+		return nil, utils.ErrInvalidField("protocol", params.Protocol)
 	}
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+
+	return result, err
+}
+
+func GetCachedRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *solver.Solver) {
+	var params SchemaQueryParams
+	if err := Decoder.Decode(&params, r.URL.Query()); err != nil {
+		utils.RespondWithError(w, utils.ErrInvalidParameters(err))
 		return
 	}
 
+	result, err := cache.WithCache(getCacheKey(params), cache.WithOptions(
+		cache.WithDuration(cache.Period),
+		cache.WithStaleData(cache.UseStale),
+		cache.WithStaleBuffer(cache.StaleBuffer),
+	), func() (map[string]actions.ProtocolSchema, error) {
+		return GetRequest(s, params)
+	})
+	if err != nil {
+		utils.RespondWithError(w, utils.ErrInternal("failed to get schema: "+err.Error()))
+		return
+	}
 	if err := json.NewEncoder(w).Encode(result); err != nil {
-		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))
 		return
 	}
 }
 
 func Get(s *solver.Solver) *routes.RouteHandler {
-	return routes.NewRouteHandler(GetRequest, GetContext, cache.Redis, s)
+	return routes.NewRouteHandler(GetCachedRequest, GetContext, redis.CacheRedis, s)
 }

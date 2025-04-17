@@ -42,6 +42,7 @@ export const getChainName = (chainId: ChainId) => {
 	const chain = chains[chainId]
 
 	if (chainId === 31337) return "Plug"
+	if (!chain) return "Unknown"
 	return chain.name
 }
 

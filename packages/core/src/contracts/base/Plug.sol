@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { PlugInterface } from "../interfaces/Plug.Interface.sol";
 
-import { PlugLib, PlugTypesLib, PlugAddressesLib } from "../libraries/Plug.Lib.sol";
+import {
+    PlugLib, PlugTypesLib, PlugAddressesLib
+} from "../libraries/Plug.Lib.sol";
 
 import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
@@ -22,22 +24,35 @@ import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 contract Plug is PlugInterface {
     /// @dev Define the reference to the factory that enables counterfactual
     ///      deployment through having a presigned bundle of Plugs.
-    PlugFactoryInterface factory = PlugFactoryInterface(PlugAddressesLib.PLUG_FACTORY_ADDRESS);
+    PlugFactoryInterface factory =
+        PlugFactoryInterface(PlugAddressesLib.PLUG_FACTORY_ADDRESS);
 
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs) external payable virtual {
-        emit PlugLib.PlugResult(0, _plug($livePlugs, msg.sender));
+    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
+        external
+        payable
+        virtual
+    {
+        (PlugTypesLib.Result memory results, bytes32 livePlugsHash) =
+            _plug($livePlugs, msg.sender);
+        emit PlugLib.PlugResult(0, livePlugsHash, results);
     }
 
     /**
-     * See {PlugInterface-tryPlug}.
+     * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs) external payable virtual {
-        uint256 length = $livePlugs.length;
-        for (uint8 i; i < length; i++) {
-            emit PlugLib.PlugResult(i, _plug($livePlugs[i], msg.sender));
+    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
+        external
+        payable
+        virtual
+    {
+        PlugTypesLib.Result memory results;
+        bytes32 livePlugsHash;
+        for (uint8 i; i < $livePlugs.length; i++) {
+            (results, livePlugsHash) = _plug($livePlugs[i], msg.sender);
+            emit PlugLib.PlugResult(i, livePlugsHash, results);
         }
     }
 
@@ -71,7 +86,9 @@ contract Plug is PlugInterface {
         if (socketAddress.code.length == 0) {
             (, address $socketAddress) = factory.deploy($livePlugs.plugs.salt);
             if (socketAddress != $socketAddress) {
-                revert PlugLib.SocketAddressInvalid(socketAddress, $socketAddress);
+                revert PlugLib.SocketAddressInvalid(
+                    socketAddress, $socketAddress
+                );
             }
         }
         $socket = PlugSocketInterface(socketAddress);
@@ -88,14 +105,18 @@ contract Plug is PlugInterface {
         address $sender
     )
         internal
-        returns (PlugTypesLib.Result memory $results)
+        returns (PlugTypesLib.Result memory $results, bytes32 $livePlugsHash)
     {
-        try _socket($livePlugs).plug($livePlugs, $sender) returns (
-            PlugTypesLib.Result memory _results
-        ) {
-            $results = _results;
+        PlugSocketInterface socket = _socket($livePlugs);
+        $livePlugsHash = socket.hash($livePlugs);
+        try socket.plug($livePlugs, $sender) {
+            $results =
+                PlugTypesLib.Result({ index: type(uint8).max, error: "" });
         } catch Error(string memory reason) {
-            $results = PlugTypesLib.Result({ index: type(uint8).max - 1, error: reason });
+            $results = PlugTypesLib.Result({
+                index: type(uint8).max - 1,
+                error: reason
+            });
         } catch Panic(uint256 errorCode) {
             $results = PlugTypesLib.Result({
                 index: type(uint8).max - 2,
@@ -103,36 +124,41 @@ contract Plug is PlugInterface {
             });
         } catch (bytes memory data) {
             if (data.length < 4) {
-                return PlugTypesLib.Result({ index: type(uint8).max - 4, error: "Plug:empty-data" });
+                return (
+                    PlugTypesLib.Result({
+                        index: type(uint8).max - 4,
+                        error: "Plug:empty-data"
+                    }),
+                    $livePlugsHash
+                );
             }
 
             if (bytes4(data) != PlugLib.PlugFailed.selector) {
-                return PlugTypesLib.Result({
-                    index: type(uint8).max - 3,
-                    error: "Plug:unknown-selector"
-                });
+                return (
+                    PlugTypesLib.Result({
+                        index: type(uint8).max - 3,
+                        error: "Plug:unknown-selector"
+                    }),
+                    $livePlugsHash
+                );
             }
 
             bytes memory slicedData;
             assembly {
-                // ----------------------------------------------- Allocate memory for slicedData
                 slicedData := mload(0x40)
-                // ----------------------------------------------- Set the length of slicedData
                 let errLength := sub(mload(data), 4)
                 mstore(slicedData, errLength)
-                // ----------------------------------------------- Copy data starting from the fifth byte
-                let srcPtr := add(data, 0x24) // ----------------- source: data + 32 (length) + 4 (selector)
-                let destPtr := add(slicedData, 0x20) // ---------- destination: skip length word
-                // ----------------------------------------------- Copy in 32-byte chunks
-                for { let offset := 0 } lt(offset, errLength) { offset := add(offset, 0x20) } {
-                    mstore(add(destPtr, offset), mload(add(srcPtr, offset)))
-                }
-                // ----------------------------------------------- Update the free memory pointer
+                let srcPtr := add(data, 0x24)
+                let destPtr := add(slicedData, 0x20)
+                for { let offset := 0 } lt(offset, errLength) {
+                    offset := add(offset, 0x20)
+                } { mstore(add(destPtr, offset), mload(add(srcPtr, offset))) }
                 mstore(0x40, add(slicedData, add(0x20, errLength)))
             }
-            (uint8 index, string memory reason) = abi.decode(slicedData, (uint8, string));
+            (uint8 index, string memory reason) =
+                abi.decode(slicedData, (uint8, string));
 
-            return PlugTypesLib.Result({ index: index, error: reason });
+            $results = PlugTypesLib.Result({ index: index, error: reason });
         }
     }
 }

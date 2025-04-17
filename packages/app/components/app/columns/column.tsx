@@ -6,7 +6,7 @@ import { useAtom } from "jotai"
 
 import { Draggable } from "@hello-pangea/dnd"
 
-import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
+import { ColumnSettings } from "@/components/app/columns/settings/column"
 import { ColumnAdd, OPTIONS } from "@/components/app/columns/utils/column-add"
 import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
@@ -19,7 +19,7 @@ import { SocketCollectionList } from "@/components/app/sockets/collectibles/coll
 import { SocketPositionList } from "@/components/app/sockets/position/position-list"
 import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
 import { Button } from "@/components/shared/buttons/button"
-import { cardColors, cn, formatTitle, useConnect } from "@/lib"
+import { cardColors, cn, formatTitle } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
@@ -36,9 +36,6 @@ export const ConsoleColumn: FC<{
 }> = memo(({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const {
-		account: { session }
-	} = useConnect()
 	const { socket } = useSocket()
 
 	const [column] = useAtom(columnByIndexAtom(index))
@@ -235,7 +232,7 @@ export const ConsoleColumn: FC<{
 								/>
 							</div>
 
-							<div className="flex-1 overflow-y-auto rounded-b-lg">
+							<div className="flex-1 overflow-y-auto overflow-x-hidden rounded-b-lg">
 								{column.key === COLUMNS.KEYS.ADD ? (
 									<ColumnAdd index={column.index} />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
@@ -260,7 +257,7 @@ export const ConsoleColumn: FC<{
 								) : column.key === COLUMNS.KEYS.ADMIN ? (
 									<ConsoleAdmin index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
-									<ConsoleSettings index={column.index} className="p-4" />
+									<ColumnSettings index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (
 									<ColumnApplication index={column.index} />
 								) : (

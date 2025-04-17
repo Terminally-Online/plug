@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { SafeTransferLib } from "solady/utils/SafeTransferLib.sol";
 
@@ -49,7 +49,11 @@ contract PlugEVM {
      * @param blockNumber The block number to get the hash for
      * @return result The requested block hash
      */
-    function getBlockHash(uint256 blockNumber) public view returns (bytes32 result) {
+    function getBlockHash(uint256 blockNumber)
+        public
+        view
+        returns (bytes32 result)
+    {
         require(
             blockNumber < block.number && blockNumber >= block.number - 256,
             "PlugEVM:block-hash-unavailable"
@@ -151,7 +155,11 @@ contract PlugEVM {
      * @param account The address to check
      * @return result The code hash of the address
      */
-    function getCodeHash(address account) public view returns (bytes32 result) {
+    function getCodeHash(address account)
+        public
+        view
+        returns (bytes32 result)
+    {
         return account.codehash;
     }
 

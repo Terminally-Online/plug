@@ -130,7 +130,7 @@ export const Part: FC<PartProps> = memo(
 					.filter(name => validateLinkedInput(`<-{${name}}`, coils[name]))
 					.map(key => [key, coils[key]])
 			)
-		}, [coils, input, validateLinkedInput])
+		}, [coils, validateLinkedInput])
 
 		const isLinked =
 			typeof value?.value === "string" && value?.value?.startsWith("<-{") && value?.value?.endsWith("}")

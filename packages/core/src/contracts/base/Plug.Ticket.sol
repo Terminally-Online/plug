@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { Ownable } from "solady/auth/Ownable.sol";
 import { ERC721 } from "solady/tokens/ERC721.sol";
@@ -92,7 +92,12 @@ contract PlugTicket is Ownable, ERC721 {
     /**
      * See {ERC721-tokenURI}
      */
-    function tokenURI(uint256 $id) public view override returns (string memory) {
+    function tokenURI(uint256 $id)
+        public
+        view
+        override
+        returns (string memory)
+    {
         return string.concat(base, $id.toString());
     }
 }

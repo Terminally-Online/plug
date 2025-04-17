@@ -19,10 +19,7 @@ export const LIVE_PLUGS_TYPES = {
 		{ name: 'slice', type: 'Slice' }
 	],
 	Plug: [
-		{ name: 'selector', type: 'uint8' },
-		{ name: 'to', type: 'address' },
 		{ name: 'data', type: 'bytes' },
-		{ name: 'value', type: 'uint256' },
 		{ name: 'updates', type: 'Update[]' }
 	],
 	Plugs: [
@@ -43,7 +40,7 @@ export const DEFAULT_SCHEMA = {
 			name: 'PlugTypes',
 			filename: 'Plug.Types',
 			license: 'MIT',
-			solidity: '0.8.23'
+			solidity: '0.8.26'
 		},
 		types: EIP712_TYPES,
 		dangerous: {

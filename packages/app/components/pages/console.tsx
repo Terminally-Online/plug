@@ -4,14 +4,15 @@ import { useEffect, useRef } from "react"
 
 import { useAtomValue } from "jotai"
 
-import { useConnect, useMediaQuery } from "@/lib"
-import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
+import { useMediaQuery } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { COLUMNS, primaryColumnsAtom, useColumnActions } from "@/state/columns"
 import { plugsAtom } from "@/state/plugs"
 
 import { DesktopConsole } from "./desktop"
 import { MobileConsole } from "./mobile"
+import { useAccount } from "@/lib/hooks/account/useAccount"
+import { useDisconnect } from "@/lib/hooks/account/useDisconnect"
 
 export const ConsolePage = () => {
 	const hasHandledInitialUrl = useRef(false)
@@ -30,9 +31,7 @@ export const ConsolePage = () => {
 	const router = useRouter()
 	const { md } = useMediaQuery()
 
-	const {
-		account: { address }
-	} = useConnect()
+	const { address } = useAccount()
 	const { disconnect } = useDisconnect(true)
 	const { socket } = useSocket()
 
@@ -40,11 +39,13 @@ export const ConsolePage = () => {
 	const { add } = useColumnActions()
 	const plugs = useAtomValue(plugsAtom)
 
-	useEffect(() => {
-		if (socket.id === address || !socket.id.startsWith("0x")) return
-
-		disconnect()
-	}, [socket, address, disconnect])
+	// useEffect(() => {
+	// 	const isAnonymous = !socket.id.startsWith("0x")
+	// 	const isPotentiallyExpired = !address || socket.id === address
+	// 	if (isAnonymous || isPotentiallyExpired) return
+	//
+	// 	disconnect()
+	// }, [socket, address, disconnect])
 
 	useEffect(() => {
 		if (!socket || !socket.identity) return

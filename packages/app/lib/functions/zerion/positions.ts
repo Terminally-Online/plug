@@ -34,7 +34,6 @@ const prohibitedNameInclusions = [
 const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdrop", "visit"]
 
 const SECOND = 1000
-// const MINUTE = 60 * second
 const POSITIONS_CACHE_TIME = 60 * SECOND
 
 const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
@@ -51,6 +50,8 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 	const data: ZerionPositions = response.data
+
+	console.log('getting position')
 
 	await db.$transaction(async tx => {
 		const positions = data.data
@@ -72,7 +73,6 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 		const fungibleData = positions.map(position => {
 			const { attributes } = position
 
-			// Only save records for chains that we support.
 			const implementations = attributes.fungible_info.implementations
 				.filter(implementation => chains.includes(implementation.chain_id))
 				.map(implementation => ({
@@ -81,13 +81,7 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 					decimals: implementation.decimals
 				}))
 
-			// If Zerion does not have an icon for the fungible, try to find a static token.
-			let icon = attributes.fungible_info.icon?.url ?? "" // Initialize with empty string
-			// if (!icon) {
-			// 	const staticToken = TOKENS.find(t => t.symbol === attributes.fungible_info.symbol)
-			// 	if (staticToken?.logoURI) icon = staticToken.logoURI
-			// }
-			// If we still don't have an icon, try to find it from the llamas.
+			let icon = attributes.fungible_info.icon?.url
 			if (!icon) {
 				const implementation = implementations.sort((a, b) => getChainId(b.chain) - getChainId(a.chain))[0]
 				icon = `https://token-icons.llamao.fi/icons/tokens/${getChainId(implementation.chain)}/${implementation.contract}?h=240&w=240`
@@ -102,12 +96,9 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 			}
 		})
 
-		// Create the fungible assets for each position.
 		await tx.fungible.createMany({
 			data: fungibleData.map(fungible => ({
 				...fungible,
-				// Do not create the implementations for the fungibles because
-				// we will do it right below this in bulk.
 				implementations: undefined
 			})),
 			skipDuplicates: true
@@ -323,11 +314,11 @@ const findPositions = async (id: string, search: string = "") => {
 	})
 
 	const prices = await getPrices(
-		[...tokens.map(token => `${token.implementations[0].chain}:${token.implementations[0].contract}`)].concat(
+		[...tokens.map(token => `${token.implementations[0]?.chain}:${token.implementations[0]?.contract}`)].concat(
 			protocols.flatMap(protocol =>
 				protocol.positions.map(
 					position =>
-						`${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
+						`${position.fungible.implementations[0]?.chain}:${position.fungible.implementations[0]?.contract}`
 				)
 			)
 		)
@@ -362,7 +353,7 @@ const findPositions = async (id: string, search: string = "") => {
 
 				const { price, change } =
 					prices.find(
-						price => price.id === `${token.implementations[0].chain}:${token.implementations[0].contract}`
+						price => price.id === `${token.implementations[0]?.chain}:${token.implementations[0]?.contract}`
 					) || {}
 
 				return {
@@ -385,7 +376,7 @@ const findPositions = async (id: string, search: string = "") => {
 						prices.find(
 							price =>
 								price.id ===
-								`${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`
+								`${fungible.implementations[0]?.chain}:${fungible.implementations[0]?.contract}`
 						) || {}
 
 					return {
@@ -411,7 +402,6 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	})
 
 	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-	// if (socketAddress && socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
 
 	// NOTE: The user can retrieve positions for their own address as well as the
 	// address of their socket. To power this, we store both caches relative to the user
@@ -429,8 +419,9 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 		select: { updatedAt: true }
 	})
 
-	if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
+	if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME)) { 
 		await getZerionPositions(chains, socket.id, socketAddress)
+	}
 
 	return await findPositions(id, search)
 }

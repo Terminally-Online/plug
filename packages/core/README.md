@@ -36,7 +36,7 @@ Built into the scripts are redeploy protection so if you are running a batch dep
 All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Factory.sol` and the base `Plug.Socket.sol` are all found at constant addresses across chains. The only time the address will change when a new version is deployed. This will happen most common for the Socket, but we will always keep the list updated.
 
 ```ml
-[v0.4.2]:
+[v0.5.0]:
 ├─ Mining Configuration:
 │  ├─ Leading Zeros: 4
 │  ├─ Total Zeros: 8
@@ -44,14 +44,16 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
 │  └─ Quick Mode: Yes
 │
 └─ Contracts:
-   ├─ Plug.Assert.sol [256] — "0x0000000005d8F29675fC43df88588bD0D5c0DeC5"
-   ├─ Plug.Boolean.sol [256] — "0x00000000410986831F18E06d908bE25e5Fb949A0"
-   ├─ Plug.Coercion.sol [256] — "0x0000000011fEb9342943e0029Ad2717f5a85F118"
-   ├─ Plug.Database.sol [256] — "0x0000000006d777c8390a5E84Ecb88A6556A1d3B5"
-   ├─ Plug.EVM.sol [256] — "0x000000005DAf9C20a195d6f895c96A226e52Ed98"
-   ├─ Plug.Factory.sol [256] — "0x000000002D0BacD773C6055c22650A6B85a2990B"
-   ├─ Plug.Math.sol [256] — "0x000000000c0352950e3aa28973824f4d01ccec4f"
-   ├─ Plug.Socket.sol [256] — "0x000000000B830571FC0D6456A6Ca2b6ddAa18F6F"
-   ├─ Plug.Ticket.sol [256] — "0x000000006580cEe0D3b8ea5a196F1A038FfD3604"
-   └─ Plug.sol [4217] — "0x000000004C26dFdF00334a42652d5880608647Fb"
+   ├─ Plug.Assert.sol [256] — "0x0000000035F357c2f503DA504B0B7dBDC534539C"
+   ├─ Plug.Boolean.sol [256] — "0x000000000cAF2bfe5bbe3F7BBD5e70aCDCA6D1FE"
+   ├─ Plug.Coercion.sol [256] — "0x0000000034E10d8cA2843b56453A0A373023b792"
+   ├─ Plug.Database.sol [256] — "0x000000002Cea9833a9D2dc60e35846Cbb7fC1442"
+   ├─ Plug.EVM.sol [4217] — "0x000000001B2147E34d7A00925B016e6bC697C9DC"
+   ├─ Plug.Factory.sol [256] — "0x00000000026dF9927AE0fB3CFB5f4ce0298f6C45"
+   ├─ Plug.Math.sol [65536] — "0x0000000000269af70428b90fEC44d94f56b43d21"
+   ├─ Plug.Rewards.sol [256] — "0x000000004234f504f1e759Cb97A4B01c35398289"
+   ├─ Plug.Socket.sol [256] — "0x00000000a0C0e8b03FE11be22Fe8073202E75d64"
+   ├─ Plug.Ticket.sol [256] — "0x000000003525F8830Dbf2eaAdBCEC33cbFC3E79e"
+   ├─ Plug.Token.sol [256] — "0x00000000C3970e7529189339354c7e0f4cdBBF79"
+   └─ Plug.sol [256] — "0x00000000Eb573fC340f1a4e84d487BD9F48069a8"
 ```

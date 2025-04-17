@@ -48,7 +48,7 @@ func New() actions.Protocol {
 					actions.IsEmptyOnchainFunc,
 				),
 				actions.ReadHealthFactor: actions.NewActionDefinition(
-					"Get gealth factor for {0<sub-account:uint8>}",
+					"Get health factor for {0<sub-account:uint8>}",
 					euler_actions.HealthFactor,
 					euler_options.PositionOptions,
 					actions.IsUser,
@@ -81,7 +81,7 @@ func New() actions.Protocol {
 				),
 				actions.ActionWithdrawCollateral: actions.NewActionDefinition(
 					"Withdraw collateral {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>} using {3<sub-account:uint8>}",
-					euler_actions.HandleWithdrawCollateral,
+					euler_actions.HandleWithdraw,
 					euler_options.SupplyTokenToVaultToPositionsOptions,
 					actions.IsUser,
 					actions.IsDynamic,

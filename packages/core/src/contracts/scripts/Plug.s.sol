@@ -1,6 +1,6 @@
 /// SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { Script } from "forge-std/Script.sol";
 import { Plug } from "../base/Plug.sol";
@@ -18,18 +18,22 @@ contract PlugDeployment is Script {
 
         if (PlugEtcherLib.PLUG_FACTORY_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
+                PlugEtcherLib.PLUG_FACTORY_SALT,
+                PlugEtcherLib.PLUG_FACTORY_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_SOCKET_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
+                PlugEtcherLib.PLUG_SOCKET_SALT,
+                PlugEtcherLib.PLUG_SOCKET_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(PlugEtcherLib.PLUG_SALT, PlugEtcherLib.PLUG_INITCODE);
+            PlugEtcherLib.FACTORY.safeCreate2(
+                PlugEtcherLib.PLUG_SALT, PlugEtcherLib.PLUG_INITCODE
+            );
         }
 
         vm.stopBroadcast();

@@ -1,5 +1,23 @@
 # @nftchance/plug-core
 
+## 0.5.0
+
+### Minor Changes
+
+- feat: adjust the way plug data is defined and coils are used
+
+## 0.4.3
+
+### Patch Changes
+
+- feat: much improved socket address calculation and handling
+
+## 0.4.2
+
+### Patch Changes
+
+- 98c9299: feat: version bump to 0.8.26
+
 ## 0.4.1
 
 ### Patch Changes

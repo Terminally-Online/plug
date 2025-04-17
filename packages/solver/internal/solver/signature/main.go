@@ -64,6 +64,33 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 	return salt, nil
 }
 
+func getSliceHash(slice coil.Slice) [32]byte {
+	return crypto.Keccak256Hash(
+		[]byte(SLICE_TYPEHASH),
+		[]byte{slice.Index},
+		common.LeftPadBytes(slice.Start.Bytes(), 32),
+		common.LeftPadBytes(slice.Length.Bytes(), 32),
+	)
+}
+
+func getUpdateHash(update coil.Update) [32]byte {
+	sliceHash := getSliceHash(update.Slice)
+	return crypto.Keccak256Hash(
+		[]byte(UPDATE_TYPEHASH),
+		common.LeftPadBytes(update.Start.Bytes(), 32),
+		sliceHash[:],
+	)
+}
+
+func getUpdateArrayHash(updates []coil.Update) [32]byte {
+	var encoded []byte
+	for _, update := range updates {
+		hash := getUpdateHash(update)
+		encoded = append(encoded, hash[:]...)
+	}
+	return crypto.Keccak256Hash(encoded)
+}
+
 func GetPlugHash(plug Plug) [32]byte {
 	updateArrayHash := getUpdateArrayHash(plug.Updates)
 
@@ -77,44 +104,6 @@ func GetPlugHash(plug Plug) [32]byte {
 	)
 }
 
-func getUpdateArrayHash(updates []coil.Update) [32]byte {
-	var encoded []byte
-	for _, update := range updates {
-		hash := getUpdateHash(update)
-		encoded = append(encoded, hash[:]...)
-	}
-	return crypto.Keccak256Hash(encoded)
-}
-
-func getUpdateHash(update coil.Update) [32]byte {
-	sliceHash := getSliceHash(update.Slice)
-	return crypto.Keccak256Hash(
-		[]byte(UPDATE_TYPEHASH),
-		common.LeftPadBytes(update.Start.Bytes(), 32),
-		sliceHash[:],
-	)
-}
-
-func getSliceHash(slice coil.Slice) [32]byte {
-	return crypto.Keccak256Hash(
-		[]byte(SLICE_TYPEHASH),
-		[]byte{slice.Index},
-		common.LeftPadBytes(slice.Start.Bytes(), 32),
-		common.LeftPadBytes(slice.Length.Bytes(), 32),
-	)
-}
-
-func GetPlugsHash(plugs Plugs) [32]byte {
-	plugArrayHash := GetPlugArrayHash(plugs.Plugs)
-	return crypto.Keccak256Hash(
-		[]byte(PLUGS_TYPEHASH),
-		plugs.Socket.Bytes(),
-		plugArrayHash[:],
-		crypto.Keccak256(plugs.Solver),
-		crypto.Keccak256(plugs.Salt),
-	)
-}
-
 func GetPlugArrayHash(plugs []Plug) [32]byte {
 	var encoded []byte
 	for _, plug := range plugs {
@@ -125,12 +114,14 @@ func GetPlugArrayHash(plugs []Plug) [32]byte {
 	return crypto.Keccak256Hash(encoded)
 }
 
-func GetLivePlugArrayHash(livePlugs LivePlugs) [32]byte {
-	plugsHash := GetPlugsHash(livePlugs.Plugs)
+func GetPlugsHash(plugs Plugs) [32]byte {
+	plugArrayHash := GetPlugArrayHash(plugs.Plugs)
 	return crypto.Keccak256Hash(
-		[]byte(LIVE_PLUGS_TYPEHASH),
-		plugsHash[:],
-		crypto.Keccak256(livePlugs.Signature),
+		[]byte(PLUGS_TYPEHASH),
+		plugs.Socket.Bytes(),
+		plugArrayHash[:],
+		crypto.Keccak256(plugs.Solver),
+		crypto.Keccak256(plugs.Salt),
 	)
 }
 

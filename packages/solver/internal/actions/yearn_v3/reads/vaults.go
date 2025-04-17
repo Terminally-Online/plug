@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"solver/internal/actions/yearn_v3/types"
 	"solver/internal/utils"
+	"strings"
 )
 
 func GetVaults(chainId uint64, force ...bool) ([]types.YearnVault, error) {
@@ -30,4 +31,19 @@ func GetVaults(chainId uint64, force ...bool) ([]types.YearnVault, error) {
 	}
 
 	return endorsedVaults, nil
+}
+
+func GetVault(chainId uint64, vaultAddress string) (*types.YearnVault, error) {
+	vaults, err := GetVaults(chainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vaults: %v", err)
+	}
+
+	for _, vault := range vaults {
+		if strings.EqualFold(vault.Address, vaultAddress) {
+			return &vault, nil
+		}
+	}
+
+	return nil, fmt.Errorf("vault not found: %s", vaultAddress)
 }

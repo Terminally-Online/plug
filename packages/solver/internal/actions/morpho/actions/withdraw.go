@@ -8,6 +8,7 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/morpho/reads"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -15,13 +16,18 @@ import (
 )
 
 type WithdrawRequest struct {
-	Amount string `json:"amount"`
-	Token  string `json:"token"`
-	Target string `json:"target"`
+	Amount coil.CoilInput[string, *big.Int] `json:"amount"`
+	Token  string                           `json:"token"`
+	Target string                           `json:"target"`
 }
 
-var WithdrawFunc = actions.ActionOnchainFunctionResponse{
+var WithdrawMarketFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     morpho_router.MorphoRouterMetaData,
+	FunctionName: "withdraw",
+}
+
+var WithdrawVaultFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     morpho_vault.MorphoVaultMetaData,
 	FunctionName: "withdraw",
 }
 
@@ -31,34 +37,39 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	amount, err := utils.StringToUint(lookup.Inputs.Amount, decimals)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert withdraw collateral amount to uint: %w", err)
-	}
-
+	// Differentiate handling for vault and market
 	if len(lookup.Inputs.Target) == 42 {
-		_, err := reads.GetVault(lookup.Inputs.Target, lookup.ChainId)
+		var amountUpdates []coil.Update
+		amount, amountUpdates, err := actions.GetAndUpdate(
+			&lookup.Inputs.Amount,
+			lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+			&WithdrawVaultFunc,
+			"assets",
+			amountUpdates,
+			lookup.PreviousActionDefinition,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = reads.GetVault(lookup.Inputs.Target, lookup.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get vault: %w", err)
 		}
 
-		vaultAbi, err := morpho_vault.MorphoVaultMetaData.GetAbi()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get vault abi: %w", err)
-		}
-		withdrawCalldata, err := vaultAbi.Pack(
-			"withdraw",
+		withdrawCalldata, err := WithdrawVaultFunc.GetCalldata(
 			amount,
 			lookup.From,
 			lookup.From,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
+			return nil, utils.ErrTransaction(err.Error())
 		}
 
 		return []signature.Plug{{
-			To:   common.HexToAddress(lookup.Inputs.Target),
-			Data: withdrawCalldata,
+			To:      common.HexToAddress(lookup.Inputs.Target),
+			Data:    withdrawCalldata,
+			Updates: amountUpdates,
 		}}, nil
 	}
 
@@ -67,7 +78,20 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
-	withdrawCalldata, err := WithdrawFunc.GetCalldata(
+	var amountUpdates []coil.Update
+	amount, amountUpdates, err := actions.GetAndUpdate(
+		&lookup.Inputs.Amount,
+		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
+		&WithdrawMarketFunc,
+		"assets",
+		amountUpdates,
+		lookup.PreviousActionDefinition,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	withdrawCalldata, err := WithdrawMarketFunc.GetCalldata(
 		market.Params,
 		amount,
 		big.NewInt(0),
@@ -79,7 +103,8 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
-		Data: withdrawCalldata,
+		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		Data:    withdrawCalldata,
+		Updates: amountUpdates,
 	}}, nil
 }

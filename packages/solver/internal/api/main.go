@@ -12,6 +12,7 @@ import (
 	"solver/internal/solver"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func SetupRouter(s *solver.Solver) *mux.Router {
@@ -20,6 +21,7 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 
 	r.Use(m.Json)
 	r.Use(m.Timeout)
+	r.Use(m.Metrics)
 
 	r.Handle("/health", health.GetHealth()).Methods(http.MethodGet)
 
@@ -49,11 +51,14 @@ func SetupRouter(s *solver.Solver) *mux.Router {
 
 	killable.Handle("/solver", intent.Get(s)).Methods(http.MethodGet)
 	killable.Handle("/solver", intent.Post(s)).Methods(http.MethodPost)
+	killable.Handle("/solver/intent/sign", intent.Sign(s)).Methods(http.MethodPost)
 
 	openapi := open_api.SetupOpenAPIRoutes(r)
 	r.Handle("/openapi.json", openapi).Methods(http.MethodGet)
 	r.Handle("/openapi", openapi).Methods(http.MethodGet).Queries("format", "{format}")
 	r.HandleFunc("/docs", open_api.DocsRequest).Methods(http.MethodGet)
+
+	r.Handle("/metrics", promhttp.Handler()).Methods(http.MethodGet)
 
 	return r
 }

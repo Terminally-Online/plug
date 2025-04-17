@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity ^0.8.26;
 
 import { Vm } from "forge-std/Vm.sol";
 import { PRBTest } from "@prb/test/PRBTest.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 
 import { PlugEtcherLib } from "../../libraries/Plug.Etcher.Lib.sol";
-import { PlugLib, PlugTypesLib, PlugAddressesLib } from "../../libraries/Plug.Lib.sol";
+import {
+    PlugLib,
+    PlugTypesLib,
+    PlugAddressesLib
+} from "../../libraries/Plug.Lib.sol";
+import { PlugCoilLib } from "../../libraries/Plug.Coil.Lib.sol";
 
 import { LibClone } from "solady/utils/LibClone.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
@@ -54,7 +59,9 @@ abstract contract TestPlus {
             let r1 := mload(0x20)
 
             let cSize := add(codesize(), iszero(codesize()))
-            if iszero(lt(cSize, 32)) { cSize := sub(cSize, and(mload(0x02), 0x1f)) }
+            if iszero(lt(cSize, 32)) {
+                cSize := sub(cSize, and(mload(0x02), 0x1f))
+            }
             let start := mod(mload(0x10), cSize)
             let size := mul(sub(cSize, start), gt(cSize, start))
             let times := div(0x7ffff, cSize)
@@ -96,7 +103,8 @@ abstract contract TestPlus {
         /// @solidity memory-safe-assembly
         assembly {
             // This is the keccak256 of a very long string I randomly mashed on my keyboard.
-            let sSlot := 0xd715531fe383f818c5f158c342925dcf01b954d24678ada4d07c36af0f20e1ee
+            let sSlot :=
+                0xd715531fe383f818c5f158c342925dcf01b954d24678ada4d07c36af0f20e1ee
             let sValue := sload(sSlot)
 
             mstore(0x20, sValue)
@@ -123,16 +131,25 @@ abstract contract TestPlus {
                 // With a 1/2 chance, set `r` to near a random power of 2.
                 if iszero(and(2, d)) {
                     // Set `t` either `not(0)` or `xor(sValue, r)`.
-                    let t := xor(not(0), mul(iszero(and(4, d)), not(xor(sValue, r))))
+                    let t :=
+                        xor(not(0), mul(iszero(and(4, d)), not(xor(sValue, r))))
                     // Set `r` to `t` shifted left or right by a random multiple of 8.
                     switch and(8, d)
                     case 0 {
                         if iszero(and(16, d)) { t := 1 }
-                        r := add(shl(shl(3, and(byte(3, r), 0x1f)), t), sub(and(r, 7), 3))
+                        r :=
+                            add(
+                                shl(shl(3, and(byte(3, r), 0x1f)), t),
+                                sub(and(r, 7), 3)
+                            )
                     }
                     default {
                         if iszero(and(16, d)) { t := shl(255, 1) }
-                        r := add(shr(shl(3, and(byte(3, r), 0x1f)), t), sub(and(r, 7), 3))
+                        r :=
+                            add(
+                                shr(shl(3, and(byte(3, r), 0x1f)), t),
+                                sub(and(r, 7), 3)
+                            )
                     }
                     // With a 1/2 chance, negate `r`.
                     if iszero(and(0x20, d)) { r := not(r) }
@@ -146,14 +163,20 @@ abstract contract TestPlus {
     }
 
     /// @dev Returns a random signer and its private key.
-    function _randomSigner() internal returns (address signer, uint256 privateKey) {
-        uint256 privateKeyMax = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140;
+    function _randomSigner()
+        internal
+        returns (address signer, uint256 privateKey)
+    {
+        uint256 privateKeyMax =
+            0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140;
         privateKey = _hem(_random(), 1, privateKeyMax);
         /// @solidity memory-safe-assembly
         assembly {
             mstore(0x00, 0xffa18649) // `addr(uint256)`.
             mstore(0x20, privateKey)
-            if iszero(call(gas(), _VM_ADDRESS, 0, 0x1c, 0x24, 0x00, 0x20)) { revert(0, 0) }
+            if iszero(call(gas(), _VM_ADDRESS, 0, 0x1c, 0x24, 0x00, 0x20)) {
+                revert(0, 0)
+            }
             signer := mload(0x00)
         }
     }
@@ -191,7 +214,11 @@ abstract contract TestPlus {
         /// @solidity memory-safe-assembly
         assembly {
             let m := mload(twoWords)
-            m := add(m, mul(and(keccak256(0x00, twoWords), 0x1f), iszero(and(m, 0x1f))))
+            m :=
+                add(
+                    m,
+                    mul(and(keccak256(0x00, twoWords), 0x1f), iszero(and(m, 0x1f)))
+                )
             mstore(twoWords, m)
         }
     }
@@ -234,9 +261,15 @@ abstract contract TestPlus {
             let length := mload(s)
             let lastWord := mload(add(add(s, 0x20), and(length, not(0x1f))))
             let remainder := and(length, 0x1f)
-            if remainder { if shl(mul(8, remainder), lastWord) { notZeroRightPadded := 1 } }
+            if remainder {
+                if shl(mul(8, remainder), lastWord) { notZeroRightPadded := 1 }
+            }
             // Check if the memory allocated is sufficient.
-            if length { if gt(add(add(s, 0x20), length), mload(0x40)) { insufficientMalloc := 1 } }
+            if length {
+                if gt(add(add(s, 0x20), length), mload(0x40)) {
+                    insufficientMalloc := 1
+                }
+            }
         }
         if (notZeroRightPadded) {
             revert("Not zero right padded!");
@@ -344,11 +377,22 @@ abstract contract TestPlus {
                 let n := mload(ic2fBytecode)
                 mstore(add(m, 0x60), n)
                 for { let i := 0 } lt(i, n) { i := add(0x20, i) } {
-                    mstore(add(add(m, 0x80), i), mload(add(add(ic2fBytecode, 0x20), i)))
+                    mstore(
+                        add(add(m, 0x80), i),
+                        mload(add(add(ic2fBytecode, 0x20), i))
+                    )
                 }
-                if iszero(call(gas(), _VM_ADDRESS, 0, add(m, 0x1c), add(n, 0x64), 0x00, 0x00)) {
-                    revert(0, 0)
-                }
+                if iszero(
+                    call(
+                        gas(),
+                        _VM_ADDRESS,
+                        0,
+                        add(m, 0x1c),
+                        add(n, 0x64),
+                        0x00,
+                        0x00
+                    )
+                ) { revert(0, 0) }
             }
         }
         /// @solidity memory-safe-assembly
@@ -361,9 +405,22 @@ abstract contract TestPlus {
             mstore(add(m, 0x60), n)
             // prettier-ignore
             for { let i := 0 } lt(i, n) { i := add(i, 0x20) } {
-                mstore(add(add(m, 0x80), i), mload(add(add(initializationCode, 0x20), i)))
+                mstore(
+                    add(add(m, 0x80), i),
+                    mload(add(add(initializationCode, 0x20), i))
+                )
             }
-            if iszero(call(gas(), c2f, payableAmount, add(m, 0x1c), add(n, 0x64), m, 0x20)) {
+            if iszero(
+                call(
+                    gas(),
+                    c2f,
+                    payableAmount,
+                    add(m, 0x1c),
+                    add(n, 0x64),
+                    m,
+                    0x20
+                )
+            ) {
                 returndatacopy(m, m, returndatasize())
                 revert(m, returndatasize())
             }
@@ -470,13 +527,18 @@ abstract contract TestPlug is TestPlus {
     }
 
     function deployFactory() internal virtual returns (PlugFactory $factory) {
-        vm.etch(PlugEtcherLib.PLUG_FACTORY_ADDRESS, address(new PlugFactory()).code);
+        vm.etch(
+            PlugEtcherLib.PLUG_FACTORY_ADDRESS, address(new PlugFactory()).code
+        );
         $factory = PlugFactory(payable(PlugEtcherLib.PLUG_FACTORY_ADDRESS));
     }
 
     function deployVault() internal virtual returns (PlugSocket $vault) {
-        (, address vaultAddress) =
-            factory.deploy(abi.encode(uint96(0), signer, oneClicker, address(socketImplementation)));
+        (, address vaultAddress) = factory.deploy(
+            abi.encode(
+                uint96(0), signer, oneClicker, address(socketImplementation)
+            )
+        );
         $vault = PlugSocket(payable(vaultAddress));
     }
 
@@ -491,14 +553,10 @@ abstract contract TestPlug is TestPlus {
         returns (PlugTypesLib.Plug memory $plug)
     {
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](0);
-        $plug = PlugTypesLib.Plug({
-            // Use TYPE_CALL_WITH_VALUE (0x02) for value transfers
-            selector: $value > 0 ? 0x02 : 0x00,
-            to: $to,
-            data: $data,
-            value: $value,
-            updates: updates
-        });
+        bytes memory data =
+            abi.encode($value > 0 ? 0x02 : 0x00, $to, $value, $data);
+
+        $plug = PlugTypesLib.Plug({ data: data, updates: updates });
     }
 
     function createPlug(
@@ -525,8 +583,12 @@ abstract contract TestPlug is TestPlus {
                     $plugType
                 );
             } else {
-                $plug =
-                    createPlug(0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E, $value, "", $plugType);
+                $plug = createPlug(
+                    0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E,
+                    $value,
+                    "",
+                    $plugType
+                );
             }
         }
     }
@@ -568,7 +630,9 @@ abstract contract TestPlug is TestPlus {
         view
         returns (PlugTypesLib.Plugs memory $plugs)
     {
-        $plugs = createPlugs(address(socket), $plugsArray, abi.encode($expiration, $solver));
+        $plugs = createPlugs(
+            address(socket), $plugsArray, abi.encode($expiration, $solver)
+        );
     }
 
     function createPlugs(PlugTypesLib.Plug[] memory $plugsArray)
@@ -590,7 +654,8 @@ abstract contract TestPlug is TestPlus {
         bytes32 digest = $socket.getPlugsDigest($plugs);
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
-        $livePlugs = PlugTypesLib.LivePlugs({ plugs: $plugs, signature: signature });
+        $livePlugs =
+            PlugTypesLib.LivePlugs({ plugs: $plugs, signature: signature });
     }
 
     function createLivePlugs(PlugTypesLib.Plugs memory $plugs)
@@ -618,8 +683,9 @@ abstract contract TestPlug is TestPlus {
         view
         returns (PlugTypesLib.LivePlugs memory $livePlugs)
     {
-        PlugTypesLib.Plugs memory plugs =
-            createPlugs($plugsArray, uint48(block.timestamp + 3 minutes), $solver);
+        PlugTypesLib.Plugs memory plugs = createPlugs(
+            $plugsArray, uint48(block.timestamp + 3 minutes), $solver
+        );
         $livePlugs = createLivePlugs(socket, plugs);
     }
 }

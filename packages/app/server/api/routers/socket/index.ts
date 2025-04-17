@@ -5,22 +5,39 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { getSocketAddress, getSocketSalt } from "@terminallyonline/plug-core/lib"
-
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
-import { companion } from "./companion"
 import { onboard } from "./onboard"
 import { referral } from "./referral"
 import { stats } from "./stats"
+import { env } from "@/env"
+import { getSocketAddress, getSocketFactory, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
 
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
 export const MAGIC_NONCE = BigInt(1738)
 
-// NOTE: This client can be only mainnet because it is only used for ENS lookups
 const client = createClient(mainnet.id)
+
+const getDeployment = async (admin: `0x${string}`) => {
+	const { deployment: { address: factory } } = getSocketFactory()
+	const { deployment: { address: implementation } } = getSocketImplementation()
+	const { hex: salt } = getSocketSalt(
+		MAGIC_NONCE,
+		admin as `0x${string}`,
+	)
+	const { address: socketAddress } = await getSocketAddress(salt as `0x${string}`)
+
+	return {
+		socketAddress,
+		deploymentFactory: factory,
+		deploymentNonce: parseInt(MAGIC_NONCE.toString()),
+		deploymentDelegate: env.SOLVER_DELEGATE_ADDRESS,
+		deploymentImplementation: implementation,
+		deploymentSalt: salt
+	} as const
+}
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ ctx }) => {
@@ -48,16 +65,29 @@ export const socket = createTRPCRouter({
 			}
 		}
 
-		let socketAddress = ""
-		let salt = ""
-		let implementation = ""
 
+		let socketAddress = ctx.session.address
+		let factory = undefined
+		let nonce = undefined
+		let delegate = undefined
+		let implementation = undefined
+		let salt = undefined
 		if (ctx.session.address.startsWith("0x")) {
-			const { bytes, hex } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
-			const socketDetails = getSocketAddress(bytes)
-			socketAddress = socketDetails.address
-			salt = hex
-			implementation = socketDetails.implementation
+			const { 
+				socketAddress: deploymentSocketAddress,
+				deploymentFactory,
+				deploymentNonce, 
+				deploymentDelegate, 
+				deploymentImplementation, 
+				deploymentSalt 
+			} = await getDeployment(ctx.session.address as `0x${string}`)
+
+			socketAddress = deploymentSocketAddress
+			factory = deploymentFactory
+			nonce = deploymentNonce
+			delegate = deploymentDelegate
+			implementation = deploymentImplementation
+			salt = deploymentSalt
 		}
 
 		await ctx.db.socket.upsert({
@@ -65,8 +95,11 @@ export const socket = createTRPCRouter({
 			create: {
 				id: ctx.session.address,
 				socketAddress,
-				salt,
-				implementation,
+				deploymentFactory: factory,
+				deploymentNonce: parseInt(MAGIC_NONCE.toString()),
+				deploymentDelegate: delegate,
+				deploymentImplementation: implementation,
+				deploymentSalt: salt,
 				identity: {
 					create: {
 						ens: {
@@ -75,13 +108,6 @@ export const socket = createTRPCRouter({
 								avatar
 							}
 						},
-						companion: {
-							create: {
-								name: "New Companion",
-								feedCount: 0,
-								treatsFed: 0
-							}
-						}
 					}
 				}
 			},
@@ -99,16 +125,6 @@ export const socket = createTRPCRouter({
 									}
 								}
 							},
-							companion: {
-								connectOrCreate: {
-									where: { socketId: ctx.session.address },
-									create: {
-										name: "New Companion",
-										feedCount: 0,
-										treatsFed: 0
-									}
-								}
-							}
 						},
 						update: {
 							ens: {
@@ -117,17 +133,6 @@ export const socket = createTRPCRouter({
 									data: { name, avatar, updatedAt: new Date() }
 								}
 							},
-							companion: {
-								upsert: {
-									where: { socketId: ctx.session.address },
-									create: {
-										name: "New Companion",
-										feedCount: 0,
-										treatsFed: 0
-									},
-									update: {}
-								}
-							}
 						}
 					}
 				}
@@ -211,7 +216,6 @@ export const socket = createTRPCRouter({
 		}),
 
 	balances,
-	companion,
 	referral,
 	stats,
 	onboard
