@@ -148,8 +148,8 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 	return plugs, nil
 }
 
-func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from string) (*signature.LivePlugs, error) {
-	solver, err := signature.GetSolverHash()
+func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from string, signatureExpirationMinutes int) (*signature.LivePlugs, error) {
+	solver, err := signature.GetSolverHash(signatureExpirationMinutes)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +269,7 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		return nil, err
 	}
 
-	livePlugs, err := s.GetLivePlugs(plugs, intent.ChainId, intent.From)
+	livePlugs, err := s.GetLivePlugs(plugs, intent.ChainId, intent.From, intent.SignatureExpirationMinutes)
 	if err != nil {
 		return nil, err
 	}

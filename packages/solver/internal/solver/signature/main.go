@@ -30,12 +30,12 @@ const (
 	SELECTOR_STATICCALL      = 3
 )
 
-func GetSolverHash() ([]byte, error) {
-	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
-	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
+func GetSolverHash(expirationMinutes int) ([]byte, error) {
+	// NOTE: This sets the expiration of a Solver provided order to an intent set variable minutes from now so that
+	//       our Solver cannot sign a message, someone else get a hold if it and execute way in the future or us
 	//       end up having the case where things are Plugs are not properly executed because they are being
 	//       executed 10k blocks late after it was held from execution.
-	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
+	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(int64(expirationMinutes*60)))
 	solver, err := abi.Arguments{
 		{Type: abi.Type{T: abi.UintTy, Size: 48}},
 		{Type: abi.Type{T: abi.AddressTy}},
