@@ -44,19 +44,14 @@ jobs:
                     echo "needs_merge=true" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Merge main into staging
+            - name: Update staging with main changes
               if: steps.check-branches.outputs.needs_merge == 'true'
               run: |
-                  # Check if staging branch exists
-                  if git show-ref --verify --quiet refs/remotes/origin/staging; then
-                    git checkout staging
-                  else
-                    # Create staging branch if it doesn't exist
-                    git checkout -b staging
-                  fi
-
-                  git merge --no-ff origin/main -m "Auto-merge main into staging" || {
-                      echo "Merge conflict occurred. Manual intervention required."
-                      exit 1
-                  }                  
+                  git checkout staging
+                  git merge origin/main -m "chore: sync staging with main" || {
+                    echo "⚠️ Merge conflict occurred! This requires manual resolution."
+                    echo "The staging branch has changes that conflict with main."
+                    exit 1
+                  }
+                  
                   git push origin staging
