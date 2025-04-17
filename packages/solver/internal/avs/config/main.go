@@ -11,6 +11,7 @@ import (
 
 var (
 	ChainId           = int64(8453)
+	UseAVS            = utils.GetEnvOrDefault("USE_AVS", "false") == "true"
 	Production        = utils.GetEnvOrDefault("AVS_ENV", "development") == "production"
 	SolverUrl         = utils.GetEnvOrDefault("SOLVER_URL", "http://localhost:8080")
 	PrivateKey        = utils.GetEnvOrDefault("PRIVATE_KEY", "")

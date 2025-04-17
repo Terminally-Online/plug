@@ -137,7 +137,6 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 			return nil, utils.ErrBuild(err.Error())
 		}
 
-		// Store the current action as prevAction for the next iteration
 		prevAction = &action
 	}
 
@@ -213,7 +212,6 @@ func (s *Solver) SolveEOA(intent *models.Intent, simulate bool) (solution *Solut
 
 	var run *models.Run
 
-	// Safely handle the simulate option to prevent crashes from type assertions
 	shouldSimulate := false
 	if simulate {
 		if simulateVal, ok := intent.Options["simulate"]; ok && simulateVal != nil {
@@ -332,24 +330,10 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		return nil, fmt.Errorf("failed to save pending run: %v", err)
 	}
 
-	result := &Solution{
+	return &Solution{
 		Run:       run,
 		LivePlugs: livePlugs,
-	}
-
-	// TODO: I have no idea what this was doing and I commented it out and cannot decipher it right now.
-	//       I will come back here myself or when I realize this caused a regression. - CHANCE
-	if livePlugs != nil {
-		// routerAddress := livePlugs.GetRouterAddress()
-		// routerPlug := &signature.MinimalPlug{
-		// 	To:    routerAddress,
-		// 	Data:  callData,
-		// 	Value: big.NewInt(0),
-		// }
-		// result.Transactions = routerPlug
-	}
-
-	return result, nil
+	}, nil
 }
 
 func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solution *Solution, err error) {

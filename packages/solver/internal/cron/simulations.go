@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"solver/internal/avs/config"
 	"solver/internal/avs/streams"
 	"solver/internal/database"
 	"solver/internal/database/models"
@@ -11,11 +12,7 @@ import (
 	"time"
 )
 
-func SubmitAVSTask(solution *solver.Solution, err error) error {
-	if err != nil {
-		return err
-	}
-
+func SubmitToAVS(solution *solver.Solution) error {
 	if len(solution.LivePlugs.Plugs.Plugs) == 0 || solution.Run.Status != "success" {
 		return nil
 	}
@@ -42,6 +39,22 @@ func SubmitAVSTask(solution *solver.Solution, err error) error {
 
 	log.Printf("Published intent %s to Circuit stream", solution.IntentId)
 	return nil
+}
+
+func SubmitToMempool(solution *solver.Solution) (error) {
+	return nil
+}
+
+func Submit(solution *solver.Solution, err error) error {
+	if err != nil {
+		return err
+	}
+
+	if config.UseAVS {
+		return SubmitToAVS(solution)
+	}
+
+	return SubmitToMempool(solution)
 }
 
 func Simulations(s *solver.Solver) {
@@ -73,12 +86,11 @@ func Simulations(s *solver.Solver) {
 		}
 
 		if intent.Locked {
-			// TODO: Need to actually simulate this before kicking it off.
-			if err := SubmitAVSTask(s.RebuildSolutionFromModels(&intent)); err != nil {
+			if err := Submit(s.RebuildSolutionFromModels(&intent)); err != nil {
 				log.Printf("failed to submit intent execution task to avs")
 			}
-		} else if err := SubmitAVSTask(s.Solve(&intent, true, true)); err != nil {
-			log.Printf("failed to submit intent execution task to avs")
+		} else if err := Submit(s.Solve(&intent, true, true)); err != nil {
+			log.Printf("failed to submit intent execution")
 		} else {
 			log.Printf("failed to simulate intent")
 		}
