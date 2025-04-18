@@ -20,6 +20,7 @@ const STATUS_CONFIG: Record<
 	upcoming: { color: "text-blue-400", Icon: Loader },
 	completed: { color: "text-blue-400", Icon: CheckCircle },
 	active: { color: "text-blue-400", Icon: Play },
+	running: { color: "text-blue-400", Icon: Loader },
 	paused: { color: "text-plug-green", Icon: Pause },
 	success: { color: "text-plug-green", Icon: CheckCircle },
 	failure: { color: "text-plug-red", Icon: XCircle },
