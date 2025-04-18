@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// TODO: Mason -- what is field doing here exactly? Think I can rip it out but I see how it might help make defining the error message easier.
 type SolverError struct {
 	Message    string `json:"message"`
 	Field      string `json:"status,omitempty"`
