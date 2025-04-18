@@ -8,6 +8,7 @@ import (
 	"solver/internal/database/models"
 	"solver/internal/database/types"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -80,7 +81,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
+		return nil, utils.ErrSimulationFailed(err.Error())
 	}
 
 	// Create run object with results
@@ -181,7 +182,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", simTx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
+		return nil, utils.ErrSimulationFailed(err.Error())
 	}
 
 	// Create run object with results

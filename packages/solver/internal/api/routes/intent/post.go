@@ -65,9 +65,9 @@ func PostRequest(w http.ResponseWriter, r *http.Request, c *redisv8.Client, s *s
 		solution, solveErr = s.Solve(intent, true, false)
 		return solveErr
 	})
-	
+
 	if err != nil {
-		utils.RespondWithError(w, utils.ErrInternal("failed to solve intent: "+err.Error()))
+		utils.RespondWithError(w, err)
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {
 			utils.RespondWithError(w, utils.ErrInternal("failed to encode response: "+err.Error()))

@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // TODO: Mason -- what is field doing here exactly? Think I can rip it out but I see how it might help make defining the error message easier.
@@ -97,6 +98,54 @@ var (
 			Field:      field,
 			Message:    fmt.Sprintf("%d is not a valid chainId", value),
 			StatusCode: http.StatusBadRequest,
+		}
+	}
+
+	// note, kind of guessing with most of these error messages. We can remove or cleanup them as we start to see them in the wild
+	ErrSimulationFailed = func(error string) SolverError {
+		switch {
+		case strings.Contains(error, "insufficient funds for gas"):
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    "insufficient funds for gas",
+				StatusCode: http.StatusConflict,
+			}
+		case strings.Contains(error, "execution reverted"):
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    "execution reverted",
+				StatusCode: http.StatusConflict,
+			}
+		case strings.Contains(error, "out of gas"):
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    "transaction ran out of gas",
+				StatusCode: http.StatusConflict,
+			}
+		case strings.Contains(error, "gas limit reached"):
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    "gas limit exceeded",
+				StatusCode: http.StatusConflict,
+			}
+		case strings.Contains(error, "insufficient balance"):
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    "insufficient balance for transfer",
+				StatusCode: http.StatusConflict,
+			}
+		case strings.Contains(error, "insufficient allowance"):
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    "insufficient token allowance",
+				StatusCode: http.StatusConflict,
+			}
+		default:
+			return SolverError{
+				Type:       "SimulationFailed",
+				Message:    fmt.Sprintf("simulation failed: %s", error),
+				StatusCode: http.StatusInternalServerError,
+			}
 		}
 	}
 
