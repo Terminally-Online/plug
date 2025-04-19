@@ -47,14 +47,13 @@ var (
 		actions.IsDynamic,
 		&plug_actions.BalanceFunc,
 	)
-	ReadPrice = actions.NewActionDefinitionWithCoils(
+	ReadPrice = actions.NewActionDefinition(
 		ReadPriceSentence,
 		plug_actions.Price,
 		plug_options.PriceOptions,
 		actions.IsUser,
 		actions.IsDynamic,
 		&plug_actions.PriceFunc,
-		map[string]string{"price": "uint256"},
 	)
 )
 
