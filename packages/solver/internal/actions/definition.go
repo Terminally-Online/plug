@@ -263,39 +263,3 @@ func (d *ActionDefinition[T]) GetCoilKeys() (map[string]string, error) {
 
 	return coilKeys, nil
 }
-
-func NewActionDefinitionWithCoils[T any](
-	sentence string,
-	action ActionFunc[T],
-	options ActionOptionsFunc[T],
-	isUserSpecific bool,
-	isSearchable bool,
-	response *ActionOnchainFunctionResponse,
-	explicitCoilKeys map[string]string,
-) ActionDefinitionInterface {
-	return &ActionDefinitionWithCoils[T]{
-		ActionDefinition: ActionDefinition[T]{
-			Sentence:       sentence,
-			Handler:        action,
-			Options:        options,
-			IsUserSpecific: isUserSpecific,
-			IsSearchable:   isSearchable,
-			Response:       response,
-		},
-		explicitCoilKeys: explicitCoilKeys,
-	}
-}
-
-// ActionDefinitionWithCoils extends ActionDefinition with explicit coil information
-type ActionDefinitionWithCoils[T any] struct {
-	ActionDefinition[T]
-	explicitCoilKeys map[string]string
-}
-
-// Override GetCoilKeys to use the explicit coil mapping
-func (d *ActionDefinitionWithCoils[T]) GetCoilKeys() (map[string]string, error) {
-	if d.explicitCoilKeys != nil {
-		return d.explicitCoilKeys, nil
-	}
-	return d.ActionDefinition.GetCoilKeys()
-}
