@@ -113,7 +113,7 @@ func GetArgumentsCoilPosition(arguments *abi.Arguments, inputName *string, input
 		return nil, fmt.Errorf("arguments cannot be nil")
 	}
 
-	var currentPos uint = 0 // No function selector (4 bytes) for Arguments
+	var currentPos uint = 0
 
 	for i, input := range *arguments {
 		if (inputName != nil && input.Name == *inputName) ||

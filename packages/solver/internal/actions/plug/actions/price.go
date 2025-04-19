@@ -49,6 +49,7 @@ func Price(lookup *actions.SchemaLookup[PriceRequest]) ([]signature.Plug, error)
 	}
 
 	return []signature.Plug{{
-		Data: packedData,
+		Selector: signature.ForwardedCall,
+		Data:     packedData,
 	}}, nil
 }

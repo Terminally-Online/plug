@@ -96,7 +96,7 @@ func GetPlugHash(plug Plug) [32]byte {
 
 	return crypto.Keccak256Hash(
 		[]byte(PLUG_TYPEHASH),
-		[]byte{plug.Selector},
+		[]byte{uint8(plug.Selector)},
 		plug.To.Bytes(),
 		crypto.Keccak256(plug.Data),
 		common.LeftPadBytes(plug.Value.Bytes(), 32),

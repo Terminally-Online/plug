@@ -37,10 +37,20 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
+type Selector uint8
+
+var (
+	Call          Selector = 0
+	DelegateCall  Selector = 1
+	CallWithValue Selector = 2
+	StaticCall    Selector = 3
+	ForwardedCall Selector = 4
+)
+
 // Plug represents a single transaction to be executed as part of a bundle.
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
-	Selector uint8          `json:"selector"`
+	Selector Selector       `json:"selector"`
 	To       common.Address `json:"to"`
 	Data     hexutil.Bytes  `json:"data"`
 	Value    *big.Int       `json:"value"`
