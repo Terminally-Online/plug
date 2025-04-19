@@ -32,6 +32,10 @@ type Solver struct {
 	IsKilled  bool
 }
 
+var (
+	SolverInstance = New()
+)
+
 func New() *Solver {
 	return &Solver{
 		Protocols: map[string]actions.Protocol{
@@ -335,18 +339,6 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 	result := &Solution{
 		Run:       run,
 		LivePlugs: livePlugs,
-	}
-
-	// TODO: I have no idea what this was doing and I commented it out and cannot decipher it right now.
-	//       I will come back here myself or when I realize this caused a regression. - CHANCE
-	if livePlugs != nil {
-		// routerAddress := livePlugs.GetRouterAddress()
-		// routerPlug := &signature.MinimalPlug{
-		// 	To:    routerAddress,
-		// 	Data:  callData,
-		// 	Value: big.NewInt(0),
-		// }
-		// result.Transactions = routerPlug
 	}
 
 	return result, nil

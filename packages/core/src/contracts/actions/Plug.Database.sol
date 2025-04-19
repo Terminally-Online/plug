@@ -36,7 +36,13 @@ contract PlugDatabase {
      * @param value The value to store
      * @return result The stored value
      */
-    function set(bytes32 key, bytes32 value) external returns (bytes32 result) {
+    function set(
+        bytes32 key,
+        bytes32 value
+    )
+        external
+        returns (bytes32 result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_BYTES32);
         bytes32Storage[msg.sender][typedKey] = value;
         return value;
@@ -48,7 +54,13 @@ contract PlugDatabase {
      * @param value The value to store
      * @return result The stored value
      */
-    function setUint(bytes32 key, uint256 value) external returns (uint256 result) {
+    function setUint(
+        bytes32 key,
+        uint256 value
+    )
+        external
+        returns (uint256 result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_UINT256);
         uintStorage[msg.sender][typedKey] = value;
         return value;
@@ -60,7 +72,13 @@ contract PlugDatabase {
      * @param value The value to store
      * @return result The stored value
      */
-    function setInt(bytes32 key, int256 value) external returns (int256 result) {
+    function setInt(
+        bytes32 key,
+        int256 value
+    )
+        external
+        returns (int256 result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_INT256);
         intStorage[msg.sender][typedKey] = value;
         intExists[msg.sender][typedKey] = true;
@@ -73,7 +91,13 @@ contract PlugDatabase {
      * @param value The value to store
      * @return result The stored value
      */
-    function setAddress(bytes32 key, address value) external returns (address result) {
+    function setAddress(
+        bytes32 key,
+        address value
+    )
+        external
+        returns (address result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_ADDRESS);
         addressStorage[msg.sender][typedKey] = value;
         return value;
@@ -116,7 +140,13 @@ contract PlugDatabase {
      * @param value The value to store
      * @return result The stored value
      */
-    function setBytes(bytes32 key, bytes calldata value) external returns (bytes memory result) {
+    function setBytes(
+        bytes32 key,
+        bytes calldata value
+    )
+        external
+        returns (bytes memory result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_BYTES);
         bytesStorage[msg.sender][typedKey] = value;
         return value;
@@ -128,7 +158,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function get(address sender, bytes32 key) external view returns (bytes32 result) {
+    function get(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (bytes32 result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_BYTES32);
         return bytes32Storage[sender][typedKey];
     }
@@ -139,7 +176,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function getUint(address sender, bytes32 key) external view returns (uint256 result) {
+    function getUint(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (uint256 result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_UINT256);
         return uintStorage[sender][typedKey];
     }
@@ -150,7 +194,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function getInt(address sender, bytes32 key) external view returns (int256 result) {
+    function getInt(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (int256 result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_INT256);
         return intStorage[sender][typedKey];
     }
@@ -161,7 +212,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function getAddress(address sender, bytes32 key) external view returns (address result) {
+    function getAddress(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (address result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_ADDRESS);
         return addressStorage[sender][typedKey];
     }
@@ -172,7 +230,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function getBool(address sender, bytes32 key) external view returns (bool result) {
+    function getBool(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (bool result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_BOOL);
         return boolStorage[sender][typedKey];
     }
@@ -183,7 +248,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function getString(address sender, bytes32 key) external view returns (string memory result) {
+    function getString(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (string memory result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_STRING);
         return stringStorage[sender][typedKey];
     }
@@ -194,7 +266,14 @@ contract PlugDatabase {
      * @param key The key to retrieve
      * @return result The stored value
      */
-    function getBytes(address sender, bytes32 key) external view returns (bytes memory result) {
+    function getBytes(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (bytes memory result)
+    {
         bytes32 typedKey = _deriveKey(key, TYPE_BYTES);
         return bytesStorage[sender][typedKey];
     }
@@ -206,7 +285,15 @@ contract PlugDatabase {
      * @param typeId The type to check for
      * @return True if a value exists for the given type and key
      */
-    function exists(address sender, bytes32 key, uint8 typeId) external view returns (bool) {
+    function exists(
+        address sender,
+        bytes32 key,
+        uint8 typeId
+    )
+        external
+        view
+        returns (bool)
+    {
         bytes32 typedKey = _deriveKey(key, typeId);
 
         if (typeId == TYPE_BYTES32) {
@@ -234,7 +321,14 @@ contract PlugDatabase {
      * @param key The key to check
      * @return The type identifier (0 if not found)
      */
-    function getType(address sender, bytes32 key) external view returns (uint8) {
+    function getType(
+        address sender,
+        bytes32 key
+    )
+        external
+        view
+        returns (uint8)
+    {
         // For performance, check types in order of likely frequency
         for (uint8 i = TYPE_BYTES32; i <= TYPE_BYTES; i++) {
             if (this.exists(sender, key, i)) {
@@ -251,7 +345,9 @@ contract PlugDatabase {
      * @param typeId The type of the value to delete
      */
     function removeWithType(bytes32 key, uint8 typeId) public {
-        require(typeId >= TYPE_BYTES32 && typeId <= TYPE_BYTES, "Invalid type ID");
+        require(
+            typeId >= TYPE_BYTES32 && typeId <= TYPE_BYTES, "Invalid type ID"
+        );
 
         bytes32 typedKey = _deriveKey(key, typeId);
 
@@ -292,9 +388,17 @@ contract PlugDatabase {
      * @param values Array of values to store
      * @param typeId The type of values being set
      */
-    function batchSet(bytes32[] calldata keys, bytes32[] calldata values, uint8 typeId) external {
+    function batchSet(
+        bytes32[] calldata keys,
+        bytes32[] calldata values,
+        uint8 typeId
+    )
+        external
+    {
         require(keys.length == values.length, "Array length mismatch");
-        require(typeId == TYPE_BYTES32, "Only bytes32 batch operations supported");
+        require(
+            typeId == TYPE_BYTES32, "Only bytes32 batch operations supported"
+        );
 
         for (uint256 i = 0; i < keys.length; i++) {
             bytes32 typedKey = _deriveKey(keys[i], typeId);
@@ -309,7 +413,14 @@ contract PlugDatabase {
      * @param typePrefix The type identifier to prefix the key with
      * @return A bytes32 key with the type prefix in the highest byte
      */
-    function _deriveKey(bytes32 baseKey, uint8 typePrefix) internal pure returns (bytes32) {
+    function _deriveKey(
+        bytes32 baseKey,
+        uint8 typePrefix
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
         return bytes32(uint256(baseKey) | (uint256(typePrefix) << 248));
     }
 
@@ -331,7 +442,8 @@ contract PlugDatabase {
      */
     function _extractBaseKey(bytes32 key) internal pure returns (bytes32) {
         return bytes32(
-            uint256(key) & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            uint256(key)
+                & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         );
     }
 }

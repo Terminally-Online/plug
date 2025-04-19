@@ -18,7 +18,8 @@ contract PlugRewardsDeployment is Script {
 
         if (PlugEtcherLib.PLUG_REWARDS_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_REWARDS_SALT, PlugEtcherLib.PLUG_REWARDS_INITCODE
+                PlugEtcherLib.PLUG_REWARDS_SALT,
+                PlugEtcherLib.PLUG_REWARDS_INITCODE
             );
         }
 

@@ -80,11 +80,13 @@ func (i *Intent) GetOrCreate(db *gorm.DB) (*Intent, error) {
 	return &intent, nil
 }
 
-func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt *time.Time) {
+func (i *Intent) GetNextSimulationAt() (status string, periodEndAt *time.Time, nextSimulationAt *time.Time) {
 	now := time.Now()
 
-	if i.EndAt == nil || i.EndAt.Before(now) || i.Frequency == 0 {
-		return nil, nil
+	isSingleUse := i.EndAt == nil || i.Frequency == 0
+	isExpired := i.EndAt.Before(now)
+	if isSingleUse || isExpired {
+		return "completed", nil, nil
 	}
 
 	if i.PeriodEndAt != nil && i.Frequency > 0 {
@@ -98,18 +100,21 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 			executionFrequency := time.Duration(i.Frequency) * 24 * time.Hour
 			nextPeriodEnd := i.PeriodEndAt.Add(executionFrequency)
 
+			// TODO: I am not actually sure this check and completed status toggle
+			// makes sense here, but it is what used to work so I am cleaning this
+			// function up and leaving this here assuming it had some influence.
 			if nextPeriodEnd.After(*i.EndAt) {
-				return i.EndAt, nil
+				return "completed", i.EndAt, nil
 			}
 
-			return &nextPeriodEnd, i.PeriodEndAt
+			return "active", &nextPeriodEnd, i.PeriodEndAt
 		}
 
 		nextSimAt := time.Now().Add(5 * time.Minute)
-		return i.PeriodEndAt, &nextSimAt
+		return "active", i.PeriodEndAt, &nextSimAt
 	}
 
-	return nil, nil
+	return "completed", nil, nil
 }
 
 func (i *Intent) ValidateFields() error {

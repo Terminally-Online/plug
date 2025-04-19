@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -47,19 +48,26 @@ type Plug struct {
 	Meta     any            `json:"meta,omitempty"`
 }
 
-func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
+func (p Plug) Wrap() (*plug_router.PlugTypesLibPlug, error) {
 	updates := make([]plug_router.PlugTypesLibUpdate, len(p.Updates))
 	for index, update := range p.Updates {
 		updates[index] = update.Wrap()
 	}
 
-	return plug_router.PlugTypesLibPlug{
-		Selector: p.Selector,
-		To:       p.To,
-		Data:     []byte(p.Data),
-		Value:    p.Value,
-		Updates:  updates,
+	data, err := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 8}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.UintTy, Size: 256}},
+		{Type: abi.Type{T: abi.BytesTy}},
+	}.Pack(p.Selector, p.To, p.Value, p.Data.UnmarshalText)
+	if err != nil {
+		return nil, err
 	}
+
+	return &plug_router.PlugTypesLibPlug{
+		Data:    data,
+		Updates: updates,
+	}, nil
 }
 
 type Plugs struct {
@@ -69,18 +77,22 @@ type Plugs struct {
 	Salt   []byte         `json:"salt"`
 }
 
-func (p Plugs) Wrap() plug_router.PlugTypesLibPlugs {
+func (p Plugs) Wrap() (*plug_router.PlugTypesLibPlugs, error) {
 	var plugs []plug_router.PlugTypesLibPlug
 	for _, plug := range p.Plugs {
-		plugs = append(plugs, plug.Wrap())
+		plug, err := plug.Wrap()
+		if err != nil {
+			return nil, err
+		}
+		plugs = append(plugs, *plug)
 	}
 
-	return plug_router.PlugTypesLibPlugs{
+	return &plug_router.PlugTypesLibPlugs{
 		Socket: p.Socket,
 		Plugs:  plugs,
 		Solver: p.Solver,
 		Salt:   p.Salt,
-	}
+	}, nil
 }
 
 // LivePlugs is the central model for transaction processing throughout the application.
@@ -109,11 +121,15 @@ type LivePlugs struct {
 	Signature []byte `json:"signature" gorm:"type:bytea"`
 }
 
-func (l LivePlugs) Wrap() plug_router.PlugTypesLibLivePlugs {
-	return plug_router.PlugTypesLibLivePlugs{
-		Plugs:     l.Plugs.Wrap(),
-		Signature: l.Signature,
+func (l LivePlugs) Wrap() (*plug_router.PlugTypesLibLivePlugs, error) {
+	plugs, err := l.Plugs.Wrap()
+	if err != nil {
+		return nil, err
 	}
+	return &plug_router.PlugTypesLibLivePlugs{
+		Plugs:     *plugs,
+		Signature: l.Signature,
+	}, nil
 }
 
 // Helper method to get router contract address for this chain
@@ -131,7 +147,11 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 		return nil, fmt.Errorf("failed to get router ABI: %w", err)
 	}
 
-	plugCalldata, err := routerAbi.Pack("plug0", l.Wrap())
+	livePlugs, err := l.Wrap()
+	if err != nil {
+		return nil, err
+	}
+	plugCalldata, err := routerAbi.Pack("plug0", livePlugs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
 	}
@@ -167,7 +187,7 @@ func (l *LivePlugs) Execute() (string, error) {
 	if privateKeyHex == "" {
 		return "", fmt.Errorf("PRIVATE_KEY environment variable not set")
 	}
-	
+
 	privateKey, err := crypto.HexToECDSA(privateKeyHex)
 	if err != nil {
 		return "", fmt.Errorf("failed to load private key: %w", err)

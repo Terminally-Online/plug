@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.5.0
+
+### Minor Changes
+
+- feat: adjust the way plug data is defined and coils are used
+
 ## 0.4.3
 
 ### Patch Changes

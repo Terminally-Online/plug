@@ -18,7 +18,8 @@ contract PlugBooleanDeployment is Script {
 
         if (PlugEtcherLib.PLUG_BOOLEAN_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_BOOLEAN_SALT, PlugEtcherLib.PLUG_BOOLEAN_INITCODE
+                PlugEtcherLib.PLUG_BOOLEAN_SALT,
+                PlugEtcherLib.PLUG_BOOLEAN_INITCODE
             );
         }
 

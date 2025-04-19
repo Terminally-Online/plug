@@ -29,6 +29,22 @@ type LlamaCoinResponse struct {
 	} `json:"coins"`
 }
 
+func GetChainName(chainId uint64) (string, error) {
+	switch chainId {
+	case 1:
+		return "ethereum", nil
+	case 8453:
+		return "base", nil
+	case 137:
+		return "polygon", nil
+	case 42161:
+		return "arbitrum", nil
+	case 10:
+		return "optimism", nil
+	}
+	return "", fmt.Errorf("unknown chain id: %d", chainId)
+}
+
 func GetPriceKey(chain, address string) string {
 	return fmt.Sprintf("%s:%s", strings.ToLower(chain), address)
 }
