@@ -110,7 +110,6 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 		return nil, nil
 	}
 
-	// If we have custom arguments, return slices for those
 	if d.Response.Arguments != nil {
 		slices := make([]coil.Slice, 0, len(*d.Response.Arguments))
 
@@ -118,7 +117,6 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 			typeId := coil.TypeIDStatic
 			var sliceType string
 
-			// Type conversion logic
 			switch arg.Type.T {
 			case abi.UintTy:
 				sliceType = fmt.Sprintf("uint%d", arg.Type.Size)
@@ -141,7 +139,6 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 				sliceType = arg.Type.String()
 			}
 
-			// Use the provided name or generate a default one
 			name := arg.Name
 			if name == "" {
 				name = fmt.Sprintf("arg%d", i)
@@ -151,7 +148,7 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 				Name:   &name,
 				Index:  uint8(i),
 				Start:  big.NewInt(int64(i * int(coil.WordSize))),
-				Length: big.NewInt(int64(coil.WordSize)), // Default static size
+				Length: big.NewInt(int64(coil.WordSize)),
 				Type:   sliceType,
 				TypeId: &typeId,
 			})
@@ -160,7 +157,6 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 		return slices, nil
 	}
 
-	// For regular contract ABIs with Metadata
 	if d.Response.Metadata != nil && d.Response.FunctionName != "" {
 		abi, err := d.Response.Metadata.GetAbi()
 		if err != nil {
@@ -178,72 +174,81 @@ func (d *ActionDefinition[T]) GetCoilSlices() ([]coil.Slice, error) {
 	return nil, nil
 }
 
-func (d *ActionDefinition[T]) GetCoilSlice(name string) (*coil.Slice, error) {
+func (d *ActionDefinition[T]) GetArgumentCoilSlice(name string) (*coil.Slice, error) {
 	if d.Response == nil {
 		return nil, nil
 	}
 
-	// If we have custom arguments, look for the named argument
-	if d.Response.Arguments != nil {
-		for i, arg := range *d.Response.Arguments {
-			if arg.Name == name {
-				typeId := coil.TypeIDStatic
-				var sliceType string
+	for i, arg := range *d.Response.Arguments {
+		if arg.Name == name {
+			typeId := coil.TypeIDStatic
+			var sliceType string
 
-				// Type conversion logic
-				switch arg.Type.T {
-				case abi.UintTy:
-					sliceType = fmt.Sprintf("uint%d", arg.Type.Size)
-				case abi.IntTy:
-					sliceType = fmt.Sprintf("int%d", arg.Type.Size)
-				case abi.AddressTy:
-					sliceType = "address"
-				case abi.BoolTy:
-					sliceType = "bool"
-				case abi.BytesTy:
-					typeId = coil.TypeIDString
-					sliceType = "bytes"
-				case abi.StringTy:
-					typeId = coil.TypeIDString
-					sliceType = "string"
-				case abi.ArrayTy:
-					typeId = coil.TypeIDArray
-					sliceType = arg.Type.String()
-				default:
-					sliceType = arg.Type.String()
-				}
-
-				return &coil.Slice{
-					Name:   &name,
-					Index:  uint8(i),
-					Start:  big.NewInt(int64(i * int(coil.WordSize))),
-					Length: big.NewInt(int64(coil.WordSize)),
-					Type:   sliceType,
-					TypeId: &typeId,
-				}, nil
+			switch arg.Type.T {
+			case abi.UintTy:
+				sliceType = fmt.Sprintf("uint%d", arg.Type.Size)
+			case abi.IntTy:
+				sliceType = fmt.Sprintf("int%d", arg.Type.Size)
+			case abi.AddressTy:
+				sliceType = "address"
+			case abi.BoolTy:
+				sliceType = "bool"
+			case abi.BytesTy:
+				typeId = coil.TypeIDString
+				sliceType = "bytes"
+			case abi.StringTy:
+				typeId = coil.TypeIDString
+				sliceType = "string"
+			case abi.ArrayTy:
+				typeId = coil.TypeIDArray
+				sliceType = arg.Type.String()
+			default:
+				sliceType = arg.Type.String()
 			}
-		}
 
-		return nil, fmt.Errorf("no argument found with name: %s", name)
+			return &coil.Slice{
+				Name:   &name,
+				Index:  uint8(i),
+				Start:  big.NewInt(int64(i * int(coil.WordSize))),
+				Length: big.NewInt(int64(coil.WordSize)),
+				Type:   sliceType,
+				TypeId: &typeId,
+			}, nil
+		}
 	}
 
-	// For regular contract ABIs with Metadata
+	return nil, fmt.Errorf("no argument found with name: %s", name)
+}
+
+func (d *ActionDefinition[T]) GetMetadataCoilSlice(name string) (*coil.Slice, error) {
+	if d.Response == nil {
+		return nil, nil
+	}
+
+	abi, err := d.Response.Metadata.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ABI: %w", err)
+	}
+
+	slices, err := coil.GetCoilSlices(abi, d.Response.FunctionName, &name, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find coils: %w", err)
+	}
+
+	if len(slices) == 0 {
+		return nil, fmt.Errorf("no slices found for name: %s", name)
+	}
+
+	return &slices[0], nil
+}
+
+func (d *ActionDefinition[T]) GetCoilSlice(name string) (*coil.Slice, error) {
+	if d.Response.Arguments != nil {
+		return d.GetArgumentCoilSlice(name)
+	}
+
 	if d.Response.Metadata != nil && d.Response.FunctionName != "" {
-		abi, err := d.Response.Metadata.GetAbi()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get ABI: %w", err)
-		}
-
-		slices, err := coil.GetCoilSlices(abi, d.Response.FunctionName, &name, nil)
-		if err != nil {
-			return nil, fmt.Errorf("failed to find coils: %w", err)
-		}
-
-		if len(slices) == 0 {
-			return nil, fmt.Errorf("no slices found for name: %s", name)
-		}
-
-		return &slices[0], nil
+		return d.GetMetadataCoilSlice(name)
 	}
 
 	return nil, fmt.Errorf("neither Arguments nor Metadata+FunctionName provided")
