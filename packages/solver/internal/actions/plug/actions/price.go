@@ -43,6 +43,7 @@ func Price(lookup *actions.SchemaLookup[PriceRequest]) ([]signature.Plug, error)
 	priceScaled := new(big.Float).Mul(priceDecimal, new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)))
 	priceInt := new(big.Int)
 	priceScaled.Int(priceInt)
+
 	packedData, err := PriceFunc.Arguments.Pack(priceInt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack price data: %w", err)
