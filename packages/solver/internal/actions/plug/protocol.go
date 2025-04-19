@@ -45,7 +45,7 @@ var (
 		plug_options.BalanceOptions,
 		actions.IsUser,
 		actions.IsDynamic,
-		&plug_actions.BalanceFunc,
+		&plug_actions.Erc20BalanceFunc,
 	)
 	ReadPrice = actions.NewActionDefinition(
 		ReadPriceSentence,
