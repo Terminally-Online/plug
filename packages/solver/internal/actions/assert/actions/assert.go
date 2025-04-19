@@ -13,7 +13,7 @@ import (
 
 type AssertRequest struct {
 	Condition coil.CoilInput[bool, bool] `json:"condition"`
-	Assertion bool                       `json:"assertion"`
+	Assertion string                     `json:"assertion"`
 }
 
 func HandleAssert(lookup *actions.SchemaLookup[AssertRequest]) ([]signature.Plug, error) {
@@ -24,7 +24,7 @@ func HandleAssert(lookup *actions.SchemaLookup[AssertRequest]) ([]signature.Plug
 	}
 
 	functionName := "assertTrue"
-	if !lookup.Inputs.Assertion {
+	if lookup.Inputs.Assertion == "false" {
 		functionName = "assertFalse"
 	}
 
