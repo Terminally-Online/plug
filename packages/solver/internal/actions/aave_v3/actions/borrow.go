@@ -30,13 +30,12 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	var updates []coil.Update
 	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&BorrowFunc,
 		"amount",
-		updates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
@@ -54,8 +53,10 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	aavePool := common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"])
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Networks[lookup.ChainId].References["aave_v3"]["pool"]),
-		Data: calldata,
+		To:      aavePool,
+		Data:    calldata,
+		Updates: updates,
 	}}, nil
 }
