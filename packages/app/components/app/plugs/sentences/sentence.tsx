@@ -22,7 +22,7 @@ import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { sentenceValidStateAtom } from "@/state/sentences"
 
 import { HandleValueProps, Part } from "./part"
-import { useAccount } from "wagmi"
+import { useAccount } from "@/lib/hooks/account/useAccount"
 
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
@@ -57,13 +57,13 @@ export const Sentence: FC<SentenceProps> = ({
 	className,
 	...props
 }) => {
-	const { address } = useAccount()
+	const { id } = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const { frame } = useColumnActions(index)
 
 	const [plug] = useAtom(plugByIdAtom(item ?? ""))
-	const own = (plug && address === plug.socketId) || false
+	const own = (plug && id === plug.socketId) || false
 
 	const editPlug = useSetAtom(editPlugAtom)
 	const actionMutation = api.plugs.action.edit.useMutation({
