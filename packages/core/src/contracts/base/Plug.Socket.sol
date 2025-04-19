@@ -33,10 +33,11 @@ contract PlugSocket is
     using LibBitmap for LibBitmap.Bitmap;
     using PlugCoilLib for bytes;
 
-    uint256 private constant TYPE_CALL = 0x00;
-    uint256 private constant TYPE_DELEGATECALL = 0x01;
-    uint256 private constant TYPE_CALL_WITH_VALUE = 0x02;
-    uint256 private constant TYPE_STATICCALL = 0x03;
+    uint8 private constant CALL = 0x00;
+    uint8 private constant DELEGATE_CALL = 0x01;
+    uint8 private constant CALL_WITH_VALUE = 0x02;
+    uint8 private constant STATIC_CALL = 0x03;
+    uint8 private constant FORWARDED_CALL = 0x04;
 
     LibBitmap.Bitmap private nonces;
 
@@ -249,13 +250,13 @@ contract PlugSocket is
         (uint8 selector, address to, uint256 value, bytes memory data) =
             $plug.decode();
 
-        if (selector == TYPE_DELEGATECALL) {
+        if (selector == DELEGATE_CALL) {
             ($success, $result) = to.delegatecall(data);
-        } else if (selector == TYPE_CALL) {
+        } else if (selector == CALL) {
             ($success, $result) = to.call(data);
-        } else if (selector == TYPE_CALL_WITH_VALUE) {
+        } else if (selector == CALL_WITH_VALUE) {
             ($success, $result) = to.call{ value: value }(data);
-        } else if (selector == TYPE_STATICCALL) {
+        } else if (selector == STATIC_CALL) {
             ($success, $result) = to.staticcall(data);
         }
     }
@@ -281,6 +282,9 @@ contract PlugSocket is
                 (state[input],) = state[$plugs.plugs[i].updates[ii].slice.index]
                     .transform(i, $plugs.plugs[i].updates[ii], state[input]);
             }
+
+            if (state[input].selector() == FORWARDED_CALL) continue;
+
             (success, state[input + 1]) = _call(state[input]);
             if (!success) {
                 revert PlugLib.PlugFailed(i, PlugLib.PlugCorePlugFailed);
