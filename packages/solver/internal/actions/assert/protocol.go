@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	ActionAssertKey = "assert"
+	ActionAssertKey = "true_or_false"
 
 	ActionAssertSentence = "Assert that {0<condition:bool>} is {1<assertion:bool>}"
 
