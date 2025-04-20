@@ -33,13 +33,12 @@ func Balance(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug, er
 		return nil, err
 	}
 
-	var updates []coil.Update
 	holder, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Holder,
 		lookup.Inputs.Holder.GetValueWithError,
 		&BalanceFunc,
 		"_owner",
-		updates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
