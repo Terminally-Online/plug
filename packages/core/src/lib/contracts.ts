@@ -1901,50 +1901,21 @@ export const contracts = [
                 "name": "add",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "clamp",
-                "inputs": [
-                    {
-                        "name": "value",
-                        "type": "int256",
-                        "internalType": "int256"
-                    },
-                    {
-                        "name": "minValue",
-                        "type": "int256",
-                        "internalType": "int256"
-                    },
-                    {
-                        "name": "maxValue",
-                        "type": "int256",
-                        "internalType": "int256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -1954,21 +1925,21 @@ export const contracts = [
                 "name": "divide",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -1978,21 +1949,21 @@ export const contracts = [
                 "name": "max",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2002,21 +1973,21 @@ export const contracts = [
                 "name": "min",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2027,20 +1998,20 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
                         "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2050,21 +2021,21 @@ export const contracts = [
                 "name": "multiply",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2074,12 +2045,12 @@ export const contracts = [
                 "name": "power",
                 "inputs": [
                     {
-                        "name": "base",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "exponent",
+                        "name": "y",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -2087,8 +2058,8 @@ export const contracts = [
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2098,21 +2069,21 @@ export const contracts = [
                 "name": "subtract",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"

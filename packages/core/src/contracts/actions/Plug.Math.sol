@@ -12,43 +12,64 @@ pragma solidity ^0.8.26;
 contract PlugMath {
     /**
      * @notice Adds two numbers together
-     * @param a First number
-     * @param b Second number
-     * @return result The sum of a and b
+     * @param x First number
+     * @param y Second number
+     * @return result The sum of x and y
      */
-    function add(int256 a, int256 b) public pure returns (int256 result) {
-        return a + b;
+    function add(uint256 x, uint256 y) public pure returns (uint256 result) {
+        return x + y;
     }
 
     /**
      * @notice Subtracts one number from another
-     * @param a First number
-     * @param b Number to subtract
-     * @return result The difference (a - b)
+     * @param x First number
+     * @param y Number to subtract
+     * @return result The difference (x - y)
      */
-    function subtract(int256 a, int256 b) public pure returns (int256 result) {
-        return a - b;
+    function subtract(
+        uint256 x,
+        uint256 y
+    )
+        public
+        pure
+        returns (uint256 result)
+    {
+        return x - y;
     }
 
     /**
      * @notice Multiplies two numbers
-     * @param a First number
-     * @param b Second number
-     * @return result The product of a and b
+     * @param x First number
+     * @param y Second number
+     * @return result The product of x and y
      */
-    function multiply(int256 a, int256 b) public pure returns (int256 result) {
-        return a * b;
+    function multiply(
+        uint256 x,
+        uint256 y
+    )
+        public
+        pure
+        returns (uint256 result)
+    {
+        return x * y;
     }
 
     /**
      * @notice Divides one number by another
-     * @param a Numerator
-     * @param b Denominator
-     * @return result The quotient (a / b)
+     * @param x Numerator
+     * @param y Denominator
+     * @return result The quotient (x / y)
      */
-    function divide(int256 a, int256 b) public pure returns (int256 result) {
-        require(b != 0, "PlugMath:divide-by-zero");
-        return a / b;
+    function divide(
+        uint256 x,
+        uint256 y
+    )
+        public
+        pure
+        returns (uint256 result)
+    {
+        require(x != 0, "PlugMath:divide-by-zero");
+        return x / y;
     }
 
     /**
@@ -57,79 +78,53 @@ contract PlugMath {
      * @param b Divisor
      * @return result The remainder of a divided by b
      */
-    function modulo(int256 a, int256 b) public pure returns (int256 result) {
+    function modulo(
+        uint256 a,
+        uint256 b
+    )
+        public
+        pure
+        returns (uint256 result)
+    {
         require(b != 0, "PlugMath:modulo-by-zero");
         return a % b;
     }
 
     /**
      * @notice Returns the minimum of two numbers
-     * @param a First number
-     * @param b Second number
+     * @param x First number
+     * @param y Second number
      * @return result The smaller of a and b
      */
-    function min(int256 a, int256 b) public pure returns (int256 result) {
-        return a < b ? a : b;
+    function min(uint256 x, uint256 y) public pure returns (uint256 result) {
+        return x < y ? x : y;
     }
 
     /**
      * @notice Returns the maximum of two numbers
-     * @param a First number
-     * @param b Second number
-     * @return result The larger of a and b
+     * @param x First number
+     * @param y Second number
+     * @return result The larger of x and y
      */
-    function max(int256 a, int256 b) public pure returns (int256 result) {
-        return a > b ? a : b;
+    function max(uint256 x, uint256 y) public pure returns (uint256 result) {
+        return x > y ? x : y;
     }
 
     /**
      * @notice Calculates a number raised to a power
-     * @param base The base number
-     * @param exponent The exponent (must be non-negative)
-     * @return result The base raised to the exponent
+     * @param x The base number
+     * @param y The exponent (must be non-negative)
+     * @return result The x raised to the y
      */
-    function power(
-        int256 base,
-        uint256 exponent
-    )
-        public
-        pure
-        returns (int256 result)
-    {
-        // Handle edge cases
-        if (exponent == 0) return 1;
-        if (base == 0) return 0;
+    function power(uint256 x, uint256 y) public pure returns (uint256 result) {
+        if (y == 0) return 1;
+        if (x == 0) return 0;
 
-        // For negative bases, handle even/odd exponents differently
-        bool isNegative = base < 0;
-        int256 absBase = isNegative ? -base : base;
-
-        int256 temp = 1;
-        for (uint256 i = 0; i < exponent; i++) {
-            temp = temp * absBase;
+        result = 1;
+        for (uint256 i = 0; i < y; i++) {
+            result = result * x;
         }
 
-        // If base is negative and exponent is odd, result is negative
-        return (isNegative && exponent % 2 == 1) ? -temp : temp;
-    }
-
-    /**
-     * @notice Clamps a number between a minimum and maximum value
-     * @param value The input value
-     * @param minValue The minimum allowed value
-     * @param maxValue The maximum allowed value
-     * @return result The clamped value (between min and max)
-     */
-    function clamp(
-        int256 value,
-        int256 minValue,
-        int256 maxValue
-    )
-        public
-        pure
-        returns (int256 result)
-    {
-        require(minValue <= maxValue, "PlugMath:min-exceeds-max");
-        return min(max(value, minValue), maxValue);
+        return result;
     }
 }
