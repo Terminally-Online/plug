@@ -36,13 +36,12 @@ func DepositCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([
 		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
 	}
 
-	var approvalUpdates []coil.Update
 	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&actions.Erc20ApprovalFunc,
 		"_value",
-		approvalUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
@@ -57,13 +56,12 @@ func DepositCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	var supplyUpdates []coil.Update
 	supplyAmount, supplyUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&DepositCollateralFunc,
 		"assets",
-		supplyUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
