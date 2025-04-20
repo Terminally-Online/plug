@@ -18,12 +18,12 @@ type CompareNumbersRequest struct {
 	B          coil.CoilInput[*big.Int, *big.Int] `json:"b"`
 }
 
-var CompareNumberFunc = actions.ActionOnchainFunctionResponse{
+var NumberComparisonFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     plug_boolean.PlugBooleanMetaData,
-	FunctionName: "isAnd",
+	FunctionName: "isEqual",
 }
 
-func CompareNumbers(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]signature.Plug, error) {
+func NumberComparison(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]signature.Plug, error) {
 	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
@@ -32,7 +32,7 @@ func CompareNumbers(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]sign
 	a, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.A,
 		lookup.Inputs.A.GetValueWithError,
-		&CompareNumberFunc,
+		&NumberComparisonFunc,
 		"a",
 		nil,
 		lookup.PreviousActionDefinition,
@@ -44,7 +44,7 @@ func CompareNumbers(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]sign
 	b, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.B,
 		lookup.Inputs.B.GetValueWithError,
-		&CompareNumberFunc,
+		&NumberComparisonFunc,
 		"b",
 		updates,
 		lookup.PreviousActionDefinition,

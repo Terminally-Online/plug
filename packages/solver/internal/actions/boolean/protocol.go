@@ -8,23 +8,27 @@ import (
 )
 
 var (
-	ActionCompareNumbersKey = "number_comparison"
+	ActionNumberComparisonKey = "number_comparison"
+	ActionNumberLogicKey      = "logic_operation"
 
-	ActionCompareNumbers = actions.NewActionDefinition(
-		"{0<a:uint256>} {1<comparison:string>} {2<b:uint256>}",
-		boolean_actions.CompareNumbers,
-		boolean_options.CompareNumbersOptions,
+	ActionNumberComparisonSentence = "{0<a:uint256>} {1<comparison:string>} {2<b:uint256>}"
+	ActionNumberLogicSentence      = "{0<a:bool>} {1<comparison:string>} {2<b:[(1)!=isNot?bool:null]>}"
+
+	ActionNumberComparison = actions.NewActionDefinition(
+		ActionNumberComparisonSentence,
+		boolean_actions.NumberComparison,
+		boolean_options.NumberComparisonOptions,
 		actions.IsGlobal,
 		actions.IsStatic,
-		&boolean_actions.CompareNumberFunc,	
+		&boolean_actions.NumberComparisonFunc,
 	)
-	ActionBooleanLogic = actions.NewActionDefinition(
-		"{0<a:uint256>} {1<comparison:string>} {2<b:[(1)!=not?uint256:null]>}",
-		boolean_actions.LogicOperation,
-		boolean_options.LogicOperationOptions,
+	ActionNumberLogic = actions.NewActionDefinition(
+		ActionNumberLogicSentence,
+		boolean_actions.NumberLogic,
+		boolean_options.NumberLogicOptions,
 		actions.IsGlobal,
 		actions.IsStatic,
-		&boolean_actions.CompareNumberFunc,	
+		&boolean_actions.NumberLogicFunc,
 	)
 )
 
@@ -36,7 +40,8 @@ func New() actions.Protocol {
 			Tags:   []string{"logic", "condition", "comparison"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				ActionCompareNumbersKey: ActionCompareNumbers,
+				ActionNumberComparisonKey: ActionNumberComparison,
+				ActionNumberLogicKey:      ActionNumberLogic,
 			},
 		},
 	)

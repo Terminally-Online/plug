@@ -82,104 +82,97 @@ contract PlugBoolean {
 
     /**
      * @notice Check if two values are equal
-     * @param value First value to compare
-     * @param threshold Second value to compare
+     * @param a First value to compare
+     * @param b Second value to compare
      * @return result True if the values are equal
      */
-    function isEqual(
-        uint256 value,
-        uint256 threshold
-    )
-        public
-        pure
-        returns (bool result)
-    {
-        result = value == threshold;
+    function isEqual(uint256 a, uint256 b) public pure returns (bool result) {
+        result = a == b;
     }
 
     /**
      * @notice Check if two values are not equal
-     * @param value First value to compare
-     * @param threshold Second value to compare
+     * @param a First value to compare
+     * @param b Second value to compare
      * @return result True if the values are not equal
      */
     function isNotEqual(
-        uint256 value,
-        uint256 threshold
+        uint256 a,
+        uint256 b
     )
         public
         pure
         returns (bool result)
     {
-        result = value != threshold;
+        result = a != b;
     }
 
     /**
      * @notice Check if a value is greater than a threshold
-     * @param value The value to check
-     * @param threshold The threshold to compare against
+     * @param a The value to check
+     * @param b The threshold to compare against
      * @return result True if value > threshold
      */
     function isGreaterThan(
-        uint256 value,
-        uint256 threshold
+        uint256 a,
+        uint256 b
     )
         public
         pure
         returns (bool result)
     {
-        result = value > threshold;
+        result = a > b;
     }
 
     /**
      * @notice Check if a value is greater than or equal to a threshold
-     * @param value The value to check
-     * @param threshold The threshold to compare against
+     * @param a The value to check
+     * @param b The threshold to compare against
      * @return result True if value >= threshold
      */
     function isGreaterThanOrEqual(
-        uint256 value,
-        uint256 threshold
+        uint256 a,
+        uint256 b
     )
         public
         pure
         returns (bool result)
     {
-        result = value >= threshold;
+        result = a >= b;
     }
 
     /**
      * @notice Check if a value is less than a threshold
-     * @param value The value to check
-     * @param threshold The threshold to compare against
+     * @param a The value to check
+     * @param b The threshold to compare against
      * @return result True if value < threshold
      */
     function isLessThan(
-        uint256 value,
-        uint256 threshold
+        uint256 a,
+        uint256 b
     )
         public
         pure
         returns (bool result)
     {
-        result = value < threshold;
+        result = a < b;
     }
 
     /**
      * @notice Check if a value is less than or equal to a threshold
-     * @param value The value to check
-     * @param threshold The threshold to compare against
+     * @param a The value to check
+     * @param b The threshold to compare against
      * @return result True if value <= threshold
      */
     function isLessThanOrEqual(
-        uint256 value,
-        uint256 threshold
+        uint256 a,
+        uint256 b
     )
         public
         pure
         returns (bool result)
     {
-        result = value <= threshold;
+        result = a <= b;
     }
 
     /**

@@ -91,12 +91,12 @@ export const contracts = [
                 "name": "isEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -115,12 +115,12 @@ export const contracts = [
                 "name": "isGreaterThan",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -139,12 +139,12 @@ export const contracts = [
                 "name": "isGreaterThanOrEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -187,12 +187,12 @@ export const contracts = [
                 "name": "isLessThan",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -211,12 +211,12 @@ export const contracts = [
                 "name": "isLessThanOrEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -302,12 +302,12 @@ export const contracts = [
                 "name": "isNotEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }

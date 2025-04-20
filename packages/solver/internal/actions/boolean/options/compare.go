@@ -15,7 +15,7 @@ var (
 	}
 )
 
-func CompareNumbersOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
+func NumberComparisonOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
 	return map[int]actions.Options{
 		1: {Simple: numberComparisonOptions},
 	}, nil
