@@ -8,17 +8,23 @@ import (
 )
 
 var (
-	LogicOperation = "logic_peration"
-
-	ActionCompareNumbersKey = "compare_numbers"
+	ActionCompareNumbersKey = "number_comparison"
 
 	ActionCompareNumbers = actions.NewActionDefinition(
-		"Check if {0<a:uint256>} {1<comparison:string>} {2<b:uint256>}",
+		"{0<a:uint256>} {1<comparison:string>} {2<b:uint256>}",
 		boolean_actions.CompareNumbers,
 		boolean_options.CompareNumbersOptions,
 		actions.IsGlobal,
 		actions.IsStatic,
-		actions.IsEmptyOnchainFunc,
+		&boolean_actions.CompareNumberFunc,	
+	)
+	ActionBooleanLogic = actions.NewActionDefinition(
+		"{0<a:uint256>} {1<comparison:string>} {2<b:[(1)!=not?uint256:null]>}",
+		boolean_actions.LogicOperation,
+		boolean_options.LogicOperationOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&boolean_actions.CompareNumberFunc,	
 	)
 )
 

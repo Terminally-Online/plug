@@ -9,13 +9,13 @@ var (
 	}
 
 	logicalOperationOptions = []actions.Option{
-		{Label: "AND", Value: "and"},
-		{Label: "OR", Value: "or"},
-		{Label: "NOT", Value: "not"},
-		{Label: "XOR", Value: "xor"},
-		{Label: "NAND", Value: "nand"},
-		{Label: "NOR", Value: "nor"},
-		{Label: "IMPLIES", Value: "implies"},
+		{Name: "And", Label: "and", Value: "isAnd"},
+		{Name: "Or", Label: "or", Value: "isOr"},
+		{Name: "Not", Label: "not", Value: "isNot"},
+		{Name: "Xor", Label: "xor", Value: "isXor"},
+		{Name: "Nand", Label: "nand", Value: "isNand"},
+		{Name: "Nor", Label: "nor", Value: "isNor"},
+		{Name: "Implies", Label: "implies", Value: "isImplies"},
 	}
 )
 

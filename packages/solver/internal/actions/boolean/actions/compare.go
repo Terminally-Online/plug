@@ -9,7 +9,6 @@ import (
 	"solver/internal/coil"
 	"solver/internal/solver/signature"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -20,9 +19,8 @@ type CompareNumbersRequest struct {
 }
 
 var CompareNumberFunc = actions.ActionOnchainFunctionResponse{
-	Arguments: &abi.Arguments{
-		{Name: "result", Type: abi.Type{T: abi.BoolTy}},
-	},
+	Metadata:     plug_boolean.PlugBooleanMetaData,
+	FunctionName: "isAnd",
 }
 
 func CompareNumbers(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]signature.Plug, error) {

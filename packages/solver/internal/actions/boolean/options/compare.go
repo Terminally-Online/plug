@@ -6,12 +6,12 @@ import (
 
 var (
 	numberComparisonOptions = []actions.Option{
-		{Name: "Equals", Label: "=", Value: "isEqual"},
-		{Name: "Does Not Equal", Label: "≠", Value: "isNotEqual"},
-		{Name: "Greater Than", Label: ">", Value: "isGreaterThan"},
-		{Name: "Greater Than or Equal", Label: "≥", Value: "isGreaterThanOrEqual"},
-		{Name: "Less Than", Label: "<", Value: "isLessThan"},
-		{Name: "Less Than or Equal", Label: "≤", Value: "isLessThanOrEqual"},
+		{Name: "Equals", Label: "is equal to", Value: "isEqual"},
+		{Name: "Does Not Equal", Label: "is not equal to", Value: "isNotEqual"},
+		{Name: "Greater Than", Label: "is greater than", Value: "isGreaterThan"},
+		{Name: "Greater Than or Equal", Label: "is greater than or equal to", Value: "isGreaterThanOrEqual"},
+		{Name: "Less Than", Label: "is less than", Value: "isLessThan"},
+		{Name: "Less Than or Equal", Label: "is less than or equal to", Value: "isLessThanOrEqual"},
 	}
 )
 
