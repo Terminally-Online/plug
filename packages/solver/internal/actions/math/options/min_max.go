@@ -15,7 +15,7 @@ var (
 				},
 				{
 					Name:  "Maximum",
-					Label: "mminusaximum",
+					Label: "maximum",
 					Value: "max",
 				},
 			},
