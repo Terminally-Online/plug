@@ -6,52 +6,65 @@ import (
 	"solver/bindings/plug_boolean"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
-	"strings"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type NumberComparisonRequest struct {
-	A          *big.Int `json:"a"`
-	Comparison string   `json:"comparison"`
-	B          *big.Int `json:"b"`
+type CompareNumbersRequest struct {
+	A          coil.CoilInput[*big.Int, *big.Int] `json:"a"`
+	Comparison string                             `json:"comparison"`
+	B          coil.CoilInput[*big.Int, *big.Int] `json:"b"`
 }
 
+var CompareNumberFunc = actions.ActionOnchainFunctionResponse{
+	Arguments: &abi.Arguments{
+		{Name: "result", Type: abi.Type{T: abi.BoolTy}},
+	},
+}
 
-func CompareNumbers(lookup *actions.SchemaLookup[NumberComparisonRequest]) ([]signature.Plug, error) {
-	comparison := strings.ToLower(lookup.Inputs.Comparison)
-	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
+func CompareNumbers(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]signature.Plug, error) {
 	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
 	}
 
-	comparisonFunctions := map[string]string{
-		"equal":              "isEqual",
-		"notequal":           "isNotEqual",
-		"greaterthan":        "isGreaterThan",
-		"greaterthanorequal": "isGreaterThanOrEqual",
-		"lessthan":           "isLessThan",
-		"lessthanorequal":    "isLessThanOrEqual",
-	}
-
-	functionName, supported := comparisonFunctions[comparison]
-	if !supported {
-		return nil, fmt.Errorf("unsupported number comparison: %s", lookup.Inputs.Comparison)
-	}
-
-	calldata, err := booleanAbi.Pack(functionName, lookup.Inputs.A, lookup.Inputs.B)
+	a, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.A,
+		lookup.Inputs.A.GetValueWithError,
+		&CompareNumberFunc,
+		"a",
+		nil,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+		return nil, err
 	}
 
-	plug := signature.Plug{
-		To:    booleanContract,
-		Data:  calldata,
-		Value: nil,
+	b, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.B,
+		lookup.Inputs.B.GetValueWithError,
+		&CompareNumberFunc,
+		"b",
+		updates,
+		lookup.PreviousActionDefinition,
+	)
+	if err != nil {
+		return nil, err
 	}
 
-	return []signature.Plug{plug}, nil
+	calldata, err := booleanAbi.Pack(lookup.Inputs.Comparison, a, b)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", lookup.Inputs.Comparison, err)
+	}
+
+	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
+	return []signature.Plug{{
+		Selector: signature.StaticCall,
+		To:       booleanContract,
+		Data:     calldata,
+		Updates:  updates,
+	}}, nil
 }
-

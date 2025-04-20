@@ -10,24 +10,6 @@ export const contracts = [
                         "name": "condition",
                         "type": "bool",
                         "internalType": "bool"
-                    },
-                    {
-                        "name": "message",
-                        "type": "string",
-                        "internalType": "string"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "assertFalse",
-                "inputs": [
-                    {
-                        "name": "condition",
-                        "type": "bool",
-                        "internalType": "bool"
                     }
                 ],
                 "outputs": [],
@@ -41,37 +23,6 @@ export const contracts = [
                         "name": "condition",
                         "type": "bool",
                         "internalType": "bool"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "assertTrue",
-                "inputs": [
-                    {
-                        "name": "condition",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "message",
-                        "type": "string",
-                        "internalType": "string"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "fail",
-                "inputs": [
-                    {
-                        "name": "message",
-                        "type": "string",
-                        "internalType": "string"
                     }
                 ],
                 "outputs": [],
@@ -82,30 +33,6 @@ export const contracts = [
     {
         "name": "PlugBoolean",
         "abi": [
-            {
-                "type": "function",
-                "name": "isAfterTime",
-                "inputs": [
-                    {
-                        "name": "time",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "threshold",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
             {
                 "type": "function",
                 "name": "isAnd",
@@ -119,30 +46,6 @@ export const contracts = [
                         "name": "b",
                         "type": "bool",
                         "internalType": "bool"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isBeforeTime",
-                "inputs": [
-                    {
-                        "name": "time",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "threshold",
-                        "type": "uint256",
-                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
@@ -185,35 +88,6 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "isBetweenTimes",
-                "inputs": [
-                    {
-                        "name": "time",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "start",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "end",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
                 "name": "isEqual",
                 "inputs": [
                     {
@@ -225,25 +99,6 @@ export const contracts = [
                         "name": "threshold",
                         "type": "uint256",
                         "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isFalse",
-                "inputs": [
-                    {
-                        "name": "value",
-                        "type": "bool",
-                        "internalType": "bool"
                     }
                 ],
                 "outputs": [
@@ -479,87 +334,6 @@ export const contracts = [
                         "name": "b",
                         "type": "bool",
                         "internalType": "bool"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isSameDay",
-                "inputs": [
-                    {
-                        "name": "timestamp1",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "timestamp2",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isTrue",
-                "inputs": [
-                    {
-                        "name": "value",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isWeekday",
-                "inputs": [
-                    {
-                        "name": "timestamp",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isWeekend",
-                "inputs": [
-                    {
-                        "name": "timestamp",
-                        "type": "uint256",
-                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [

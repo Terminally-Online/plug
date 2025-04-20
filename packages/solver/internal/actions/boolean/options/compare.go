@@ -6,15 +6,14 @@ import (
 
 var (
 	numberComparisonOptions = []actions.Option{
-		{Label: "Equals (=)", Value: "equal"},
-		{Label: "Does Not Equal (≠)", Value: "notEqual"},
-		{Label: "Greater Than (>)", Value: "greaterThan"},
-		{Label: "Greater Than or Equal (≥)", Value: "greaterThanOrEqual"},
-		{Label: "Less Than (<)", Value: "lessThan"},
-		{Label: "Less Than or Equal (≤)", Value: "lessThanOrEqual"},
+		{Name: "Equals", Label: "=", Value: "isEqual"},
+		{Name: "Does Not Equal", Label: "≠", Value: "isNotEqual"},
+		{Name: "Greater Than", Label: ">", Value: "isGreaterThan"},
+		{Name: "Greater Than or Equal", Label: "≥", Value: "isGreaterThanOrEqual"},
+		{Name: "Less Than", Label: "<", Value: "isLessThan"},
+		{Name: "Less Than or Equal", Label: "≤", Value: "isLessThanOrEqual"},
 	}
 )
-
 
 func CompareNumbersOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
 	return map[int]actions.Options{

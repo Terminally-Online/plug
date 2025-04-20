@@ -9,7 +9,17 @@ import (
 
 var (
 	LogicOperation = "logic_peration"
-	CompareNumbers = "compare_numbers"
+
+	ActionCompareNumbersKey = "compare_numbers"
+
+	ActionCompareNumbers = actions.NewActionDefinition(
+		"Check if {0<a:uint256>} {1<comparison:string>} {2<b:uint256>}",
+		boolean_actions.CompareNumbers,
+		boolean_options.CompareNumbersOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		actions.IsEmptyOnchainFunc,
+	)
 )
 
 func New() actions.Protocol {
@@ -20,22 +30,7 @@ func New() actions.Protocol {
 			Tags:   []string{"logic", "condition", "comparison"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				CompareNumbers: actions.NewActionDefinition(
-					"Check if {0<a:integer>} {1<comparison:string>} {2<b:integer>}",
-					boolean_actions.CompareNumbers,
-					boolean_options.CompareNumbersOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
-				LogicOperation: actions.NewActionDefinition(
-					"Check if {0<a:boolean>} {1<operation:string>} {2<b:boolean>}",
-					boolean_actions.LogicOperation,
-					boolean_options.LogicOperationOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
+				ActionCompareNumbersKey: ActionCompareNumbers,
 			},
 		},
 	)

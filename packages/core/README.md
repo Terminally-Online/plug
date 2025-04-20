@@ -44,8 +44,8 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
 │  └─ Quick Mode: Yes
 │
 └─ Contracts:
-   ├─ Plug.Assert.sol [256] — "0x00000000F6BC829aB754e492c356b55afA158cE6"
-   ├─ Plug.Boolean.sol [256] — "0x000000002992e33AC9B870aAF734d71638543EdB"
+   ├─ Plug.Assert.sol [256] — "0x0000000043fCd2f536248A3C4460240812e84C9d"
+   ├─ Plug.Boolean.sol [256] — "0x00000000BAeB8597208f08e56Eb7a0D703f22614"
    ├─ Plug.Coercion.sol [256] — "0x0000000072f0b1700faEb2db53328E6343CF6F92"
    ├─ Plug.Database.sol [4217] — "0x0000000007189742A4a2ED3F90008a6B7FAedc21"
    ├─ Plug.EVM.sol [256] — "0x00000000bb7a076fd9606836A7D3394A078Bc486"
