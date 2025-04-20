@@ -24,11 +24,6 @@ var NumberComparisonFunc = actions.ActionOnchainFunctionResponse{
 }
 
 func NumberComparison(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]signature.Plug, error) {
-	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
-	}
-
 	a, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.A,
 		lookup.Inputs.A.GetValueWithError,
@@ -53,7 +48,8 @@ func NumberComparison(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]si
 		return nil, err
 	}
 
-	calldata, err := booleanAbi.Pack(lookup.Inputs.Comparison, a, b)
+	NumberComparisonFunc.FunctionName = lookup.Inputs.Comparison
+	calldata, err := NumberComparisonFunc.GetCalldata(a, b)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack %s calldata: %w", lookup.Inputs.Comparison, err)
 	}

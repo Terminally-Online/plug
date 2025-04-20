@@ -23,11 +23,6 @@ var NumberLogicFunc = actions.ActionOnchainFunctionResponse{
 }
 
 func NumberLogic(lookup *actions.SchemaLookup[LogicOperationRequest]) ([]signature.Plug, error) {
-	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
-	}
-
 	a, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.A,
 		lookup.Inputs.A.GetValueWithError,
@@ -40,9 +35,11 @@ func NumberLogic(lookup *actions.SchemaLookup[LogicOperationRequest]) ([]signatu
 		return nil, err
 	}
 
+	NumberLogicFunc.FunctionName = lookup.Inputs.Operation
+
 	var calldata []byte
 	if lookup.Inputs.Operation == "isNot" {
-		calldata, err = booleanAbi.Pack(lookup.Inputs.Operation, a)
+		calldata, err = NumberLogicFunc.GetCalldata(a)
 	} else {
 		var b bool
 		b, updates, err = actions.GetAndUpdate(
@@ -57,8 +54,9 @@ func NumberLogic(lookup *actions.SchemaLookup[LogicOperationRequest]) ([]signatu
 			return nil, err
 		}
 
-		calldata, err = booleanAbi.Pack(lookup.Inputs.Operation, a, b)
+		calldata, err = NumberLogicFunc.GetCalldata(a, b)
 	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack %s calldata: %w", lookup.Inputs.Operation, err)
 	}
