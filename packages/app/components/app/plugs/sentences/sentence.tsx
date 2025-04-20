@@ -119,8 +119,8 @@ export const Sentence: FC<SentenceProps> = ({
 	)
 
 	const [minimalActions] = useActions()
-	const sentence = minimalActions[action.protocol]?.schema[action.action].sentence
-	const coils = minimalActions[action.protocol]?.schema[action.action].coils ?? {}
+	const sentence = minimalActions[action.protocol]?.schema[action.action]?.sentence
+	const coils = minimalActions[action.protocol]?.schema[action.action]?.coils ?? {}
 	const values = Object.entries(action.values ?? []).reduce(
 		(acc, [key, value]) => {
 			if (value && value.value !== undefined) {
