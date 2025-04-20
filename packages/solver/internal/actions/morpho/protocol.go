@@ -14,7 +14,7 @@ var (
 	ActionRepaySentence             = "Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<market:string>}"
 	ActionDepositCollateralSentence = "Supply {0<amount:float>} {1<token:address:uint8>} as collateral to {1=>2<market:string>}"
 	ActionWithdrawSentence          = "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<target:string>}"
-	ReadAPYSentence                 = "Get {0<action:int8>} APY in {1<target:string>}"
+	ReadAPYSentence                 = "Get {0<action:int8>} APY in {0=>1<target:string>}"
 	ReadHealthFactorSentence        = "Get health factor in {0<market:string>}"
 
 	ActionBorrow = actions.NewActionDefinition(
