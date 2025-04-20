@@ -12,6 +12,15 @@ pragma solidity ^0.8.26;
  */
 contract PlugBoolean {
     /**
+     * @notice Perform a logical NOT operation
+     * @param a Boolean operand to negate
+     * @return result True if a is false, false if a is true
+     */
+    function isNot(bool a) public pure returns (bool result) {
+        result = !a;
+    }
+
+    /**
      * @notice Perform a logical AND operation
      * @param a First boolean operand
      * @param b Second boolean operand
@@ -29,15 +38,6 @@ contract PlugBoolean {
      */
     function isOr(bool a, bool b) public pure returns (bool result) {
         result = a || b;
-    }
-
-    /**
-     * @notice Perform a logical NOT operation
-     * @param a Boolean operand to negate
-     * @return result True if a is false, false if a is true
-     */
-    function isNot(bool a) public pure returns (bool result) {
-        result = !a;
     }
 
     /**
