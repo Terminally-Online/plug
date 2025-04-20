@@ -64,8 +64,9 @@ func Balance(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug, er
 	}
 
 	return []signature.Plug{{
-		To:      *token,
-		Data:    balanceCalldata,
-		Updates: updates,
+		Selector: signature.StaticCall,
+		To:       *token,
+		Data:     balanceCalldata,
+		Updates:  updates,
 	}}, nil
 }
