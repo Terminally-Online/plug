@@ -69,7 +69,7 @@ func (p Plug) Wrap() (*plug_router.PlugTypesLibPlug, error) {
 		{Type: abi.Type{T: abi.AddressTy}},
 		{Type: abi.Type{T: abi.UintTy, Size: 256}},
 		{Type: abi.Type{T: abi.BytesTy}},
-	}.Pack(p.Selector, p.To, p.Value, p.Data.UnmarshalText)
+	}.Pack(p.Selector, p.To, p.Value, []byte(p.Data))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,10 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	plugCalldata, err := routerAbi.Pack("plug0", livePlugs)
+
+	livePlugSlice := []plug_router.PlugTypesLibLivePlugs{*livePlugs}
+
+	plugCalldata, err := routerAbi.Pack("plug0", livePlugSlice)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
 	}
