@@ -119,9 +119,10 @@ func Balance20(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug, 
 	}
 
 	return []signature.Plug{{
-		To:      token,
-		Data:    balanceCalldata,
-		Updates: updates,
+		Selector: signature.StaticCall,
+		To:       token,
+		Data:     balanceCalldata,
+		Updates:  updates,
 	}}, nil
 }
 
@@ -147,9 +148,10 @@ func Balance721(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug,
 	}
 
 	return []signature.Plug{{
-		To:      token,
-		Data:    balanceCalldata,
-		Updates: updates,
+		Selector: signature.StaticCall,
+		To:       token,
+		Data:     balanceCalldata,
+		Updates:  updates,
 	}}, nil
 }
 
@@ -180,8 +182,9 @@ func Balance1155(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Plug
 	}
 
 	return []signature.Plug{{
-		To:      token,
-		Data:    balanceCalldata,
-		Updates: updates,
+		Selector: signature.StaticCall,
+		To:       token,
+		Data:     balanceCalldata,
+		Updates:  updates,
 	}}, nil
 }
