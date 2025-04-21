@@ -45,6 +45,10 @@ type Intent struct {
 func (i *Intent) BeforeCreate(tx *gorm.DB) error {
 	i.Id = utils.GenerateUUID()
 	if i.Frequency > 0 {
+		if i.StartAt == nil {
+			startAt := time.Now()
+			i.StartAt = &startAt
+		}
 		periodEndAt := i.StartAt.Add(time.Duration(i.Frequency) * 24 * time.Hour)
 		i.PeriodEndAt = &periodEndAt
 	}
