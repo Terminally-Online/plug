@@ -9,7 +9,7 @@ import (
  * GetHoldingsOptions returns a list of options to be used that include held fungibles and collectibles, as well as non-held fungibles.
  */
 func GetHoldingsOptions[T any](lookup *actions.SchemaLookup[T], index int) ([]actions.Option, error) {
-	holdingsIndex := 1
+	holdingsIndex := 0
 	heldFungiblesOptions, err := GetFungiblesHeldOptions(lookup, holdingsIndex)
 	if err != nil {
 		return nil, err
