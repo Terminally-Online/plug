@@ -69,7 +69,7 @@ func (p Plug) Wrap() (*plug_router.PlugTypesLibPlug, error) {
 		{Type: abi.Type{T: abi.AddressTy}},
 		{Type: abi.Type{T: abi.UintTy, Size: 256}},
 		{Type: abi.Type{T: abi.BytesTy}},
-	}.Pack(p.Selector, p.To, p.Value, p.Data.UnmarshalText)
+	}.Pack(p.Selector, p.To, p.Value, []byte(p.Data))
 	if err != nil {
 		return nil, err
 	}
@@ -131,15 +131,17 @@ type LivePlugs struct {
 	Signature []byte `json:"signature" gorm:"type:bytea"`
 }
 
-func (l LivePlugs) Wrap() (*plug_router.PlugTypesLibLivePlugs, error) {
+func (l LivePlugs) Wrap() ([]plug_router.PlugTypesLibLivePlugs, error) {
 	plugs, err := l.Plugs.Wrap()
 	if err != nil {
 		return nil, err
 	}
-	return &plug_router.PlugTypesLibLivePlugs{
+
+	livePlugs := plug_router.PlugTypesLibLivePlugs{
 		Plugs:     *plugs,
 		Signature: l.Signature,
-	}, nil
+	}
+	return []plug_router.PlugTypesLibLivePlugs{livePlugs}, nil
 }
 
 // Helper method to get router contract address for this chain
@@ -161,6 +163,7 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	plugCalldata, err := routerAbi.Pack("plug0", livePlugs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
