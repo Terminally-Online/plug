@@ -88,8 +88,11 @@ func (i *Intent) GetNextSimulationAt() (status string, periodEndAt *time.Time, n
 	now := time.Now()
 
 	isSingleUse := i.EndAt == nil || i.Frequency == 0
+	if isSingleUse {
+		return "completed", nil, nil
+	}
 	isExpired := i.EndAt.Before(now)
-	if isSingleUse || isExpired {
+	if isExpired {
 		return "completed", nil, nil
 	}
 
