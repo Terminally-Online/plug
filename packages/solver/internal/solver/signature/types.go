@@ -131,17 +131,15 @@ type LivePlugs struct {
 	Signature []byte `json:"signature" gorm:"type:bytea"`
 }
 
-func (l LivePlugs) Wrap() ([]plug_router.PlugTypesLibLivePlugs, error) {
+func (l LivePlugs) Wrap() (*plug_router.PlugTypesLibLivePlugs, error) {
 	plugs, err := l.Plugs.Wrap()
 	if err != nil {
 		return nil, err
 	}
-
-	livePlugs := plug_router.PlugTypesLibLivePlugs{
+	return &plug_router.PlugTypesLibLivePlugs{
 		Plugs:     *plugs,
 		Signature: l.Signature,
-	}
-	return []plug_router.PlugTypesLibLivePlugs{livePlugs}, nil
+	}, nil
 }
 
 // Helper method to get router contract address for this chain
@@ -164,7 +162,9 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 		return nil, err
 	}
 
-	plugCalldata, err := routerAbi.Pack("plug0", livePlugs)
+	livePlugSlice := []plug_router.PlugTypesLibLivePlugs{*livePlugs}
+
+	plugCalldata, err := routerAbi.Pack("plug0", livePlugSlice)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
 	}
