@@ -24,7 +24,7 @@ type BalanceRequest struct {
 
 var NativeBalanceFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     plug_evm.PlugEvmMetaData,
-	FunctionName: "getBalance",
+	FunctionName: "balanceOf",
 }
 
 var Erc20BalanceFunc = actions.ActionOnchainFunctionResponse{
@@ -78,7 +78,7 @@ func BalanceNative(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Pl
 		lookup.Inputs.Holder.GetValueWithError,
 		&Erc20BalanceFunc,
 		"_owner",
-		updates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {

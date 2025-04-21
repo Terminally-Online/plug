@@ -20,12 +20,12 @@ type SupplyCollateralRequest struct {
 	Target string                           `json:"target"`
 }
 
-var SupplyCollateralFunc = actions.ActionOnchainFunctionResponse{
+var DepositCollateralFunc = actions.ActionOnchainFunctionResponse{
 	Metadata:     morpho_router.MorphoRouterMetaData,
 	FunctionName: "supplyCollateral",
 }
 
-func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]signature.Plug, error) {
+func DepositCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]signature.Plug, error) {
 	token, decimals, err := utils.ParseAddressAndDecimals(lookup.Inputs.Token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
@@ -36,13 +36,12 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
 	}
 
-	var approvalUpdates []coil.Update
 	approvalAmount, approvalUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&actions.Erc20ApprovalFunc,
 		"_value",
-		approvalUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
@@ -57,20 +56,19 @@ func SupplyCollateral(lookup *actions.SchemaLookup[SupplyCollateralRequest]) ([]
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	var supplyUpdates []coil.Update
 	supplyAmount, supplyUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
-		&SupplyCollateralFunc,
+		&DepositCollateralFunc,
 		"assets",
-		supplyUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	supplyCollateralCalldata, err := SupplyCollateralFunc.GetCalldata(
+	supplyCollateralCalldata, err := DepositCollateralFunc.GetCalldata(
 		targetParams.MarketParams,
 		supplyAmount,
 		lookup.From,

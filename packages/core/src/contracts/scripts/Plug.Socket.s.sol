@@ -18,7 +18,8 @@ contract PlugSocketDeployment is Script {
 
         if (PlugEtcherLib.PLUG_SOCKET_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
+                PlugEtcherLib.PLUG_SOCKET_SALT,
+                PlugEtcherLib.PLUG_SOCKET_INITCODE
             );
         }
 

@@ -5,58 +5,67 @@ import (
 	"solver/bindings/plug_boolean"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/coil"
 	"solver/internal/solver/signature"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type LogicOperationRequest struct {
-	A         bool   `json:"a"`
-	Operation string `json:"operation"`
-	B         bool   `json:"b"`
+	A         coil.CoilInput[bool, bool] `json:"a"`
+	Operation string                     `json:"operation"`
+	B         coil.CoilInput[bool, bool] `json:"b"`
 }
 
+var NumberLogicFunc = actions.ActionOnchainFunctionResponse{
+	Metadata:     plug_boolean.PlugBooleanMetaData,
+	FunctionName: "isAnd",
+}
 
-func LogicOperation(lookup *actions.SchemaLookup[LogicOperationRequest]) ([]signature.Plug, error) {
-	operation := strings.ToLower(lookup.Inputs.Operation)
-	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
-	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
+func NumberLogic(lookup *actions.SchemaLookup[LogicOperationRequest]) ([]signature.Plug, error) {
+	a, updates, err := actions.GetAndUpdate(
+		&lookup.Inputs.A,
+		lookup.Inputs.A.GetValueWithError,
+		&NumberLogicFunc,
+		"a",
+		nil,
+		lookup.PreviousActionDefinition,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
+		return nil, err
 	}
 
-	operationFunctions := map[string]string{
-		"and":     "isAnd",
-		"or":      "isOr",
-		"not":     "isNot",
-		"xor":     "isXor",
-		"nand":    "isNand",
-		"nor":     "isNor",
-		"implies": "isImplies",
-	}
-
-	functionName, supported := operationFunctions[operation]
-	if !supported {
-		return nil, fmt.Errorf("unsupported logical operation: %s", lookup.Inputs.Operation)
-	}
+	NumberLogicFunc.FunctionName = lookup.Inputs.Operation
 
 	var calldata []byte
-	if operation == "not" {
-		calldata, err = booleanAbi.Pack(functionName, lookup.Inputs.A)
+	if lookup.Inputs.Operation == "isNot" {
+		calldata, err = NumberLogicFunc.GetCalldata(a)
 	} else {
-		calldata, err = booleanAbi.Pack(functionName, lookup.Inputs.A, lookup.Inputs.B)
+		var b bool
+		b, updates, err = actions.GetAndUpdate(
+			&lookup.Inputs.B,
+			lookup.Inputs.B.GetValueWithError,
+			&NumberLogicFunc,
+			"b",
+			updates,
+			lookup.PreviousActionDefinition,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		calldata, err = NumberLogicFunc.GetCalldata(a, b)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", lookup.Inputs.Operation, err)
 	}
 
-	plug := signature.Plug{
-		To:    booleanContract,
-		Data:  calldata,
-		Value: nil,
-	}
-
-	return []signature.Plug{plug}, nil
+	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
+	return []signature.Plug{{
+		Selector: signature.StaticCall,
+		To:       booleanContract,
+		Data:     calldata,
+		Updates:  updates,
+	}}, nil
 }

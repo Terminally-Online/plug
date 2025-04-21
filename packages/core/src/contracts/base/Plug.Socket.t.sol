@@ -24,7 +24,7 @@ contract PlugSocketTest is Test {
     }
 
     function test_symbol() public {
-        assertEq(socket.symbol(), "PS");
+        assertEq(socket.symbol(), "PLUGS");
     }
 
     function testRevert_Initialize_Again() public {

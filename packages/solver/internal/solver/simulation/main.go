@@ -8,6 +8,7 @@ import (
 	"solver/internal/database/models"
 	"solver/internal/database/types"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -31,20 +32,16 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	}
 	defer rpcClient.Close()
 
-	// Get router address for this chain
 	routerAddress := livePlugs.GetRouterAddress()
 
-	// Create transaction parameters for simulation
 	tx := map[string]any{
 		"from": livePlugs.From,
 		"to":   routerAddress.Hex(),
 	}
 
-	// Include data if available
 	if livePlugs.Data != "" {
 		tx["data"] = livePlugs.Data
 	} else {
-		// Generate call data if not already available
 		callData, err := livePlugs.GetCallData()
 		if err != nil {
 			return nil, err
@@ -52,7 +49,6 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		tx["data"] = hexutil.Bytes(callData).String()
 	}
 
-	// Get block metadata for simulation
 	var blockNumber string
 	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
 		return nil, fmt.Errorf("failed to get block number: %v", err)
@@ -85,7 +81,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
+		return nil, utils.ErrSimulationFailed(err.Error())
 	}
 
 	// Create run object with results
@@ -186,7 +182,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", simTx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
+		return nil, utils.ErrSimulationFailed(err.Error())
 	}
 
 	// Create run object with results

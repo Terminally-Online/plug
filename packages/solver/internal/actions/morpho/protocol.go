@@ -8,14 +8,80 @@ import (
 )
 
 var (
-	ActionEarn             = "earn"
-	ActionSupplyCollateral = "supply_collateral"
-	ActionWithdraw         = "withdraw"
-	ActionBorrow           = "borrow"
-	ActionRepay            = "repay"
-	ActionClaimRewards     = "claim_rewards"
-	ConstraintLLTV         = "lltv"
-	ConstraintAPY          = "apy"
+	ActionBorrowSentence            = "Borrow {0<amount:float>} {1<token:address:uint8>} from {1=>2<market:string>}"
+	ActionClaimRewardsSentence      = "Claim all reward distributions"
+	ActionEarnSentence              = "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:string>}"
+	ActionRepaySentence             = "Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<market:string>}"
+	ActionDepositCollateralSentence = "Supply {0<amount:float>} {1<token:address:uint8>} as collateral to {1=>2<market:string>}"
+	ActionWithdrawSentence          = "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<target:string>}"
+	ReadAPYSentence                 = "Get {0<action:int8>} APY in {0=>1<target:string>}"
+	ReadHealthFactorSentence        = "Get health factor in {0<market:string>}"
+
+	ActionBorrow = actions.NewActionDefinition(
+		ActionBorrowSentence,
+		morpho_actions.Borrow,
+		morpho_options.BorrowTokenToMarketOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&morpho_actions.BorrowFunc,
+	)
+	ActionClaimRewards = actions.NewActionDefinition(
+		ActionClaimRewardsSentence,
+		morpho_actions.ClaimRewards,
+		nil,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&morpho_actions.ClaimRewardsFunc,
+	)
+	ActionEarn = actions.NewActionDefinition(
+		ActionEarnSentence,
+		morpho_actions.Earn,
+		morpho_options.SupplyTokenToVaultOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&morpho_actions.EarnFunc,
+	)
+	ActionRepay = actions.NewActionDefinition(
+		ActionRepaySentence,
+		morpho_actions.Repay,
+		morpho_options.BorrowTokenToMarketOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&morpho_actions.RepayFunc,
+	)
+	ActionDepositCollateral = actions.NewActionDefinition(
+		ActionDepositCollateralSentence,
+		morpho_actions.DepositCollateral,
+		morpho_options.CollateralTokenToMarketOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&morpho_actions.DepositCollateralFunc,
+	)
+	ActionWithdraw = actions.NewActionDefinition(
+		ActionWithdrawSentence,
+		morpho_actions.Withdraw,
+		morpho_options.SupplyAndCollateralTokenToMarketOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		// TODO MASON: we have two different return function signatures here if we do actually support vaults through this.
+		&morpho_actions.WithdrawMarketFunc,
+	)
+	ReadAPY = actions.NewActionDefinition(
+		ReadAPYSentence,
+		morpho_actions.APY,
+		morpho_options.APYOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		&morpho_actions.ApyFunc,
+	)
+	ReadHealthFactor = actions.NewActionDefinition(
+		ReadHealthFactorSentence,
+		morpho_actions.HealthFactor,
+		morpho_options.HealthFactorOptions,
+		actions.IsGlobal,
+		actions.IsStatic,
+		actions.IsEmptyOnchainFunc,
+	)
 )
 
 func New() actions.Protocol {
@@ -26,70 +92,14 @@ func New() actions.Protocol {
 			Tags:   []string{"lending", "defi"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				actions.ReadAPY: actions.NewActionDefinition(
-					"Get {0<action:int8>} APY in {1<target:string>}",
-					morpho_actions.APY,
-					morpho_options.APYOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
-				ActionBorrow: actions.NewActionDefinition(
-					"Borrow {0<amount:float>} {1<token:address:uint8>} from {1=>2<market:string>}",
-					morpho_actions.Borrow,
-					morpho_options.BorrowTokenToMarketOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					&morpho_actions.BorrowFunc,
-				),
-				ActionClaimRewards: actions.NewActionDefinition(
-					"Claim all reward distributions",
-					morpho_actions.ClaimRewards,
-					nil,
-					actions.IsGlobal,
-					actions.IsStatic,
-					&morpho_actions.ClaimRewardsFunc,
-				),
-				ActionEarn: actions.NewActionDefinition(
-					"Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:string>}",
-					morpho_actions.Earn,
-					morpho_options.SupplyTokenToVaultOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					&morpho_actions.EarnFunc,
-				),
-				actions.ReadHealthFactor: actions.NewActionDefinition(
-					"Get health factor in {0<market:string>}",
-					morpho_actions.HealthFactor,
-					morpho_options.HealthFactorOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
-				ActionRepay: actions.NewActionDefinition(
-					"Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<market:string>}",
-					morpho_actions.Repay,
-					morpho_options.BorrowTokenToMarketOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					&morpho_actions.RepayFunc,
-				),
-				ActionSupplyCollateral: actions.NewActionDefinition(
-					"Supply {0<amount:float>} {1<token:address:uint8>} as collateral to {1=>2<market:string>}",
-					morpho_actions.SupplyCollateral,
-					morpho_options.CollateralTokenToMarketOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					&morpho_actions.SupplyCollateralFunc,
-				),
-				ActionWithdraw: actions.NewActionDefinition(
-					"Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<target:string>}",
-					morpho_actions.Withdraw,
-					morpho_options.SupplyAndCollateralTokenToMarketOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					&morpho_actions.WithdrawMarketFunc, // TODO MASON: we have two different return function signatures here if we do actually support vaults through this.
-				),
+				actions.ActionBorrow:            ActionBorrow,
+				actions.ActionClaimRewards:      ActionClaimRewards,
+				actions.ActionEarn:              ActionEarn,
+				actions.ActionRepay:             ActionRepay,
+				actions.ActionDepositCollateral: ActionDepositCollateral,
+				actions.ActionWithdraw:          ActionWithdraw,
+				actions.ReadAPY:                 ReadAPY,
+				actions.ReadHealthFactor:        ReadHealthFactor,
 			},
 		},
 	)

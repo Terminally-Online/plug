@@ -10,14 +10,18 @@ import (
 )
 
 var (
+	UseExecution = utils.GetEnvOrDefault("USE_EXECUTION", "false") == "true"
+	UseAVS       = utils.GetEnvOrDefault("USE_AVS", "false") == "true"
+
+	Node_1    = utils.GetEnvOrDefault("RPC_1", "")
+	Node_8453 = utils.GetEnvOrDefault("RPC_8453", "")
+
+	// NOTE: These are AVS specific and should never be used in the solver isolated codebase.
 	ChainId           = int64(8453)
-	Production        = utils.GetEnvOrDefault("AVS_ENV", "development") == "production"
-	SolverUrl         = utils.GetEnvOrDefault("SOLVER_URL", "http://localhost:8080")
 	PrivateKey        = utils.GetEnvOrDefault("PRIVATE_KEY", "")
-	Node_1            = utils.GetEnvOrDefault("RPC_1", "")
-	Node_8453         = utils.GetEnvOrDefault("RPC_8453", "")
 	Port              = utils.GetEnvOrDefault("PORT", "6473")
 	AttestationCenter = common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d")
+	Production        = utils.GetEnvOrDefault("AVS_ENV", "development") == "production"
 )
 
 func GetNodeUrl(chainId int64) (string, error) {
