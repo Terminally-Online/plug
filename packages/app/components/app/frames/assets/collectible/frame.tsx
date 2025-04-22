@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown"
 import { getAddress } from "viem"
 
 import {
+	ArrowDownFromLine,
 	BookDashed,
 	BookText,
 	ChevronDown,
@@ -34,7 +35,7 @@ import {
 	getTextColor
 } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 type Traits = Array<{ trait_type: string; value: string }>
 
@@ -169,18 +170,30 @@ export const CollectibleFrame: FC<{
 
 				<div className="flex flex-row gap-2 px-6 pb-4">
 					<button
-						onClick={() => {
-							transfer({ percentage: 0, precise: "0", recipient: undefined })
-							frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
-						}}
 						className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 						style={{
 							backgroundColor: metadata?.color ?? "",
 							color: textColor
 						}}
+						onClick={() => {
+							transfer({ percentage: 0, precise: "0", recipient: undefined })
+							frame(index === COLUMNS.SIDEBAR_INDEX
+								? `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
+								: `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
+							)
+						}}
 					>
-						<Send size={14} className="opacity-60" />
-						Send
+						{index === COLUMNS.SIDEBAR_INDEX ? (
+							<>
+								<ArrowDownFromLine size={14} className="opacity-60" />
+								Deposit
+							</>
+						) : (
+							<>
+								<Send size={14} className="opacity-60" />
+								Send
+							</>
+						)}
 					</button>
 				</div>
 

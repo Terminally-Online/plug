@@ -36,33 +36,49 @@ export const useDebounce = <T,>(
 	return [value, debounced, setValue, valueRef]
 }
 
+export function useStateDebounce<T>(value: T, delay = 250) {
+	const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedValue(value);
+		}, delay);
+
+		return () => {
+			clearTimeout(handler);
+		};
+	}, [value, delay]);
+
+	return debouncedValue;
+}
+
 export const useDebounceInline = <T,>(value: T, delay = DEFAULT_DELAY, callback?: (value: T) => void): T => {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  const callbackRef = useRef(callback);
-  const previousValueRef = useRef<T>(value);
-  
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-  
-  useEffect(() => {
-    // Skip if the value is the same by reference
-    // This works for primitives and prevents unnecessary stringification for objects
-    if (value === previousValueRef.current) {
-      return;
-    }
-    
-    // For objects, we update the reference regardless
-    // This avoids deep equality checks which can be problematic
-    previousValueRef.current = value;
-    
-    const timeout = setTimeout(() => {
-      setDebouncedValue(value);
-      callbackRef.current?.(value);
-    }, delay);
-    
-    return () => clearTimeout(timeout);
-  }, [value, delay]);
-  
-  return debouncedValue;
+	const [debouncedValue, setDebouncedValue] = useState<T>(value);
+	const callbackRef = useRef(callback);
+	const previousValueRef = useRef<T>(value);
+
+	useEffect(() => {
+		callbackRef.current = callback;
+	}, [callback]);
+
+	useEffect(() => {
+		// Skip if the value is the same by reference
+		// This works for primitives and prevents unnecessary stringification for objects
+		if (value === previousValueRef.current) {
+			return;
+		}
+
+		// For objects, we update the reference regardless
+		// This avoids deep equality checks which can be problematic
+		previousValueRef.current = value;
+
+		const timeout = setTimeout(() => {
+			setDebouncedValue(value);
+			callbackRef.current?.(value);
+		}, delay);
+
+		return () => clearTimeout(timeout);
+	}, [value, delay]);
+
+	return debouncedValue;
 };

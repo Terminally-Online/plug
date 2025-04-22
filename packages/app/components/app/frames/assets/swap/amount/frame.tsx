@@ -10,7 +10,7 @@ import { SwapAmountInput } from "@/components/app/frames/assets/swap/amount/inpu
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS, useDebounceInline } from "@/lib"
+import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS, useDebounceInline, useStateDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
@@ -67,31 +67,27 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 	const isEOA = column && column.index === COLUMNS.SIDEBAR_INDEX
 	const from = socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : ""
-	const request = useDebounceInline<{
-		chainId: number,
-		from: string | `0x${string}`
-		inputs: Array<{
-			protocol: string,
-			action: string,
-			[key: string]: string
-		}>, options?: { isEOA?: boolean, simulate?: boolean }
-	}>({
+
+	const amount = useStateDebounce(amounts[tokenOut.symbol].precise)
+	const tokenLookup = `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`
+	const tokenInLookup = `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
+	const request = {
 		chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
 		from,
 		inputs: [
 			{
 				protocol: "plug",
 				action: "swap",
-				amount: amounts[tokenOut.symbol].precise,
-				token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
-				tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
+				amount,
+				token: tokenLookup,
+				tokenIn: tokenInLookup
 			}
 		],
 		options: {
 			isEOA: isEOA,
 			simulate: true
 		}
-	})
+	}
 
 	const { data: intent, error: intentError, isLoading } = api.solver.actions.intent.useQuery(request, {
 		enabled:
