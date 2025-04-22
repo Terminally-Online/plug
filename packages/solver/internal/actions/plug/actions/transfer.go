@@ -60,7 +60,6 @@ func Transfer(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, 
 	}
 
 	token := common.HexToAddress(parts[0])
-
 	if token == utils.NativeTokenAddress {
 		return TransferNative(lookup)
 	}
@@ -169,9 +168,9 @@ func Transfer20(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug
 func Transfer721(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, error) {
 	parts := strings.Split(lookup.Inputs.Token, ":")
 	token := common.HexToAddress(parts[0])
-	tokenId, err := strconv.ParseUint(parts[1], 10, 256)
-	if err != nil {
-		return nil, err
+	tokenId, ok := new(big.Int).SetString(parts[1], 10)
+	if !ok {
+		return nil, fmt.Errorf("could not parse tokenId")
 	}
 
 	var updates []coil.Update
@@ -202,9 +201,9 @@ func Transfer721(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plu
 func Transfer1155(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug, error) {
 	parts := strings.Split(lookup.Inputs.Token, ":")
 	token := common.HexToAddress(parts[0])
-	tokenId, err := strconv.ParseUint(parts[1], 10, 256)
-	if err != nil {
-		return nil, err
+	tokenId, ok := new(big.Int).SetString(parts[1], 10)
+	if !ok {
+		return nil, fmt.Errorf("could not parse tokenId")
 	}
 
 	var updates []coil.Update
