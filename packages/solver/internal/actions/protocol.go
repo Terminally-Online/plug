@@ -33,9 +33,9 @@ func NewProtocol(p Protocol) Protocol {
 					}
 					return definition.GetType()
 				}(),
-				Sentence:       definition.GetSentence(),
-				IsUserSpecific: definition.GetIsUserSpecific(),
-				Coils:          coilKeys,
+				Sentence:   definition.GetSentence(),
+				Properties: definition.GetProperties(),
+				Coils:      coilKeys,
 			},
 		}
 	}

@@ -22,48 +22,42 @@ var (
 		ActionBorrowSentence,
 		aave_actions.Borrow,
 		aave_options.BorrowOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		&aave_actions.BorrowFunc,
 	)
 	ActionDeposit = actions.NewActionDefinition(
 		ActionDepositSentence,
 		aave_actions.Deposit,
 		aave_options.CollateralOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		&aave_actions.DepositFunc,
 	)
 	ActionRepay = actions.NewActionDefinition(
 		ActionRepaySentence,
 		aave_actions.Repay,
 		aave_options.BorrowOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		&aave_actions.RepayFunc,
 	)
 	ActionWithdraw = actions.NewActionDefinition(
 		ActionWithdrawSentence,
 		aave_actions.Withdraw,
 		aave_options.CollateralOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		&aave_actions.WithdrawFunc,
 	)
 	ReadApy = actions.NewActionDefinition(
 		ReadApySentence,
 		aave_actions.APY,
 		aave_options.APYOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 	ReadHealthFactor = actions.NewActionDefinition(
 		ReadHealthFactorSentence,
 		aave_actions.HealthFactor,
 		aave_options.HealthFactorOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 )

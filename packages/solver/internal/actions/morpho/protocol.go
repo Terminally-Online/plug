@@ -21,48 +21,42 @@ var (
 		ActionBorrowSentence,
 		morpho_actions.Borrow,
 		morpho_options.BorrowTokenToMarketOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&morpho_actions.BorrowFunc,
 	)
 	ActionClaimRewards = actions.NewActionDefinition(
 		ActionClaimRewardsSentence,
 		morpho_actions.ClaimRewards,
 		nil,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&morpho_actions.ClaimRewardsFunc,
 	)
 	ActionEarn = actions.NewActionDefinition(
 		ActionEarnSentence,
 		morpho_actions.Earn,
 		morpho_options.SupplyTokenToVaultOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&morpho_actions.EarnFunc,
 	)
 	ActionRepay = actions.NewActionDefinition(
 		ActionRepaySentence,
 		morpho_actions.Repay,
 		morpho_options.BorrowTokenToMarketOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&morpho_actions.RepayFunc,
 	)
 	ActionDepositCollateral = actions.NewActionDefinition(
 		ActionDepositCollateralSentence,
 		morpho_actions.DepositCollateral,
 		morpho_options.CollateralTokenToMarketOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&morpho_actions.DepositCollateralFunc,
 	)
 	ActionWithdraw = actions.NewActionDefinition(
 		ActionWithdrawSentence,
 		morpho_actions.Withdraw,
 		morpho_options.SupplyAndCollateralTokenToMarketOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		// TODO MASON: we have two different return function signatures here if we do actually support vaults through this.
 		&morpho_actions.WithdrawMarketFunc,
 	)
@@ -70,16 +64,14 @@ var (
 		ReadAPYSentence,
 		morpho_actions.APY,
 		morpho_options.APYOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&morpho_actions.ApyFunc,
 	)
 	ReadHealthFactor = actions.NewActionDefinition(
 		ReadHealthFactorSentence,
 		morpho_actions.HealthFactor,
 		morpho_options.HealthFactorOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 )

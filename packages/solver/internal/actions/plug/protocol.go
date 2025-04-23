@@ -18,40 +18,49 @@ var (
 		ActionTransferSentence,
 		plug_actions.Transfer,
 		plug_options.TransferOptions,
-		actions.IsUser,
-		actions.IsDynamic,
+		&actions.ActionProperties{
+			IsSearchable:   true,
+			IsUserSpecific: true,
+		},
 		actions.IsEmptyOnchainFunc,
 	)
 	ActionSwap = actions.NewActionDefinition(
 		ActionSwapSentence,
 		plug_actions.Swap,
 		plug_options.SwapOptions,
-		actions.IsUser,
-		actions.IsDynamic,
+		&actions.ActionProperties{
+			IsSearchable:   true,
+			IsUserSpecific: true,
+		},
 		actions.IsEmptyOnchainFunc,
 	)
 	ActionDeploy = actions.NewActionDefinition(
 		ActionDeploySentence,
 		plug_actions.Deploy,
 		nil,
-		actions.IsGlobal,
-		actions.IsStatic,
+		&actions.ActionProperties{
+			IsInternalOnly: true,
+		},
 		actions.IsEmptyOnchainFunc,
 	)
 	ReadBalance = actions.NewActionDefinition(
 		ReadBalanceSentence,
 		plug_actions.Balance,
 		plug_options.BalanceOptions,
-		actions.IsUser,
-		actions.IsDynamic,
+		&actions.ActionProperties{
+			IsSearchable:   true,
+			IsUserSpecific: true,
+		},
 		&plug_actions.Erc20BalanceFunc,
 	)
 	ReadPrice = actions.NewActionDefinition(
 		ReadPriceSentence,
 		plug_actions.Price,
 		plug_options.PriceOptions,
-		actions.IsUser,
-		actions.IsDynamic,
+		&actions.ActionProperties{
+			IsSearchable:   true,
+			IsUserSpecific: true,
+		},
 		&plug_actions.PriceFunc,
 	)
 )

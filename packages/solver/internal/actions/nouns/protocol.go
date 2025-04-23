@@ -19,32 +19,30 @@ var (
 		ActionBidSentence,
 		nouns_actions.Bid,
 		nil,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 	ActionIncreaseBid = actions.NewActionDefinition(
 		ActionIncreaseBidSentence,
 		nouns_actions.IncreaseBid,
 		nil,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 	ReadHasTrait = actions.NewActionDefinition(
 		ReadHasTraitSentence,
 		nouns_actions.HasTrait,
 		nouns_options.HasTraitOptions,
-		actions.IsGlobal,
-		actions.IsDynamic,
+		&actions.ActionProperties{
+			IsSearchable: true,
+		},
 		actions.IsEmptyOnchainFunc,
 	)
 	ReadCurrentAuction = actions.NewActionDefinition(
 		ReadCurrentAuctionSentence,
 		nouns_actions.CurrentAuction,
 		nil,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 )

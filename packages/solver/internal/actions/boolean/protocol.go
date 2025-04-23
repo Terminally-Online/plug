@@ -18,16 +18,14 @@ var (
 		ActionNumberComparisonSentence,
 		boolean_actions.NumberComparison,
 		boolean_options.NumberComparisonOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&boolean_actions.NumberComparisonFunc,
 	)
 	ActionNumberLogic = actions.NewActionDefinition(
 		ActionNumberLogicSentence,
 		boolean_actions.NumberLogic,
 		boolean_options.NumberLogicOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&boolean_actions.NumberLogicFunc,
 	)
 )

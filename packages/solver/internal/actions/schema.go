@@ -30,9 +30,9 @@ type ChainSchema struct {
 }
 
 type Schema struct {
-	Type           string            `default:"action" json:"type"`
-	Sentence       string            `json:"sentence"`
-	Options        map[int]Options   `json:"options,omitempty"`
-	Coils          map[string]string `json:"coils,omitempty"`
-	IsUserSpecific bool              `json:"-"`
+	Type       string            `default:"action" json:"type"`
+	Sentence   string            `json:"sentence"`
+	Options    map[int]Options   `json:"options,omitempty"`
+	Coils      map[string]string `json:"coils,omitempty"`
+	Properties ActionProperties  `json:"properties"`
 }
