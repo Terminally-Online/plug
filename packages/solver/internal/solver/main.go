@@ -93,7 +93,7 @@ func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, cha
 		}
 
 		if transactions[i].Value.Cmp(big.NewInt(0)) != 0 {
-			transactions[i].Selector = signature.SELECTOR_CALL_WITH_VALUE
+			transactions[i].Selector = signature.CallWithValue
 		}
 	}
 
