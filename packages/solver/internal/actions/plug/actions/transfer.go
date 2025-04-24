@@ -8,6 +8,7 @@ import (
 	"solver/bindings/erc_721"
 	"solver/internal/actions"
 	"solver/internal/coil"
+	"solver/internal/helpers/squid"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -20,6 +21,9 @@ type TransferRequest struct {
 	Amount    coil.CoilInput[string, *big.Int]               `json:"amount"`
 	Token     string                                         `json:"token"`
 	Recipient coil.CoilInput[common.Address, common.Address] `json:"recipient"`
+	ToChainId uint64                                         `json:"toChainId"`
+	ToToken   common.Address                                 `json:"toToken"`
+	ToAddress common.Address                                 `json:"toAddress"`
 }
 
 var TransferERC20Func = actions.ActionOnchainFunctionResponse{
@@ -113,6 +117,23 @@ func TransferNative(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.
 		return nil, err
 	}
 
+	isBridge := lookup.Inputs.ToChainId != 0 && lookup.Inputs.ToChainId != lookup.ChainId
+	if isBridge {
+		if len(updates) > 0 {
+			return nil, fmt.Errorf("cannot use coils with crosschain action")
+		}
+
+		return squid.GetPlugs(squid.SquidRouteRequest{
+			FromAddress: lookup.From,
+			FromChain:   lookup.ChainId,
+			FromToken:   utils.NativeTokenAddress,
+			FromAmount:  amount,
+			ToChain:     lookup.Inputs.ToChainId,
+			ToToken:     lookup.Inputs.ToToken,
+			ToAddress:   lookup.Inputs.ToAddress,
+		})
+	}
+
 	return []signature.Plug{{
 		To:      recipient,
 		Value:   amount,
@@ -153,14 +174,31 @@ func Transfer20(lookup *actions.SchemaLookup[TransferRequest]) ([]signature.Plug
 		return nil, err
 	}
 
-	calldata, err := TransferERC20Func.GetCalldata(recipient, amount)
+	isBridge := lookup.Inputs.ToChainId != 0 && lookup.Inputs.ToChainId != lookup.ChainId
+	if isBridge {
+		if len(updates) > 0 {
+			return nil, fmt.Errorf("cannot use coils with crosschain action")
+		}
+
+		return squid.GetPlugs(squid.SquidRouteRequest{
+			FromAddress: lookup.From,
+			FromChain:   lookup.ChainId,
+			FromToken:   token,
+			FromAmount:  amount,
+			ToChain:     lookup.Inputs.ToChainId,
+			ToToken:     lookup.Inputs.ToToken,
+			ToAddress:   lookup.Inputs.ToAddress,
+		})
+	}
+
+	transferCalldata, err := TransferERC20Func.GetCalldata(recipient, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return []signature.Plug{{
 		To:      token,
-		Data:    calldata,
+		Data:    transferCalldata,
 		Updates: updates,
 	}}, nil
 }
