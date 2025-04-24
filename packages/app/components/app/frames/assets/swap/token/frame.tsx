@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-import { BadgeCheck, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 
 import { useAtom, useAtomValue } from "jotai"
 
@@ -8,51 +8,53 @@ import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { getChainId, greenGradientStyle, useDebounce } from "@/lib"
-import { api, RouterOutputs } from "@/server/client"
+import { Counter } from "@/components/shared/utils/counter"
+import { cn, getZerionTokenIconUrl, greenGradientStyle, useDebounce, ZerionFungible, ZerionPosition } from "@/lib"
+import { api } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-
-type Token =
-	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-	| NonNullable<RouterOutputs["solver"]["tokens"]["get"]>[number]
 
 type SwapTokenFrameProps = {
 	index: number
-	tokenOut: Token
-	handleTokenIn: (token: Token) => void
+	tokenOut: ZerionPosition
+	handleTokenIn: (token: ZerionFungible) => void
 }
 
 export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handleTokenIn }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey = `${tokenOut.symbol}-swap-token`
+	const frameKey = `${tokenOut.attributes.fungible_info.symbol}-swap-token`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame } = useColumnActions(index, frameKey)
 
-	const [search, debouncedSearch, handleSearch] = useDebounce("")
+	const [search, debouncedSearch, handleSearch] = useDebounce("", 100)
 
-	const { data: tokens } = api.solver.tokens.get.useQuery(debouncedSearch, {
-		placeholderData: prev => prev
-	})
+	const { data } = api.service.zerion.fungibles.list.useQuery(
+		{
+			query: {
+				filter: {
+					implementationChainId: "base",
+					searchQuery: debouncedSearch || undefined
+				}
+			}
+		},
+		{ placeholderData: prev => prev }
+	)
+	const tokens = data?.data || []
 
 	return (
 		<Frame
 			index={index}
-			className="min-h-[480px]"
 			icon={
 				<div className="relative h-8 w-10">
 					<TokenImage
-						logo={
-							tokenOut?.icon ||
-							`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenOut.implementations[0].chain)}/${tokenOut.implementations[0].contract}?h=240&w=240`
-						}
-						symbol={tokenOut.symbol}
+						logo={getZerionTokenIconUrl(tokenOut)}
+						symbol={tokenOut.attributes.fungible_info.symbol}
 						size="sm"
 					/>
 				</div>
 			}
-			label={`Swap ${tokenOut.symbol}`}
+			label={`Swap ${tokenOut.attributes.fungible_info.symbol}`}
 			visible={isFrame}
-			handleBack={() => frame(`${tokenOut.symbol}-token`)}
+			handleBack={() => frame(`${tokenOut.attributes.fungible_info.symbol}-token`)}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
@@ -66,37 +68,75 @@ export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handl
 				/>
 
 				{tokens
-					?.filter(token => token?.symbol !== tokenOut?.symbol)
+					?.filter(token => token.attributes.symbol !== tokenOut.attributes.fungible_info.symbol)
 					.map((token, tokenIndex) => (
 						<Accordion
 							key={tokenIndex}
 							onExpand={() => {
 								handleTokenIn(token)
-								frame(`${tokenOut.symbol}-${token.symbol}-swap-amount`)
+								frame(
+									`${tokenOut.attributes.fungible_info.symbol}-${token.attributes.symbol}-swap-amount`
+								)
 							}}
 						>
 							<div className="flex flex-row items-center gap-4">
-								{token.implementations && token.implementations.length > 0 && (
+								{token.attributes.implementations && token.attributes.implementations.length > 0 && (
 									<TokenImage
-										logo={
-											token?.icon ||
-											`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-										}
-										symbol={token?.symbol}
+										logo={getZerionTokenIconUrl(token.attributes?.icon?.url)}
+										symbol={token.attributes.symbol}
 									/>
 								)}
 
-								<div className="w-full flex flex-row justify-between gap-2 items-center">
-									<div className="flex flex-col text-left w-full">
-										<p className="font-bold">{token.name}</p>
-										<p className="text-sm font-bold opacity-60">{token.symbol}</p>
+								<div className="flex w-full flex-col items-center justify-between">
+									<div className="flex w-full flex-row font-bold">
+										<p className="truncate whitespace-nowrap font-bold">{token.attributes.name}</p>
+										<div className="ml-auto flex flex-row items-center">
+											$
+											<Counter
+												count={(token.attributes?.market_data?.price ?? 0).toLocaleString(
+													"en-US",
+													{
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2
+													}
+												)}
+												decimals={2}
+											/>
+										</div>
 									</div>
 
-									{token.flags.verified && (
-										<p className="font-bold text-sm" style={{ ...greenGradientStyle }}>
-											Verified
-										</p>
-									)}
+									<div className="flex w-full flex-row font-bold">
+										<div className="flex flex-row items-center gap-2 truncate overflow-ellipsis">
+											<p className="flex flex-row items-center gap-1 truncate whitespace-nowrap text-sm opacity-40">
+												{token.attributes.symbol?.toUpperCase()}
+											</p>
+										</div>
+
+										<div
+											className={cn(
+												"ml-auto flex flex-row items-center text-sm",
+												token.attributes?.market_data?.changes?.percent_1d
+													? token.attributes?.market_data?.changes?.percent_1d >= 0
+														? "text-chart-green"
+														: "text-plug-red"
+													: "opacity-60"
+											)}
+										>
+											<>
+												{token.attributes?.market_data?.changes?.percent_1d ? (
+													<>
+														<Counter
+															count={token.attributes?.market_data?.changes?.percent_1d}
+															decimals={2}
+														/>
+														%
+													</>
+												) : (
+													"-"
+												)}
+											</>
+										</div>
+									</div>
 								</div>
 							</div>
 						</Accordion>

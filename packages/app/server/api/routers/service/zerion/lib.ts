@@ -8,7 +8,8 @@ import { env } from "@/env"
 export const zerion = axios.create({
 	baseURL: "https://api.zerion.io/v1",
 	headers: {
-		Authorization: `Bearer ${env.ZERION_KEY}`
+		accept: "application/json",
+		authorization: `Basic ${env.ZERION_KEY}`
 	}
 })
 

@@ -2,10 +2,10 @@ export const formatNumber = (value: number) => {
 	const fixed = 4
 
 	if (value < 1e3) return parseFloat(value.toFixed(fixed).toString()).toString()
-	if (value >= 1e3 && value < 1e6) return parseFloat((+(value / 1e3).toFixed(fixed)).toString()) + "K"
-	if (value >= 1e6 && value < 1e9) return parseFloat((+(value / 1e6).toFixed(fixed)).toString()) + "M"
-	if (value >= 1e9 && value < 1e12) return parseFloat((+(value / 1e9).toFixed(fixed)).toString()) + "B"
-	return parseFloat((+(value / 1e12).toFixed(fixed)).toString()) + "T"
+	if (value >= 1e3 && value < 1e6) return parseFloat((+(value / 1e3).toFixed(fixed)).toString()) + "k"
+	if (value >= 1e6 && value < 1e9) return parseFloat((+(value / 1e6).toFixed(fixed)).toString()) + "m"
+	if (value >= 1e9 && value < 1e12) return parseFloat((+(value / 1e9).toFixed(fixed)).toString()) + "b"
+	return parseFloat((+(value / 1e12).toFixed(fixed)).toString()) + "t"
 }
 
 export const formatFloat = (value: number) => parseFloat(formatNumber(value).toString())
@@ -26,6 +26,7 @@ export const formatBalance = (value: string | bigint | bigint | undefined, decim
 export const formatTitle = (title: string = "") =>
 	title
 		.replaceAll("_", " ")
+		.replaceAll("-", " ")
 		.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, "$1$3 $2$4")
 		.split(" ")
 		.map(word => {
@@ -46,6 +47,24 @@ export const formatInputName = (input: string | undefined) =>
 		.split(" ")
 		.join(" ")
 		.toLowerCase() ?? ""
+
+export const formatTimestamp = (timestamp: number) => {
+	if (isNaN(timestamp)) return
+
+	const milliseconds = timestamp.toString().length === 10 ? timestamp * 1000 : timestamp
+	const date = new Date(milliseconds)
+
+	const formatter = new Intl.DateTimeFormat("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: true
+	})
+
+	return formatter.format(date)
+}
 
 export const formatTimeSince = (date: Date): string => {
 	const now = new Date()

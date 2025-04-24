@@ -1,63 +1,61 @@
-import React, { FC, memo, useState } from "react"
+import { FC, memo, useState } from "react"
 
-import { SwapFrame } from "@/components/app/frames/assets/swap/frame"
-import { TokenFrame } from "@/components/app/frames/assets/token/frame"
-import { TransferFrame } from "@/components/app/frames/assets/transfer/frame"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getChainId, getTextColor } from "@/lib"
-import { RouterOutputs } from "@/server/client"
+import { cn, getTextColor, getZerionTokenIconUrl, ZerionPosition } from "@/lib"
 import { useColumnActions } from "@/state/columns"
+
+import { SwapFrame } from "../../frames/assets/swap/frame"
+import { TokenFrame } from "../../frames/assets/token/frame"
+import { TransferAmountFrame } from "../../frames/assets/transfer/amount/frame"
+import { TransferRecipientFrame } from "../../frames/assets/transfer/recipient/frame"
 
 const DEFAULT_TOKEN_COLOR = "#ffffff"
 
 type SocketTokenItemProps = {
 	index: number
-	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-	isListToken?: boolean
+	token: ZerionPosition | undefined
 }
-
 export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token }) => {
-	const { frame } = useColumnActions(index, `${token?.symbol}-token`)
+	const { frame } = useColumnActions(index, `${token?.attributes.fungible_info.symbol}-token`)
+
 	const [color, setColor] = useState(DEFAULT_TOKEN_COLOR)
 	const textColor = getTextColor(color)
 
+	const isPlaceholder = token === undefined
+
 	return (
 		<>
-			<Accordion loading={token === undefined} onExpand={token === undefined ? () => { } : () => frame()}>
-				{token === undefined ? (
-					<div className="invisible">
-						<p>.</p>
-						<p>.</p>
-					</div>
-				) : (
+			<Accordion loading={isPlaceholder} onExpand={isPlaceholder ? () => {} : () => frame()}>
+				{token && (
 					<div className="flex w-full flex-row items-center gap-4">
 						<div className="relative h-10 min-w-10">
-							{token.implementations && token.implementations.length > 0 && (
-								<TokenImage
-									logo={
-										// @ts-ignore
-										token.icon?.url ||
-										token.icon ||
-										`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-									}
-									symbol={token.symbol}
-									handleColor={setColor}
-								/>
-							)}
+							{token.attributes.fungible_info.implementations &&
+								token.attributes.fungible_info.implementations.length > 0 && (
+									<TokenImage
+										logo={getZerionTokenIconUrl(token)}
+										symbol={token.attributes.fungible_info.symbol}
+										handleColor={setColor}
+									/>
+								)}
 						</div>
 
 						<div className="flex w-full flex-col items-center truncate overflow-ellipsis tabular-nums">
 							<div className="flex w-full flex-row font-bold">
-								<p className="truncate whitespace-nowrap font-bold">{token.name}</p>
+								<p className="truncate whitespace-nowrap font-bold">
+									{token.attributes.fungible_info.name}
+								</p>
 								<div className="ml-auto flex flex-row items-center">
 									$
 									<Counter
-										count={(token.value ?? token.price ?? 0).toLocaleString("en-US", {
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2
-										})}
+										count={(token.attributes.value ?? token.attributes.price ?? 0).toLocaleString(
+											"en-US",
+											{
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2
+											}
+										)}
 										decimals={2}
 									/>
 								</div>
@@ -65,45 +63,34 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token })
 
 							<div className="flex w-full flex-row gap-4 font-bold">
 								<div className="flex flex-row items-center gap-2 truncate overflow-ellipsis">
-									{/*<div className="flex flex-row items-center">
-										{token.implementations?.map((implementation, implementationIndex) => (
-											<ChainImage
-												key={implementationIndex}
-												chainId={getChainId(implementation.chain)}
-												size="xs"
-											/>
-										))}
-									</div>*/}
 									<div className="flex flex-row items-center gap-1 truncate text-sm opacity-40">
-										<Counter count={token.balance ?? 0} />
-										<p className="whitespace-nowrap">{token.symbol?.toUpperCase()}</p>
+										<Counter count={token.attributes.quantity.float ?? 0} />
+										<p className="whitespace-nowrap">
+											{token.attributes.fungible_info.symbol?.toUpperCase()}
+										</p>
 									</div>
 								</div>
 
 								<div
 									className={cn(
 										"ml-auto flex flex-row items-center text-sm",
-										token.change === undefined
+										token.attributes.changes?.percent_1d === undefined
 											? "opacity-60"
-											: token.change >= 0
-												? "text-plug-green"
-												: "text-red-500"
+											: token.attributes.changes?.percent_1d >= 0
+												? "text-chart-green"
+												: "text-plug-red"
 									)}
 								>
 									<>
-										{token.change ? (
+										{token.attributes.changes?.percent_1d ? (
 											<>
-												<Counter count={token.change} decimals={2} />%
+												<Counter count={token.attributes.changes?.percent_1d} decimals={2} />%
 											</>
 										) : (
 											"-"
 										)}
 									</>
 								</div>
-
-								{/* <pre className="text-left text-xs">
-									{JSON.stringify({ ...token, description: "" }, null, 2)}
-								</pre> */}
 							</div>
 						</div>
 					</div>
@@ -113,7 +100,10 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token })
 			{token && (
 				<>
 					<TokenFrame index={index} token={token} color={color} textColor={textColor} />
-					<TransferFrame index={index} token={token} color={color} textColor={textColor} />
+
+					<TransferRecipientFrame index={index} token={token} />
+					<TransferAmountFrame index={index} token={token} color={color} textColor={textColor} />
+
 					<SwapFrame index={index} tokenOut={token} color={color} textColor={textColor} />
 				</>
 			)}

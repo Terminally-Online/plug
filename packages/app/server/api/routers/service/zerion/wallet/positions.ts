@@ -21,88 +21,184 @@ const PositionsInputSchema = z.object({
 					trash: z.enum(["only_trash", "only_non_trash"]).default("only_non_trash")
 				})
 				.optional(),
-			sort: z.enum(["value", "recent"]).default("value")
+			sort: z.enum(["value", "recent"]).default("value"),
+			aggregate: z.boolean().optional().default(false)
 		})
 		.optional()
 		.default({})
+})
+
+const PositionSchema = z.object({
+	type: z.string(),
+	id: z.string(),
+	attributes: z.object({
+		parent: z.any().nullable(),
+		protocol: z.any().nullable(),
+		name: z.string(),
+		position_type: z.string(),
+		quantity: z.object({
+			int: z.string(),
+			decimals: z.number(),
+			float: z.number(),
+			numeric: z.string()
+		}),
+		value: z.number().nullable(),
+		price: z.number().nullable(),
+		changes: z
+			.object({
+				absolute_1d: z.number(),
+				percent_1d: z.number()
+			})
+			.nullable(),
+		fungible_info: z.object({
+			name: z.string(),
+			symbol: z.string(),
+			icon: z
+				.object({
+					url: z.string()
+				})
+				.nullable(),
+			flags: z.object({
+				verified: z.boolean()
+			}),
+			implementations: z.array(
+				z
+					.object({
+						chain_id: z.string(),
+						address: z.string().nullable(),
+						decimals: z.number()
+					})
+					.extend({
+						balance: z.number().optional(),
+						value: z.number().optional(),
+						percentage: z.number().optional()
+					})
+			)
+		}),
+		flags: z.object({
+			displayable: z.boolean(),
+			is_trash: z.boolean()
+		}),
+		updated_at: z.string(),
+		updated_at_block: z.number()
+	}),
+	relationships: z.object({
+		chain: z.object({
+			links: z.object({
+				related: z.string()
+			}),
+			data: z.object({
+				type: z.string(),
+				id: z.string()
+			})
+		}),
+		fungible: z.object({
+			links: z.object({
+				related: z.string()
+			}),
+			data: z.object({
+				type: z.string(),
+				id: z.string()
+			})
+		})
+	})
 })
 
 const PositionsOutputSchema = z.object({
 	links: z.object({
 		self: z.string()
 	}),
-	data: z.array(
-		z.object({
-			type: z.string(),
-			id: z.string(),
-			attributes: z.object({
-				parent: z.any().nullable(),
-				protocol: z.any().nullable(),
-				name: z.string(),
-				position_type: z.string(),
-				quantity: z.object({
-					int: z.string(),
-					decimals: z.number(),
-					float: z.number(),
-					numeric: z.string()
-				}),
-				value: z.number().nullable(),
-				price: z.number().nullable(),
-				changes: z
-					.object({
-						absolute_1d: z.number(),
-						percent_1d: z.number()
-					})
-					.nullable(),
-				fungible_info: z.object({
-					name: z.string(),
-					symbol: z.string(),
-					icon: z
-						.object({
-							url: z.string()
-						})
-						.nullable(),
-					flags: z.object({
-						verified: z.boolean()
-					}),
-					implementations: z.array(
-						z.object({
-							chain_id: z.string(),
-							address: z.string().nullable(),
-							decimals: z.number()
-						})
-					)
-				}),
-				flags: z.object({
-					displayable: z.boolean(),
-					is_trash: z.boolean()
-				}),
-				updated_at: z.string(),
-				updated_at_block: z.number()
-			}),
-			relationships: z.object({
-				chain: z.object({
-					links: z.object({
-						related: z.string()
-					}),
-					data: z.object({
-						type: z.string(),
-						id: z.string()
-					})
-				}),
-				fungible: z.object({
-					links: z.object({
-						related: z.string()
-					}),
-					data: z.object({
-						type: z.string(),
-						id: z.string()
-					})
-				})
-			})
-		})
-	)
+	data: z.array(PositionSchema)
 })
+
+const groupByPositionType = (
+	positions: Array<z.infer<typeof PositionSchema>> = []
+): Record<string, Array<z.infer<typeof PositionSchema>>> => {
+	return positions.reduce<Record<string, Array<z.infer<typeof PositionSchema>>>>((groups, position) => {
+		const type = position.attributes.position_type
+		if (!groups[type]) {
+			groups[type] = []
+		}
+		groups[type].push(position)
+		return groups
+	}, {})
+}
+
+const reduceByRelationships = (
+	positions: Array<z.infer<typeof PositionSchema>> = []
+): Array<z.infer<typeof PositionSchema>> => {
+	const groupedByFungible: Record<string, Array<z.infer<typeof PositionSchema>>> = {}
+
+	positions.forEach(position => {
+		const fungibleId = position.relationships.fungible.data.id
+		if (!groupedByFungible[fungibleId]) {
+			groupedByFungible[fungibleId] = []
+		}
+		groupedByFungible[fungibleId].push(position)
+	})
+
+	return Object.values(groupedByFungible).map(positionGroup => {
+		if (positionGroup.length === 1) {
+			const position = positionGroup[0]
+			const chainId = position.relationships.chain.data.id
+			const value = position.attributes.value || 0
+
+			return {
+				...position,
+				attributes: {
+					...position.attributes,
+					fungible_info: {
+						...position.attributes.fungible_info,
+						implementations: position.attributes.fungible_info.implementations.map(impl => {
+							if (impl.chain_id === chainId) {
+								return {
+									...impl,
+									balance: position.attributes.quantity.float || 0,
+									value,
+									percentage: 100
+								}
+							}
+							return impl
+						})
+					}
+				}
+			}
+		}
+
+		const basePosition = { ...positionGroup[0] }
+		const totalValue = positionGroup.reduce((sum, pos) => sum + (pos.attributes.value || 0), 0)
+
+		const chainPositionMap: Record<string, z.infer<typeof PositionSchema>> = {}
+		positionGroup.forEach(pos => {
+			const chainId = pos.relationships.chain.data.id
+			chainPositionMap[chainId] = pos
+		})
+
+		basePosition.id = `${basePosition.relationships.fungible.data.id}-multichain`
+		basePosition.attributes = {
+			...basePosition.attributes,
+			value: totalValue,
+			quantity: basePosition.attributes.quantity,
+			name: `${basePosition.attributes.name} (${positionGroup.length} chains)`,
+			fungible_info: {
+				...basePosition.attributes.fungible_info,
+				implementations: basePosition.attributes.fungible_info.implementations.map(impl => {
+					const chainId = impl.chain_id
+					const chainPosition = chainPositionMap[chainId]
+
+					return {
+						...impl,
+						balance: chainPosition?.attributes.quantity.float || 0,
+						value: chainPosition?.attributes.value || 0,
+						percentage: chainPosition ? ((chainPosition.attributes.value || 0) / totalValue) * 100 : 0
+					}
+				})
+			}
+		}
+
+		return basePosition
+	})
+}
 
 export const positions = protectedProcedure
 	.input(PositionsInputSchema)
@@ -121,5 +217,25 @@ export const positions = protectedProcedure
 			sort: input.query.sort
 		})
 
-		return zerionApi(() => zerion.get(`/wallets/${address}/positions/${queryParams}`))
+		type PositionsResponse = z.infer<typeof PositionsOutputSchema>
+
+		const response = (await zerionApi(() =>
+			zerion.get(`/wallets/${address}/positions/${queryParams}`)
+		)) as PositionsResponse
+
+		if (!input.query.aggregate) {
+			return response
+		}
+
+		const responseData = response.data
+		const groupedPositions = groupByPositionType(responseData)
+		const walletPositions = groupedPositions["wallet"] || []
+		const aggregatedWalletPositions = reduceByRelationships(walletPositions)
+
+		const otherPositions = responseData.filter(pos => pos.attributes.position_type !== "wallet")
+
+		return {
+			links: response.links,
+			data: [...aggregatedWalletPositions, ...otherPositions]
+		}
 	})

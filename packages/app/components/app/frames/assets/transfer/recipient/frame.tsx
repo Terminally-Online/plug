@@ -10,21 +10,20 @@ import { TransferRecipient } from "@/components/app/frames/assets/transfer/recip
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { getChainId } from "@/lib"
+import { getChainId, getZerionTokenIconUrl, ZerionPosition } from "@/lib"
 import { useAccount } from "@/lib/hooks/account/useAccount"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { useRecipients } from "@/state/recipients"
 
-type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+// type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
+// type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 
 type TransferRecipientFrameProps = {
 	index: number
-	token?: TokenType
-	collectible?: CollectibleType
-	collection?: CollectionType
+	token?: ZerionPosition
+	// collectible?: CollectibleType
+	// collection?: CollectionType
 }
 
 export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
@@ -32,7 +31,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = token
-		? `${token.symbol}-transfer-recipient`
+		? `${token.attributes.fungible_info.symbol}-transfer-recipient`
 		: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, transfer } = useColumnActions(index, frameKey)
@@ -54,14 +53,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 	const { recipients, handleRecent } = useRecipients(formattedRecipient)
 
 	const icon = token ? (
-		<TokenImage
-			logo={
-				token.icon ||
-				`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-			}
-			symbol={token.symbol}
-			size="sm"
-		/>
+		<TokenImage logo={getZerionTokenIconUrl(token)} symbol={token.attributes.fungible_info.symbol} size="sm" />
 	) : (
 		<div
 			className="relative h-8 w-8 rounded-full bg-cover bg-center bg-no-repeat"
@@ -81,7 +73,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 
 		if (address !== "") {
 			if (token) {
-				frame(`${token.symbol}-transfer-amount`)
+				frame(`${token.attributes.fungible_info.symbol}-transfer-amount`)
 			} else if (collectible && collection) {
 				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`)
 			}
@@ -90,7 +82,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 
 	const handleBack = () => {
 		if (token) {
-			frame(`${token.symbol}-token`)
+			frame(`${token.attributes.fungible_info.symbol}-token`)
 		} else if (collectible && collection) {
 			frame(`${collection.address}-${collection.chain}-${collectible.tokenId}`)
 		}
