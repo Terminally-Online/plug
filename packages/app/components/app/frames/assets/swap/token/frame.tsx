@@ -9,7 +9,7 @@ import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getZerionTokenIconUrl, greenGradientStyle, useDebounce, ZerionFungible, ZerionPosition } from "@/lib"
+import { cn, getZerionTokenIconUrl, useDebounce, ZerionFungible, ZerionPosition } from "@/lib"
 import { api } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 
@@ -67,9 +67,10 @@ export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handl
 					clear
 				/>
 
-				{tokens
-					?.filter(token => token.attributes.symbol !== tokenOut.attributes.fungible_info.symbol)
-					.map((token, tokenIndex) => (
+				{tokens.map((token, tokenIndex) => {
+					if (tokenOut.relationships.fungible.data.id === token.id) return null
+
+					return (
 						<Accordion
 							key={tokenIndex}
 							onExpand={() => {
@@ -140,7 +141,8 @@ export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handl
 								</div>
 							</div>
 						</Accordion>
-					))}
+					)
+				})}
 			</div>
 		</Frame>
 	)

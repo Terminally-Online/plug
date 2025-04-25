@@ -37,6 +37,35 @@ type SwapAmountFrameProps = {
 }
 
 export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFrameProps) => {
+	const implementations = useMemo(() => {
+		const tokenOutImplementation = tokenOut.attributes.fungible_info.implementations.find(
+			implementation => implementation.chain_id === "base"
+		)
+		const tokenOutAddress = getAddress(tokenOutImplementation?.address ?? NATIVE_TOKEN_ADDRESS)
+		const tokenOutDecimals = tokenOutImplementation?.decimals ?? 18
+
+		const tokenInImplementation = tokenIn.attributes.implementations.find(
+			implementation => implementation.chain_id === "base"
+		)
+		const tokenInAddress = getAddress(tokenInImplementation?.address ?? NATIVE_TOKEN_ADDRESS)
+		const tokenInDecimals = tokenInImplementation?.decimals ?? 18
+
+		return {
+			tokenOut: {
+				...tokenOutImplementation,
+				address: tokenOutAddress,
+				decimals: tokenOutDecimals,
+				lookup: `${tokenOutAddress}:${tokenOutDecimals}:${20}`
+			},
+			tokenIn: {
+				...tokenInImplementation,
+				address: tokenInAddress,
+				decimals: tokenInDecimals,
+				lookup: `${tokenOutAddress}:${tokenOutDecimals}:${20}`
+			}
+		}
+	}, [tokenIn, tokenOut])
+
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = `${tokenOut.attributes.fungible_info.symbol}-${tokenIn.attributes.symbol}-swap-amount`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
@@ -45,72 +74,58 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const { socket } = useSocket()
 	const { error, sendTransaction, isPending } = useSendTransaction()
 
-	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {
-		const tokenOutImplementation = tokenOut.attributes.fungible_info.implementations.find(
-			implementation => implementation.chain_id === "base"
-		)
-		const tokenInImplementation = tokenIn.attributes.implementations.find(
-			implementation => implementation.chain_id === "base"
-		)
+	const balance = implementations.tokenOut?.balance ?? 0
 
-		return { tokenOutImplementation, tokenInImplementation }
-	}, [tokenIn, tokenOut])
-
-	const [step, setStep] = useState(0)
-	const [tokenOutColor, setTokenOutColor] = useState("#000000")
-	const [tokenInColor, setTokenInColor] = useState("#000000")
 	const [amounts, setAmounts] = useState({
 		[tokenOut.attributes.fungible_info.symbol]: {
-			precise: ((tokenOutImplementation?.balance ?? 0) / 2).toString(),
-			percentage: (tokenOutImplementation?.balance ?? 0) / 2 === 0 ? 0 : 50
+			precise: (balance / 2).toString(),
+			percentage: balance / 2 === 0 ? 0 : 50
 		},
 		[tokenIn.attributes.symbol]: {
 			precise: "0",
 			percentage: 0
 		}
 	})
+	const [step, setStep] = useState(0)
+	const [tokenOutColor, setTokenOutColor] = useState("#000000")
+	const [tokenInColor, setTokenInColor] = useState("#000000")
 
-	const isSufficientBalance =
-		tokenOutImplementation &&
-		(tokenOutImplementation?.balance ?? 0) > 0 &&
-		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.attributes.fungible_info.symbol].precise)
+	const isSufficientBalance = balance > 0 &&
+		balance >= Number(amounts[tokenOut.attributes.fungible_info.symbol].precise)
 
 	const isEOA = column && column.index === COLUMNS.SIDEBAR_INDEX
 	const from = socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : ""
 
 	const amount = useStateDebounce(amounts[tokenOut.attributes.fungible_info.symbol].precise)
-	const tokenLookup = `${getAddress(tokenOutImplementation?.address ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`
-	const tokenInLookup = `${getAddress(tokenInImplementation?.address ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
-	const request = {
-		chainId: getChainId(tokenOutImplementation?.chain_id ?? "base"),
+
+	const {
+		data: intent,
+		error: intentError,
+		isLoading
+	} = api.solver.actions.intent.useQuery({
+		chainId: getChainId(implementations.tokenOut?.chain_id ?? "base"),
 		from,
 		inputs: [
 			{
 				protocol: "plug",
 				action: "swap",
 				amount,
-				token: tokenLookup,
-				tokenIn: tokenInLookup
+				token: implementations.tokenOut.lookup,
+				tokenIn: implementations.tokenIn.lookup
 			}
 		],
 		options: {
 			isEOA: isEOA,
 			simulate: true
 		}
-	}
-
-	const {
-		data: intent,
-		error: intentError,
-		isLoading
-	} = api.solver.actions.intent.useQuery(request, {
+	}, {
 		enabled:
 			isFrame &&
-			!!tokenInImplementation &&
-			!!tokenOutImplementation &&
+			!!socket &&
+			!!implementations.tokenIn &&
+			!!implementations.tokenOut &&
 			amounts[tokenOut.attributes.fungible_info.symbol].precise !== "0" &&
-			isSufficientBalance &&
-			!!socket
+			isSufficientBalance
 	})
 
 	const isReady =
@@ -122,7 +137,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const meta = intent ? intent.transactions[intent.transactions.length - 1].meta : null
 
 	const { approval } = useAllowance({
-		token: getAddress(tokenOutImplementation?.address ?? NATIVE_TOKEN_ADDRESS),
+		token: implementations.tokenOut.address,
 		owner: from,
 		spender: meta?.settlementAddress
 	})
@@ -144,7 +159,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 	const isApproved =
 		approval >
-		BigInt(meta?.sellTokens[getAddress(tokenOutImplementation?.address ?? NATIVE_TOKEN_ADDRESS)]?.amount ?? "0")
+		BigInt(meta?.sellTokens[implementations.tokenOut?.address]?.amount ?? "0")
+
 	const handleTransactionOnchain = useCallback(async () => {
 		if (!column || !intent) return
 
@@ -206,7 +222,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						attributes: {
 							...tokenOut.attributes,
 							price:
-								meta?.sellTokens[getAddress(tokenOutImplementation?.address ?? NATIVE_TOKEN_ADDRESS)]
+								meta?.sellTokens[implementations.tokenOut.address]
 									?.priceUsd ?? 0
 						}
 					}}
@@ -243,13 +259,13 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							position_type: "wallet",
 							quantity: {
 								int: "0",
-								decimals: tokenInImplementation?.decimals ?? 18,
+								decimals: implementations.tokenIn.decimals,
 								float: 0,
 								numeric: "0"
 							},
 							value: 0,
 							price:
-								meta?.buyTokens[getAddress(tokenInImplementation?.address ?? NATIVE_TOKEN_ADDRESS)]
+								meta?.buyTokens[implementations.tokenIn?.address]
 									?.priceUsd ?? null,
 							changes: {
 								absolute_1d: 0,
@@ -276,7 +292,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							chain: {
 								data: {
 									type: "chains",
-									id: tokenInImplementation?.chain_id ?? "base"
+									id: implementations.tokenIn?.chain_id ?? "base"
 								},
 								links: {
 									related: ""
@@ -287,9 +303,9 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					color={tokenInColor}
 					amounts={{
 						precise: formatUnits(
-							meta?.buyTokens[getAddress(tokenInImplementation?.address ?? NATIVE_TOKEN_ADDRESS)]
+							meta?.buyTokens[implementations.tokenIn.address]
 								?.amount ?? "0",
-							tokenInImplementation?.decimals ?? 18
+							implementations.tokenIn.decimals
 						).toString(),
 						percentage: amounts[tokenIn.attributes.symbol].percentage
 					}}
@@ -364,15 +380,15 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					</span>
 				</p>
 
-				{tokenOutImplementation?.chain_id && (
+				{implementations.tokenOut?.chain_id && (
 					<p className="flex flex-row justify-between font-bold">
 						<span className="flex w-max flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />
 							<span className="opacity-40">Chain</span>
 						</span>{" "}
 						<span className="flex flex-row items-center gap-2 font-bold">
-							<ChainImage chainId={getChainId(tokenOutImplementation.chain_id)} size="xs" />
-							{getChainName(getChainId(tokenOutImplementation.chain_id))}
+							<ChainImage chainId={getChainId(implementations.tokenOut.chain_id)} size="xs" />
+							{getChainName(getChainId(implementations.tokenOut.chain_id))}
 						</span>
 					</p>
 				)}
@@ -383,7 +399,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						<span className="opacity-40">Approval</span>
 					</span>{" "}
 					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-						{tokenOutImplementation?.address === NATIVE_TOKEN_ADDRESS || isApproved
+						{implementations.tokenOut?.address === NATIVE_TOKEN_ADDRESS || isApproved
 							? "Sufficient"
 							: "Insufficient"}
 					</span>
@@ -431,7 +447,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							/>
 							<span>Routing...</span>
 						</span>
-					) : intentError || !tokenInImplementation || !tokenOutImplementation ? (
+					) : intentError || !implementations.tokenOut || !implementations.tokenIn ? (
 						"Route could not be found"
 					) : isEOA && intent && intent.transactions.length > 1 && step === 0 && !isApproved ? (
 						"Approve"
