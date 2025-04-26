@@ -36,35 +36,22 @@ type SwapAmountFrameProps = {
 	tokenOut: ZerionPosition
 }
 
+const getFungibleImplementation = (implementations: ZerionPosition["attributes"]["fungible_info"]["implementations"], chainName: string) => {
+	const implementation = implementations.find(
+		implementation => implementation.chain_id === chainName
+	)
+	const address = getAddress(implementation?.address ?? NATIVE_TOKEN_ADDRESS)
+	const decimals = implementation?.decimals ?? 18
+	const lookup = `${address}:${decimals}:${20}`
+
+	return { ...implementation, address, decimals, lookup }
+}
+
 export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFrameProps) => {
-	const implementations = useMemo(() => {
-		const tokenOutImplementation = tokenOut.attributes.fungible_info.implementations.find(
-			implementation => implementation.chain_id === "base"
-		)
-		const tokenOutAddress = getAddress(tokenOutImplementation?.address ?? NATIVE_TOKEN_ADDRESS)
-		const tokenOutDecimals = tokenOutImplementation?.decimals ?? 18
-
-		const tokenInImplementation = tokenIn.attributes.implementations.find(
-			implementation => implementation.chain_id === "base"
-		)
-		const tokenInAddress = getAddress(tokenInImplementation?.address ?? NATIVE_TOKEN_ADDRESS)
-		const tokenInDecimals = tokenInImplementation?.decimals ?? 18
-
-		return {
-			tokenOut: {
-				...tokenOutImplementation,
-				address: tokenOutAddress,
-				decimals: tokenOutDecimals,
-				lookup: `${tokenOutAddress}:${tokenOutDecimals}:${20}`
-			},
-			tokenIn: {
-				...tokenInImplementation,
-				address: tokenInAddress,
-				decimals: tokenInDecimals,
-				lookup: `${tokenOutAddress}:${tokenOutDecimals}:${20}`
-			}
-		}
-	}, [tokenIn, tokenOut])
+	const implementations = useMemo(() => ({
+		tokenOut: getFungibleImplementation(tokenOut.attributes.fungible_info.implementations, "base"),
+		tokenIn: getFungibleImplementation(tokenIn.attributes.implementations, "base"),
+	}), [tokenIn, tokenOut])
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = `${tokenOut.attributes.fungible_info.symbol}-${tokenIn.attributes.symbol}-swap-amount`
@@ -101,7 +88,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const {
 		data: intent,
 		error: intentError,
-		isLoading
+		isLoading,
+		isFetching
 	} = api.solver.actions.intent.useQuery({
 		chainId: getChainId(implementations.tokenOut?.chain_id ?? "base"),
 		from,
@@ -125,13 +113,15 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			!!implementations.tokenIn &&
 			!!implementations.tokenOut &&
 			amounts[tokenOut.attributes.fungible_info.symbol].precise !== "0" &&
-			isSufficientBalance
+			isSufficientBalance,
+		placeholderData: prev => prev
 	})
 
 	const isReady =
 		amounts[tokenOut.attributes.fungible_info.symbol].precise !== "0" &&
 		!intentError &&
 		!isLoading &&
+		!isFetching &&
 		isSufficientBalance &&
 		!isPending
 	const meta = intent ? intent.transactions[intent.transactions.length - 1].meta : null
@@ -344,9 +334,9 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 									"flex flex-row items-center whitespace-nowrap group-hover:hidden",
 									meta?.slippage === undefined
 										? "opacity-40"
-										: meta?.priceImpact >= 0
-											? ""
-											: "text-red-500"
+										: meta?.slippage >= 0
+											? "text-chart-green"
+											: "text-plug-red"
 								)}
 							>
 								{meta?.slippage > 0 && "+"}
@@ -369,8 +359,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 									meta?.priceImpact === undefined
 										? "opacity-40"
 										: meta?.priceImpact >= 0
-											? ""
-											: "text-red-500"
+											? "text-chart-green"
+											: "text-plug-red"
 								)}
 							>
 								{meta?.priceImpact > 0 && "+"}
@@ -431,14 +421,14 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						color: !isReady ? tokenInColor : getTextColor(tokenInColor),
 						borderColor: !isReady ? tokenInColor : "transparent"
 					}}
-					disabled={!isReady || isPending}
+					disabled={!isReady || isPending || isLoading || isFetching}
 					onClick={handleTransactionOnchain}
 				>
 					{!isSufficientBalance ? (
 						"Insufficient Balance"
 					) : amounts[tokenOut.attributes.fungible_info.symbol].precise === "0" ? (
 						"Enter Amount"
-					) : isLoading ? (
+					) : isLoading || isFetching ? (
 						<span className="flex flex-row items-center gap-2">
 							<Loader
 								size={14}

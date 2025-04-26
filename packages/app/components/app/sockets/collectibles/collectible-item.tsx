@@ -7,10 +7,9 @@ import { useColumnActions } from "@/state/columns"
 
 export const SocketCollectibleItem: FC<{
 	index: number
-	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-}> = ({ index, collection, collectible }) => {
-	const { frame } = useColumnActions(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
+	collectible: NonNullable<RouterOutputs["service"]["zerion"]["wallet"]["nftPositions"]["data"]>[number]
+}> = ({ index, collectible }) => {
+	const { frame } = useColumnActions(index, `collectible___${collectible?.relationships.nft.data.id}`)
 
 	const [loading, setLoading] = useState(true)
 
@@ -23,8 +22,8 @@ export const SocketCollectibleItem: FC<{
 			onClick={() => frame()}
 		>
 			<Image
-				src={collectible?.imageUrl || collection.iconUrl || ""}
-				alt={collectible?.name ?? ""}
+				src={collectible?.attributes.nft_info?.content?.detail?.url || collectible.attributes.collection_info?.content?.icon?.url || ""}
+				alt={collectible?.attributes.nft_info.name ?? ""}
 				fill
 				style={{
 					objectFit: "cover",

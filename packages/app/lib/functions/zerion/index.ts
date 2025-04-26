@@ -12,6 +12,10 @@ export type ZerionPosition = NonNullable<ZerionPositions>[number]
 
 export type ZerionFungible = NonNullable<RouterOutputs["service"]["zerion"]["fungibles"]["list"]["data"]>[number]
 
+export type ZerionCollection = NonNullable<
+	RouterOutputs["service"]["zerion"]["wallet"]["nftCollections"]["data"]
+>[number]
+
 export const getZerionTokenIconUrl = (token: ZerionPosition | string | undefined) => {
 	if (!token) return ""
 

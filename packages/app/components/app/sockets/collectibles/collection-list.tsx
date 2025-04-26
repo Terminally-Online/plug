@@ -2,56 +2,60 @@ import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { CollectibleFrame } from "@/components/app/frames/assets/collectible/frame"
 import { Search } from "@/components/app/inputs/search"
 import { SocketCollectionItem } from "@/components/app/sockets/collectibles/collection-item"
 import { Callout } from "@/components/app/utils/callout"
 import { cn } from "@/lib"
-import { RouterOutputs } from "@/server/client"
-import { useSocket } from "@/state/authentication"
-import { useHoldings } from "@/state/positions"
 import { PLACEHOLDER_COLLECTIONS } from "@/lib/constants/placeholder/collectibles"
+import { api, RouterOutputs } from "@/server/client"
+import { useSocket } from "@/state/authentication"
+import { CollectibleFrame } from "../../frames/assets/collectible/frame"
+import { CollectionFrame } from "../../frames/assets/collection/frame"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		columnCollectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
+		address?: string
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = memo(({ index, columnCollectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
+> = memo(({ index, address, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { collectibles: apiCollectibles } = useHoldings(socket?.socketAddress)
 
-	const collectibles = columnCollectibles ?? apiCollectibles
+	const { data } = api.service.zerion.wallet.nftCollections.useQuery(
+		{
+			path: { address: address || socket?.socketAddress }
+		},
+		{ enabled: !isAnonymous, retry: false, placeholderData: prev => prev }
+	)
+	const collections = data?.data || []
 
 	const [search, handleSearch] = useState("")
 
-	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
-		if (search !== "" && collectibles.length === 0)
-			return Array(5).fill(undefined)
+	const visibleCollectibles = useMemo(() => {
+		if (search !== "" && collections.length === 0) return Array(5).fill(undefined)
 
-		if (collectibles === undefined || isAnonymous || (search === "" && collectibles.length === 0))
-			return PLACEHOLDER_COLLECTIONS
+		// if (collections === undefined || isAnonymous || (search === "" && collections.length === 0))
+		// 	return PLACEHOLDER_COLLECTIONS
 
-		const filteredCollectibles = collectibles.filter(
-			collectible =>
-				collectible.name.toLowerCase().includes(search.toLowerCase()) ||
-				collectible.description.toLowerCase().includes(search.toLowerCase()) ||
-				collectible.collectibles.some(collectionCollectible =>
-					(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase())
-				)
+		const filteredCollectibles = collections.filter(
+			collection =>
+				collection.attributes.collection_info.name.toLowerCase().includes(search.toLowerCase()) ||
+				collection.attributes.collection_info.description.toLowerCase().includes(search.toLowerCase())
+			// collection.collectibles.some(collectible =>
+			// 	(collectible.name ?? "").toLowerCase().includes(search.toLowerCase())
+			// )
 		)
 
 		if (expanded) return filteredCollectibles
 
 		return filteredCollectibles.slice(0, count)
-	}, [isAnonymous, collectibles, expanded, count, search])
+	}, [isAnonymous, collections, expanded, count, search])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{isAnonymous === false && isColumn && collectibles && collectibles.length > 0 && (
+			{isAnonymous === false && isColumn && collections.length > 0 && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}
@@ -82,23 +86,13 @@ export const SocketCollectionList: FC<
 			<Callout.Anonymous index={index} viewing="collectibles" isAbsolute={true} />
 			<Callout.EmptyAssets
 				index={index}
-				isEmpty={!isAnonymous && search === "" && collectibles.length === 0}
+				isEmpty={isColumn && !isAnonymous && search === "" && collections.length === 0}
 				isViewing="collectibles"
-				isReceivable={true}
+				isReceivable
 			/>
 
-			{visibleCollectibles.map(
-				collection =>
-					collection &&
-					collection.collectibles.map(collectible => (
-						<CollectibleFrame
-							key={`${collection.address}-${collection.chain}-${collectible.tokenId}`}
-							index={index}
-							collection={collection}
-							collectible={collectible}
-						/>
-					))
-			)}
+			<CollectionFrame index={index} address={address} />
+			<CollectibleFrame index={index} />
 		</div>
 	)
 })

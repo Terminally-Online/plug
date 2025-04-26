@@ -19,53 +19,35 @@ import {
 	Waypoints
 } from "lucide-react"
 
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom } from "jotai"
 
 import { TransferFrame } from "@/components/app/frames/assets/transfer/frame"
 import { Frame } from "@/components/app/frames/base"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
-import {
-	cn,
-	formatAddress,
-	formatTitle,
-	formatTokenStandard,
-	getBlockExplorerAddress,
-	getChainId,
-	getTextColor
-} from "@/lib"
-import { api, RouterOutputs } from "@/server/client"
+import { cn, formatAddress, formatTitle, formatTokenStandard, getBlockExplorerAddress, getChainId } from "@/lib"
+import { api } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 type Traits = Array<{ trait_type: string; value: string }>
 
-export const CollectibleFrame: FC<{
-	index: number
-	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-}> = memo(({ index, collection, collectible }) => {
+type CollectibleFrameProps = { index: number }
+export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey = `${collection.address}-${collection.chain}-${collectible?.tokenId}`
-	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const frameKey = "collectible"
+	const [columnFrameKey, collectibleId] = column?.frame?.split("___") || []
+	const isFrame = frameKey === columnFrameKey
+
 	const { frame, transfer } = useColumnActions(index, frameKey)
 
-	const { data: metadata } = api.socket.balances.metadata.useQuery(
-		{
-			type: "ERC721",
-			address: collectible.collectionAddress,
-			chain: collectible.collectionChain,
-			tokenId: collectible.tokenId
-		},
+	const { data: { data: collectible } = {} } = api.service.zerion.nfts.detail.useQuery(
+		{ path: { nftId: collectibleId } },
 		{ enabled: isFrame }
 	)
 
 	const [expanded, setExpanded] = useState(false)
 
-	const textColor = getTextColor(metadata?.color ?? "#ffffff")
-
-	useEffect(() => {
-		if (isFrame === false) setExpanded(false)
-	}, [isFrame])
+	const textColor = "#000000"
 
 	return (
 		<>
@@ -76,7 +58,7 @@ export const CollectibleFrame: FC<{
 						<div
 							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10 blur-2xl filter"
 							style={{
-								backgroundImage: `url(${collection.iconUrl})`,
+								backgroundImage: `url(${collectible?.attributes?.metadata?.content?.preview?.url})`,
 								backgroundSize: "cover",
 								backgroundPosition: "center",
 								backgroundRepeat: "no-repeat",
@@ -88,7 +70,7 @@ export const CollectibleFrame: FC<{
 						<div
 							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10"
 							style={{
-								backgroundImage: `url(${collection.iconUrl})`,
+								backgroundImage: `url(${collectible?.attributes?.metadata?.content?.preview?.url})`,
 								backgroundSize: "cover",
 								backgroundPosition: "center",
 								backgroundRepeat: "no-repeat",
@@ -99,22 +81,26 @@ export const CollectibleFrame: FC<{
 						/>
 					</div>
 				}
-				label={collection.name}
+				label={"Collection Name"}
 				visible={isFrame}
-				hasChildrenPadding={false}
+				handleBack={() => frame(`collection___${collectible?.relationships.nft_collection.data.id}`)}
 				hasOverlay
 			>
-				<div className="flex flex-col gap-2 px-6">
+				<div className="flex flex-col gap-2 pt-4">
 					<CollectibleImage
-						video={collectible?.videoUrl?.includes("mp4") ? collectible?.videoUrl : undefined}
-						image={collectible?.imageUrl ?? undefined}
-						fallbackImage={collection.iconUrl ?? ""}
-						name={collectible?.name || collection.name}
+						video={
+							collectible?.attributes?.metadata?.content?.video?.url?.includes("mp4")
+								? collectible?.attributes?.metadata?.content?.video?.url
+								: undefined
+						}
+						image={collectible?.attributes?.metadata?.content?.detail?.url ?? undefined}
+						fallbackImage={collectible?.attributes?.metadata?.content?.detail?.url ?? ""}
+						name={collectible?.attributes?.metadata?.name ?? ""}
 					/>
 
-					<p className="pt-2 text-left text-lg font-bold">{collectible?.name}</p>
+					<p className="pt-2 text-left text-lg font-bold">{collectible?.attributes?.metadata?.name}</p>
 
-					{collection.description && (
+					{collectible?.attributes?.metadata?.description && (
 						<>
 							<div className="inline-flex gap-2">
 								<ReactMarkdown
@@ -125,7 +111,7 @@ export const CollectibleFrame: FC<{
 											<a
 												{...props}
 												className="relative z-20 cursor-pointer transition-opacity duration-200 hover:opacity-80"
-												style={{ color: metadata?.color ?? "" }}
+												// style={{ color: collectible?.attributes?.metadata?.color ?? "" }}
 												target="_blank"
 												rel="noopener noreferrer"
 												onClick={e => {
@@ -142,12 +128,12 @@ export const CollectibleFrame: FC<{
 									}}
 								>
 									{expanded
-										? `${collection.description.trim()}`
-										: `${collection.description.trim().slice(0, 120)}...`}
+										? `${collectible?.attributes?.metadata?.description.trim()}`
+										: `${collectible?.attributes?.metadata?.description.trim().slice(0, 120)}...`}
 								</ReactMarkdown>
 							</div>
 
-							{collection.description.trim().length > 120 && (
+							{collectible?.attributes?.metadata?.description.trim().length > 120 && (
 								<>
 									<button
 										className="mb-2 mr-auto flex flex-row items-center gap-2 text-sm font-bold"
@@ -168,19 +154,20 @@ export const CollectibleFrame: FC<{
 					)}
 				</div>
 
-				<div className="flex flex-row gap-2 px-6 pb-4">
+				<div className="flex flex-row gap-2 pb-4">
 					<button
 						className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 						style={{
-							backgroundColor: metadata?.color ?? "",
+							// backgroundColor: collectible?.attributes?.metadata?.color ?? "",
 							color: textColor
 						}}
 						onClick={() => {
 							transfer({ percentage: 0, precise: "0", recipient: undefined })
-							frame(index === COLUMNS.SIDEBAR_INDEX
-								? `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
-								: `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
-							)
+							// frame(
+							// 	index === COLUMNS.SIDEBAR_INDEX
+							// 		? `${collectible?.attributes.contract_address}-${collectible?.collectionChain}-${collectible?.tokenId}-transfer-amount`
+							// 		: `${collectible?.collectionAddress}-${collectible?.collectionChain}-${collectible?.tokenId}-transfer-recipient`
+							// )
 						}}
 					>
 						{index === COLUMNS.SIDEBAR_INDEX ? (
@@ -197,26 +184,27 @@ export const CollectibleFrame: FC<{
 					</button>
 				</div>
 
-				{metadata?.traits && (metadata?.traits?.length ?? 0) > 0 && (
-					<div className="flex flex-wrap gap-2 px-6 pb-4">
-						{(metadata.traits as Traits).map((trait, index) => (
-							<div
-								key={index}
-								className="flex flex-col rounded-lg border-2 px-4 py-2"
-								style={{ borderColor: metadata?.color ?? "" }}
-							>
-								<p className="truncate overflow-ellipsis whitespace-nowrap text-sm font-bold opacity-40">
-									{formatTitle(trait.trait_type)}
-								</p>
-								<p className="flex flex-row items-center gap-2 truncate overflow-ellipsis whitespace-nowrap font-bold">
-									{trait.value}
-								</p>
-							</div>
-						))}
-					</div>
-				)}
+				{collectible?.attributes?.metadata?.attributes &&
+					(collectible?.attributes?.metadata?.attributes?.length ?? 0) > 0 && (
+						<div className="flex flex-wrap gap-2 pb-4">
+							{collectible?.attributes?.metadata?.attributes?.map((trait, index) => (
+								<div
+									key={index}
+									className="flex flex-col rounded-lg border-2 px-4 py-2"
+									// style={{ borderColor: collectible?.attributes?.metadata?.color ?? "" }}
+								>
+									<p className="truncate overflow-ellipsis whitespace-nowrap text-sm font-bold opacity-40">
+										{formatTitle(trait.key)}
+									</p>
+									<p className="flex flex-row items-center gap-2 truncate overflow-ellipsis whitespace-nowrap font-bold">
+										{trait.value}
+									</p>
+								</div>
+							))}
+						</div>
+					)}
 
-				<div className="flex flex-col gap-2 px-6 pb-4">
+				<div className="flex flex-col gap-2 pb-4">
 					<div>
 						<div className="flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Details</p>
@@ -227,34 +215,39 @@ export const CollectibleFrame: FC<{
 							<p className="flex w-full flex-row items-center gap-4">
 								<BookText size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Address</span>
-								{formatAddress(getAddress(collectible.collectionAddress))}
+								{formatAddress(collectible?.attributes?.contract_address ?? "")}
 							</p>
 							<p className="flex w-full flex-row items-center gap-4">
 								<Hash size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Identifier</span>
-								{collectible.tokenId.length > 11
-									? formatAddress(collectible.tokenId)
-									: collectible.tokenId}
+								{(collectible?.attributes?.token_id?.length ?? 0) > 11
+									? formatAddress(collectible?.attributes?.token_id ?? "")
+									: collectible?.attributes?.token_id}
 							</p>
-							{collectible.interface === "ERC1155" && (
+							{collectible?.attributes?.interface === "ERC1155" && (
 								<p className="flex w-full flex-row items-center gap-4">
 									<Hash size={18} className="opacity-20" />
 									<span className="mr-auto opacity-40">Balance</span>
-									{collectible.amount}
+									{/* {collectible?.attributes?} */}1
 								</p>
 							)}
 							<p className="flex w-full flex-row items-center gap-4">
 								<Waypoints size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Chain</span>
 								<span className="flex flex-row items-center gap-2">
-									<ChainImage chainId={getChainId(collection.chain)} size="xs" />
-									{formatTitle(collection.chain)}
+									<ChainImage
+										chainId={getChainId(collectible?.relationships.chain.data.id ?? "")}
+										size="xs"
+									/>
+									{formatTitle(collectible?.relationships.chain.data.id ?? "")}
 								</span>
 							</p>
 							<p className="flex w-full flex-row items-center gap-4">
 								<BookText size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Token Standard</span>
-								<span className="whitespace-nowrap">{formatTokenStandard(collectible.interface)}</span>
+								<span className="whitespace-nowrap">
+									{formatTokenStandard(collectible?.attributes?.interface ?? "")}
+								</span>
 							</p>
 						</div>
 
@@ -267,12 +260,12 @@ export const CollectibleFrame: FC<{
 							<a
 								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 								style={{
-									backgroundColor: metadata?.color ?? "",
+									// backgroundColor: metadata?.color ?? "",
 									color: textColor
 								}}
 								href={getBlockExplorerAddress(
-									getChainId(collectible.collectionChain),
-									collectible.collectionAddress
+									getChainId(collectible?.relationships.chain.data.id ?? ""),
+									collectible?.attributes?.contract_address ?? ""
 								)}
 								target="_blank"
 								rel="noreferrer"
@@ -281,7 +274,7 @@ export const CollectibleFrame: FC<{
 								Explorer
 							</a>
 
-							{collection.projectUrl && (
+							{/* {collection.projectUrl && (
 								<a
 									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 									style={{
@@ -391,19 +384,19 @@ export const CollectibleFrame: FC<{
 									<BookDashed size={14} className="opacity-60" />
 									Wiki
 								</a>
-							)}
+							)} */}
 						</div>
 					</div>
 				</div>
 			</Frame>
 
-			<TransferFrame
+			{/* <TransferFrame
 				index={index}
 				collectible={collectible}
 				collection={collection}
 				color={metadata?.color ?? ""}
 				textColor={textColor}
-			/>
+			/> */}
 		</>
 	)
 })

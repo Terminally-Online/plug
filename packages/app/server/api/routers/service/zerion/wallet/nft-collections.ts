@@ -30,92 +30,44 @@ const NftCollectionsOutputSchema = z.object({
 	data: z.array(
 		z.object({
 			type: z.literal("wallet_nft_collections"),
-			id: z.union([z.string(), z.number()]),
+			id: z.string(),
 			attributes: z.object({
-				min_changed_at: isoDateString.nullable(),
-				max_changed_at: isoDateString.nullable(),
+				min_changed_at: z.string(),
+				max_changed_at: z.string(),
 				nfts_count: z.string(),
-				total_floor_price: z.number().nullable(),
-				collection_info: z
-					.object({
-						name: z.string(),
-						description: z.string().nullable(),
-						content: z
-							.object({
-								icon: z
-									.object({
-										url: z.string()
-									})
-									.nullable(),
-								banner: z
-									.object({
-										url: z.string(),
-										content_type: z.string().optional()
-									})
-									.nullable()
-							})
-							.nullable()
-					})
-					.nullable()
-			}),
-			relationships: z.object({
-				chains: z.array(
-					z.object({
-						links: z.object({
-							related: z.string()
+				total_floor_price: z.number(),
+				collection_info: z.object({
+					name: z.string(),
+					description: z.string(),
+					content: z.object({
+						icon: z.object({
+							url: z.string()
 						}),
-						data: z.object({
-							type: z.string(),
-							id: z.string()
-						})
-					})
-				),
-				nft_collection: z.object({
-					data: z.object({
-						type: z.string(),
-						id: z.union([z.string(), z.number()])
+						banner: z
+							.object({
+								url: z.string(),
+								content_type: z.string().optional()
+							})
+							.optional()
 					})
 				})
 			}),
-			included: z
-				.array(
-					z.object({
-						type: z.literal("nft_collections"),
-						id: z.union([z.string(), z.number()]),
-						attributes: z.object({
-							metadata: z
-								.object({
-									name: z.string(),
-									description: z.string().nullable(),
-									content: z
-										.object({
-											icon: z
-												.object({
-													url: z.string()
-												})
-												.nullable(),
-											banner: z
-												.object({
-													url: z.string(),
-													content_type: z.string().optional()
-												})
-												.nullable()
-										})
-										.nullable(),
-									payment_token_symbol: z.string().optional()
-								})
-								.nullable(),
-							market_data: z
-								.object({
-									prices: z.object({
-										floor: z.number().nullable()
-									})
-								})
-								.optional()
+			relationships: z.object({
+				chains: z.object({
+					data: z.array(
+						z.object({
+							type: z.literal("chains"),
+							id: z.string()
 						})
+					)
+				}),
+				nft_collection: z.object({
+					data: z.object({
+						type: z.literal("nft_collections"),
+						id: z.string()
 					})
-				)
-				.optional()
+				})
+			})
 		})
 	)
 })
