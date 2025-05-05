@@ -1,9 +1,5 @@
-import { RouterOutputs } from "@/server/client"
-
-type CreatePlaceholderTokenProps = Pick<
-	NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number],
-	"name"
-> & { 
+type CreatePlaceholderTokenProps = { 
+	name: string
 	icon: string; 
 	values: Array<number>; 
 } 

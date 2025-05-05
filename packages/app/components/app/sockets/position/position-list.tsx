@@ -2,49 +2,61 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { PositionFrame } from "@/components/app/frames/assets/position/frame"
 import { Search } from "@/components/app/inputs/search"
 import { SocketPositionItem } from "@/components/app/sockets/position/position-item"
 import { Callout } from "@/components/app/utils/callout"
 import { cn } from "@/lib"
-import { RouterOutputs } from "@/server/client"
+import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
-import { useHoldings } from "@/state/positions"
 import { PLACEHOLDER_POSITIONS } from "@/lib/constants/placeholder/positions"
 
 export const SocketPositionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		columnProtocols?: RouterOutputs["socket"]["balances"]["positions"]["protocols"]
-		expanded?: boolean
+		address?: string
 		isColumn?: boolean
+		expanded?: boolean
 	}
-> = ({ index, columnProtocols, expanded, isColumn = true, className, ...props }) => {
+> = ({ index, address, expanded, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { protocols: apiProtocols } = useHoldings(socket?.socketAddress)
 
-	const protocols = columnProtocols ?? apiProtocols
+	const { data } = api.service.zerion.wallet.positions.useQuery({
+		path: { address: address || socket?.socketAddress },
+		query: {
+			aggregate: true,
+			filter: {
+				positions: "only_complex"
+			}
+		}
+	}, {
+		enabled: !isAnonymous,
+		placeholderData: prev => prev
+	})
+	const protocols = data?.data || []
 
 	const [search, handleSearch] = useState("")
 
 	const visibilePositions = useMemo(() => {
-		if (search !== "" && protocols.length === 0) 
+		if (search !== "" && protocols.length === 0)
 			return Array(5).fill(undefined)
 
-		if (isAnonymous || protocols === undefined || protocols.length == 0)
-			return PLACEHOLDER_POSITIONS
+		const isEmptyResults = (search === "" && protocols.length == 0)
+		const isPlaceholder = isColumn && (!protocols || isAnonymous || isEmptyResults)
+
+		if (isPlaceholder) return PLACEHOLDER_POSITIONS
+		if (search === "") return protocols
 
 		const filteredProtocols = protocols.filter(
 			protocol =>
-				protocol.name.toLowerCase().includes(search.toLowerCase()) ||
-				protocol.positions.some(
-					position =>
-						position.fungible.name.toLowerCase().includes(search.toLowerCase()) ||
-						position.fungible.symbol.toLowerCase().includes(search.toLowerCase()) ||
-						position.fungible.implementations.some(implementation =>
-							implementation.contract.toLowerCase().includes(search.toLowerCase())
-						)
-				)
+				protocol.attributes.name.toLowerCase().includes(search.toLowerCase())
+			// protocol.positions.some(
+			// 	position =>
+			// 		position.fungible.name.toLowerCase().includes(search.toLowerCase()) ||
+			// 		position.fungible.symbol.toLowerCase().includes(search.toLowerCase()) ||
+			// 		position.fungible.implementations.some(implementation =>
+			// 			implementation.contract.toLowerCase().includes(search.toLowerCase())
+			// 		)
+			// )
 		)
 
 		if (expanded) return filteredProtocols
@@ -82,16 +94,10 @@ export const SocketPositionList: FC<
 			<Callout.Anonymous index={index} viewing="positions" isAbsolute={true} />
 			<Callout.EmptyAssets
 				index={index}
-				isEmpty={!isAnonymous && search === "" && protocols.length === 0}
+				isEmpty={isColumn && !isAnonymous && search === "" && protocols.length === 0}
 				isViewing="positions"
 				isReceivable={false}
 			/>
-
-			{visibilePositions
-				.filter(protocol => Boolean(protocol))
-				.map((protocol, protocolIndex) => {
-					return <PositionFrame key={protocolIndex} index={index} protocol={protocol} />
-				})}
 		</div>
 	)
 }

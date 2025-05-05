@@ -34,6 +34,8 @@ const PositionSchema = z.object({
 	attributes: z.object({
 		parent: z.any().nullable(),
 		protocol: z.any().nullable(),
+		poolAddress: z.string().nullable().optional(),
+		groupId: z.string().nullable().optional(),
 		name: z.string(),
 		position_type: z.string(),
 		quantity: z.object({
@@ -80,7 +82,16 @@ const PositionSchema = z.object({
 			is_trash: z.boolean()
 		}),
 		updated_at: z.string(),
-		updated_at_block: z.number()
+		updated_at_block: z.number().nullable(),
+		application_metadata: z.object({
+			name: z.string(),
+			icon: z
+				.object({
+					url: z.string()
+				})
+				.nullable(),
+			url: z.string().nullable().optional()
+		}).nullable().optional()
 	}),
 	relationships: z.object({
 		chain: z.object({
@@ -100,7 +111,13 @@ const PositionSchema = z.object({
 				type: z.string(),
 				id: z.string()
 			})
-		})
+		}),
+		dapp: z.object({
+			data: z.object({
+				type: z.string(),
+				id: z.string()
+			})
+		}).optional()
 	})
 })
 

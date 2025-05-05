@@ -7,7 +7,7 @@ import { SocketCollectionItem } from "@/components/app/sockets/collectibles/coll
 import { Callout } from "@/components/app/utils/callout"
 import { cn } from "@/lib"
 import { PLACEHOLDER_COLLECTIONS } from "@/lib/constants/placeholder/collectibles"
-import { api, RouterOutputs } from "@/server/client"
+import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { CollectibleFrame } from "../../frames/assets/collectible/frame"
 import { CollectionFrame } from "../../frames/assets/collection/frame"
@@ -43,9 +43,6 @@ export const SocketCollectionList: FC<
 			collection =>
 				collection.attributes.collection_info.name.toLowerCase().includes(search.toLowerCase()) ||
 				collection.attributes.collection_info.description.toLowerCase().includes(search.toLowerCase())
-			// collection.collectibles.some(collectible =>
-			// 	(collectible.name ?? "").toLowerCase().includes(search.toLowerCase())
-			// )
 		)
 
 		if (expanded) return filteredCollectibles

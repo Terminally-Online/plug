@@ -36,13 +36,13 @@ export const SocketTokenList: FC<
 	const [search, debouncedSearch, handleSearch] = useDebounce("")
 
 	const visibleTokens = useMemo(() => {
-		if (search !== "" && tokens.length === 0) {
-			return Array(5).fill(undefined)
-		}
+		if (search !== "" && tokens.length === 0) return Array(5).fill(undefined)
 
-		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0)) {
-			return PLACEHOLDER_TOKENS
-		}
+		const isEmptyResults = (search === "" && tokens.length == 0)
+		const isPlaceholder = isColumn && (!tokens || isAnonymous || isEmptyResults)
+
+		if (isPlaceholder) return PLACEHOLDER_TOKENS
+		if (search === "") return tokens
 
 		const filteredTokens = tokens.filter(
 			token =>

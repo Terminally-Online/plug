@@ -27,12 +27,10 @@ export const SocketAssets: FC<SocketAssetsProps> = ({
 	<div className={cn("flex flex-col gap-2", className)} {...props}>
 		<Callout.Anonymous index={index} viewing="assets" />
 
-		{/*
-			<Callout.EmptyAssets
-				index={index}
-				isEmpty={[tokens].every(basket => basket.length === 0)}
-			/>
-			*/}
+		{/* <Callout.EmptyAssets
+			index={index}
+			isEmpty={[tokens].every(basket => basket.length === 0)}
+		/> */}
 
 		<SocketTokenList
 			className="h-max"
@@ -41,13 +39,6 @@ export const SocketAssets: FC<SocketAssetsProps> = ({
 			isColumn={false}
 			expanded
 		/>
-
-		{/*<SocketPositionList
-				index={index}
-				expanded={true}
-				isColumn={false}
-				columnProtocols={protocols}
-			/>*/}
 
 		<SocketCollectionList
 			index={index}

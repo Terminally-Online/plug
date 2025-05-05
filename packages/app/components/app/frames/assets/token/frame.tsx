@@ -79,7 +79,7 @@ export const TokenFrame: FC<{
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-			<div className="flex flex-row px-6 font-bold">
+			<div className="flex flex-row px-6 py-4 font-bold">
 				<div className="flex flex-col items-center font-bold">
 					<div className="mr-auto flex w-max flex-row text-lg">
 						{tooltipData || token.attributes.price ? (
