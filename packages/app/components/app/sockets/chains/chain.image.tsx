@@ -17,14 +17,14 @@ const sizeClasses = {
 }
 
 export const ChainImage = ({ chainId, size = "sm" }: ChainImageProps) => {
-	if (!chainId) return null
-
 	const src = useMemo(
 		() =>
 			(typeof chainId === "string" ? getZerionChainIconUrl(chainId) : chains[chainId]?.logo) ||
 			"/protocols/plug.png",
 		[chainId]
 	)
+
+	if (!chainId) return null
 
 	return <Image src={src} alt={chainId.toString()} width={128} height={128} className={cn(sizeClasses[size])} />
 }

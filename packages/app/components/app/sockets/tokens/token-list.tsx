@@ -30,7 +30,7 @@ export const SocketTokenList: FC<
 		},
 		{ enabled: !isAnonymous, placeholderData: prev => prev }
 	)
-	const positions = data?.data || []
+	const positions = useMemo(() => data?.data || [], [data])
 	const tokens = useMemo(() => positions.filter(pos => pos.attributes.position_type === "wallet"), [positions])
 
 	const [search, debouncedSearch, handleSearch] = useDebounce("")

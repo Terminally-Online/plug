@@ -76,7 +76,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 				onError: error => console.error(error) 
 			}
 		)
-	}, [bytecode, intent])
+	}, [bytecode, intent, refetch, sendTransaction])
 
 	return (
 		<Frame

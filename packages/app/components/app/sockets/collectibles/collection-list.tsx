@@ -29,7 +29,7 @@ export const SocketCollectionList: FC<
 		},
 		{ enabled: !isAnonymous, retry: false, placeholderData: prev => prev }
 	)
-	const collections = data?.data || []
+	const collections = useMemo(() => data?.data || [], [data])
 
 	const [search, handleSearch] = useState("")
 

@@ -32,7 +32,7 @@ export const SocketPositionList: FC<
 		enabled: !isAnonymous,
 		placeholderData: prev => prev
 	})
-	const protocols = data?.data || []
+	const protocols = useMemo(() => data?.data || [], [data])
 
 	const [search, handleSearch] = useState("")
 

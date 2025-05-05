@@ -109,7 +109,7 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 		]
 
 		return base
-	}, [])
+	}, [flagOptions])
 
 	const isBody = index != columns.length - 2
 
