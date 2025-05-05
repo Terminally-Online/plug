@@ -16,7 +16,7 @@ import { TransferFrame } from "@/components/app/frames/assets/transfer/frame"
 import { Frame } from "@/components/app/frames/base"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
-import { cn, formatAddress, formatTitle, formatTokenStandard, getTextColor } from "@/lib"
+import { formatAddress, formatTitle, formatTokenStandard, getTextColor } from "@/lib"
 import { api } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { TokenFrameExternalLink } from "../token/link"
@@ -31,8 +31,8 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 
 	const { frame, transfer } = useColumnActions(index, frameKey)
 
-	const { data: { data: collectible } = {} } = api.service.zerion.nfts.detail.useQuery(
-		{ path: { nftId: collectibleId } },
+	const { data: { data: collectible, included } = {} } = api.service.zerion.nfts.detail.useQuery(
+		{ path: { nftId: collectibleId }, query: { include: "nft_collections" } },
 		{ enabled: isFrame }
 	)
 
@@ -44,11 +44,10 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 			<Frame
 				index={index}
 				icon={
-					<div className="relative h-8 w-10">
+					<div className="relative h-8 w-10 rounded-full">
 						<TokenImage
-							logo={collectible?.attributes?.metadata?.content?.preview?.url}
-							symbol="test"
-							handleColor={setColor}
+							logo={included?.at(0)?.attributes?.metadata?.icon?.url}
+							symbol={included?.at(0)?.attributes?.metadata?.name ?? ""}
 						/>
 					</div>
 				}
@@ -58,6 +57,14 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 				hasOverlay
 			>
 				<div className="flex flex-col gap-2 pt-4">
+					<TokenImage
+						className="absolute"
+						logo={collectible?.attributes?.metadata?.content?.detail?.url ?? ""}
+						symbol={collectible?.attributes?.metadata?.name ?? ""}
+						handleColor={setColor}
+						blur={false}
+					/>
+
 					<CollectibleImage
 						video={collectible?.attributes?.metadata?.content?.video?.url}
 						image={collectible?.attributes?.metadata?.content?.detail?.url}
@@ -101,9 +108,12 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 									<div
 										key={index}
 										className="flex flex-col rounded-lg border-2 px-4 py-2"
-									// style={{ borderColor: collectible?.attributes?.metadata?.color ?? "" }}
+										style={{ borderColor: color ?? "" }}
 									>
-										<p className="truncate overflow-ellipsis whitespace-nowrap text-sm font-bold opacity-40 text-left">
+										<p
+											className="truncate overflow-ellipsis whitespace-nowrap text-sm font-bold opacity-40 text-left"
+											style={{ color: color ?? "" }}
+										>
 											{formatTitle(trait.key)}
 										</p>
 										<p className="flex flex-row items-center gap-2 truncate overflow-ellipsis whitespace-nowrap font-bold">
