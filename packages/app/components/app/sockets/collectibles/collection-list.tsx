@@ -36,8 +36,8 @@ export const SocketCollectionList: FC<
 	const visibleCollectibles = useMemo(() => {
 		if (search !== "" && collections.length === 0) return Array(5).fill(undefined)
 
-		// if (collections === undefined || isAnonymous || (search === "" && collections.length === 0))
-		// 	return PLACEHOLDER_COLLECTIONS
+		if (collections === undefined || isAnonymous || (search === "" && collections.length === 0))
+			return PLACEHOLDER_COLLECTIONS
 
 		const filteredCollectibles = collections.filter(
 			collection =>
