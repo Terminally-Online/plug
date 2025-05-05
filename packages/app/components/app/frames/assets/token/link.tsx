@@ -36,7 +36,7 @@ export const TokenFrameExternalLink = ({ link }: { link: { name: string; url: st
 				<span className="flex max-w-[120px] flex-row items-center truncate overflow-ellipsis whitespace-nowrap">
 					<ArrowRight
 						size={18}
-						className="-rotate-45 opacity-20 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+						className="group-hover:-rotate-45 opacity-20 transition-all duration-200 ease-in-out group-hover:opacity-100"
 					/>
 				</span>
 			</a>

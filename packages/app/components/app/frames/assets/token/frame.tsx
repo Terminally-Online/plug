@@ -181,11 +181,11 @@ export const TokenFrame: FC<{
 			<div className="flex flex-col px-6 pb-2 pt-4 font-bold">
 				<div className="flex flex-row items-center gap-4">
 					<p className="mr-auto opacity-40">Balance</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 					<p className="ml-auto opacity-40">Value</p>
 				</div>
 
-				<div className="mt-2 flex flex-row items-center justify-between gap-4">
+				<div className="flex flex-row items-center justify-between gap-4">
 					<div className="mr-auto flex h-8 items-center" style={{ color: color }}>
 						<TokenImage
 							logo={getZerionTokenIconUrl(token)}
@@ -211,10 +211,10 @@ export const TokenFrame: FC<{
 
 			<div className="flex flex-row items-center gap-4 px-6 font-bold">
 				<p className="opacity-40">Distribution</p>
-				<div className="h-[2px] w-full bg-plug-green/10" />
+				<div className="h-[1px] w-full bg-plug-green/10" />
 			</div>
 
-			<div className="relative mt-2 flex w-full flex-col gap-2 px-6 pb-4">
+			<div className="relative mt-2 flex w-full flex-col px-6 pb-4">
 				{token.attributes.fungible_info.implementations
 					?.filter(impl => impl.balance && impl.balance > 0)
 					.map((implementation, implementationIndex) => {
@@ -233,10 +233,10 @@ export const TokenFrame: FC<{
 					})}
 			</div>
 
-			<div className="flex flex-col gap-2 px-6 pb-4">
+			<div className="flex flex-col px-6 pb-4">
 				<div className="flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Market</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 
 				<p className="flex w-full flex-row items-center gap-4 font-bold">
@@ -285,10 +285,10 @@ export const TokenFrame: FC<{
 				</p>
 			</div>
 
-			<div className="flex flex-col gap-2 px-6 pb-4">
+			<div className="flex flex-col px-6 pb-4">
 				<div className="flex flex-row items-center gap-4 font-bold">
 					<p className="whitespace-nowrap opacity-40">External Links</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 
 				{details?.attributes.external_links?.map((link, linkIndex) => (

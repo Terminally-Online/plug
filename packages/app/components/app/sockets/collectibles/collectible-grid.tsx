@@ -8,7 +8,7 @@ export const SocketCollectibleGrid: FC<{
 	collectibles: NonNullable<RouterOutputs["service"]["zerion"]["wallet"]["nftPositions"]["data"]>
 }> = ({ index, collectibles }) => {
 	return (
-		<div className="grid grid-cols-2 gap-4 mx-6 pb-4">
+		<div className="grid grid-cols-2 gap-2 py-4">
 			{collectibles.map((collectible, collectibleIndex) => {
 				return (
 					<SocketCollectibleItem

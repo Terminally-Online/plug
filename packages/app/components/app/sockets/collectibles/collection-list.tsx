@@ -11,27 +11,31 @@ import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { CollectibleFrame } from "../../frames/assets/collectible/frame"
 import { CollectionFrame } from "../../frames/assets/collection/frame"
+import { Header } from "../../layout/header"
+import { Counter } from "@/components/shared/utils/counter"
+import { Animate } from "../../utils/animate"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
 		address?: string
-		expanded?: boolean
+		isExpanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = memo(({ index, address, expanded, count = 5, isColumn = true, className, ...props }) => {
+> = memo(({ index, address, isExpanded = false, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
 
 	const { data } = api.service.zerion.wallet.nftCollections.useQuery(
 		{
-			path: { address: address || socket?.socketAddress }
+			path: { address: address || socket?.socketAddress },
 		},
 		{ enabled: !isAnonymous, retry: false, placeholderData: prev => prev }
 	)
 	const collections = useMemo(() => data?.data || [], [data])
 
 	const [search, handleSearch] = useState("")
+	const [expanded, setExpanded] = useState(isExpanded)
 
 	const visibleCollectibles = useMemo(() => {
 		if (search !== "" && collections.length === 0) return Array(5).fill(undefined)
@@ -52,6 +56,15 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
+			<Header variant="frame" label={<div className="flex w-full justify-between items-center">
+				<p className="font-bold">Collectibles</p>
+				<p className="font-bold text-xs flex gap-1 opacity-40">
+					<Counter count={visibleCollectibles.length} />
+					<span className="opacity-40">/</span>
+					<Counter count={collections.length} />
+				</p>
+			</div>} nextOnClick={() => setExpanded(prev => !prev)} nextLabel={expanded ? "See Less" : "See All"} />
+
 			{isAnonymous === false && isColumn && collections.length > 0 && (
 				<Search
 					className="mb-2"
@@ -69,16 +82,17 @@ export const SocketCollectionList: FC<
 				handleSearch={handleSearch}
 			/>
 
-			<div className="flex flex-col gap-2">
+			<Animate.List>
 				{visibleCollectibles.map((collection, collectionIndex) => (
-					<SocketCollectionItem
-						key={collectionIndex}
-						index={index}
-						collection={collection}
-						searched={false}
-					/>
+					<Animate.ListItem key={collectionIndex}>
+						<SocketCollectionItem
+							index={index}
+							collection={collection}
+							searched={false}
+						/>
+					</Animate.ListItem>
 				))}
-			</div>
+			</Animate.List>
 
 			<Callout.Anonymous index={index} viewing="collectibles" isAbsolute={true} />
 			<Callout.EmptyAssets

@@ -104,7 +104,7 @@ import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
 // 						<div key={type}>
 // 							<div className="mb-2 flex flex-row items-center gap-2">
 // 								<p className="font-bold opacity-40">{formatTitle(type)}</p>
-// 								<div className="h-[2px] w-full bg-plug-green/10" />
+// 								<div className="h-[1px] w-full bg-plug-green/10" />
 // 								<p className="font-bold opacity-40">Value</p>
 // 							</div>
 //

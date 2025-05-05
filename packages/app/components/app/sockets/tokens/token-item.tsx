@@ -16,8 +16,10 @@ const DEFAULT_TOKEN_COLOR = "#ffffff"
 type SocketTokenItemProps = {
 	index: number
 	token: ZerionPosition | undefined
-}
-export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token }) => {
+}&
+	React.HTMLAttributes<HTMLDivElement>
+
+export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, ...props }) => {
 	const { frame } = useColumnActions(index, `${token?.attributes.fungible_info.symbol}-token`)
 
 	const [color, setColor] = useState(DEFAULT_TOKEN_COLOR)
@@ -27,7 +29,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token })
 
 	return (
 		<>
-			<Accordion loading={isPlaceholder} onExpand={isPlaceholder ? () => {} : () => frame()}>
+			<Accordion loading={isPlaceholder} onExpand={isPlaceholder ? () => {} : () => frame()} {...props}>
 				{token && (
 					<div className="flex w-full flex-row items-center gap-4">
 						<div className="relative h-10 min-w-10">

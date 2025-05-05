@@ -135,7 +135,7 @@ export const TransferAmountFrame: FC<TransferAmountFrameProps> = ({ index, token
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-			<div className="mb-4 flex flex-col gap-2">
+			<div className="py-4 flex flex-col gap-2">
 				{index !== COLUMNS.SIDEBAR_INDEX && (
 					<div className="px-6">
 						<TransferRecipient

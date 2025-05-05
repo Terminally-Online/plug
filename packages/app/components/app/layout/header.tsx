@@ -25,7 +25,7 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 
 const sizes: Record<NonNullable<Props["size"]>, string> = {
 	sm: "",
-	md: "text-lg",
+	md: "",
 	lg: "text-xl"
 }
 

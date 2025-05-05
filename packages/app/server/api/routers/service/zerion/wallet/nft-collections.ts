@@ -17,7 +17,7 @@ const NftCollectionsInputSchema = z.object({
 				})
 				.optional(),
 			sort: z.enum(["-total_floor_price", "total_floor_price"]).optional(),
-			include: z.array(z.string()).optional()
+			include: z.string().optional()
 		})
 		.optional()
 		.default({})

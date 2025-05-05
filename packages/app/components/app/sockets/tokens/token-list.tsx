@@ -1,6 +1,6 @@
-import { FC, HTMLAttributes, memo, useMemo } from "react"
+import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
-import { SearchIcon } from "lucide-react"
+import { Coins, SearchIcon } from "lucide-react"
 
 import { Search } from "@/components/app/inputs/search"
 import { SocketTokenItem } from "@/components/app/sockets/tokens/token-item"
@@ -9,18 +9,20 @@ import { cn, NATIVE_TOKEN_ADDRESS, useDebounce } from "@/lib"
 import { PLACEHOLDER_TOKENS } from "@/lib/constants/placeholder/tokens"
 import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
+import { Header } from "../../layout/header"
+import { Animate } from "../../utils/animate"
+import { Counter } from "@/components/shared/utils/counter"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
 		address?: string
-		expanded?: boolean
+		isExpanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = memo(({ index, address, expanded, count = 5, isColumn = true, className, ...props }) => {
+> = memo(({ index, address, isExpanded = false, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-
 	const { data } = api.service.zerion.wallet.positions.useQuery(
 		{
 			path: { address: address || socket?.socketAddress },
@@ -34,6 +36,9 @@ export const SocketTokenList: FC<
 	const tokens = useMemo(() => positions.filter(pos => pos.attributes.position_type === "wallet"), [positions])
 
 	const [search, debouncedSearch, handleSearch] = useDebounce("")
+	const [expanded, setExpanded] = useState<boolean>(isExpanded)
+
+	const [hovering, setHovering] = useState<string | undefined>()
 
 	const visibleTokens = useMemo(() => {
 		if (search !== "" && tokens.length === 0) return Array(5).fill(undefined)
@@ -42,7 +47,6 @@ export const SocketTokenList: FC<
 		const isPlaceholder = isColumn && (!tokens || isAnonymous || isEmptyResults)
 
 		if (isPlaceholder) return PLACEHOLDER_TOKENS
-		if (search === "") return tokens
 
 		const filteredTokens = tokens.filter(
 			token =>
@@ -58,8 +62,67 @@ export const SocketTokenList: FC<
 		return filteredTokens
 	}, [isAnonymous, tokens, expanded, count, debouncedSearch, search])
 
+	const visibleValue = useMemo(() => {
+		let value = 0;
+		for (const token of visibleTokens) {
+			value += token.attributes?.value || 0;
+		}
+		return value;
+	}, [visibleTokens])
+	const value = useMemo(() => {
+		let value = 0;
+		for (const token of tokens) {
+			value += token.attributes?.value || 0;
+		}
+		return value;
+	}, [visibleTokens])
+
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
+			{!isColumn && <Header
+				variant="frame"
+				icon={<Coins size={14} className="opacity-40" />}
+				label={<div className="flex w-full justify-between items-center">
+					<p className="font-bold">Tokens</p>
+					<p
+						className="font-bold text-xs flex gap-1 opacity-40"
+						onMouseEnter={() => setHovering("visible")}
+						onMouseLeave={() => setHovering(undefined)}
+					>
+						{hovering === "visible" ? (<>
+							$<Counter
+								count={(visibleValue).toLocaleString(
+									"en-US",
+									{
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+									}
+								)}
+								decimals={2}
+							/>
+							<span className="opacity-40">/</span>
+							$<Counter
+								count={(value).toLocaleString(
+									"en-US",
+									{
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+									}
+								)}
+								decimals={2}
+							/>
+						</>) : (<>
+							<Counter count={hovering ? hovering : visibleTokens.length} />
+							<span className="opacity-40">/</span>
+							<Counter count={tokens.length} />
+						</>)}
+
+					</p>
+				</div>}
+				nextOnClick={tokens.length > count ? () => setExpanded(prev => !prev) : undefined}
+				nextLabel={expanded ? "See Less" : "See All"}
+			/>}
+
 			{isAnonymous === false && isColumn && tokens.length > 0 && (
 				<Search
 					className="mb-2"
@@ -77,15 +140,18 @@ export const SocketTokenList: FC<
 				handleSearch={handleSearch}
 			/>
 
-			<div className="flex flex-col gap-2">
+			<Animate.List>
 				{visibleTokens.map((token, tokenIndex) => (
-					<SocketTokenItem
-						key={`${tokenIndex}-${token.attributes.fungible_info.symbol}`}
-						index={index}
-						token={token}
-					/>
+					<Animate.ListItem key={tokenIndex}>
+						<SocketTokenItem
+							index={index}
+							token={token}
+							onMouseEnter={() => setHovering((tokenIndex + 1).toString())}
+							onMouseLeave={() => setHovering(undefined)}
+						/>
+					</Animate.ListItem>
 				))}
-			</div>
+			</Animate.List>
 
 			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
 			<Callout.EmptyAssets
@@ -94,7 +160,7 @@ export const SocketTokenList: FC<
 				isViewing="tokens"
 				isReceivable
 			/>
-		</div>
+		</div >
 	)
 })
 
