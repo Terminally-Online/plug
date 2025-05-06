@@ -9,20 +9,20 @@ import { Counter } from "@/components/shared/utils/counter"
 
 type TransferSFTAmountProps = {
 	index: number
-	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+	collectible?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["data"]>
+	included?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["included"]>[number]
 	color: string
 }
-export const TransferSFTAmount: FC<TransferSFTAmountProps> = ({ index, collectible, collection, color }) => {
+export const TransferSFTAmount: FC<TransferSFTAmountProps> = ({ index, collectible, included, color }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey = `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
+	const frameKey = `collectible___${collectible?.id}___transfer-amount`
 	const { transfer } = useColumnActions(index, frameKey)
 	const [isPrecise, setIsPrecise] = useState(false)
 
-	const balance = parseInt(collectible.amount)
+	const balance = 1
 
 	const handleDragStart = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
@@ -74,7 +74,8 @@ export const TransferSFTAmount: FC<TransferSFTAmountProps> = ({ index, collectib
 			}))
 		} else {
 			const parsedValue = parseInt(numericValue)
-			const maxAmount = parseInt(collectible.amount)
+			// const maxAmount = parseInt(collectible.amount)
+			const maxAmount = 1
 			const clampedValue = Math.min(Math.max(0, parsedValue), maxAmount)
 			const percentage = (clampedValue / maxAmount) * 100
 
@@ -98,21 +99,14 @@ export const TransferSFTAmount: FC<TransferSFTAmountProps> = ({ index, collectib
 				<div className="flex flex-row items-center gap-4 px-2">
 					<div className="h-8 w-8 min-w-8 overflow-hidden">
 						<CollectibleImage
-							className="rounded-sm"
-							video={
-								collectible.videoUrl?.includes("mp4")
-									? collectible.videoUrl
-									: undefined
-							}
-							image={collectible.imageUrl ?? undefined}
-							fallbackImage={collection.iconUrl ?? undefined}
-							name={collectible.name || collection.name}
-							size="sm"
+							video={collectible?.attributes?.metadata?.content?.video?.url}
+							image={collectible?.attributes?.metadata?.content?.detail?.url}
+							name={collectible?.attributes?.metadata?.name ?? ""}
 						/>
 					</div>
 
 					<div className="flex flex-col">
-						<p className="mr-auto truncate overflow-ellipsis font-bold">{`${collectible.name}`}</p>
+						<p className="mr-auto truncate overflow-ellipsis font-bold">{`${collectible?.attributes?.metadata?.name}`}</p>
 						<p className="flex w-max flex-row text-sm font-bold text-black/40">
 							<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
 						</p>

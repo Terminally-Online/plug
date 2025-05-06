@@ -25,8 +25,6 @@ export const TokenImage: FC<
 	}
 
 	useEffect(() => {
-		if (imageColor) return
-
 		const color = getAssetColor(symbol)
 
 		const getImageColor = () => {

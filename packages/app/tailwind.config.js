@@ -34,6 +34,8 @@ module.exports = {
 				"pink-pink": "#F94EFD",
 				"pink-purple": "#FD4ECC",
 
+				"chart-green": "#B2E986",
+
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",

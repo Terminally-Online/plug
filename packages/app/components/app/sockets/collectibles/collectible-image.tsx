@@ -70,7 +70,7 @@ export const CollectibleImage: FC<
 						}}
 					/>
 				</React.Fragment>
-			) : image && !imageError ? (
+			) : image ? (
 				<>
 					<Image
 						src={image}
@@ -88,7 +88,6 @@ export const CollectibleImage: FC<
 						height={1200}
 						quality={100}
 						priority={true}
-						onError={() => setImageError(true)}
 					/>
 				</>
 			) : (

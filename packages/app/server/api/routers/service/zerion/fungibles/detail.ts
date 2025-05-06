@@ -18,7 +18,7 @@ const DetailInputSchema = z.object({
 
 const DetailOutputSchema = z.object({
 	links: z.object({
-		related: z.string()
+		self: z.string()
 	}),
 	data: z.object({
 		type: z.literal("fungibles"),
@@ -43,11 +43,11 @@ const DetailOutputSchema = z.object({
 						url: z.string()
 					})
 				)
-				.optional(),
+				.nullable(),
 			implementations: z.array(
 				z.object({
 					chain_id: z.string(),
-					address: z.string(),
+					address: z.string().nullable(),
 					decimals: z.number()
 				})
 			),

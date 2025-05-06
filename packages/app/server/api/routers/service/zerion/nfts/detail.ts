@@ -11,7 +11,7 @@ const DetailInputSchema = z.object({
 	query: z
 		.object({
 			currency: z.string().default("usd"),
-			include: z.array(z.string()).optional()
+			include: z.string().optional()
 		})
 		.optional()
 		.default({})
@@ -31,7 +31,7 @@ const DetailOutputSchema = z.object({
 			metadata: z
 				.object({
 					name: z.string().nullable(),
-					description: z.string().nullable(),
+					description: z.string().nullable().optional(),
 					tags: z.array(z.string()).optional(),
 					content: z
 						.object({
@@ -139,27 +139,23 @@ const DetailOutputSchema = z.object({
 					metadata: z
 						.object({
 							name: z.string().nullable(),
-							description: z.string().nullable(),
-							content: z
+							description: z.string().nullable().optional(),
+							icon: z
 								.object({
-									icon: z
-										.object({
-											url: z.string()
-										})
-										.nullable()
-										.optional(),
-									banner: z
-										.object({
-											url: z.string(),
-											content_type: z.string().optional()
-										})
-										.nullable()
-										.optional()
+									url: z.string()
 								})
-								.nullable(),
-							payment_token_symbol: z.string().optional()
+								.nullable()
+								.optional(),
+							banner: z
+								.object({
+									url: z.string(),
+									content_type: z.string().optional()
+								})
+								.nullable()
+								.optional()
 						})
 						.nullable()
+						.optional()
 				})
 			})
 		)

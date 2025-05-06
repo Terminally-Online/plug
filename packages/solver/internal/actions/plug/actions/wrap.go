@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"solver/bindings/weth_address"
 	"solver/internal/actions"
+	"solver/internal/helpers/bebop"
 	"solver/internal/helpers/llama"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
@@ -76,13 +77,13 @@ func handleWrap(lookup *actions.SchemaLookup[SwapRequest], wethAddress string) (
 		To:    tx.To,
 		Data:  tx.Data,
 		Value: tx.Value,
-		Meta: BebopTransactionMeta{
+		Meta: bebop.BebopTransactionMeta{
 			Expiry:      0,
 			Slippage:    0.0,
 			PriceImpact: 0.0,
-			BuyTokens: map[string]BebopQuoteResponseBuyTokens{
+			BuyTokens: map[string]bebop.BebopQuoteResponseBuyTokens{
 				common.HexToAddress(lookup.Inputs.TokenIn).Hex(): {
-					BebopQuoteResponseToken: BebopQuoteResponseToken{
+					BebopQuoteResponseToken: bebop.BebopQuoteResponseToken{
 						Amount:         lookup.Inputs.Amount,
 						Decimals:       18,
 						PriceUsd:       ethPrice,
@@ -94,7 +95,7 @@ func handleWrap(lookup *actions.SchemaLookup[SwapRequest], wethAddress string) (
 					DeltaFromExpected: 0,
 				},
 			},
-			SellTokens: map[string]BebopQuoteResponseToken{
+			SellTokens: map[string]bebop.BebopQuoteResponseToken{
 				common.HexToAddress(lookup.Inputs.Token).Hex(): {
 					Amount:         lookup.Inputs.Amount,
 					Decimals:       18,
