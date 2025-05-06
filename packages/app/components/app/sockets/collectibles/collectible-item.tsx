@@ -7,31 +7,24 @@ import { useColumnActions } from "@/state/columns"
 
 export const SocketCollectibleItem: FC<{
 	index: number
-	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-}> = ({ index, collection, collectible }) => {
-	const { frame } = useColumnActions(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
+	collectible: NonNullable<RouterOutputs["service"]["zerion"]["wallet"]["nftPositions"]["data"]>[number]
+}> = ({ index, collectible }) => {
+	const { frame } = useColumnActions(index, `collectible___${collectible?.relationships.nft.data.id}`)
 
 	const [loading, setLoading] = useState(true)
 
 	return (
 		<div
 			className="relative z-[4] w-full rounded-md"
-			style={{
-				paddingTop: "100%"
-			}}
 			onClick={() => frame()}
 		>
 			<Image
-				src={collectible?.imageUrl || collection.iconUrl || ""}
-				alt={collectible?.name ?? ""}
-				fill
-				style={{
-					objectFit: "cover",
-					objectPosition: "center"
-				}}
+				src={collectible?.attributes.nft_info?.content?.detail?.url || collectible.attributes.collection_info?.content?.icon?.url || ""}
+				alt={collectible?.attributes.nft_info.name ?? ""}
+				width={300}
+				height={300}
 				className={cn(
-					"rounded-md",
+					"rounded-t-md w-full",
 					loading
 						? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
 						: "transition-all duration-200 ease-in-out",
@@ -39,6 +32,11 @@ export const SocketCollectibleItem: FC<{
 				)}
 				onLoad={() => setLoading(false)}
 			/>
+
+			<div className="text-left px-4 py-2 rounded-b-md border-[1px] border-plug-green/10">
+				<p className="font-bold">{collectible.attributes.nft_info.name}</p>
+				<p className="font-bold opacity-40 text-xs truncate">#{collectible.attributes.nft_info.token_id}</p>
+			</div>
 		</div>
 	)
 }

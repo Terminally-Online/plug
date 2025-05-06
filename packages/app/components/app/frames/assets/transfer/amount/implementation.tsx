@@ -4,19 +4,14 @@ import { useAtom } from "jotai"
 
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { formatTitle, getChainId } from "@/lib"
-import { RouterOutputs } from "@/server/client"
+import { formatTitle, getChainId, getZerionTokenIconUrl, ZerionPosition } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../../../sockets/chains/chain.image"
 
-type Implementation = NonNullable<
-	RouterOutputs["socket"]["balances"]["positions"]
->["tokens"][number]["implementations"][number]
-
 export const TransferTokenImplementation: FC<{
-	implementation: Implementation
-	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+	token: ZerionPosition
+	implementation: ZerionPosition["attributes"]["fungible_info"]["implementations"][number]
 	index: number
 	color: string
 }> = ({ implementation, token, index, color }) => {
@@ -48,7 +43,7 @@ export const TransferTokenImplementation: FC<{
 						percentage
 					}))
 
-					const newAmount = (implementation.balance * percentage) / 100
+					const newAmount = (implementation?.balance ?? 0 * percentage) / 100
 					const formattedAmount = newAmount.toFixed(20).replace(/\.?0+$/, "")
 					const [integerPart, decimalPart] = formattedAmount.split(".")
 					let finalAmount = integerPart
@@ -64,7 +59,7 @@ export const TransferTokenImplementation: FC<{
 
 					transfer(prev => ({
 						...prev,
-						precise: percentage >= 99.5 ? implementation.balance.toString() : finalAmount
+						precise: percentage >= 99.5 ? (implementation?.balance ?? 0).toString() : finalAmount
 					}))
 
 					setIsPrecise(true)
@@ -92,7 +87,7 @@ export const TransferTokenImplementation: FC<{
 		if (numericValue === "") {
 			transfer(prev => ({ ...prev, precise: "0" }))
 		} else if (!isNaN(parsedValue)) {
-			const maxBalance = implementation.balance
+			const maxBalance = implementation?.balance ?? 0
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
 			const percentage = (clampedValue / maxBalance) * 100
 
@@ -107,8 +102,8 @@ export const TransferTokenImplementation: FC<{
 
 	return (
 		<div
-			className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-plug-green/10 p-4"
 			ref={containerRef}
+			className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-plug-green/10 p-4"
 			onMouseDown={handleDragStart}
 			onMouseEnter={() => setIsPrecise(true)}
 			onMouseLeave={() => setIsPrecise(false)}
@@ -116,25 +111,21 @@ export const TransferTokenImplementation: FC<{
 			<div className="flex w-full flex-row">
 				<div className="flex flex-row items-center gap-4 px-2">
 					<TokenImage
-						logo={
-							token?.icon ||
-							`https://token-icons.llamao.fi/icons/tokens/${getChainId(implementation.chain)}/${implementation.contract}?h=240&w=240`
-						}
-						symbol={token.symbol}
+						logo={getZerionTokenIconUrl(token)}
+						symbol={token.attributes.fungible_info.symbol}
 						size="sm"
 					/>
 
 					<div className="flex flex-col items-center">
-						<p className="mr-auto font-bold">{formatTitle(token.symbol)}</p>
+						<p className="mr-auto font-bold">{token.attributes.fungible_info.symbol}</p>
 						<div className="relative flex flex-row items-center gap-2">
-							<ChainImage chainId={getChainId(implementation.chain)} size="xs" />
+							<ChainImage chainId={implementation.chain_id} size="xs" />
 							<p className="flex flex-row text-sm font-bold text-black/40">
 								<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
 							</p>
 						</div>
 					</div>
 				</div>
-
 
 				<div className="ml-auto flex-col items-end px-2">
 					<div className="pointer-events-none relative flex h-full w-max min-w-32 flex-col items-center justify-center text-right">
@@ -154,9 +145,11 @@ export const TransferTokenImplementation: FC<{
 						>
 							<Counter
 								count={
-									isPrecise ? column?.transfer?.precise || "0" : Number(column?.transfer?.precise ?? 0).toLocaleString("en-US", {
-										maximumFractionDigits: 18
-									}) ?? "0"
+									isPrecise
+										? column?.transfer?.precise || "0"
+										: (Number(column?.transfer?.precise ?? 0).toLocaleString("en-US", {
+												maximumFractionDigits: 18
+											}) ?? "0")
 								}
 							/>
 
@@ -173,8 +166,8 @@ export const TransferTokenImplementation: FC<{
 								<span className="ml-auto">$</span>
 								<Counter
 									count={
-										((implementation.balance * (column?.transfer?.percentage ?? 0)) / 100) *
-										(token.price ?? 0)
+										((implementation?.balance ?? 0 * (column?.transfer?.percentage ?? 0)) / 100) *
+										(token.attributes.price ?? 0)
 									}
 									decimals={2}
 								/>

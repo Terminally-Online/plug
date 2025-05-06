@@ -1,17 +1,30 @@
 import { RouterOutputs } from "@/server/client"
 
-type CreatePlaceholderTokenProps = Pick<
-	NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number],
-	"name"
-> & { icon: string }
-const createPlaceholderCollection = ({ name, icon }: CreatePlaceholderTokenProps) => {
-	const collectibles = Array.from({ length: Math.floor(Math.random() * 7) + 1 }).fill({ collectionAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", tokenId: 1 })
-
+type CreatePlaceholderTokenProps = { name: string, icon: string }
+type CreatePlaceholderCollectionReturn = NonNullable<RouterOutputs["service"]["zerion"]["wallet"]>["nftCollections"]["data"][number]
+const createPlaceholderCollection = ({ name, icon }: CreatePlaceholderTokenProps): CreatePlaceholderCollectionReturn => {
 	return {
-		iconUrl: icon.startsWith('http') ? icon : `https://cdn.zerion.io/${icon}.png`,
-		name,
-		chain: "base",
-		collectibles
+		id: name,
+		type: "wallet_nft_collections",
+		attributes: {
+			min_changed_at: "",
+			max_changed_at: "",
+			nfts_count: Math.floor(Math.random() * 10).toString(),
+			total_floor_price: 0,
+			collection_info: {
+				name,
+				description: "",
+				content: {
+					icon: {
+						url: icon.startsWith('http') ? icon : `https://cdn.zerion.io/${icon}.png`,
+					}
+				}
+			}
+		},
+		relationships: {
+			chains: { data: [{ type: "chains", id: "base" }] },
+			nft_collection: { data: { type: "nft_collections", id: "base" } }
+		}
 	}
 }
 

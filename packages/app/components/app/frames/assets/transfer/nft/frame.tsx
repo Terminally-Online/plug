@@ -20,21 +20,20 @@ import { base } from "viem/chains"
 
 type TransferNFTFrameProps = {
 	index: number
-	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+	collectible?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["data"]>
+	included?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["included"]>[number]
 	color: string
 	textColor: string
 }
-export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible, collection, color, textColor }) => {
+export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible, included, color, textColor }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey = `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
+	const frameKey = `collectible___${collectible?.id}___transfer-amount`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
 	const { isAuthenticated } = useAccount()
 	const { socket } = useSocket()
 	const { error, sendTransaction, isPending } = useSendTransaction()
-
 
 	const chainId = getChainId("base")
 	const from = socket
@@ -43,8 +42,8 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible
 			: getAddress(socket.socketAddress)
 		: ""
 
-	const balance = parseInt(collectible.amount)
-	const token = `${collection.address}:${collectible.tokenId}:${collectible?.interface === "ERC1155" ? 1155 : 721}`
+	const balance = 1
+	const token = `${collectible?.attributes?.contract_address}:${collectible?.attributes?.token_id}:${collectible?.attributes?.interface === "ERC1155" ? 1155 : 721}`
 	const amount = useStateDebounce<string>(`${parseInt(column?.transfer?.precise ?? "0")}`)
 	const recipient =
 		column && socket
@@ -115,7 +114,6 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible
 
 	const isDisabled = (intent && isPending) || isReady === false
 
-
 	return (
 		<Frame
 			index={index}
@@ -124,7 +122,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10 blur-2xl filter"
 						style={{
-							backgroundImage: `url(${collection.iconUrl})`,
+							backgroundImage: `url(${included?.attributes?.metadata?.icon?.url})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
@@ -136,7 +134,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10"
 						style={{
-							backgroundImage: `url(${collection.iconUrl})`,
+							backgroundImage: `url(${included?.attributes?.metadata?.icon?.url})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
@@ -151,50 +149,44 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible
 			visible={isFrame}
 			handleBack={() =>
 				frame(index !== COLUMNS.SIDEBAR_INDEX
-					? `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
-					: `${collection.address}-${collection.chain}-${collectible.tokenId}`
+					? `collectible___${collectible?.id}___transfer-recipient`
+					: `collectible___${collectible?.id}`
 				)
 			}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-			<div className="relative mb-4 flex flex-col gap-2">
+			<div className="relative my-4 flex flex-col gap-2">
 				<div className="flex flex-col gap-2">
 					{index !== COLUMNS.SIDEBAR_INDEX && (
 						<div className="px-6">
 							<TransferRecipient
 								address={column?.transfer?.recipient ?? ""}
-								handleSelect={() =>
-									frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)
-								}
+								handleSelect={() => frame(`collectible___${collectible?.id}___transfer-recipient`)}
 							/>
 						</div>
 					)}
 
-					{collectible.interface !== "ERC1155" ? (
+					{collectible?.attributes?.interface !== "ERC1155" ? (
 						<div className="px-6">
 							<Accordion>
 								<div className="flex w-full flex-row items-center gap-4">
 									<div className="relative h-10 w-10 min-w-10">
 										<CollectibleImage
-											className="rounded-md"
-											video={
-												collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined
-											}
-											image={collectible.imageUrl ?? undefined}
-											fallbackImage={collection.iconUrl ?? undefined}
-											name={collectible.name || collection.name}
+											video={collectible?.attributes?.metadata?.content?.video?.url}
+											image={collectible?.attributes?.metadata?.content?.detail?.url}
+											name={collectible?.attributes?.metadata?.name ?? ""}
 										/>
 									</div>
 									<div className="flex w-full flex-col truncate overflow-ellipsis">
 										<div className="flex flex-row items-center justify-between">
 											<p className="mr-auto font-bold">
-												{formatTitle(collectible.name || collection.name)}
+												{formatTitle(collectible?.attributes?.metadata?.name || included?.attributes?.metadata?.name || "")}
 											</p>
 										</div>
 										<div className="flex flex-row items-center justify-between">
 											<p className="mr-auto truncate overflow-ellipsis text-sm font-bold tabular-nums opacity-40">
-												#{collectible.tokenId}
+												#{collectible?.attributes?.token_id}
 											</p>
 										</div>
 									</div>
@@ -205,7 +197,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible
 						<TransferSFTAmount
 							index={index}
 							collectible={collectible}
-							collection={collection}
+							included={included}
 							color={color}
 						/>
 					)}

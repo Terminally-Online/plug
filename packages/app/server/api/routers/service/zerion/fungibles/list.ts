@@ -63,7 +63,7 @@ const ListOutputSchema = z.object({
 				implementations: z.array(
 					z.object({
 						chain_id: z.string(),
-						address: z.string(),
+						address: z.string().nullable(),
 						decimals: z.number()
 					})
 				),

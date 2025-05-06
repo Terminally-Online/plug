@@ -6,7 +6,6 @@ import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, colors, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnActions } from "@/state/columns"
 
 
