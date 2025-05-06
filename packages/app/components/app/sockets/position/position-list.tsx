@@ -62,7 +62,7 @@ export const SocketPositionList: FC<
 		if (expanded) return filteredProtocols
 
 		return filteredProtocols.slice(0, 3)
-	}, [isAnonymous, expanded, protocols, search])
+	}, [isAnonymous, expanded, isColumn, protocols, search])
 
 	if (protocols === undefined) return null
 

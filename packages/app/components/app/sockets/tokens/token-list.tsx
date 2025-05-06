@@ -60,7 +60,7 @@ export const SocketTokenList: FC<
 		if (!expanded) return filteredTokens.slice(0, count)
 
 		return filteredTokens
-	}, [isAnonymous, tokens, expanded, count, debouncedSearch, search])
+	}, [isAnonymous, tokens, expanded, count, isColumn, debouncedSearch, search])
 
 	const visibleValue = useMemo(() => {
 		let value = 0;
@@ -75,7 +75,7 @@ export const SocketTokenList: FC<
 			value += token.attributes?.value || 0;
 		}
 		return value;
-	}, [visibleTokens])
+	}, [tokens])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
