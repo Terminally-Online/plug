@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, HTMLAttributes } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
@@ -9,10 +9,11 @@ import { useColumnActions } from "@/state/columns"
 
 import { PositionFrame } from "../../frames/assets/position/frame"
 
-export const SocketPositionItem: FC<{
+type SocketPositionItemProps = {
 	index: number
 	protocols?: NonNullable<RouterOutputs["service"]["zerion"]["wallet"]["positions"]>["data"]
-}> = ({ index, protocols }) => {
+} & HTMLAttributes<HTMLDivElement>
+export const SocketPositionItem: FC<SocketPositionItemProps> = ({ index, protocols, ...props }) => {
 	const protocol = protocols?.[0]
 	const { frame } = useColumnActions(index, `${protocol?.relationships.dapp?.data.id ?? ""}-position`)
 
@@ -26,7 +27,7 @@ export const SocketPositionItem: FC<{
 
 	return (
 		<>
-			<Accordion loading={protocol === undefined} onExpand={() => frame()}>
+			<Accordion loading={protocol === undefined} onExpand={() => frame()} {...props}>
 				{protocol === undefined ? (
 					<div className="invisible">
 						<p>.</p>

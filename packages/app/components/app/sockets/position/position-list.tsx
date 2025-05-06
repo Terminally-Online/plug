@@ -134,9 +134,14 @@ export const SocketPositionList: FC<
 			/>
 
 			<Animate.List>
-				{Object.entries(visibleProtocols).map(([dappId, group]) => (
+				{Object.entries(visibleProtocols).map(([dappId, group], idx) => (
 					<Animate.ListItem key={dappId}>
-						<SocketPositionItem index={index} protocols={group.positions} />
+						<SocketPositionItem 
+							index={index} 
+							protocols={group.positions} 
+							onMouseEnter={() => setHovering(String(idx + 1))}
+							onMouseLeave={() => setHovering(undefined)}
+						/>
 					</Animate.ListItem>
 				))}
 			</Animate.List>
