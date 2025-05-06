@@ -54,7 +54,7 @@ export const SocketCollectionList: FC<
 		if (expanded) return filteredCollectibles
 
 		return filteredCollectibles.slice(0, count)
-	}, [isAnonymous, collections, expanded, count, search])
+	}, [isAnonymous, collections, expanded, count, isColumn, search])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>

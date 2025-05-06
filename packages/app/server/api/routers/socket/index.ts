@@ -8,7 +8,6 @@ import { z } from "zod"
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
-import { balances } from "./balances"
 import { onboard } from "./onboard"
 import { referral } from "./referral"
 import { stats } from "./stats"
@@ -215,7 +214,6 @@ export const socket = createTRPCRouter({
 			})
 		}),
 
-	balances,
 	referral,
 	stats,
 	onboard

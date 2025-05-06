@@ -26,8 +26,7 @@
 		"prestart:prisma": "pnpm prisma:migrate && pnpm prisma:push && pnpm prisma:seed",
 		"prestart": "run-s prestart:*",
 		"start": "next start",
-		"job:anonymous": "tsx lib/scripts/cron/anonymous-users.ts",
-		"job:metadata": "tsx lib/scripts/cron/collectible-metadata.ts"
+		"job:anonymous": "tsx lib/scripts/cron/anonymous-users.ts"
 	},
 	"prisma": {
 		"seed": "tsx prisma/seed.ts"
