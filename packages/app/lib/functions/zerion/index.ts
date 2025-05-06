@@ -3,10 +3,6 @@ import { RouterOutputs } from "@/server/client"
 import { getChainId } from "../blockchain"
 import { zerionChains } from "./addresses"
 
-export * from "./positions"
-export * from "./collectible"
-export * from "./tokens"
-
 export type ZerionPositions = NonNullable<RouterOutputs["service"]["zerion"]["wallet"]["positions"]["data"]>
 export type ZerionPosition = NonNullable<ZerionPositions>[number]
 

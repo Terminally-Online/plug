@@ -2,18 +2,11 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { getCollectibles, getPositions } from "@/lib/functions/zerion"
 import { getMetadataForToken } from "@/lib/opensea/metadata"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const balances = createTRPCRouter({
-	// collectibles: anonymousProtectedProcedure
-	// 	.input(z.string().optional())
-	// 	.query(async ({ input, ctx }) => await getCollectibles(ctx.session.address, input)),
-	// positions: anonymousProtectedProcedure
-	// 	.input(z.string().optional())
-	// 	.query(async ({ input, ctx }) => await getPositions(ctx.session.address, input)),
 	metadata: anonymousProtectedProcedure
 		.input(
 			z.object({
