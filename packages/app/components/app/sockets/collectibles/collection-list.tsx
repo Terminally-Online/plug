@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
-import { SearchIcon } from "lucide-react"
+import { Frame, SearchIcon } from "lucide-react"
 
 import { Search } from "@/components/app/inputs/search"
 import { SocketCollectionItem } from "@/components/app/sockets/collectibles/collection-item"
@@ -56,14 +56,20 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			<Header variant="frame" label={<div className="flex w-full justify-between items-center">
-				<p className="font-bold">Collectibles</p>
-				<p className="font-bold text-xs flex gap-1 opacity-40">
-					<Counter count={visibleCollectibles.length} />
-					<span className="opacity-40">/</span>
-					<Counter count={collections.length} />
-				</p>
-			</div>} nextOnClick={() => setExpanded(prev => !prev)} nextLabel={expanded ? "See Less" : "See All"} />
+			{!isColumn && <Header variant="frame"
+				icon={<Frame size={14} className="opacity-40" />}
+				label={
+					<div className="flex w-full justify-between items-center">
+						<p className="font-bold">Collectibles</p>
+						<p className="font-bold text-xs flex gap-1 opacity-40">
+							<Counter count={visibleCollectibles.length} />
+							<span className="opacity-40">/</span>
+							<Counter count={collections.length} />
+						</p>
+					</div>}
+				nextOnClick={() => setExpanded(prev => !prev)}
+				nextLabel={expanded ? "See Less" : "See All"}
+			/>}
 
 			{isAnonymous === false && isColumn && collections.length > 0 && (
 				<Search
