@@ -8,18 +8,24 @@ import { RouterOutputs } from "@/server/client"
 
 type TransferFrameProps = {
 	index: number
-	token: ZerionPosition
-	// collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-	// collection?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+	token?: ZerionPosition
+	collectible?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["data"]>
+	included?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["included"]>[number]
 	color: string
 	textColor: string
 }
 
-export const TransferFrame: FC<TransferFrameProps> = ({ index, token, ...colors }) => (
+export const TransferFrame: FC<TransferFrameProps> = ({ index, token, collectible, included, ...colors }) => (
 	<>
+		<TransferRecipientFrame index={index} token={token} collectible={collectible} included={included} />
 		{token && <TransferAmountFrame index={index} token={token} {...colors} />}
-		{/* {collectible && collection && (
-				<TransferNFTFrame index={index} collectible={collectible} collection={collection} {...colors} />
-			)} */}
+		{collectible && included && (
+			<TransferNFTFrame
+				index={index}
+				collectible={collectible}
+				included={included}
+				{...colors}
+			/>
+		)}
 	</>
 )

@@ -10,7 +10,7 @@ import {
 	Waypoints
 } from "lucide-react"
 
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 
 import { TransferFrame } from "@/components/app/frames/assets/transfer/frame"
 import { Frame } from "@/components/app/frames/base"
@@ -18,7 +18,7 @@ import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
 import { formatAddress, formatTitle, formatTokenStandard, getTextColor } from "@/lib"
 import { api } from "@/server/client"
-import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 import { TokenFrameExternalLink } from "../token/link"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 
@@ -26,8 +26,8 @@ type CollectibleFrameProps = { index: number }
 export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = "collectible"
-	const [columnFrameKey, collectibleId] = column?.frame?.split("___") || []
-	const isFrame = frameKey === columnFrameKey
+	const [, collectibleId] = column?.frame?.split("___") || []
+	const isFrame = useAtomValue(isFrameAtom)(column, `${frameKey}___${collectibleId}`)
 
 	const { frame, transfer } = useColumnActions(index, frameKey)
 
@@ -80,11 +80,11 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 							}}
 							onClick={() => {
 								transfer({ percentage: 0, precise: "0", recipient: undefined })
-								// frame(
-								// 	index === COLUMNS.SIDEBAR_INDEX
-								// 		? `${collectible?.attributes.contract_address}-${collectible?.collectionChain}-${collectible?.tokenId}-transfer-amount`
-								// 		: `${collectible?.collectionAddress}-${collectible?.collectionChain}-${collectible?.tokenId}-transfer-recipient`
-								// )
+								frame(
+									index === COLUMNS.SIDEBAR_INDEX
+										? `collectible___${collectible?.id}___transfer-amount`
+										: `collectible___${collectible?.id}___transfer-recipient`
+								)
 							}}
 						>
 							{index === COLUMNS.SIDEBAR_INDEX ? (
@@ -109,6 +109,7 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 										key={index}
 										className="flex flex-col rounded-lg border-2 px-4 py-2"
 										style={{ borderColor: color ?? "" }}
+
 									>
 										<p
 											className="truncate overflow-ellipsis whitespace-nowrap text-sm font-bold opacity-40 text-left"
@@ -216,13 +217,13 @@ export const CollectibleFrame: FC<CollectibleFrameProps> = memo(({ index }) => {
 				)}
 			</Frame>
 
-			{/* <TransferFrame
+			<TransferFrame
 				index={index}
 				collectible={collectible}
-				collection={collection}
-				color={metadata?.color ?? ""}
+				included={included?.at(0)}
+				color={color}
 				textColor={textColor}
-			/> */}
+			/>
 		</>
 	)
 })

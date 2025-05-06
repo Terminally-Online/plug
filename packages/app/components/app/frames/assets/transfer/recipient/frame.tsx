@@ -10,29 +10,26 @@ import { TransferRecipient } from "@/components/app/frames/assets/transfer/recip
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { getChainId, getZerionTokenIconUrl, ZerionPosition } from "@/lib"
+import { getZerionTokenIconUrl, ZerionPosition } from "@/lib"
 import { useAccount } from "@/lib/hooks/account/useAccount"
 import { RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { useRecipients } from "@/state/recipients"
 
-// type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-// type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-
 type TransferRecipientFrameProps = {
 	index: number
 	token?: ZerionPosition
-	// collectible?: CollectibleType
-	// collection?: CollectionType
+	collectible?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["data"]>
+	included?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["included"]>[number]
 }
 
-export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
+export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, included }) => {
 	const account = useAccount()
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = token
 		? `${token.attributes.fungible_info.symbol}-transfer-recipient`
-		: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
+		: `collectible___${collectible?.id}___transfer-recipient`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, transfer } = useColumnActions(index, frameKey)
 
@@ -58,7 +55,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 		<div
 			className="relative h-8 w-8 rounded-full bg-cover bg-center bg-no-repeat"
 			style={{
-				backgroundImage: `url(${collection?.iconUrl})`
+				backgroundImage: `url(${included?.attributes?.metadata?.icon?.url ?? ""})`
 			}}
 		/>
 	)
@@ -74,8 +71,8 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 		if (address !== "") {
 			if (token) {
 				frame(`${token.attributes.fungible_info.symbol}-transfer-amount`)
-			} else if (collectible && collection) {
-				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`)
+			} else if (collectible) {
+				frame(`collectible___${collectible?.id}___transfer-amount`)
 			}
 		}
 	}
@@ -83,8 +80,8 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 	const handleBack = () => {
 		if (token) {
 			frame(`${token.attributes.fungible_info.symbol}-token`)
-		} else if (collectible && collection) {
-			frame(`${collection.address}-${collection.chain}-${collectible.tokenId}`)
+		} else if (collectible) {
+			frame(`collectible___${collectible?.id}`)
 		}
 	}
 
