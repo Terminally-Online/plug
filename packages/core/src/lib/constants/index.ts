@@ -6,12 +6,12 @@ export * from './schema'
 export const contractsPath = 'src/contracts'
 
 const base = (name: string): Contract => ({
-    name,
-    relativePath: '../base/'
+	name,
+	relativePath: '../base/'
 })
 const actions = (name: string): Contract => ({
-    name,
-    relativePath: '../actions/'
+	name,
+	relativePath: '../actions/'
 })
 
 export const router = base('Plug.sol')
@@ -29,24 +29,24 @@ export const evm = actions('Plug.EVM.sol')
 export const math = actions('Plug.Math.sol')
 
 export const constantContracts: Readonly<Array<Contract>> = [
-    // assert,
-    // boolean,
-    // coercion,
-    // database,
-    // evm,
-    // math,
+	// assert,
+	// boolean,
+	// coercion,
+	// database,
+	// evm,
+	// math,
 ] as const
 export const etchContracts: Readonly<Array<Contract>> = [
-    router,
-    factory,
-    socket,
-    ticket,
-    rewards,
-    token,
-    assert,
-    boolean,
-    coercion,
-    database,
-    evm,
-    math,
+	router,
+	factory,
+	socket,
+	ticket,
+	rewards,
+	token,
+	assert,
+	boolean,
+	coercion,
+	database,
+	evm,
+	math
 ] as const

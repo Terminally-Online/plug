@@ -18,7 +18,8 @@ contract PlugAssertDeployment is Script {
 
         if (PlugEtcherLib.PLUG_ASSERT_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_ASSERT_SALT, PlugEtcherLib.PLUG_ASSERT_INITCODE
+                PlugEtcherLib.PLUG_ASSERT_SALT,
+                PlugEtcherLib.PLUG_ASSERT_INITCODE
             );
         }
 

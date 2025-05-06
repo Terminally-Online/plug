@@ -18,25 +18,29 @@ contract PlugDeployment is Script {
 
         if (PlugEtcherLib.PLUG_ASSERT_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_ASSERT_SALT, PlugEtcherLib.PLUG_ASSERT_INITCODE
+                PlugEtcherLib.PLUG_ASSERT_SALT,
+                PlugEtcherLib.PLUG_ASSERT_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_BOOLEAN_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_BOOLEAN_SALT, PlugEtcherLib.PLUG_BOOLEAN_INITCODE
+                PlugEtcherLib.PLUG_BOOLEAN_SALT,
+                PlugEtcherLib.PLUG_BOOLEAN_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_COERCION_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_COERCION_SALT, PlugEtcherLib.PLUG_COERCION_INITCODE
+                PlugEtcherLib.PLUG_COERCION_SALT,
+                PlugEtcherLib.PLUG_COERCION_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_DATABASE_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_DATABASE_SALT, PlugEtcherLib.PLUG_DATABASE_INITCODE
+                PlugEtcherLib.PLUG_DATABASE_SALT,
+                PlugEtcherLib.PLUG_DATABASE_INITCODE
             );
         }
 
@@ -48,7 +52,8 @@ contract PlugDeployment is Script {
 
         if (PlugEtcherLib.PLUG_FACTORY_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
+                PlugEtcherLib.PLUG_FACTORY_SALT,
+                PlugEtcherLib.PLUG_FACTORY_INITCODE
             );
         }
 
@@ -60,19 +65,22 @@ contract PlugDeployment is Script {
 
         if (PlugEtcherLib.PLUG_REWARDS_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_REWARDS_SALT, PlugEtcherLib.PLUG_REWARDS_INITCODE
+                PlugEtcherLib.PLUG_REWARDS_SALT,
+                PlugEtcherLib.PLUG_REWARDS_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_SOCKET_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
+                PlugEtcherLib.PLUG_SOCKET_SALT,
+                PlugEtcherLib.PLUG_SOCKET_INITCODE
             );
         }
 
         if (PlugEtcherLib.PLUG_TICKET_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_TICKET_SALT, PlugEtcherLib.PLUG_TICKET_INITCODE
+                PlugEtcherLib.PLUG_TICKET_SALT,
+                PlugEtcherLib.PLUG_TICKET_INITCODE
             );
         }
 
@@ -83,7 +91,9 @@ contract PlugDeployment is Script {
         }
 
         if (PlugEtcherLib.PLUG_ADDRESS.code.length == 0) {
-            PlugEtcherLib.FACTORY.safeCreate2(PlugEtcherLib.PLUG_SALT, PlugEtcherLib.PLUG_INITCODE);
+            PlugEtcherLib.FACTORY.safeCreate2(
+                PlugEtcherLib.PLUG_SALT, PlugEtcherLib.PLUG_INITCODE
+            );
         }
 
         vm.stopBroadcast();

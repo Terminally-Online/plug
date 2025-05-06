@@ -6,8 +6,8 @@ import (
 )
 
 func TransferOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
-	fungiblesIndex := 1
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
+	holdingsIndex := 1
+	holdingsOptions, err := options.GetHoldingsOptions(lookup, holdingsIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +19,7 @@ func TransferOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Op
 	}
 
 	return map[int]actions.Options{
-		fungiblesIndex: {Simple: fungiblesOptions},
+		holdingsIndex:  {Simple: holdingsOptions},
 		recipientIndex: {Simple: recipientOptions},
 	}, nil
 }

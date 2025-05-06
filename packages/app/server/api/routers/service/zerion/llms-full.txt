@@ -1,0 +1,623 @@
+# Zerion API Detailed Reference (llms-full.txt)
+
+## API Base URL
+https://api.zerion.io
+
+## Authentication
+
+Zerion API uses **HTTP Basic Authentication**.
+
+- **Username**: Your API key (e.g., `zk_prod_...` or `zk_dev_...`)
+- **Password**: Leave empty
+
+All API requests must be made over HTTPS.
+
+### Example: Authorization Header
+
+Set the Authorization header using Base64 encoding:
+
+```bash
+curl -H "Authorization: Basic <base64_encoded_api_key>" https://api.zerion.io/v1/your-endpoint
+```
+
+To generate the Base64-encoded API key, append a colon to your key and encode it:
+
+**Python Example:**
+```python
+import base64
+api_key = 'zk_prod_yourapikey'
+encoded_key = base64.b64encode(f'{api_key}:'.encode()).decode()
+print(encoded_key)
+```
+
+### CORS Note (Browser Requests)
+
+Requests from browsers are **CORS-limited**. Zerion only allows requests from:
+
+- `localhost`
+- `127.0.0.1`
+- `*.local`
+
+**Recommendation:** For production, route requests via your backend to securely manage the API key.
+
+## Endpoints with Detailed Schemas & Examples
+
+### [GET] /v1/wallets/{address}/charts/{chart_period}
+**Summary**: Get wallet's balance chart
+
+**Description**:
+This endpoint returns a portfolio balance chart for a wallet.
+This is over a specified time period, based on the provided start and end timestamps. 
+Results can be filtered by blockchain and asset type, offering flexible and detailed visualizations of wallet performance, similar to what you see in the Zerion interface. 
+
+Note: We do not support historical protocol positions data.
+
+**Parameters:**
+- `chart_period` (path, required): Chart period
+- `` (, optional): 
+- `` (, optional): 
+- `filter[chain_ids]` (query, optional): Account only for balance on these chains. Available chain ids can be found in chains endpoints.
+- `filter[fungible_ids]` (query, optional): Account only for balance of given fungible assets.
+
+**Response Schema:**
+```yaml
+properties:
+  data:
+    properties:
+      attributes:
+        properties:
+          begin_at:
+            description: Begin timestamp of the chart
+            example: '2023-01-18T11:00:00Z'
+            type: string
+          end_at:
+            description: End timestamp of the chart
+            example: '2023-01-25T10:30:00Z'
+            type: string
+          points:
+            description: Sorted list of chart points
+            items:
+              description: Chart point - tuple of two items, the first one is timestamp,
+                the second one is a balance in requested currency
+              example:
+              - 1674039600
+              - 1145.00999
+              items:
+                oneOf:
+                - type: integer
+                - type: number
+              maxItems: 2
+              minItems: 2
+              type: array
+            type: array
+        required:
+        - begin_at
+        - end_at
+        type: object
+      id:
+        description: Wallet chart unique identifier
+        example: 0x42b9df65b219b3dd36ff330a4dd8f327a6ada990-day
+        type: string
+      type:
+        description: Wallet chart resource type
+        example: wallet_charts
+        type: string
+    required:
+    - type
+    - id
+    type: object
+  links:
+    properties:
+      self:
+        example: https://api.zerion.io/v1/wallets/0x42b9df65b219b3dd36ff330a4dd8f327a6ada990/charts/day
+        format: url
+        type: string
+    type: object
+required:
+- links
+- data
+type: object
+
+```
+
+### [GET] /v1/wallets/{address}/pnl/
+**Summary**: Get wallet's PnL
+
+**Description**:
+This endpoint returns the Profit and Loss (PnL) details of a web3 wallet.
+This includes Unrealized PnL, Realized PnL, Net Invested amounts and filters for asset categories like Non Fungible Tokens (NFTs). 
+It uses the FIFO (First In, First Out) standard for calculations, providing accurate insights into wallet performance. 
+Ideal for tracking and analyzing financial outcomes of wallet activity.
+
+**Parameters:**
+- `` (, optional): 
+- `` (, optional): 
+- `filter[chain_ids]` (query, optional): Calculate PnL only for specified chains.
+- `filter[fungible_ids]` (query, optional): Account only for PnL related to given fungible assets.
+
+**Response Schema:**
+```yaml
+properties:
+  data:
+    properties:
+      attributes:
+        properties:
+          net_invested:
+            description: 'Net Invested Amount.
+
+
+              The total amount invested in fungible assets that have not been sold,
+              calculated using the FIFO method (the earliest purchases are
+
+              matched with the earliest sales).
+
+              '
+            example: 45.84218703
+            format: float
+            type: number
+          realized_gain:
+            description: 'Realized Gain.
+
+
+              The gain (or loss) realized from the sale of fungible assets, calculated
+              using the FIFO (First In, First Out) method (the
+
+              earliest purchases are matched with the earliest sales).
+
+              The cost basis of the oldest assets is subtracted from the sale proceeds.
+
+              '
+            example: -655.3618983
+            format: float
+            type: number
+          received_external:
+            description: "Received Amount from Other Wallets.\n\nThe cumulative value\
+              \ of all fungible assets received from other wallets.  \n\nNote: This\
+              \ value does not include amounts traded internally within the wallet\
+              \ but does include `received_for_nfts`.\n"
+            example: 133971.2931
+            format: float
+            type: number
+          received_for_nfts:
+            description: 'Received Amount for NFTs.
+
+
+              The cumulative value of all fungible assets received in transactions
+              where the wallet sends NFTs.
+
+              '
+            example: 133971.2931
+            format: float
+            type: number
+          sent_external:
+            description: 'Sent Amount to Other Wallets.
+
+
+              The cumulative value of all fungible assets sent to other wallets.
+
+
+              Note: This value does not include amounts traded internally within the
+              wallet but does include `sent_for_nfts`.
+
+              '
+            example: 133270.089
+            format: float
+            type: number
+          sent_for_nfts:
+            description: 'Sent Amount for NFTs.
+
+
+              The cumulative value of all fungible assets sent in transactions where
+              the wallet receives NFTs.
+
+              '
+            example: 133971.2931
+            format: float
+            type: number
+          total_fee:
+            description: 'Total Fees Paid.
+
+
+              The sum of all transaction fees associated with asset trades.
+
+              '
+            example: 281.9088917
+            format: float
+            type: number
+          unrealized_gain:
+            description: 'Unrealized Gain.
+
+
+              The potential gain (or loss) on unsold fungible assets, calculated as
+              the difference between their current market value and cost basis using
+              the FIFO method (the
+
+              earliest purchases are matched with the earliest sales).
+
+              '
+            example: 17.5445466
+            format: float
+            type: number
+        type: object
+      id:
+        description: PNL unique ID
+        example: '0x42b9df65b219b3dd36ff330a4dd8f327a6ada990'
+        type: string
+      type:
+        example: pnl
+        type: string
+    required:
+    - type
+    - id
+    - attributes
+    type: object
+  links:
+    properties:
+      self:
+        example: https://api.zerion.io/v1/wallets/0x42b9df65b219b3dd36ff330a4dd8f327a6ada990/pnl/
+        format: url
+        type: string
+    required:
+    - self
+    type: object
+required:
+- links
+- data
+type: object
+
+```
+
+### [GET] /v1/wallets/{address}/portfolio
+**Summary**: Get wallet's portfolio
+
+**Description**:
+This endpoint returns the portfolio overview of a web3 wallet.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `filter[positions]` (query, optional): This parameter allows to customize the aggregation of DeFi positions within a portfolio based on their types. The aggregation can include:
+
+  - `only_simple`: Only includes wallet-type positions, which are basic, non-protocol related assets. This is the default selection if the parameter is not specified.
+  - `only_complex`: Aggregates positions associated with DeFi protocols only (e.g., staked assets, liquidity pools), like Uniswap or Aave, excluding simple wallet positions.
+  - `no_filter`: Provides an aggregated view of both protocol-related and simple wallet positions without any filtering.
+
+The selection of filters affects the composition of the aggregated portfolio results, allowing for tailored analysis and reporting based on the types of positions of interest.
+
+> ⚠️ Note: Enterprise usage of this API may be subject to different pricing models depending on the selected filter type. For detailed pricing information, please contact `api@zerion.io`.
+
+- `` (, optional): 
+- `` (, optional): 
+
+**Response Schema:** None provided
+
+### [GET] /v1/wallets/{address}/positions/
+**Summary**: Get list of wallet's fungible positions
+
+**Description**:
+This endpoint returns a list of wallet positions.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+> NOTE: This endpoint supports a lot of filters, sorting and pagination parameters. Make sure that a request URL length is in a safe range for your platform. Usually, 2000 characters are the safe limit in virtually any combination of client and server software.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `filter[positions]` (query, optional): This parameter allows users to filter DeFi positions based on their types. There are three options:
+
+- `only_simple`: Retrieves exclusively wallet-type positions. These are basic, non-protocol related positions. This option is applied if parameter is not specified.
+- `only_complex`: Fetches only positions associated with all DeFi protocols (including staked assets, liquidity pools, etc), like Uniswap or Aave. This option excludes simple wallet positions.
+- `no_filter`: Applies no filtering, thus returning both protocol-related and simple wallet positions.
+
+> ⚠️ Note: Different pricing models are applied for enterprise usage of this API, depending on the filter type selected. For detailed pricing information, please reach out to us at `api@zerion.io`.
+
+- `` (, optional): 
+- `` (, optional): 
+- `filter[position_types]` (query, optional): Keep only positions with these types.
+- `filter[chain_ids]` (query, optional): Keep only positions from these chains. Available chain ids can be found in chains endpoints.
+- `filter[fungible_ids]` (query, optional): Keep only positions related to given fungible assets.
+- `filter[dapp_ids]` (query, optional): Keep only positions related to these decentralized applications (dapps).
+- `filter[trash]` (query, optional): Filter positions based on the `is_trash` flag. If no flag is specified, then `only_non_trash` is applied.
+- `sort` (query, optional): Choose how the result should be ordering
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:**
+```yaml
+$ref: '#/components/schemas/WalletPositionsResponse'
+
+```
+
+### [GET] /v1/wallets/{address}/transactions/
+**Summary**: Get list of wallet's transactions
+
+**Description**:
+This endpoint returns a list of transactions associated with the wallet.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+> NOTE: This endpoint supports a lot of filters, sorting, and pagination parameters. Make sure that your request URL length is safe for your platform. Usually, 2000 characters are the safe limit in virtually any combination of client and server software.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `` (, optional): 
+- `` (, optional): 
+- `address` (path, required): Address of the wallet.
+- `filter[search_query]` (query, optional): Query for a full-text search.
+- `filter[operation_types]` (query, optional): Return only transactions with specified types.
+- `filter[asset_types]` (query, optional): Return only transactions that contain specified asset types.
+- `filter[chain_ids]` (query, optional): Return only transactions from specified chains. You can find available chain ids in chain endpoints.
+- `filter[fungible_ids]` (query, optional): Return only transactions with fungibles with specified ids.
+- `filter[min_mined_at]` (query, optional): Return only transactions since specific date. Timestamp in milliseconds.
+- `filter[max_mined_at]` (query, optional): Return only transactions until specific date. Timestamp in milliseconds.
+- `filter[trash]` (query, optional): Filter transactions based on the `is_trash` flag. If no flag is specified, then `no_filter` is applied.
+- `filter[fungible_implementations]` (query, optional): Specify implementations of fungible tokens as a comma-separated list of `chain:address` pairs.
+
+Example format: `ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,polygon:0x123456789abcdef123456789abcdef123456789`
+
+Each item consists of a blockchain `chain_id` and an `address`, separated by a colon (`:`). Multiple pairs can be provided using commas (`,`).
+
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:** None provided
+
+### [GET] /v1/wallets/{address}/nft-positions/
+**Summary**: Get a list of a wallet's NFT positions
+
+**Description**:
+This endpoint returns a list of the NFT positions held by a specific wallet.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+If the wallet address has not been previously added, this endpoint may return a `202` status code. This indicates that the wallet's positions are not yet available, but will be in the near future. In this case, the client should periodically request this endpoint until a `200` status code is returned.
+
+> NOTE: It is important to stop retrying after a reasonable period of time. If a `200` status code is not returned within 2 minutes, it is likely that an unexpected error has occurred and the client should stop polling.
+
+> NOTE: This endpoint provides support for filters, sorting, and pagination parameters. Ensure that the length of the request URL falls within a safe range for your platform. Typically, a length of 2000 characters is a safe limit for most combinations of client and server software.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `` (, optional): 
+- `filter[chain_ids]` (query, optional): Keep only positions from the specified chains. Available chains IDs can be found in chains endpoint.
+- `filter[collections_ids]` (query, optional): Keep only positions from collections with specified IDs. The IDs are returned inside the 'collection' field of each NFT.
+- `sort` (query, optional): The order of NFTs in the result.
+- `include` (query, optional): Array of related resources to be included to the response. This parameter corresponds to the JSON API schema.
+- `` (, optional): 
+- `` (, optional): 
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:**
+```yaml
+$ref: '#/components/schemas/WalletNFTPositionsResponse'
+
+```
+
+### [GET] /v1/wallets/{address}/nft-collections/
+**Summary**: Get a list of NFT collections held by a wallet
+
+**Description**:
+This endpoint returns a list of the NFT collections held by a specific wallet.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+If the wallet address has not been previously added, this endpoint may return a `202` status code. This indicates that the wallet's collections are not yet available, but will be in the near future. In this case, the client should periodically request this endpoint until a `200` status code is returned.
+
+> NOTE: It is important to stop retrying after a reasonable period of time. If a `200` status code is not returned within 2 minutes, it is likely that an unexpected error has occurred, and the client should stop polling.
+
+> NOTE: This endpoint provides support for filters, sorting. Ensure that the length of the request URL falls within a safe range for your platform. Typically, a length of 2000 characters is a safe limit for most combinations of client and server software.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `` (, optional): 
+- `filter[chain_ids]` (query, optional): Keep only collections from the specified chains. Available chain IDs can be found in the chains endpoint.
+- `` (, optional): 
+- `` (, optional): 
+- `include` (query, optional): Array of related resources to be included to the response. This parameter corresponds to the JSON API schema.
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:**
+```yaml
+$ref: '#/components/schemas/WalletNFTCollectionsResponse'
+
+```
+
+### [GET] /v1/wallets/{address}/nft-portfolio
+**Summary**: Get wallet's NFT portfolio
+
+**Description**:
+This endpoint returns the NFT portfolio overview of a web3 wallet.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+If the address was not added before it is possible that this endpoint will return `202` status. It means that portfolio for the wallet is not prepared yet, but will be available soon. In that case the client have to request this endpoint periodically, while `200` status wasn't returned.
+
+> NOTE: Don't forget to stop retries after some reasonable period of time. If the `200` status is not returned within 2 minutes it most probably means that some unexpected error occurred and the client should stop the polling.
+
+**Parameters:**
+- `` (, optional): 
+- `` (, optional): 
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:** None provided
+
+### [GET] /v1/fungibles/
+**Summary**: Get list of fungible assets
+
+**Description**:
+This endpoint returns a paginated list of fungible assets supported by Zerion. It also provides the ability to search for fungibles. 
+If no fungible assets are found for given filters, the empty list with 200 status is returned.
+
+> NOTE: This endpoint supports a lot of filters, sorting, and pagination parameters. Ensure your request URL length is within a safe range for your platform. Usually, 2000 characters are the safe limit in virtually any combination of client and server software.
+
+> NOTE: The `filter[implementation_address]` parameter ignores `filter[search_query]`. It may be changed in the future.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `` (, optional): 
+- `` (, optional): 
+- `filter[search_query]` (query, optional): Query for a full-text search.
+- `filter[implementation_chain_id]` (query, optional): Keep only fungibles from this chain. Available chain ids can be found in chains endpoints.
+- `filter[implementation_address]` (query, optional): Keep only fungibles deployed at given address. Is it possible that different fungibles are deployed at the same address on different chains.
+- `filter[fungible_ids]` (query, optional): Keep only fungibles with the given ids
+- `sort` (query, optional): Choose how the result should be ordering
+
+**Response Schema:**
+```yaml
+$ref: '#/components/schemas/FungiblesResponse'
+
+```
+
+### [GET] /v1/fungibles/{fungible_id}
+**Summary**: Get fungible asset by ID
+
+**Description**:
+This endpoint returns a fungible asset by unique identifier
+
+**Parameters:**
+- `fungible_id` (path, required): Unique fungible ID
+- `` (, optional): 
+
+**Response Schema:** None provided
+
+### [GET] /v1/fungibles/{fungible_id}/charts/{chart_period}
+**Summary**: Get a chart for a fungible asset
+
+**Description**:
+This endpoint returns the chart for the fungible asset for a selected period
+
+**Parameters:**
+- `fungible_id` (path, required): Unique fungible ID
+- `` (, optional): 
+- `` (, optional): 
+
+**Response Schema:** None provided
+
+### [GET] /v1/chains/
+**Summary**: Get list of all chains
+
+**Description**:
+This endpoint returns list of all chains supported by Zerion.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+**Parameters:**
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:**
+```yaml
+$ref: '#/components/schemas/ChainsResponse'
+
+```
+
+### [GET] /v1/chains/{chain_id}
+**Summary**: Get chain by ID
+
+**Description**:
+This endpoint returns chain by unique chain identifier.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+**Parameters:**
+- `chain_id` (path, required): Unique chain ID
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:**
+```yaml
+$ref: '#/components/schemas/ChainResponse'
+
+```
+
+### [GET] /v1/swap/fungibles/
+**Summary**: Get fungibles available for bridge.
+
+**Description**:
+The endpoint provides a list of fungibles available for bridge exchange. This endpoint is specifically designed for situations where the input and output chains are different.
+
+**Parameters:**
+- `input` (query, optional): 
+- `output` (query, optional): 
+- `direction` (query, optional): The direction parameter is a parameter that determines the flow of fungibles involved in the transaction. It can have three possible values: 'input', 'output', or 'both'. The value 'input' indicates that the API endpoint will only return fungibles that the user can send. The value 'output' indicates that the API endpoint will only return fungibles that the user can receive. The value 'both' means that the API endpoint will return fungibles which are 'input' and 'output' at the same time. In other words - intersection for 'input' and output'. If nothing specified then `both` is used.
+
+**Response Schema:** None provided
+
+### [GET] /v1/swap/offers/
+**Summary**: Get available swap offers
+
+**Description**:
+The endpoint offers a comprehensive overview of relevant trades and bridge exchanges. A bridge exchange refers to the transfer of cryptocurrencies between different blockchain networks, while a trade pertains to an exchange of cryptocurrencies within the same network. In an effort to secure the optimal exchange rate for our users, our system sends requests to multiple exchange providers. Zerion only charges a commission fee of 0.5% on L2 and alternative L1 trades, which can be waived by obtaining our Genesis NFT. Our platform has the advantage of being an aggregator of various exchanges, ensuring that users will always get the best exchange rates available. Please note that due to the nature of the multiple requests and calculations involved, it is normal for this endpoint to have a relatively long timeout. You can expect a response time of around 5-10 seconds.
+
+**Parameters:**
+- `input` (query, optional): Information about what the wallet wants to send.
+- `output` (query, optional): Information about what the wallet wants to receive.
+- `gas_price` (query, optional): Gas price in wei. If nothing specified then current market classic gas price is used.
+- `liquidity_source_id` (query, optional): The source to be used for exchanges search. If nothing specified then `all` is used.
+- `sort` (query, optional): Order of output transactions result. If nothing specified then `amount` is used.
+- `slippage_percent` (query, optional): Maximum slippage value for the transaction to be approved. Slippage is a term used in crypto exchanges to describe the difference between the expected price of a trade and the actual price at which the trade is executed. It occurs due to the volatility and liquidity of the market, and can result in a higher or lower price than expected. If nothing specified then `2` is used.
+- `integrator` (query, optional): Integrator service related parameters.
+
+**Response Schema:** None provided
+
+### [GET] /v1/gas-prices/
+**Summary**: Get list of all available gas prices
+
+**Description**:
+This endpoint provides real-time information on the current gas prices across all supported blockchain networks. Gas prices play a crucial role in the speed and cost of executing transactions on a blockchain, and fluctuate frequently based on network demand and usage. By using this endpoint, developers can stay up-to-date with the latest gas prices and adjust their application's transaction parameters accordingly to ensure optimal speed and cost efficiency.
+
+**Parameters:**
+- `filter[chain_ids]` (query, optional): Return only gas prices from specified chains. You can find available chain ids in chain endpoints.
+- `filter[gas_types]` (query, optional): Return only gas prices with specified gas-type.
+
+**Response Schema:** None provided
+
+### [GET] /v1/nfts/
+**Summary**: Get list of NFTs
+
+**Description**:
+This endpoint returns list of NFTs by using different parameters.
+
+It returns NFTs of both types - ERC721 and ERC1155.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+> NOTE: Consider all IDs as abstract strings, without making any assumptions about their format or relying on such assumptions. There is a non-zero probability that IDs may change in the future, and this should not result in any breaking changes.
+
+**Parameters:**
+- `filter[references]` (query, optional): Keep only NFTs matching specified references.
+
+Reference format is `chain_id:contract_address:token_id`. 
+
+References should be separated by comma `,`.
+
+`chain_id`- ID of the chain where NFT exists, can be found in /chains endpoint.
+
+`contract_address` address of the deployed contract which NFT belongs to.
+
+`token_id` id of the NFT withing specified `contract_address`.
+
+NOTE: parameter currently is mandatory and can not be omitted.
+
+- `` (, optional): 
+- `include` (query, optional): Array of related resources to be included to the response. This parameter corresponds to the JSON API schema.
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:** None provided
+
+### [GET] /v1/nfts/{nft_id}
+**Summary**: Get single NFT by ID
+
+**Description**:
+This endpoint returns single NFT by its unique identifier.
+
+This endpoint supports testnets. To get data for testnets use `X-Env` header.
+
+**Parameters:**
+- `nft_id` (path, required): NFT unique identifier
+- `` (, optional): 
+- `include` (query, optional): Array of related resources to be included to the response. This parameter corresponds to the JSON API schema.
+- `X-Env` (header, optional): Custom header that allows you to get data for testnets.
+
+**Response Schema:** None provided

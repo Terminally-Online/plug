@@ -143,12 +143,6 @@ export const SocketTokenPriceChart: FC<{
 			setIsLoading(true)
 			setQueriedKeys(keys.join(","))
 
-			// const failure = {
-			// 	timestamp: new Date().toISOString(),
-			// 	price: 0,
-			// 	error: "Could not load price data."
-			// }
-
 			await Promise.allSettled(
 				periods.map(async period => {
 					const url = `https://coins.llama.fi/chart/${keys.join(",")}?span=${period.span}&period=${period.period}&searchWidth=1200`
@@ -207,7 +201,7 @@ export const SocketTokenPriceChart: FC<{
 				// </div>
 				// )
 				<>
-					<ResponsiveContainer minHeight={120} height="100%" width="100%" style={{ marginLeft: "-16%" }}>
+					<ResponsiveContainer minHeight={120} height="100%" width="100%">
 						<LineChart onMouseMove={handleMouseMove} onMouseLeave={() => handleTooltip(undefined)}>
 							{priceData &&
 								keys.map(key => {

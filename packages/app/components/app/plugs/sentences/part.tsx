@@ -163,7 +163,7 @@ export const Part: FC<PartProps> = memo(
 			<>
 				<button
 					className={cn(
-						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
+						"group/part mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
 						isCompatibleCoil ? "bg-orange-300/60" : isValid ? "bg-plug-yellow/60" : "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
@@ -193,7 +193,7 @@ export const Part: FC<PartProps> = memo(
 								))}
 						</div>
 					)}
-					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">
+					<span className="group-hover/part:max-w-[1000px] max-w-[150px] overflow-hidden truncate text-ellipsis transition-all duration-200 ease-in-out">
 						{isLinked && isCompatibleCoil && label.startsWith("<-{")
 							? label.replace("<-{", "").replace("}", "")
 							: label}
@@ -245,110 +245,106 @@ export const Part: FC<PartProps> = memo(
 									</div>
 								)}
 
-								{isReady && !isOptionBased && (
-									<>
-										{Object.keys(validCoils).length > 0 && <div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
-											{Object.keys(validCoils).map((coil, index) => {
-												if (value?.value === `<-{${coil}}`) return null
+								{isReady && Object.keys(validCoils).length > 0 && <div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
+									{Object.keys(validCoils).map((coil, index) => {
+										if (value?.value === `<-{${coil}}`) return null
 
-												return (
-													<Button
-														key={index}
-														variant="secondary"
-														sizing="sm"
-														onClick={() =>
-															handleValue({
-																index: input?.index ?? "",
-																key: input?.name ?? "",
-																name: input?.name ?? "",
-																label: label,
-																value: `<-{${coil}}`,
-																isNumber: input.type?.toString().includes("int")
-															})
-														}
-														className="group/coil flex flex-row gap-2 px-2 pr-3"
-													>
-														<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-300 transition-all duration-200 ease-in-out group-hover/coil:bg-orange-400">
-															<p className="text-xs font-bold text-plug-white">#</p>
-														</div>
-
-														{coil}
-													</Button>
-												)
-											})}
-										</div>}
-
-										{isLinked ? (
-											<>
-												<button
-													className={cn(
-														`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out`,
-														isCompatibleCoil ? "border-plug-green/10" : "border-plug-red/10"
-													)}
-													onClick={() =>
-														handleValue({
-															index: input?.index ?? "",
-															key: input?.name ?? "",
-															name: input?.name ?? "",
-															label: label,
-															value: undefined,
-															isNumber: input.type?.toString().includes("int")
-														})
-													}
-												>
-													<div
-														className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
-															}`}
-													>
-														<p className="text-xs font-bold text-plug-white">
-															{isCompatibleCoil ? "#" : "!"}
-														</p>
-													</div>
-													<span
-														className={isCompatibleCoil ? "" : "font-semibold text-red-600"}
-													>
-														{typeof value?.value === "string" &&
-															value?.value.startsWith("<-{")
-															? isCompatibleCoil
-																? formatTitle(
-																	value?.value.replace("<-{", "").replace("}", "")
-																)
-																: "Invalid link: Coil not available in this position"
-															: getInputPlaceholder(input.type)}
-													</span>
-												</button>
-											</>
-										) : (
-											<Search
-												className="mb-4"
-												icon={<Hash size={14} />}
-												placeholder={
-													typeof value?.value === "string" && value?.value.startsWith("<-")
-														? "Amount: number"
-														: getInputPlaceholder(input.type)
-												}
-												search={value?.value ? String(value?.value) : ""}
-												handleSearch={data =>
+										return (
+											<Button
+												key={index}
+												variant="secondary"
+												className="group/coil flex flex-row gap-2 px-4 text-sm"
+												onClick={() =>
 													handleValue({
 														index: input?.index ?? "",
 														key: input?.name ?? "",
 														name: input?.name ?? "",
-														label,
-														value: data,
+														label: label,
+														value: `<-{${coil}}`,
 														isNumber: input.type?.toString().includes("int")
 													})
 												}
-												isNumber={
-													input.type?.toString().includes("int") ||
-													input.type?.toString().includes("float")
-												}
-												focus
-											/>
-										)}
+											>
+												<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-400">
+													<p className="text-xs font-bold text-plug-white">#</p>
+												</div>
+
+												<span className="opacity-40 group-hover/coil:opacity-100">{coil}</span>
+											</Button>
+										)
+									})}
+								</div>}
+
+
+								{isReady && isLinked && (
+									<>
+										<button
+											className={cn(
+												`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out`,
+												isCompatibleCoil ? "border-plug-green/10" : "border-plug-red/10"
+											)}
+											onClick={() =>
+												handleValue({
+													index: input?.index ?? "",
+													key: input?.name ?? "",
+													name: input?.name ?? "",
+													label: label,
+													value: undefined,
+													isNumber: input.type?.toString().includes("int")
+												})
+											}
+										>
+											<div
+												className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-300" : "bg-plug-red"
+													}`}
+											>
+												<p className="text-xs font-bold text-plug-white">
+													{isCompatibleCoil ? "#" : "!"}
+												</p>
+											</div>
+											<span
+												className={isCompatibleCoil ? "" : "font-semibold text-red-600"}
+											>
+												{typeof value?.value === "string" &&
+													value?.value.startsWith("<-{")
+													? isCompatibleCoil
+														? formatTitle(
+															value?.value.replace("<-{", "").replace("}", "")
+														)
+														: "Invalid link: Coil not available in this position"
+													: getInputPlaceholder(input.type)}
+											</span>
+										</button>
 									</>
 								)}
 
-								{isReady && isOptionBased && (
+								{isReady && !isOptionBased && !isLinked && <Search
+									className="mb-4"
+									icon={<Hash size={14} />}
+									placeholder={
+										typeof value?.value === "string" && value?.value.startsWith("<-")
+											? "Amount: number"
+											: getInputPlaceholder(input.type)
+									}
+									search={value?.value ? String(value?.value) : ""}
+									handleSearch={data =>
+										handleValue({
+											index: input?.index ?? "",
+											key: input?.name ?? "",
+											name: input?.name ?? "",
+											label,
+											value: data,
+											isNumber: input.type?.toString().includes("int")
+										})
+									}
+									isNumber={
+										input.type?.toString().includes("int") ||
+										input.type?.toString().includes("float")
+									}
+									focus
+								/>}
+
+								{isReady && isOptionBased && !isLinked && (
 									<>
 										<Search
 											icon={<SearchIcon size={14} />}

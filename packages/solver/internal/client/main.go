@@ -16,7 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -65,7 +64,7 @@ func (c *Client) SolverReadOptions() *bind.CallOpts {
 }
 
 func (c *Client) WriteOptions(address common.Address, value *big.Int) *bind.TransactOpts {
-	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
+	transactionForwarder := func(_ common.Address, transaction *ethtypes.Transaction) (*ethtypes.Transaction, error) {
 		return transaction, nil
 	}
 
@@ -80,18 +79,21 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs map[string]signature.LivePlugs) ([]signature.Result, error) {
+func (c *Client) Plug(livePlugs *signature.LivePlugs) ([]signature.Result, error) {
 	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
-	var lps []plug_router.PlugTypesLibLivePlugs
-	for _, livePlug := range livePlugs {
-		lps = append(lps, livePlug.Wrap())
+
+	l, err := livePlugs.Wrap()
+	if err != nil {
+		return nil, err
 	}
+
+	lps := []plug_router.PlugTypesLibLivePlugs{*l}
 
 	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {
 		return nil, err
 	}
-	transaction, err := router.Plug(c.SolverWriteOptions(), lps)
+	transaction, err := router.Plug0(c.SolverWriteOptions(), lps)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send plug transaction: %w", err)
 	}

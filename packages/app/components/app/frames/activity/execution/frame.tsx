@@ -79,7 +79,9 @@ export const ExecutionFrame: FC<{
 						<div
 							className="mr-4 flex h-8 w-8 min-w-8 items-center justify-center rounded-sm bg-plug-green/10 text-white/60"
 							style={{
-								backgroundImage: activity.plug?.color ? cardColors[activity.plug.color] : cardColors['plug']
+								backgroundImage: activity.plug?.color
+									? cardColors[activity.plug.color]
+									: cardColors["plug"]
 							}}
 						/>
 						<span>{activity.inputs.map(input => formatTitle(input.action)).join(", ")}</span>
@@ -136,7 +138,7 @@ export const ExecutionFrame: FC<{
 
 					<div className="mb-2 flex flex-row items-center gap-4">
 						<p className="font-bold opacity-40">Details</p>
-						<div className="h-[2px] w-full bg-plug-green/10" />
+						<div className="h-[1px] w-full bg-plug-green/10" />
 					</div>
 
 					<div className="flex flex-col">
@@ -159,7 +161,7 @@ export const ExecutionFrame: FC<{
 
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Schedule</p>
-							<div className="h-[2px] w-full bg-plug-green/10" />
+							<div className="h-[1px] w-full bg-plug-green/10" />
 						</div>
 						<p className="flex flex-row justify-between font-bold">
 							<span className="flex w-full flex-row items-center gap-4">
@@ -189,7 +191,7 @@ export const ExecutionFrame: FC<{
 					{(activity.status !== "paused" || activity.runs.length > 0) && (
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Runs</p>
-							<div className="h-[2px] w-full bg-plug-green/10" />
+							<div className="h-[1px] w-full bg-plug-green/10" />
 						</div>
 					)}
 

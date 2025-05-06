@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 
 import { formatUnits, getAddress } from "viem"
+import { useSendTransaction } from "wagmi"
 
 import { ArrowRight, Bell, CheckCircle, CircleDollarSign, Loader, TriangleRight, Waypoints } from "lucide-react"
 
@@ -8,107 +9,132 @@ import { useAtom, useAtomValue } from "jotai"
 
 import { SwapAmountInput } from "@/components/app/frames/assets/swap/amount/input"
 import { Frame } from "@/components/app/frames/base"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS, useDebounceInline } from "@/lib"
-import { api, RouterOutputs } from "@/server/client"
+import {
+	cn,
+	getChainId,
+	getChainName,
+	getTextColor,
+	getZerionTokenIconUrl,
+	NATIVE_TOKEN_ADDRESS,
+	useStateDebounce,
+	ZerionFungible,
+	ZerionPosition
+} from "@/lib"
+import { useAllowance } from "@/lib/hooks/chain/useApproval"
+import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
-import { useSendTransaction } from "wagmi"
-import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { ScrollingError } from "../../scrolling-error"
-import { useAllowance } from "@/lib/hooks/chain/useApproval"
-
-type Token =
-	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-	| NonNullable<RouterOutputs["solver"]["tokens"]["get"]>[number]
 
 type SwapAmountFrameProps = {
 	index: number
-	tokenIn: Token
-	tokenOut: Token
+	tokenIn: ZerionFungible
+	tokenOut: ZerionPosition
+}
+
+const getFungibleImplementation = (
+	implementations: ZerionPosition["attributes"]["fungible_info"]["implementations"],
+	chainName: string
+) => {
+	const implementation = implementations.find(implementation => implementation.chain_id === chainName)
+	const address = getAddress(implementation?.address ?? NATIVE_TOKEN_ADDRESS)
+	const decimals = implementation?.decimals ?? 18
+	const lookup = `${address}:${decimals}:${20}`
+
+	return { ...implementation, address, decimals, lookup }
 }
 
 export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFrameProps) => {
+	const implementations = useMemo(
+		() => ({
+			tokenOut: getFungibleImplementation(tokenOut.attributes.fungible_info.implementations, "base"),
+			tokenIn: getFungibleImplementation(tokenIn.attributes.implementations, "base")
+		}),
+		[tokenIn, tokenOut]
+	)
+
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey = `${tokenOut.symbol}-${tokenIn.symbol}-swap-amount`
+	const frameKey = `${tokenOut.attributes.fungible_info.symbol}-${tokenIn.attributes.symbol}-swap-amount`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
 	const { socket } = useSocket()
 	const { error, sendTransaction, isPending } = useSendTransaction()
 
-	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {
-		const tokenOutImplementation = tokenOut.implementations.find(implementation => implementation.chain === "base")
-		const tokenInImplementation = tokenIn.implementations.find(implementation => implementation?.chain === "base")
+	const balance = implementations.tokenOut?.balance ?? 0
 
-		return { tokenOutImplementation, tokenInImplementation }
-	}, [tokenIn, tokenOut])
-
-	const [step, setStep] = useState(0)
-	const [tokenOutColor, setTokenOutColor] = useState("#000000")
-	const [tokenInColor, setTokenInColor] = useState("#000000")
 	const [amounts, setAmounts] = useState({
-		[tokenOut.symbol]: {
-			precise: ((tokenOutImplementation?.balance ?? 0) / 2).toString(),
-			percentage: (tokenOutImplementation?.balance ?? 0) / 2 === 0 ? 0 : 50
+		[tokenOut.attributes.fungible_info.symbol]: {
+			precise: (balance / 2).toString(),
+			percentage: balance / 2 === 0 ? 0 : 50
 		},
-		[tokenIn.symbol]: {
+		[tokenIn.attributes.symbol]: {
 			precise: "0",
 			percentage: 0
 		}
 	})
+	const [step, setStep] = useState(0)
+	const [tokenOutColor, setTokenOutColor] = useState("#000000")
+	const [tokenInColor, setTokenInColor] = useState("#000000")
 
 	const isSufficientBalance =
-		tokenOutImplementation &&
-		(tokenOutImplementation?.balance ?? 0) > 0 &&
-		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
+		balance > 0 && balance >= Number(amounts[tokenOut.attributes.fungible_info.symbol].precise)
 
 	const isEOA = column && column.index === COLUMNS.SIDEBAR_INDEX
 	const from = socket ? (column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress) : ""
-	const request = useDebounceInline<{
-		chainId: number,
-		from: string | `0x${string}`
-		inputs: Array<{
-			protocol: string,
-			action: string,
-			[key: string]: string
-		}>, options?: { isEOA?: boolean, simulate?: boolean }
-	}>({
-		chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
-		from,
-		inputs: [
-			{
-				protocol: "plug",
-				action: "swap",
-				amount: amounts[tokenOut.symbol].precise,
-				token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
-				tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`
-			}
-		],
-		options: {
-			isEOA: isEOA,
-			simulate: true
-		}
-	})
 
-	const { data: intent, error: intentError, isLoading } = api.solver.actions.intent.useQuery(request, {
-		enabled:
-			isFrame &&
-			!!tokenInImplementation &&
-			!!tokenOutImplementation &&
-			amounts[tokenOut.symbol].precise !== "0" &&
-			isSufficientBalance &&
-			!!socket,
-	})
+	const amount = useStateDebounce(amounts[tokenOut.attributes.fungible_info.symbol].precise)
+
+	const {
+		data: intent,
+		error: intentError,
+		isLoading,
+		isFetching
+	} = api.solver.actions.intent.useQuery(
+		{
+			chainId: getChainId(implementations.tokenOut?.chain_id ?? "base"),
+			from,
+			inputs: [
+				{
+					protocol: "plug",
+					action: "swap",
+					amount,
+					token: implementations.tokenOut.lookup,
+					tokenIn: implementations.tokenIn.lookup
+				}
+			],
+			options: {
+				isEOA: isEOA,
+				simulate: true
+			}
+		},
+		{
+			enabled:
+				isFrame &&
+				!!socket &&
+				!!implementations.tokenIn &&
+				!!implementations.tokenOut &&
+				amounts[tokenOut.attributes.fungible_info.symbol].precise !== "0" &&
+				isSufficientBalance,
+			placeholderData: prev => prev
+		}
+	)
 
 	const isReady =
-		amounts[tokenOut.symbol].precise !== "0" && !intentError && !isLoading && isSufficientBalance && !isPending
+		amounts[tokenOut.attributes.fungible_info.symbol].precise !== "0" &&
+		!intentError &&
+		!isLoading &&
+		!isFetching &&
+		isSufficientBalance &&
+		!isPending
 	const meta = intent ? intent.transactions[intent.transactions.length - 1].meta : null
 
 	const { approval } = useAllowance({
-		token: getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS),
+		token: implementations.tokenOut.address,
 		owner: from,
 		spender: meta?.settlementAddress
 	})
@@ -128,21 +154,24 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		else setStep(prev => prev + 1)
 	}, [intent, step, toggleSavedMutation, navigate, frame, index])
 
+	const isApproved = approval > BigInt(meta?.sellTokens[implementations.tokenOut?.address]?.amount ?? "0")
 
-	const isApproved = approval > BigInt(meta?.sellTokens[getAddress(tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")]?.amount ?? "0")
 	const handleTransactionOnchain = useCallback(async () => {
 		if (!column || !intent) return
 
 		const transactionAtStep = isApproved && intent.transactions.length > 1 ? 1 : step
 
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
-			sendTransaction({
-				to: intent.transactions[transactionAtStep].to,
-				data: intent.transactions[transactionAtStep].data,
-				value: intent.transactions[transactionAtStep].value
-			}, {
-				onSuccess: handleTransactionOffchain
-			})
+			sendTransaction(
+				{
+					to: intent.transactions[transactionAtStep].to,
+					data: intent.transactions[transactionAtStep].data,
+					value: intent.transactions[transactionAtStep].value
+				},
+				{
+					onSuccess: handleTransactionOffchain
+				}
+			)
 	}, [column, intent, step, isApproved, sendTransaction, handleTransactionOffchain])
 
 	return (
@@ -152,22 +181,16 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				<div className="group relative flex flex-row items-center">
 					<div className="relative h-8 w-10">
 						<TokenImage
-							logo={
-								tokenOut?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenOut.implementations[0].chain)}/${tokenOut.implementations[0]?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}?h=240&w=240`
-							}
-							symbol={tokenOut.symbol}
+							logo={getZerionTokenIconUrl(tokenOut)}
+							symbol={tokenOut.attributes.fungible_info.symbol}
 							size="sm"
 							handleColor={setTokenOutColor}
 						/>
 					</div>
 					<div className="relative -ml-4 h-8 w-10 transition-all duration-100 group-hover:ml-0">
 						<TokenImage
-							logo={
-								tokenIn?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenIn.implementations[0].chain)}/${tokenIn.implementations[0]?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}?h=240&w=240`
-							}
-							symbol={tokenIn.symbol}
+							logo={getZerionTokenIconUrl(tokenIn.attributes.icon?.url)}
+							symbol={tokenIn.attributes.symbol}
 							size="sm"
 							handleColor={setTokenInColor}
 						/>
@@ -176,109 +199,127 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			}
 			label={
 				<span className="flex flex-row items-center gap-2 text-lg font-bold">
-					<span>{tokenOut.symbol}</span>
+					<span>{tokenOut.attributes.fungible_info.symbol}</span>
 					<ArrowRight size={14} className="opacity-60" />
-					<span>{tokenIn.symbol}</span>
+					<span>{tokenIn.attributes.symbol}</span>
 				</span>
 			}
 			visible={isFrame}
-			handleBack={() => frame(`${tokenOut.symbol}-swap-token`)}
+			handleBack={() => frame(`${tokenOut.attributes.fungible_info.symbol}-swap-token`)}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-			<div>
-				<div className="relative mb-2 flex flex-col gap-2">
-					<SwapAmountInput
-						index={index}
-						token={{
-							...tokenOut,
-							price:
-								meta?.sellTokens[
-									getAddress(
-										tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-									)
-								]?.priceUsd ?? 0
-						}}
-						color={tokenOutColor}
-						amounts={amounts[tokenOut.symbol]}
-						setAmounts={amount =>
-							setAmounts(prev => {
-								if (typeof amount === "function") {
-									return {
-										...prev,
-										[tokenOut.symbol]: amount(prev[tokenOut.symbol])
-									}
-								}
+			<div className="relative mb-2 flex flex-col gap-2">
+				<SwapAmountInput
+					index={index}
+					token={{
+						...tokenOut,
+						attributes: {
+							...tokenOut.attributes,
+							price: meta?.sellTokens[implementations.tokenOut.address]?.priceUsd ?? 0
+						}
+					}}
+					color={tokenOutColor}
+					amounts={amounts[tokenOut.attributes.fungible_info.symbol]}
+					setAmounts={amount =>
+						setAmounts(prev => {
+							if (typeof amount === "function") {
 								return {
 									...prev,
-									[tokenOut.symbol]: amount
+									[tokenOut.attributes.fungible_info.symbol]: amount(
+										prev[tokenOut.attributes.fungible_info.symbol]
+									)
 								}
-							})
-						}
-					/>
+							}
+							return {
+								...prev,
+								[tokenOut.attributes.fungible_info.symbol]: amount
+							}
+						})
+					}
+				/>
 
-					<SwapAmountInput
-						index={index}
-						token={{
-							...tokenIn,
-							price:
-								meta?.buyTokens[
-									getAddress(
-										tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-									)
-								]?.priceUsd ?? 0,
-							implementations: [
-								// @ts-ignore
-								{
-									...tokenInImplementation,
-									balance:
-										meta?.buyTokens[
-											getAddress(
-												tokenInImplementation?.contract ??
-												"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-											)
-										]?.amount ?? 0
+				<SwapAmountInput
+					index={index}
+					token={{
+						...tokenIn,
+						id: tokenIn.id,
+						type: "positions",
+						attributes: {
+							parent: null,
+							protocol: null,
+							name: tokenIn.attributes.name,
+							position_type: "wallet",
+							quantity: {
+								int: "0",
+								decimals: implementations.tokenIn.decimals,
+								float: 0,
+								numeric: "0"
+							},
+							value: 0,
+							price: meta?.buyTokens[implementations.tokenIn?.address]?.priceUsd ?? null,
+							changes: {
+								absolute_1d: 0,
+								percent_1d: 0
+							},
+							flags: {
+								displayable: true,
+								is_trash: false
+							},
+							updated_at: "",
+							updated_at_block: 0,
+							fungible_info: tokenIn.attributes
+						},
+						relationships: {
+							fungible: {
+								data: {
+									type: "fungibles",
+									id: tokenIn.id
+								},
+								links: {
+									related: ""
 								}
-							]
-						}}
-						color={tokenInColor}
-						amounts={{
-							precise: formatUnits(
-								meta?.buyTokens[
-									getAddress(
-										tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-									)
-								]?.amount ?? "0",
-								meta?.buyTokens[
-									getAddress(
-										tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-									)
-								]?.decimals ?? 18
-							).toString(),
-							percentage: amounts[tokenOut.symbol].percentage
-						}}
-						setAmounts={amount =>
-							setAmounts(prev => {
-								if (typeof amount === "function") {
-									return {
-										...prev,
-										[tokenIn.symbol]: amount(prev[tokenIn.symbol])
-									}
+							},
+							chain: {
+								data: {
+									type: "chains",
+									id: implementations.tokenIn?.chain_id ?? "base"
+								},
+								links: {
+									related: ""
 								}
+							}
+						}
+					}}
+					color={tokenInColor}
+					amounts={{
+						precise: formatUnits(
+							meta?.buyTokens[implementations.tokenIn.address]?.amount ?? "0",
+							implementations.tokenIn.decimals
+						).toString(),
+						percentage: amounts[tokenIn.attributes.symbol].percentage
+					}}
+					setAmounts={amount =>
+						setAmounts(prev => {
+							if (typeof amount === "function") {
 								return {
 									...prev,
-									[tokenIn.symbol]: amount
+									[tokenIn.attributes.symbol]: amount(prev[tokenIn.attributes.symbol])
 								}
-							})
-						}
-					/>
-				</div>
+							}
+							return {
+								...prev,
+								[tokenIn.attributes.symbol]: amount
+							}
+						})
+					}
+				/>
 			</div>
 
 			<div className="px-6 pt-2">
 				<div className="mb-2 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Details</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 
 				<p className="flex flex-row justify-between font-bold tabular-nums">
@@ -293,9 +334,9 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 									"flex flex-row items-center whitespace-nowrap group-hover:hidden",
 									meta?.slippage === undefined
 										? "opacity-40"
-										: meta?.priceImpact >= 0
-											? ""
-											: "text-red-500"
+										: meta?.slippage >= 0
+											? "text-chart-green"
+											: "text-plug-red"
 								)}
 							>
 								{meta?.slippage > 0 && "+"}
@@ -318,8 +359,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 									meta?.priceImpact === undefined
 										? "opacity-40"
 										: meta?.priceImpact >= 0
-											? ""
-											: "text-red-500"
+											? "text-chart-green"
+											: "text-plug-red"
 								)}
 							>
 								{meta?.priceImpact > 0 && "+"}
@@ -329,19 +370,18 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					</span>
 				</p>
 
-				{tokenOutImplementation?.chain && (
+				{implementations.tokenOut?.chain_id && (
 					<p className="flex flex-row justify-between font-bold">
 						<span className="flex w-max flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />
 							<span className="opacity-40">Chain</span>
 						</span>{" "}
 						<span className="flex flex-row items-center gap-2 font-bold">
-							<ChainImage chainId={getChainId(tokenOutImplementation.chain)} size="xs" />
-							{getChainName(getChainId(tokenOutImplementation.chain))}
+							<ChainImage chainId={getChainId(implementations.tokenOut.chain_id)} size="xs" />
+							{getChainName(getChainId(implementations.tokenOut.chain_id))}
 						</span>
 					</p>
 				)}
-
 
 				<p className="flex flex-row justify-between font-bold">
 					<span className="flex w-full flex-row items-center gap-4">
@@ -349,7 +389,9 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						<span className="opacity-40">Approval</span>
 					</span>{" "}
 					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-						{tokenOutImplementation?.contract === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" || isApproved ? "Sufficient" : "Insufficient"}
+						{implementations.tokenOut?.address === NATIVE_TOKEN_ADDRESS || isApproved
+							? "Sufficient"
+							: "Insufficient"}
 					</span>
 				</p>
 
@@ -362,13 +404,10 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
 							<Counter count={0.0} /> ETH
 						</span>
-						<span className="ml-2 flex flex-row items-center">
-							Free
-						</span>
+						<span className="ml-2 flex flex-row items-center">Free</span>
 					</span>
 				</p>
 			</div>
-
 
 			<div className="mx-6 my-4 flex flex-col gap-4">
 				<ScrollingError error={error?.message ?? ""} />
@@ -382,14 +421,14 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						color: !isReady ? tokenInColor : getTextColor(tokenInColor),
 						borderColor: !isReady ? tokenInColor : "transparent"
 					}}
-					disabled={!isReady || isPending}
+					disabled={!isReady || isPending || isLoading || isFetching}
 					onClick={handleTransactionOnchain}
 				>
 					{!isSufficientBalance ? (
 						"Insufficient Balance"
-					) : amounts[tokenOut.symbol].precise === "0" ? (
+					) : amounts[tokenOut.attributes.fungible_info.symbol].precise === "0" ? (
 						"Enter Amount"
-					) : isLoading ? (
+					) : isLoading || isFetching ? (
 						<span className="flex flex-row items-center gap-2">
 							<Loader
 								size={14}
@@ -398,7 +437,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							/>
 							<span>Routing...</span>
 						</span>
-					) : intentError || !tokenInImplementation || !tokenOutImplementation ? (
+					) : intentError || !implementations.tokenOut || !implementations.tokenIn ? (
 						"Route could not be found"
 					) : isEOA && intent && intent.transactions.length > 1 && step === 0 && !isApproved ? (
 						"Approve"

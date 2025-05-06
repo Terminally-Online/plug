@@ -4,8 +4,8 @@ import "solver/internal/actions"
 
 func AssertOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
 	booleanOptions := []actions.Option{
-		{Label: "True", Value: "true"},
-		{Label: "False", Value: "false"},
+		{Name: "True", Label: "true", Value: "true"},
+		{Name: "False", Label: "false", Value: "false"},
 	}
 
 	return map[int]actions.Options{

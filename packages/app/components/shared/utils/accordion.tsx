@@ -49,7 +49,14 @@ export const Accordion: FC<Props> = memo(
 				{noPaddingChildren}
 
 				<div className={cn("flex h-full w-full flex-col", noPadding === false && "p-4")}>
-					{children}
+					{loading ? (
+						<div className="invisible">
+							<p>.</p>
+							<p>.</p>
+						</div>
+					) : (
+						children
+					)}
 
 					{accordion && <AccordionContent expanded={expanded}>{accordion}</AccordionContent>}
 				</div>

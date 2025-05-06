@@ -10,28 +10,33 @@ var (
 			Simple: []actions.Option{
 				{
 					Name:  "Add",
-					Label: "+",
-					Value: "+",
+					Label: "plus",
+					Value: "add",
 				},
 				{
 					Name:  "Subtract",
-					Label: "-",
-					Value: "-",
+					Label: "minus",
+					Value: "subtract",
 				},
 				{
 					Name:  "Multiply",
-					Label: "*",
-					Value: "*",
+					Label: "times",
+					Value: "multiply",
 				},
 				{
 					Name:  "Divide",
-					Label: "÷",
-					Value: "÷",
+					Label: "divided by",
+					Value: "divide",
 				},
 				{
 					Name:  "Modulo",
-					Label: "%",
-					Value: "%",
+					Label: "modulo",
+					Value: "modulo",
+				},
+				{
+					Name:  "Power Of",
+					Label: "to the power of",
+					Value: "power",
 				},
 			},
 		},

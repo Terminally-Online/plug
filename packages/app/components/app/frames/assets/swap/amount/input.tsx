@@ -1,18 +1,14 @@
-import { FC, useCallback, useRef, useState } from "react"
+import { FC, useCallback, useMemo, useRef, useState } from "react"
 
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { getChainId } from "@/lib"
-import { RouterOutputs } from "@/server/client"
-import { ChainImage } from "@/components/app/sockets/chains/chain.image"
-
-type Token =
-	| RouterOutputs["socket"]["balances"]["positions"]["tokens"][number]
-	| RouterOutputs["solver"]["tokens"]["get"][number]
+import { getChainId, getZerionTokenIconUrl, NATIVE_TOKEN_ADDRESS, ZerionPosition } from "@/lib"
+import { getAddress } from "viem"
 
 type SwapAmountInputProps = {
 	index: number
-	token: Token
+	token: ZerionPosition
 	color: string
 	amounts: {
 		precise: string
@@ -25,11 +21,24 @@ type SwapAmountInputProps = {
 	) => void
 }
 
+const getFungibleImplementation = (implementations: ZerionPosition["attributes"]["fungible_info"]["implementations"], chainName: string) => {
+	const implementation = implementations.find(
+		implementation => implementation.chain_id === chainName
+	)
+	const address = getAddress(implementation?.address ?? NATIVE_TOKEN_ADDRESS)
+	const decimals = implementation?.decimals ?? 18
+	const lookup = `${address}:${decimals}:${20}`
+
+	return { ...implementation, address, decimals, lookup }
+}
+
 export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amounts, setAmounts }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
 	const [isPrecise, setIsPrecise] = useState(false)
+
+	const implementation = useMemo(() => getFungibleImplementation(token.attributes.fungible_info.implementations, "base"), [token])
 
 	const handleDragStart = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
@@ -46,8 +55,8 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 					const x = e.clientX - rect.left
 					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
 
-					// @ts-ignore 
-					const newAmount = ((token?.balance ?? token.implementations[0]?.balance ?? 0) * percentage) / 100
+					// @ts-ignore
+					const newAmount = ((token?.balance ?? implementation?.balance ?? 0) * percentage) / 100
 
 					const formattedAmount = newAmount.toFixed(20).replace(/\.?0+$/, "")
 					const [integerPart, decimalPart] = formattedAmount.split(".")
@@ -81,7 +90,7 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[token, setAmounts]
+		[token, implementation, setAmounts]
 	)
 
 	const handleAmountChange = (value: string) => {
@@ -92,7 +101,7 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 			setAmounts({ ...amounts, precise: "0" })
 		} else if (!isNaN(parsedValue)) {
 			// @ts-ignore
-			const maxBalance = token?.balance ?? token?.implementations[0]?.balance ?? 0
+			const maxBalance = token?.balance ?? implementation?.balance ?? 0
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
 			const percentage = (clampedValue / maxBalance) * 100
 
@@ -117,18 +126,18 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 				<div className="flex w-full flex-row">
 					<div className="flex flex-row items-center gap-4 px-2">
 						<TokenImage
-							logo={
-								token?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-							}
-							symbol={token.symbol}
+							logo={getZerionTokenIconUrl(token.attributes.fungible_info.icon?.url)}
+							symbol={token.attributes.fungible_info.symbol}
 							size="sm"
 						/>
 
 						<div className="flex flex-col items-center">
-							<p className="mr-auto font-bold">{token.symbol}</p>
+							<p className="mr-auto font-bold">{token.attributes.fungible_info.symbol}</p>
 							<div className="relative flex flex-row items-center gap-2">
-								<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
+								<ChainImage
+									chainId={getChainId(implementation.chain_id)}
+									size="xs"
+								/>
 								<p className="flex flex-row text-sm font-bold text-black/40">
 									<Counter count={amounts?.percentage ?? 0} decimals={0} />%
 								</p>
@@ -154,9 +163,11 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 							>
 								<Counter
 									count={
-										isPrecise ? amounts.precise : Number(amounts?.precise).toLocaleString("en-US", {
-											maximumFractionDigits: 40
-										}) ?? "0"
+										isPrecise
+											? amounts.precise
+											: (Number(amounts?.precise).toLocaleString("en-US", {
+												maximumFractionDigits: 40
+											}) ?? "0")
 									}
 								/>
 
@@ -172,7 +183,9 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 								<p className="ml-auto flex text-sm font-bold tabular-nums text-black/40">
 									<span className="ml-auto">$</span>
 									<Counter
-										count={(Number(amounts?.precise) * (token.price ?? 0)).toLocaleString("en-US", {
+										count={(
+											Number(amounts?.precise) * (token.attributes.price ?? 0)
+										).toLocaleString("en-US", {
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2
 										})}

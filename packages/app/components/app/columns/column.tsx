@@ -248,9 +248,9 @@ export const ConsoleColumn: FC<{
 								) : column.key === COLUMNS.KEYS.ACTIVITY ? (
 									<SocketActivity index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.TOKENS ? (
-									<SocketTokenList index={column.index} expanded={true} className="p-4" />
+									<SocketTokenList index={column.index} isExpanded className="p-4" />
 								) : column.key === COLUMNS.KEYS.COLLECTIBLES ? (
-									<SocketCollectionList index={column.index} expanded={true} className="p-4" />
+									<SocketCollectionList index={column.index} isExpanded className="p-4" />
 								) : column.key === COLUMNS.KEYS.POSITIONS ? (
 									<SocketPositionList index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
