@@ -48,6 +48,11 @@ export const OPTIONS: Options = [
 		description: "View your collectibles and manage them.",
 		icon: <ImageIcon size={14} className="opacity-40" />
 	},
+	{
+		label: "POSITIONS",
+		description: "View your positions and manage them.",
+		icon: <PiggyBank size={14} className="opacity-40" />
+	}
 ] as const
 
 export const ColumnAdd = memo(({ index }: { index: number }) => {
@@ -109,7 +114,7 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 		]
 
 		return base
-	}, [flagOptions])
+	}, [])
 
 	const isBody = index != columns.length - 2
 

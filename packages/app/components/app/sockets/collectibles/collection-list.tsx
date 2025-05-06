@@ -5,14 +5,15 @@ import { Frame, SearchIcon } from "lucide-react"
 import { Search } from "@/components/app/inputs/search"
 import { SocketCollectionItem } from "@/components/app/sockets/collectibles/collection-item"
 import { Callout } from "@/components/app/utils/callout"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn } from "@/lib"
 import { PLACEHOLDER_COLLECTIONS } from "@/lib/constants/placeholder/collectibles"
 import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
+
 import { CollectibleFrame } from "../../frames/assets/collectible/frame"
 import { CollectionFrame } from "../../frames/assets/collection/frame"
 import { Header } from "../../layout/header"
-import { Counter } from "@/components/shared/utils/counter"
 import { Animate } from "../../utils/animate"
 
 export const SocketCollectionList: FC<
@@ -28,7 +29,7 @@ export const SocketCollectionList: FC<
 
 	const { data } = api.service.zerion.wallet.nftCollections.useQuery(
 		{
-			path: { address: address || socket?.socketAddress },
+			path: { address: address || socket?.socketAddress }
 		},
 		{ enabled: !isAnonymous, retry: false, placeholderData: prev => prev }
 	)
@@ -36,6 +37,7 @@ export const SocketCollectionList: FC<
 
 	const [search, handleSearch] = useState("")
 	const [expanded, setExpanded] = useState(isExpanded)
+	const [hovering, setHovering] = useState<string | undefined>()
 
 	const visibleCollectibles = useMemo(() => {
 		if (search !== "" && collections.length === 0) return Array(5).fill(undefined)
@@ -56,20 +58,24 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{!isColumn && <Header variant="frame"
-				icon={<Frame size={14} className="opacity-40" />}
-				label={
-					<div className="flex w-full justify-between items-center">
-						<p className="font-bold">Collectibles</p>
-						<p className="font-bold text-xs flex gap-1 opacity-40">
-							<Counter count={visibleCollectibles.length} />
-							<span className="opacity-40">/</span>
-							<Counter count={collections.length} />
-						</p>
-					</div>}
-				nextOnClick={() => setExpanded(prev => !prev)}
-				nextLabel={expanded ? "See Less" : "See All"}
-			/>}
+			{!isColumn && (
+				<Header
+					variant="frame"
+					icon={<Frame size={14} className="opacity-40" />}
+					label={
+						<div className="flex w-full items-center justify-between">
+							<p className="font-bold">Collectibles</p>
+							<p className="flex gap-1 text-xs font-bold opacity-40">
+								<Counter count={hovering ? hovering : visibleCollectibles.length} />
+								<span className="opacity-40">/</span>
+								<Counter count={collections.length} />
+							</p>
+						</div>
+					}
+					nextOnClick={() => setExpanded(prev => !prev)}
+					nextLabel={expanded ? "See Less" : "See All"}
+				/>
+			)}
 
 			{isAnonymous === false && isColumn && collections.length > 0 && (
 				<Search
@@ -95,6 +101,8 @@ export const SocketCollectionList: FC<
 							index={index}
 							collection={collection}
 							searched={false}
+							onMouseEnter={() => setHovering((collectionIndex + 1).toString())}
+							onMouseLeave={() => setHovering(undefined)}
 						/>
 					</Animate.ListItem>
 				))}

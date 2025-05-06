@@ -37,7 +37,6 @@ export const SocketTokenList: FC<
 
 	const [search, debouncedSearch, handleSearch] = useDebounce("")
 	const [expanded, setExpanded] = useState<boolean>(isExpanded)
-
 	const [hovering, setHovering] = useState<string | undefined>()
 
 	const visibleTokens = useMemo(() => {

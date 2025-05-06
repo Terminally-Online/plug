@@ -28,7 +28,7 @@ const PositionsInputSchema = z.object({
 		.default({})
 })
 
-const PositionSchema = z.object({
+export const PositionSchema = z.object({
 	type: z.string(),
 	id: z.string(),
 	attributes: z.object({
@@ -83,15 +83,18 @@ const PositionSchema = z.object({
 		}),
 		updated_at: z.string(),
 		updated_at_block: z.number().nullable(),
-		application_metadata: z.object({
-			name: z.string(),
-			icon: z
-				.object({
-					url: z.string()
-				})
-				.nullable(),
-			url: z.string().nullable().optional()
-		}).nullable().optional()
+		application_metadata: z
+			.object({
+				name: z.string(),
+				icon: z
+					.object({
+						url: z.string()
+					})
+					.nullable(),
+				url: z.string().nullable().optional()
+			})
+			.nullable()
+			.optional()
 	}),
 	relationships: z.object({
 		chain: z.object({
@@ -112,12 +115,14 @@ const PositionSchema = z.object({
 				id: z.string()
 			})
 		}),
-		dapp: z.object({
-			data: z.object({
-				type: z.string(),
-				id: z.string()
+		dapp: z
+			.object({
+				data: z.object({
+					type: z.string(),
+					id: z.string()
+				})
 			})
-		}).optional()
+			.optional()
 	})
 })
 
@@ -217,6 +222,19 @@ const reduceByRelationships = (
 	})
 }
 
+const groupByDapp = (
+	positions: Array<z.infer<typeof PositionSchema>> = []
+): Record<string, Array<z.infer<typeof PositionSchema>>> => {
+	return positions.reduce<Record<string, Array<z.infer<typeof PositionSchema>>>>((groups, position) => {
+		const dappId = position.relationships.dapp?.data.id || "unknown"
+		if (!groups[dappId]) {
+			groups[dappId] = []
+		}
+		groups[dappId].push(position)
+		return groups
+	}, {})
+}
+
 export const positions = protectedProcedure
 	.input(PositionsInputSchema)
 	.output(PositionsOutputSchema)
@@ -240,8 +258,15 @@ export const positions = protectedProcedure
 			zerion.get(`/wallets/${address}/positions/${queryParams}`)
 		)) as PositionsResponse
 
-		if (!input.query.aggregate) {
-			return response
+		if (!input.query.aggregate) return response
+
+		if (input.query?.filter?.positions === "only_complex") {
+			const groupedByDapp = groupByDapp(response.data)
+			const groupedData = Object.values(groupedByDapp).flat()
+			return {
+				links: response.links,
+				data: groupedData
+			}
 		}
 
 		const responseData = response.data

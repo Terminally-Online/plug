@@ -51,6 +51,15 @@ export const SocketAssets: FC<SocketAssetsProps> = ({
 
 		<div className="h-[1px] w-full bg-plug-green/10 my-2" />
 
+		<SocketPositionList
+			className="h-max px-4"
+			index={index}
+			address={address}
+			isColumn={false}
+		/>
+
+		<div className="h-[1px] w-full bg-plug-green/10 my-2" />
+
 		<SocketCollectionList
 			className="h-max px-4"
 			index={index}

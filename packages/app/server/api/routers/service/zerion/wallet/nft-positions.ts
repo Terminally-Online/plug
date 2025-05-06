@@ -35,16 +35,6 @@ const ContentSchema = z.object({
 	content_type: z.string().optional()
 })
 
-const ChainRelationshipSchema = z.object({
-	links: z.object({
-		related: z.string()
-	}),
-	data: z.object({
-		type: z.string(),
-		id: z.string()
-	})
-})
-
 const NftPositionsOutputSchema = z.object({
 	links: z.object({
 		self: z.string(),

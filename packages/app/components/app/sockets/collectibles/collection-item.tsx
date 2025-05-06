@@ -3,22 +3,22 @@ import { FC, memo } from "react"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { formatTitle, ZerionCollection } from "@/lib"
-
 import { useColumnActions } from "@/state/columns"
 
-export const SocketCollectionItem: FC<{
+type SocketCollectionItemProps = {
 	index: number
 	collection: ZerionCollection | undefined
 	searched?: boolean
-}> = memo(({ index, collection }) => {
-	const { frame } = useColumnActions(index, `collection___${collection?.relationships.nft_collection.data.id ?? ""}___${collection?.attributes.collection_info.name}___${collection?.attributes.collection_info.content.icon.url}`)
+} & React.HTMLAttributes<HTMLDivElement>
+
+export const SocketCollectionItem: FC<SocketCollectionItemProps> = memo(({ index, collection, ...props }) => {
+	const { frame } = useColumnActions(
+		index,
+		`collection___${collection?.relationships.nft_collection.data.id ?? ""}___${collection?.attributes.collection_info.name}___${collection?.attributes.collection_info.content.icon.url}`
+	)
 
 	return (
-		<Accordion
-			loading={collection === undefined}
-			className="text-left"
-			onExpand={() => frame()}
-		>
+		<Accordion loading={collection === undefined} className="text-left" onExpand={() => frame()} {...props}>
 			{collection === undefined ? (
 				<div className="invisible">
 					<p>.</p>
@@ -49,8 +49,7 @@ export const SocketCollectionItem: FC<{
 						</p>
 						<div className="relative flex w-max flex-row items-center gap-2">
 							<p className="text-sm font-bold opacity-40">
-								{collection.attributes.nfts_count}{" "}
-								Token
+								{collection.attributes.nfts_count} Token
 								{parseInt(collection.attributes.nfts_count) > 1 && "s"}
 							</p>
 						</div>
