@@ -18,16 +18,14 @@ var (
 		ActionCalculateSentence,
 		math_actions.Calculate,
 		math_options.CalculateOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&math_actions.CalculateFunc,
 	)
 	ActionMinimumOrMaximum = actions.NewActionDefinition(
 		ActionMinimumOrMaximumSentence,
 		math_actions.MinimumOrMaximum,
 		math_options.MinimumOrMaximumOptions,
-		actions.IsGlobal,
-		actions.IsStatic,
+		nil,
 		&math_actions.MinimumOrMaximumFunc,
 	)
 )

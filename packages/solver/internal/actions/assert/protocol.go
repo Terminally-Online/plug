@@ -16,8 +16,7 @@ var (
 		ActionAssertSentence,
 		assert_actions.HandleAssert,
 		assert_options.AssertOptions,
-		actions.IsStatic,
-		actions.IsGlobal,
+		nil,
 		actions.IsEmptyOnchainFunc,
 	)
 )

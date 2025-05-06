@@ -14,8 +14,10 @@ var (
 		ActionMintSentence,
 		basepaint_actions.MintLatest,
 		basepaint_options.MintLatestOptions,
-		actions.IsUser,
-		actions.IsDynamic,
+		&actions.ActionProperties{
+			IsSearchable:   true,
+			IsUserSpecific: true,
+		},
 		&basepaint_actions.MintLatestFunc,
 	)
 )

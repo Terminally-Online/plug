@@ -12,11 +12,20 @@ import (
 
 type ActionFunc[T any] func(lookup *SchemaLookup[T]) ([]signature.Plug, error)
 type ActionOptionsFunc[T any] func(lookup *SchemaLookup[T]) (map[int]Options, error)
+type ActionProperties struct {
+	Type           string `json:"type" default:"action"`
+	IsUserSpecific bool   `json:"isUserSpecific" default:"false"`
+	IsSearchable   bool   `json:"isSearchable" default:"false"`
+	IsUnlisted     bool   `json:"isUnlisted" default:"false"`
+}
 
 type ActionDefinitionInterface interface {
 	GetType() string
 	GetSentence() string
+	GetProperties() ActionProperties
 	GetIsUserSpecific() bool
+	GetIsSearchable() bool
+	GetIsUnlisted() bool
 	GetHandler() ActionFunc[any]
 	GetOptions() ActionOptionsFunc[any]
 	GetCoils() ([]coil.Update, error)
@@ -27,43 +36,59 @@ type ActionDefinitionInterface interface {
 
 type ActionDefinition[T any] struct {
 	ActionDefinitionInterface
-	Type           string `default:"action,omitempty"`
-	Sentence       string
-	Handler        ActionFunc[T]
-	Options        ActionOptionsFunc[T]
-	IsUserSpecific bool
-	IsSearchable   bool
-	Response       *ActionOnchainFunctionResponse
+	Sentence   string
+	Handler    ActionFunc[T]
+	Options    ActionOptionsFunc[T]
+	Properties ActionProperties
+	Response   *ActionOnchainFunctionResponse
 }
 
 func NewActionDefinition[T any](
 	sentence string,
 	action ActionFunc[T],
 	options ActionOptionsFunc[T],
-	isUserSpecific bool,
-	isSearchable bool,
+	properties *ActionProperties,
 	response *ActionOnchainFunctionResponse,
 ) ActionDefinitionInterface {
-	return &ActionDefinition[T]{
-		Sentence:       sentence,
-		Handler:        action,
-		Options:        options,
-		IsUserSpecific: isUserSpecific,
-		IsSearchable:   isSearchable,
-		Response:       response,
+	defaultProperties := ActionProperties{}
+	if properties == nil {
+		properties = &defaultProperties
 	}
-}
+	if properties.Type == "" {
+		properties.Type = "action"
+	}
 
-func (d *ActionDefinition[T]) GetType() string {
-	return d.Type
+	return &ActionDefinition[T]{
+		Sentence:   sentence,
+		Handler:    action,
+		Options:    options,
+		Properties: *properties,
+		Response:   response,
+	}
 }
 
 func (d *ActionDefinition[T]) GetSentence() string {
 	return d.Sentence
 }
 
+func (d *ActionDefinition[T]) GetProperties() ActionProperties {
+	return d.Properties
+}
+
+func (d *ActionDefinition[T]) GetType() string {
+	return d.Properties.Type
+}
+
 func (d *ActionDefinition[T]) GetIsUserSpecific() bool {
-	return d.IsUserSpecific
+	return d.Properties.IsUserSpecific
+}
+
+func (d *ActionDefinition[T]) GetIsSearchable() bool {
+	return d.Properties.IsSearchable
+}
+
+func (d *ActionDefinition[T]) GetIsUnlisted() bool {
+	return d.Properties.IsUnlisted
 }
 
 func (d *ActionDefinition[T]) GetHandler() ActionFunc[any] {
