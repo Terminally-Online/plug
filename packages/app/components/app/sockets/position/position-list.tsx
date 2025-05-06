@@ -64,9 +64,11 @@ export const SocketPositionList: FC<
 		}
 
 		const isEmptyResults = search === "" && protocols.length === 0
-		const isPlaceholder = isColumn && (!protocols || isAnonymous || isEmptyResults)
+		const isPlaceholder = (!protocols || isAnonymous || isEmptyResults)
 
-		if (isPlaceholder) return PLACEHOLDER_POSITIONS
+		if (isPlaceholder)
+			return !isColumn ? Object.fromEntries(Object.entries(PLACEHOLDER_POSITIONS).slice(0, 3)) : PLACEHOLDER_POSITIONS
+
 
 		if (search === "") {
 			if (expanded) {

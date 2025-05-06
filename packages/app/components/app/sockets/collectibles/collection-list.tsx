@@ -43,7 +43,7 @@ export const SocketCollectionList: FC<
 		if (search !== "" && collections.length === 0) return Array(5).fill(undefined)
 
 		if (collections === undefined || isAnonymous || (search === "" && collections.length === 0))
-			return PLACEHOLDER_COLLECTIONS
+			return !isColumn ? PLACEHOLDER_COLLECTIONS.slice(0, 5) : PLACEHOLDER_COLLECTIONS
 
 		const filteredCollectibles = collections.filter(
 			collection =>

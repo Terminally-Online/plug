@@ -43,9 +43,9 @@ export const SocketTokenList: FC<
 		if (search !== "" && tokens.length === 0) return Array(5).fill(undefined)
 
 		const isEmptyResults = (search === "" && tokens.length == 0)
-		const isPlaceholder = isColumn && (!tokens || isAnonymous || isEmptyResults)
+		const isPlaceholder = (!tokens || isAnonymous || isEmptyResults)
 
-		if (isPlaceholder) return PLACEHOLDER_TOKENS
+		if (isPlaceholder) return !isColumn ? PLACEHOLDER_TOKENS.slice(0, 5) : PLACEHOLDER_TOKENS
 
 		const filteredTokens = tokens.filter(
 			token =>
