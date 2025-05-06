@@ -39,7 +39,7 @@ var (
 		plug_actions.Deploy,
 		nil,
 		&actions.ActionProperties{
-			IsInternalOnly: true,
+			IsUnlisted: true,
 		},
 		actions.IsEmptyOnchainFunc,
 	)

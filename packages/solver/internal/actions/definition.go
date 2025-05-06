@@ -13,10 +13,10 @@ import (
 type ActionFunc[T any] func(lookup *SchemaLookup[T]) ([]signature.Plug, error)
 type ActionOptionsFunc[T any] func(lookup *SchemaLookup[T]) (map[int]Options, error)
 type ActionProperties struct {
-	Type           string `json:"type" default:"action,omitempty"`
+	Type           string `json:"type" default:"action"`
 	IsUserSpecific bool   `json:"isUserSpecific" default:"false"`
 	IsSearchable   bool   `json:"isSearchable" default:"false"`
-	IsInternalOnly bool   `json:"isInternalOnly" default:"false"`
+	IsUnlisted     bool   `json:"isUnlisted" default:"false"`
 }
 
 type ActionDefinitionInterface interface {
@@ -25,7 +25,7 @@ type ActionDefinitionInterface interface {
 	GetProperties() ActionProperties
 	GetIsUserSpecific() bool
 	GetIsSearchable() bool
-	GetIsInternalOnly() bool
+	GetIsUnlisted() bool
 	GetHandler() ActionFunc[any]
 	GetOptions() ActionOptionsFunc[any]
 	GetCoils() ([]coil.Update, error)
@@ -53,6 +53,9 @@ func NewActionDefinition[T any](
 	defaultProperties := ActionProperties{}
 	if properties == nil {
 		properties = &defaultProperties
+	}
+	if properties.Type == "" {
+		properties.Type = "action"
 	}
 
 	return &ActionDefinition[T]{
@@ -84,8 +87,8 @@ func (d *ActionDefinition[T]) GetIsSearchable() bool {
 	return d.Properties.IsSearchable
 }
 
-func (d *ActionDefinition[T]) GetIsInternalOnly() bool {
-	return d.Properties.IsInternalOnly
+func (d *ActionDefinition[T]) GetIsUnlisted() bool {
+	return d.Properties.IsUnlisted
 }
 
 func (d *ActionDefinition[T]) GetHandler() ActionFunc[any] {

@@ -87,7 +87,7 @@ export const RunFrame: FC<{
 	const isActionful = useMemo(() => {
 		if (!plug || !solverActions) return false
 
-		return plug.actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
+		return plug.actions.some(action => solverActions[action.protocol]?.schema[action.action]?.properties.type === "action")
 	}, [plug, solverActions])
 
 	// Using our atom to check if all sentences are valid

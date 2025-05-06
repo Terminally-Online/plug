@@ -88,9 +88,9 @@ func GetAllSchemas(s *solver.Solver, chainId uint64) (map[string]actions.Protoco
 		for supportedAction := range handler.Actions {
 			if chainSchema, ok := schemas[supportedAction]; ok {
 				protocolSchema.Schema[supportedAction] = actions.Schema{
-					Type:     chainSchema.Schema.Type,
-					Sentence: chainSchema.Schema.Sentence,
-					Coils:    chainSchema.Schema.Coils,
+					Sentence:   chainSchema.Schema.Sentence,
+					Coils:      chainSchema.Schema.Coils,
+					Properties: chainSchema.Schema.Properties,
 				}
 			}
 		}
@@ -119,9 +119,9 @@ func GetProtocolSchema(handler *actions.Protocol, protocol string, chainId uint6
 	for supportedAction := range handler.Actions {
 		if chainSchema, ok := schemas[supportedAction]; ok {
 			protocolSchema.Schema[supportedAction] = actions.Schema{
-				Type:     chainSchema.Schema.Type,
-				Sentence: chainSchema.Schema.Sentence,
-				Coils:    chainSchema.Schema.Coils,
+				Sentence:   chainSchema.Schema.Sentence,
+				Coils:      chainSchema.Schema.Coils,
+				Properties: chainSchema.Schema.Properties,
 			}
 		}
 	}

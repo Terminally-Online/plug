@@ -27,12 +27,6 @@ func NewProtocol(p Protocol) Protocol {
 
 		schemas[action] = ChainSchema{
 			Schema: Schema{
-				Type: func() string {
-					if definition.GetType() == "" {
-						return TypeAction
-					}
-					return definition.GetType()
-				}(),
 				Sentence:   definition.GetSentence(),
 				Properties: definition.GetProperties(),
 				Coils:      coilKeys,
