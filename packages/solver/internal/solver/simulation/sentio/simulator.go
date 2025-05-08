@@ -1,113 +1,104 @@
 package sentio
 
-import (
-	"fmt"
-	"solver/internal/database/models"
-	"solver/internal/solver/signature"
+// func SimulateLivePlugsWithSentio(livePlugs *signature.LivePlugs, apiKey string) (*models.Run, error) {
+// 	client := NewSentioClient(apiKey)
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-)
+// 	routerAddress := livePlugs.GetRouterAddress()
 
-func SimulateLivePlugsWithSentio(livePlugs *signature.LivePlugs, apiKey string) (*models.Run, error) {
-	client := NewClient(apiKey)
+// 	var callData []byte
+// 	var err error
 
-	routerAddress := livePlugs.GetRouterAddress()
+// 	if livePlugs.Data != "" {
+// 		callDataStr, err := hexutil.Decode(livePlugs.Data)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to decode call data: %v", err)
+// 		}
+// 		callData = callDataStr
+// 	} else {
+// 		callData, err = livePlugs.GetCallData()
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to get call data: %v", err)
+// 		}
+// 	}
 
-	var callData []byte
-	var err error
+// 	fromAddress := common.HexToAddress(livePlugs.From)
+// 	simulationID, err := client.SimulateTransaction(
+// 		livePlugs.ChainId,
+// 		fromAddress,
+// 		routerAddress,
+// 		callData,
+// 		nil,
+// 	)
 
-	if livePlugs.Data != "" {
-		callDataStr, err := hexutil.Decode(livePlugs.Data)
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode call data: %v", err)
-		}
-		callData = callDataStr
-	} else {
-		callData, err = livePlugs.GetCallData()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get call data: %v", err)
-		}
-	}
+// 	if err != nil {
+// 		return nil, fmt.Errorf("simulation failed: %v", err)
+// 	}
 
-	fromAddress := common.HexToAddress(livePlugs.From)
-	simulationID, err := client.SimulateTransaction(
-		livePlugs.ChainId,
-		fromAddress,
-		routerAddress,
-		callData,
-		nil,
-	)
+// 	callTrace, err := client.GetCallTrace(livePlugs.ChainId, simulationID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get call trace: %v", err)
+// 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("simulation failed: %v", err)
-	}
+// 	// Get state diff but ignore it for now as it's not being used
+// 	_, err = client.GetStateDiff(livePlugs.ChainId, simulationID)
+// 	if err != nil {
+// 		fmt.Printf("Warning: failed to get state diff: %v\n", err)
+// 	}
 
-	callTrace, err := client.GetCallTrace(livePlugs.ChainId, simulationID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get call trace: %v", err)
-	}
+// 	var errorReason *string
+// 	if callTrace.Error != "" {
+// 		reason := ExtractErrorFromCallTrace(callTrace)
+// 		if reason != "" {
+// 			errorReason = &reason
+// 		}
+// 	}
 
-	// Get state diff but ignore it for now as it's not being used
-	_, err = client.GetStateDiff(livePlugs.ChainId, simulationID)
-	if err != nil {
-		fmt.Printf("Warning: failed to get state diff: %v\n", err)
-	}
+// 	// var stateChanges []models.StateChangeSummary
+// 	// if stateDiff != nil {
+// 	// 	summaries := SummarizeStateChanges(stateDiff)
+// 	// 	for _, summary := range summaries {
+// 	// 		stateChanges = append(stateChanges, models.StateChangeSummary{
+// 	// 			Address:     summary.Address,
+// 	// 			Description: summary.Description,
+// 	// 			Type:        summary.Type,
+// 	// 			ValueChange: summary.ValueChange,
+// 	// 		})
+// 	// 	}
+// 	// }
 
-	var errorReason *string
-	if callTrace.Error != "" {
-		reason := ExtractErrorFromCallTrace(callTrace)
-		if reason != "" {
-			errorReason = &reason
-		}
-	}
+// 	status := "success"
+// 	var errString *string
+// 	if !callTrace.Success || callTrace.Error != "" {
+// 		status = "failed"
+// 		errString = &callTrace.Error
+// 	}
 
-	// var stateChanges []models.StateChangeSummary
-	// if stateDiff != nil {
-	// 	summaries := SummarizeStateChanges(stateDiff)
-	// 	for _, summary := range summaries {
-	// 		stateChanges = append(stateChanges, models.StateChangeSummary{
-	// 			Address:     summary.Address,
-	// 			Description: summary.Description,
-	// 			Type:        summary.Type,
-	// 			ValueChange: summary.ValueChange,
-	// 		})
-	// 	}
-	// }
+// 	var gasUsed uint64
+// 	if callTrace.GasUsed > 0 {
+// 		gasUsed = uint64(callTrace.GasUsed)
+// 	}
 
-	status := "success"
-	var errString *string
-	if !callTrace.Success || callTrace.Error != "" {
-		status = "failed"
-		errString = &callTrace.Error
-	}
+// 	// callTraceJson, _ := json.Marshal(callTrace)
+// 	// stateDiffJson, _ := json.Marshal(stateDiff)
 
-	var gasUsed uint64
-	if callTrace.GasUsed > 0 {
-		gasUsed = uint64(callTrace.GasUsed)
-	}
+// 	var errors []string
+// 	if errString != nil {
+// 		errors = []string{*errString}
+// 	}
 
-	// callTraceJson, _ := json.Marshal(callTrace)
-	// stateDiffJson, _ := json.Marshal(stateDiff)
+// 	run := &models.Run{
+// 		LivePlugsId: livePlugs.Id,
+// 		IntentId:    livePlugs.IntentId,
+// 		From:        livePlugs.From,
+// 		To:          routerAddress.Hex(),
+// 		Status:      status,
+// 		Error:       errorReason,
+// 		Errors:      errors,
+// 		GasUsed:     gasUsed,
+// 		Data: models.RunOutputData{
+// 			Raw: hexutil.MustDecode(callTrace.Output),
+// 		},
+// 	}
 
-	var errors []string
-	if errString != nil {
-		errors = []string{*errString}
-	}
-
-	run := &models.Run{
-		LivePlugsId: livePlugs.Id,
-		IntentId:    livePlugs.IntentId,
-		From:        livePlugs.From,
-		To:          routerAddress.Hex(),
-		Status:      status,
-		Error:       errorReason,
-		Errors:      errors,
-		GasUsed:     gasUsed,
-		Data: models.RunOutputData{
-			Raw: hexutil.MustDecode(callTrace.Output),
-		},
-	}
-
-	return run, nil
-}
+// 	return run, nil
+// }

@@ -8,6 +8,7 @@ import (
 	"solver/internal/database/models"
 	"solver/internal/database/types"
 	"solver/internal/solver/signature"
+	"solver/internal/solver/simulation/sentio"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -66,6 +67,39 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	callTraceConfig := map[string]any{
 		"tracer": "callTracer",
 	}
+
+	// REMOVE
+	var gasEstimate string
+	if err := rpcClient.CallContext(ctx, &gasEstimate, "eth_estimateGas", tx); err != nil {
+		return nil, fmt.Errorf("failed to estimate gas: %v", err)
+	}
+
+	// Calculate total value by summing up values from CallWithValue plugs
+	// TODO MASON: do we need to do this? Why haven't we done it before?
+	totalValue := new(big.Int)
+	for _, plug := range livePlugs.Plugs.Plugs {
+		if plug.Value != nil {
+			totalValue.Add(totalValue, plug.Value)
+		}
+	}
+
+	sentio := sentio.NewSentioClient("")
+	simulationID, err := sentio.SimulateTransaction(
+		livePlugs.ChainId,
+		common.HexToAddress(livePlugs.From),
+		routerAddress,
+		livePlugs.Data,
+		gasEstimate,
+		baseFee.BaseFeePerGas,
+		blockNumber,
+		*totalValue,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("sentio simulation failed: %v", err)
+	}
+	fmt.Printf("Simulation ID: %s\n", simulationID)
+
+	// REMOVE
 
 	var trace struct {
 		Type     string         `json:"type"`
@@ -145,9 +179,18 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	if tx.Value != nil {
 		simTx["value"] = hexutil.EncodeBig(tx.Value)
 	}
+	fmt.Printf("Value: %s\n", tx.Value)
 
 	if tx.Gas != nil {
 		simTx["gas"] = hexutil.EncodeBig(tx.Gas)
+	} else {
+		// For simulations, I believe the RPC was setting a huge amount of gas to ensure it did not run out, and as a result we lacked the funds to successfully simulate.
+		// I'm not entirely sure if we NEED to estimate the gas, but it was failing without it. I'm not sure why this is just popping up now, but I will come back to this.
+		var gasEstimate string
+		if err := rpcClient.CallContext(ctx, &gasEstimate, "eth_estimateGas", simTx); err != nil {
+			return nil, fmt.Errorf("failed to estimate gas: %v", err)
+		}
+		simTx["gas"] = gasEstimate
 	}
 
 	// Get block metadata for simulation

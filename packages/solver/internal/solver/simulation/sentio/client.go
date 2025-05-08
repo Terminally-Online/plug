@@ -7,8 +7,6 @@ import (
 	"io"
 	"math/big"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -21,253 +19,251 @@ const (
 )
 
 type Client struct {
-	APIKey     string
-	BaseURL    string
-	HttpClient *http.Client
+	APIKey       string
+	ProjectOwner string
+	ProjectSlug  string
+	BaseURL      string
+	HttpClient   *http.Client
 }
 
-func NewClient(apiKey string) *Client {
-	// TODO MASON: remove this placeholder test key for a production env one
-	apiKey = "6hyo9WIlX1As5wG6NWLfMTu8H6Y5BS9Wr"
-
+func NewSentioClient(apiKey string) *Client {
+	// TODO MASON: remove these placeholders for a production env one
 	if apiKey == "" {
-		apiKey = os.Getenv("SENTIO_API_KEY")
+		apiKey = "6hyo9WIlX1As5wG6NWLfMTu8H6Y5BS9Wr"
 	}
-
 	return &Client{
-		APIKey:  apiKey,
-		BaseURL: SentioBaseURL,
+		ProjectOwner: "mason",
+		ProjectSlug:  "testing",
+		APIKey:       apiKey,
+		BaseURL:      SentioBaseURL,
 		HttpClient: &http.Client{
 			Timeout: DefaultTimeout,
 		},
 	}
 }
 
-func (c *Client) SimulateTransaction(chainID uint64, from, to common.Address, data []byte, value *big.Int) (string, error) {
-	url := fmt.Sprintf("%s/simulate", c.BaseURL)
+func (c *Client) SimulateTransaction(chainID uint64, from, to common.Address, data string, gas string, gasPrice string, blockNumber string, value big.Int) (string, error) {
+	// https://app.sentio.xyz/api/v1/solidity/{owner}/{slug}/{chainId}/simulation
+	chainIDStr := fmt.Sprintf("%d", chainID)
+	url := fmt.Sprintf("%s/%s/%s/%s/simulation", c.BaseURL, c.ProjectOwner, c.ProjectSlug, chainIDStr)
 
-	// Prepare the request body
 	reqBody := map[string]interface{}{
-		"networkId": chainID,
-		"tx": map[string]interface{}{
-			"from": from.Hex(),
-			"to":   to.Hex(),
-			"data": hexutil.Bytes(data).String(),
+		"simulation": map[string]interface{}{
+			"networkId": "1", // do we need to change this ever?
+			"chainId":   chainIDStr,
+			"chainSpec": map[string]interface{}{
+				"chainId": chainIDStr,
+				// "forkId": "latest", ???
+			},
+			"to":               to,
+			"from":             from,
+			"input":            data,
+			"blockNumber":      "latest",
+			"gas":              gas,
+			"gasPrice":         gasPrice,
+			"value":            hexutil.EncodeBig(&value),
+			"transactionIndex": "0", // TODO MASON: how tf do we know?
 		},
 	}
 
-	// Add value if provided
-	if value != nil && value.Cmp(big.NewInt(0)) != 0 {
-		reqBody["tx"].(map[string]interface{})["value"] = hexutil.EncodeBig(value)
-	}
-
-	// Marshal request to JSON
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal simulation request: %v", err)
 	}
 
-	// Create HTTP request
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", fmt.Errorf("failed to create simulation request: %v", err)
 	}
 
-	// Set headers
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("api-key", c.APIKey)
 
-	// Execute request
 	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("simulation request failed: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// Read response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to read simulation response: %v", err)
 	}
 
-	// Check for non-200 status code
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("simulation failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
-	// Parse response
-	var simResponse struct {
-		SimulationId string `json:"simulationId"`
-		Success      bool   `json:"success"`
-		Error        string `json:"error"`
-	}
+	fmt.Printf("Simulation response: %s\n", string(body))
 
+	var simResponse SimulationResponse
 	if err := json.Unmarshal(body, &simResponse); err != nil {
 		return "", fmt.Errorf("failed to parse simulation response: %v", err)
 	}
+	fmt.Printf("Simulation response parsed: %+v\n", simResponse)
 
 	// Check for errors
-	if !simResponse.Success {
-		return "", fmt.Errorf("simulation failed: %s", simResponse.Error)
+	if simResponse.Result.TransactionReceipt.Error != "" {
+		return "", fmt.Errorf("simulation failed: %s", simResponse.Result.TransactionReceipt.Error)
 	}
 
-	return simResponse.SimulationId, nil
+	return simResponse.Simulation.Id, nil
 }
 
-func (c *Client) GetCallTrace(chainID uint64, simulationID string) (*CallTrace, error) {
-	url := fmt.Sprintf("%s/call_trace", c.BaseURL)
+// func (c *Client) GetCallTrace(chainID uint64, simulationID string) (*CallTrace, error) {
+// 	url := fmt.Sprintf("%s/call_trace", c.BaseURL)
 
-	reqBody := map[string]interface{}{
-		"networkId": chainID,
-		"txId": map[string]interface{}{
-			"simulationId": simulationID,
-		},
-		"withInternalCalls": true,
-	}
+// 	reqBody := map[string]interface{}{
+// 		"networkId": chainID,
+// 		"txId": map[string]interface{}{
+// 			"simulationId": simulationID,
+// 		},
+// 		"withInternalCalls": true,
+// 	}
 
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal call trace request: %v", err)
-	}
+// 	jsonData, err := json.Marshal(reqBody)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to marshal call trace request: %v", err)
+// 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create call trace request: %v", err)
-	}
+// 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to create call trace request: %v", err)
+// 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api-key", c.APIKey)
+// 	req.Header.Set("Content-Type", "application/json")
+// 	req.Header.Set("api-key", c.APIKey)
 
-	resp, err := c.HttpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("call trace request failed: %v", err)
-	}
-	defer resp.Body.Close()
+// 	resp, err := c.HttpClient.Do(req)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("call trace request failed: %v", err)
+// 	}
+// 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read call trace response: %v", err)
-	}
+// 	body, err := io.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to read call trace response: %v", err)
+// 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("call trace request failed with status %d: %s", resp.StatusCode, string(body))
-	}
+// 	if resp.StatusCode != http.StatusOK {
+// 		return nil, fmt.Errorf("call trace request failed with status %d: %s", resp.StatusCode, string(body))
+// 	}
 
-	var callTrace CallTrace
-	if err := json.Unmarshal(body, &callTrace); err != nil {
-		return nil, fmt.Errorf("failed to parse call trace response: %v", err)
-	}
+// 	var callTrace CallTrace
+// 	if err := json.Unmarshal(body, &callTrace); err != nil {
+// 		return nil, fmt.Errorf("failed to parse call trace response: %v", err)
+// 	}
 
-	return &callTrace, nil
-}
+// 	return &callTrace, nil
+// }
 
-func (c *Client) GetStateDiff(chainID uint64, simulationID string) (*StateDiff, error) {
-	url := fmt.Sprintf("%s/state_diff", c.BaseURL)
+// func (c *Client) GetStateDiff(chainID uint64, simulationID string) (*StateDiff, error) {
+// 	url := fmt.Sprintf("%s/state_diff", c.BaseURL)
 
-	reqBody := map[string]interface{}{
-		"networkId": chainID,
-		"txId": map[string]interface{}{
-			"simulationId": simulationID,
-		},
-	}
+// 	reqBody := map[string]interface{}{
+// 		"networkId": chainID,
+// 		"txId": map[string]interface{}{
+// 			"simulationId": simulationID,
+// 		},
+// 	}
 
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal state diff request: %v", err)
-	}
+// 	jsonData, err := json.Marshal(reqBody)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to marshal state diff request: %v", err)
+// 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create state diff request: %v", err)
-	}
+// 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to create state diff request: %v", err)
+// 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api-key", c.APIKey)
+// 	req.Header.Set("Content-Type", "application/json")
+// 	req.Header.Set("api-key", c.APIKey)
 
-	resp, err := c.HttpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("state diff request failed: %v", err)
-	}
-	defer resp.Body.Close()
+// 	resp, err := c.HttpClient.Do(req)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("state diff request failed: %v", err)
+// 	}
+// 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read state diff response: %v", err)
-	}
+// 	body, err := io.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to read state diff response: %v", err)
+// 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("state diff request failed with status %d: %s", resp.StatusCode, string(body))
-	}
+// 	if resp.StatusCode != http.StatusOK {
+// 		return nil, fmt.Errorf("state diff request failed with status %d: %s", resp.StatusCode, string(body))
+// 	}
 
-	var stateDiff StateDiff
-	if err := json.Unmarshal(body, &stateDiff); err != nil {
-		return nil, fmt.Errorf("failed to parse state diff response: %v", err)
-	}
+// 	var stateDiff StateDiff
+// 	if err := json.Unmarshal(body, &stateDiff); err != nil {
+// 		return nil, fmt.Errorf("failed to parse state diff response: %v", err)
+// 	}
 
-	return &stateDiff, nil
-}
+// 	return &stateDiff, nil
+// }
 
-// TODO MASON: wtf is going on here
-func ExtractErrorFromCallTrace(trace *CallTrace) string {
-	if trace == nil || trace.Error == "" {
-		return ""
-	}
+// // TODO MASON: wtf is going on here
+// func ExtractErrorFromCallTrace(trace *CallTrace) string {
+// 	if trace == nil || trace.Error == "" {
+// 		return ""
+// 	}
 
-	errorMsg := trace.Error
+// 	errorMsg := trace.Error
 
-	if strings.Contains(errorMsg, "execution reverted") {
-		if trace.Output != "" && strings.HasPrefix(trace.Output, "0x08c379a0") {
-			if len(trace.Output) >= 138 { // 2 + 8 + 64 + 64 (0x + selector + offset + length)
-				// Extract the string length (convert hex to decimal)
-				lenHex := trace.Output[74:138]
-				lenVal, ok := new(big.Int).SetString(lenHex, 16)
-				if ok {
-					msgLen := lenVal.Int64() * 2 // Each byte is 2 hex chars
-					if len(trace.Output) >= 138+int(msgLen) {
-						msgHex := trace.Output[138 : 138+int(msgLen)]
-						// Convert hex to ASCII
-						bytes, err := hexutil.Decode("0x" + msgHex)
-						if err == nil {
-							return string(bytes)
-						}
-					}
-				}
-			}
-		}
+// 	if strings.Contains(errorMsg, "execution reverted") {
+// 		if trace.Output != "" && strings.HasPrefix(trace.Output, "0x08c379a0") {
+// 			if len(trace.Output) >= 138 { // 2 + 8 + 64 + 64 (0x + selector + offset + length)
+// 				// Extract the string length (convert hex to decimal)
+// 				lenHex := trace.Output[74:138]
+// 				lenVal, ok := new(big.Int).SetString(lenHex, 16)
+// 				if ok {
+// 					msgLen := lenVal.Int64() * 2 // Each byte is 2 hex chars
+// 					if len(trace.Output) >= 138+int(msgLen) {
+// 						msgHex := trace.Output[138 : 138+int(msgLen)]
+// 						// Convert hex to ASCII
+// 						bytes, err := hexutil.Decode("0x" + msgHex)
+// 						if err == nil {
+// 							return string(bytes)
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
 
-		// Check recursive calls for revert reasons
-		if trace.Calls != nil && len(trace.Calls) > 0 {
-			for _, call := range trace.Calls {
-				subCall := CallTrace(call)
-				if reason := ExtractErrorFromCallTrace(&subCall); reason != "" {
-					return reason
-				}
-			}
-		}
-	}
+// 		// Check recursive calls for revert reasons
+// 		if trace.Calls != nil && len(trace.Calls) > 0 {
+// 			for _, call := range trace.Calls {
+// 				subCall := CallTrace(call)
+// 				if reason := ExtractErrorFromCallTrace(&subCall); reason != "" {
+// 					return reason
+// 				}
+// 			}
+// 		}
+// 	}
 
-	// Common error patterns
-	errorPatterns := map[string]string{
-		"execution reverted":                 "Transaction reverted",
-		"out of gas":                         "Transaction ran out of gas",
-		"invalid opcode":                     "Contract execution error: invalid opcode",
-		"invalid jump destination":           "Contract execution error: invalid jump destination",
-		"stack underflow":                    "Contract execution error: stack underflow",
-		"stack overflow":                     "Contract execution error: stack overflow",
-		"invalid instruction":                "Contract execution error: invalid instruction",
-		"insufficient balance":               "Insufficient balance for transfer",
-		"exceeded the maximum amount of gas": "Exceeded gas limit",
-	}
+// 	// Common error patterns
+// 	errorPatterns := map[string]string{
+// 		"execution reverted":                 "Transaction reverted",
+// 		"out of gas":                         "Transaction ran out of gas",
+// 		"invalid opcode":                     "Contract execution error: invalid opcode",
+// 		"invalid jump destination":           "Contract execution error: invalid jump destination",
+// 		"stack underflow":                    "Contract execution error: stack underflow",
+// 		"stack overflow":                     "Contract execution error: stack overflow",
+// 		"invalid instruction":                "Contract execution error: invalid instruction",
+// 		"insufficient balance":               "Insufficient balance for transfer",
+// 		"exceeded the maximum amount of gas": "Exceeded gas limit",
+// 	}
 
-	// Try to match against known error patterns
-	for pattern, humanMsg := range errorPatterns {
-		if strings.Contains(errorMsg, pattern) {
-			return humanMsg
-		}
-	}
+// 	// Try to match against known error patterns
+// 	for pattern, humanMsg := range errorPatterns {
+// 		if strings.Contains(errorMsg, pattern) {
+// 			return humanMsg
+// 		}
+// 	}
 
-	return errorMsg
-}
+// 	return errorMsg
+// }
 
 // func SummarizeStateChanges(diff *StateDiff) []StateChangeSummary {
 // 	if diff == nil || len(diff.StateChanges) == 0 {
