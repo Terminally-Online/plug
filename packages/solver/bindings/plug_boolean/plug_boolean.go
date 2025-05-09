@@ -31,7 +31,7 @@ var (
 
 // PlugBooleanMetaData contains all meta data concerning the PlugBoolean contract.
 var PlugBooleanMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"function\",\"name\":\"isAfterTime\",\"inputs\":[{\"name\":\"time\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isAnd\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isBeforeTime\",\"inputs\":[{\"name\":\"time\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isBetween\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"min\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"max\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isBetweenTimes\",\"inputs\":[{\"name\":\"time\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"end\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isEqual\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isFalse\",\"inputs\":[{\"name\":\"value\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isGreaterThan\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isGreaterThanOrEqual\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isImplies\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isLessThan\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isLessThanOrEqual\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNand\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNor\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNot\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNotEqual\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"threshold\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isOr\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isSameDay\",\"inputs\":[{\"name\":\"timestamp1\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"timestamp2\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isTrue\",\"inputs\":[{\"name\":\"value\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isWeekday\",\"inputs\":[{\"name\":\"timestamp\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isWeekend\",\"inputs\":[{\"name\":\"timestamp\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isXor\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"}]",
+	ABI: "[{\"type\":\"function\",\"name\":\"isAnd\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isBetween\",\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"min\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"max\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isEqual\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isGreaterThan\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isGreaterThanOrEqual\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isImplies\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isLessThan\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isLessThanOrEqual\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNand\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNor\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNot\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isNotEqual\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isOr\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"isXor\",\"inputs\":[{\"name\":\"a\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"b\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"pure\"}]",
 }
 
 // PlugBooleanABI is the input ABI used to generate the binding from.
@@ -180,37 +180,6 @@ func (_PlugBoolean *PlugBooleanTransactorRaw) Transact(opts *bind.TransactOpts, 
 	return _PlugBoolean.Contract.contract.Transact(opts, method, params...)
 }
 
-// IsAfterTime is a free data retrieval call binding the contract method 0xb61536ae.
-//
-// Solidity: function isAfterTime(uint256 time, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsAfterTime(opts *bind.CallOpts, time *big.Int, threshold *big.Int) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isAfterTime", time, threshold)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsAfterTime is a free data retrieval call binding the contract method 0xb61536ae.
-//
-// Solidity: function isAfterTime(uint256 time, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsAfterTime(time *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsAfterTime(&_PlugBoolean.CallOpts, time, threshold)
-}
-
-// IsAfterTime is a free data retrieval call binding the contract method 0xb61536ae.
-//
-// Solidity: function isAfterTime(uint256 time, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsAfterTime(time *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsAfterTime(&_PlugBoolean.CallOpts, time, threshold)
-}
-
 // IsAnd is a free data retrieval call binding the contract method 0x1d235a52.
 //
 // Solidity: function isAnd(bool a, bool b) pure returns(bool result)
@@ -240,37 +209,6 @@ func (_PlugBoolean *PlugBooleanSession) IsAnd(a bool, b bool) (bool, error) {
 // Solidity: function isAnd(bool a, bool b) pure returns(bool result)
 func (_PlugBoolean *PlugBooleanCallerSession) IsAnd(a bool, b bool) (bool, error) {
 	return _PlugBoolean.Contract.IsAnd(&_PlugBoolean.CallOpts, a, b)
-}
-
-// IsBeforeTime is a free data retrieval call binding the contract method 0xb2df673f.
-//
-// Solidity: function isBeforeTime(uint256 time, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsBeforeTime(opts *bind.CallOpts, time *big.Int, threshold *big.Int) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isBeforeTime", time, threshold)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsBeforeTime is a free data retrieval call binding the contract method 0xb2df673f.
-//
-// Solidity: function isBeforeTime(uint256 time, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsBeforeTime(time *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsBeforeTime(&_PlugBoolean.CallOpts, time, threshold)
-}
-
-// IsBeforeTime is a free data retrieval call binding the contract method 0xb2df673f.
-//
-// Solidity: function isBeforeTime(uint256 time, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsBeforeTime(time *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsBeforeTime(&_PlugBoolean.CallOpts, time, threshold)
 }
 
 // IsBetween is a free data retrieval call binding the contract method 0x95f4ac38.
@@ -304,43 +242,12 @@ func (_PlugBoolean *PlugBooleanCallerSession) IsBetween(value *big.Int, min *big
 	return _PlugBoolean.Contract.IsBetween(&_PlugBoolean.CallOpts, value, min, max)
 }
 
-// IsBetweenTimes is a free data retrieval call binding the contract method 0x6d52497a.
-//
-// Solidity: function isBetweenTimes(uint256 time, uint256 start, uint256 end) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsBetweenTimes(opts *bind.CallOpts, time *big.Int, start *big.Int, end *big.Int) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isBetweenTimes", time, start, end)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsBetweenTimes is a free data retrieval call binding the contract method 0x6d52497a.
-//
-// Solidity: function isBetweenTimes(uint256 time, uint256 start, uint256 end) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsBetweenTimes(time *big.Int, start *big.Int, end *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsBetweenTimes(&_PlugBoolean.CallOpts, time, start, end)
-}
-
-// IsBetweenTimes is a free data retrieval call binding the contract method 0x6d52497a.
-//
-// Solidity: function isBetweenTimes(uint256 time, uint256 start, uint256 end) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsBetweenTimes(time *big.Int, start *big.Int, end *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsBetweenTimes(&_PlugBoolean.CallOpts, time, start, end)
-}
-
 // IsEqual is a free data retrieval call binding the contract method 0x3ced224a.
 //
-// Solidity: function isEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsEqual(opts *bind.CallOpts, value *big.Int, threshold *big.Int) (bool, error) {
+// Solidity: function isEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCaller) IsEqual(opts *bind.CallOpts, a *big.Int, b *big.Int) (bool, error) {
 	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isEqual", value, threshold)
+	err := _PlugBoolean.contract.Call(opts, &out, "isEqual", a, b)
 
 	if err != nil {
 		return *new(bool), err
@@ -354,55 +261,24 @@ func (_PlugBoolean *PlugBooleanCaller) IsEqual(opts *bind.CallOpts, value *big.I
 
 // IsEqual is a free data retrieval call binding the contract method 0x3ced224a.
 //
-// Solidity: function isEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanSession) IsEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsEqual is a free data retrieval call binding the contract method 0x3ced224a.
 //
-// Solidity: function isEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsEqual(&_PlugBoolean.CallOpts, value, threshold)
-}
-
-// IsFalse is a free data retrieval call binding the contract method 0x410dbb8b.
-//
-// Solidity: function isFalse(bool value) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsFalse(opts *bind.CallOpts, value bool) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isFalse", value)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsFalse is a free data retrieval call binding the contract method 0x410dbb8b.
-//
-// Solidity: function isFalse(bool value) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsFalse(value bool) (bool, error) {
-	return _PlugBoolean.Contract.IsFalse(&_PlugBoolean.CallOpts, value)
-}
-
-// IsFalse is a free data retrieval call binding the contract method 0x410dbb8b.
-//
-// Solidity: function isFalse(bool value) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsFalse(value bool) (bool, error) {
-	return _PlugBoolean.Contract.IsFalse(&_PlugBoolean.CallOpts, value)
+// Solidity: function isEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCallerSession) IsEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsGreaterThan is a free data retrieval call binding the contract method 0xdcf6a592.
 //
-// Solidity: function isGreaterThan(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsGreaterThan(opts *bind.CallOpts, value *big.Int, threshold *big.Int) (bool, error) {
+// Solidity: function isGreaterThan(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCaller) IsGreaterThan(opts *bind.CallOpts, a *big.Int, b *big.Int) (bool, error) {
 	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isGreaterThan", value, threshold)
+	err := _PlugBoolean.contract.Call(opts, &out, "isGreaterThan", a, b)
 
 	if err != nil {
 		return *new(bool), err
@@ -416,24 +292,24 @@ func (_PlugBoolean *PlugBooleanCaller) IsGreaterThan(opts *bind.CallOpts, value 
 
 // IsGreaterThan is a free data retrieval call binding the contract method 0xdcf6a592.
 //
-// Solidity: function isGreaterThan(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsGreaterThan(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsGreaterThan(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isGreaterThan(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanSession) IsGreaterThan(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsGreaterThan(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsGreaterThan is a free data retrieval call binding the contract method 0xdcf6a592.
 //
-// Solidity: function isGreaterThan(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsGreaterThan(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsGreaterThan(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isGreaterThan(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCallerSession) IsGreaterThan(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsGreaterThan(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsGreaterThanOrEqual is a free data retrieval call binding the contract method 0x09aa2a75.
 //
-// Solidity: function isGreaterThanOrEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsGreaterThanOrEqual(opts *bind.CallOpts, value *big.Int, threshold *big.Int) (bool, error) {
+// Solidity: function isGreaterThanOrEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCaller) IsGreaterThanOrEqual(opts *bind.CallOpts, a *big.Int, b *big.Int) (bool, error) {
 	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isGreaterThanOrEqual", value, threshold)
+	err := _PlugBoolean.contract.Call(opts, &out, "isGreaterThanOrEqual", a, b)
 
 	if err != nil {
 		return *new(bool), err
@@ -447,16 +323,16 @@ func (_PlugBoolean *PlugBooleanCaller) IsGreaterThanOrEqual(opts *bind.CallOpts,
 
 // IsGreaterThanOrEqual is a free data retrieval call binding the contract method 0x09aa2a75.
 //
-// Solidity: function isGreaterThanOrEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsGreaterThanOrEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsGreaterThanOrEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isGreaterThanOrEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanSession) IsGreaterThanOrEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsGreaterThanOrEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsGreaterThanOrEqual is a free data retrieval call binding the contract method 0x09aa2a75.
 //
-// Solidity: function isGreaterThanOrEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsGreaterThanOrEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsGreaterThanOrEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isGreaterThanOrEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCallerSession) IsGreaterThanOrEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsGreaterThanOrEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsImplies is a free data retrieval call binding the contract method 0x3eaea839.
@@ -492,10 +368,10 @@ func (_PlugBoolean *PlugBooleanCallerSession) IsImplies(a bool, b bool) (bool, e
 
 // IsLessThan is a free data retrieval call binding the contract method 0xe9970b6c.
 //
-// Solidity: function isLessThan(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsLessThan(opts *bind.CallOpts, value *big.Int, threshold *big.Int) (bool, error) {
+// Solidity: function isLessThan(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCaller) IsLessThan(opts *bind.CallOpts, a *big.Int, b *big.Int) (bool, error) {
 	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isLessThan", value, threshold)
+	err := _PlugBoolean.contract.Call(opts, &out, "isLessThan", a, b)
 
 	if err != nil {
 		return *new(bool), err
@@ -509,24 +385,24 @@ func (_PlugBoolean *PlugBooleanCaller) IsLessThan(opts *bind.CallOpts, value *bi
 
 // IsLessThan is a free data retrieval call binding the contract method 0xe9970b6c.
 //
-// Solidity: function isLessThan(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsLessThan(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsLessThan(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isLessThan(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanSession) IsLessThan(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsLessThan(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsLessThan is a free data retrieval call binding the contract method 0xe9970b6c.
 //
-// Solidity: function isLessThan(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsLessThan(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsLessThan(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isLessThan(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCallerSession) IsLessThan(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsLessThan(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsLessThanOrEqual is a free data retrieval call binding the contract method 0x5f3e9a58.
 //
-// Solidity: function isLessThanOrEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsLessThanOrEqual(opts *bind.CallOpts, value *big.Int, threshold *big.Int) (bool, error) {
+// Solidity: function isLessThanOrEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCaller) IsLessThanOrEqual(opts *bind.CallOpts, a *big.Int, b *big.Int) (bool, error) {
 	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isLessThanOrEqual", value, threshold)
+	err := _PlugBoolean.contract.Call(opts, &out, "isLessThanOrEqual", a, b)
 
 	if err != nil {
 		return *new(bool), err
@@ -540,16 +416,16 @@ func (_PlugBoolean *PlugBooleanCaller) IsLessThanOrEqual(opts *bind.CallOpts, va
 
 // IsLessThanOrEqual is a free data retrieval call binding the contract method 0x5f3e9a58.
 //
-// Solidity: function isLessThanOrEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsLessThanOrEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsLessThanOrEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isLessThanOrEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanSession) IsLessThanOrEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsLessThanOrEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsLessThanOrEqual is a free data retrieval call binding the contract method 0x5f3e9a58.
 //
-// Solidity: function isLessThanOrEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsLessThanOrEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsLessThanOrEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isLessThanOrEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCallerSession) IsLessThanOrEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsLessThanOrEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsNand is a free data retrieval call binding the contract method 0xaf4256ba.
@@ -647,10 +523,10 @@ func (_PlugBoolean *PlugBooleanCallerSession) IsNot(a bool) (bool, error) {
 
 // IsNotEqual is a free data retrieval call binding the contract method 0x7de3e9c1.
 //
-// Solidity: function isNotEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsNotEqual(opts *bind.CallOpts, value *big.Int, threshold *big.Int) (bool, error) {
+// Solidity: function isNotEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCaller) IsNotEqual(opts *bind.CallOpts, a *big.Int, b *big.Int) (bool, error) {
 	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isNotEqual", value, threshold)
+	err := _PlugBoolean.contract.Call(opts, &out, "isNotEqual", a, b)
 
 	if err != nil {
 		return *new(bool), err
@@ -664,16 +540,16 @@ func (_PlugBoolean *PlugBooleanCaller) IsNotEqual(opts *bind.CallOpts, value *bi
 
 // IsNotEqual is a free data retrieval call binding the contract method 0x7de3e9c1.
 //
-// Solidity: function isNotEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsNotEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsNotEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isNotEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanSession) IsNotEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsNotEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsNotEqual is a free data retrieval call binding the contract method 0x7de3e9c1.
 //
-// Solidity: function isNotEqual(uint256 value, uint256 threshold) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsNotEqual(value *big.Int, threshold *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsNotEqual(&_PlugBoolean.CallOpts, value, threshold)
+// Solidity: function isNotEqual(uint256 a, uint256 b) pure returns(bool result)
+func (_PlugBoolean *PlugBooleanCallerSession) IsNotEqual(a *big.Int, b *big.Int) (bool, error) {
+	return _PlugBoolean.Contract.IsNotEqual(&_PlugBoolean.CallOpts, a, b)
 }
 
 // IsOr is a free data retrieval call binding the contract method 0x75bafee5.
@@ -705,130 +581,6 @@ func (_PlugBoolean *PlugBooleanSession) IsOr(a bool, b bool) (bool, error) {
 // Solidity: function isOr(bool a, bool b) pure returns(bool result)
 func (_PlugBoolean *PlugBooleanCallerSession) IsOr(a bool, b bool) (bool, error) {
 	return _PlugBoolean.Contract.IsOr(&_PlugBoolean.CallOpts, a, b)
-}
-
-// IsSameDay is a free data retrieval call binding the contract method 0x4fa48a88.
-//
-// Solidity: function isSameDay(uint256 timestamp1, uint256 timestamp2) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsSameDay(opts *bind.CallOpts, timestamp1 *big.Int, timestamp2 *big.Int) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isSameDay", timestamp1, timestamp2)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsSameDay is a free data retrieval call binding the contract method 0x4fa48a88.
-//
-// Solidity: function isSameDay(uint256 timestamp1, uint256 timestamp2) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsSameDay(timestamp1 *big.Int, timestamp2 *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsSameDay(&_PlugBoolean.CallOpts, timestamp1, timestamp2)
-}
-
-// IsSameDay is a free data retrieval call binding the contract method 0x4fa48a88.
-//
-// Solidity: function isSameDay(uint256 timestamp1, uint256 timestamp2) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsSameDay(timestamp1 *big.Int, timestamp2 *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsSameDay(&_PlugBoolean.CallOpts, timestamp1, timestamp2)
-}
-
-// IsTrue is a free data retrieval call binding the contract method 0x74f13070.
-//
-// Solidity: function isTrue(bool value) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsTrue(opts *bind.CallOpts, value bool) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isTrue", value)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsTrue is a free data retrieval call binding the contract method 0x74f13070.
-//
-// Solidity: function isTrue(bool value) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsTrue(value bool) (bool, error) {
-	return _PlugBoolean.Contract.IsTrue(&_PlugBoolean.CallOpts, value)
-}
-
-// IsTrue is a free data retrieval call binding the contract method 0x74f13070.
-//
-// Solidity: function isTrue(bool value) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsTrue(value bool) (bool, error) {
-	return _PlugBoolean.Contract.IsTrue(&_PlugBoolean.CallOpts, value)
-}
-
-// IsWeekday is a free data retrieval call binding the contract method 0xe15d4b4e.
-//
-// Solidity: function isWeekday(uint256 timestamp) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsWeekday(opts *bind.CallOpts, timestamp *big.Int) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isWeekday", timestamp)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsWeekday is a free data retrieval call binding the contract method 0xe15d4b4e.
-//
-// Solidity: function isWeekday(uint256 timestamp) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsWeekday(timestamp *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsWeekday(&_PlugBoolean.CallOpts, timestamp)
-}
-
-// IsWeekday is a free data retrieval call binding the contract method 0xe15d4b4e.
-//
-// Solidity: function isWeekday(uint256 timestamp) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsWeekday(timestamp *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsWeekday(&_PlugBoolean.CallOpts, timestamp)
-}
-
-// IsWeekend is a free data retrieval call binding the contract method 0x41ff7087.
-//
-// Solidity: function isWeekend(uint256 timestamp) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCaller) IsWeekend(opts *bind.CallOpts, timestamp *big.Int) (bool, error) {
-	var out []interface{}
-	err := _PlugBoolean.contract.Call(opts, &out, "isWeekend", timestamp)
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// IsWeekend is a free data retrieval call binding the contract method 0x41ff7087.
-//
-// Solidity: function isWeekend(uint256 timestamp) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanSession) IsWeekend(timestamp *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsWeekend(&_PlugBoolean.CallOpts, timestamp)
-}
-
-// IsWeekend is a free data retrieval call binding the contract method 0x41ff7087.
-//
-// Solidity: function isWeekend(uint256 timestamp) pure returns(bool result)
-func (_PlugBoolean *PlugBooleanCallerSession) IsWeekend(timestamp *big.Int) (bool, error) {
-	return _PlugBoolean.Contract.IsWeekend(&_PlugBoolean.CallOpts, timestamp)
 }
 
 // IsXor is a free data retrieval call binding the contract method 0x3182925b.

@@ -31,7 +31,7 @@ var (
 
 // PlugMathMetaData contains all meta data concerning the PlugMath contract.
 var PlugMathMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"function\",\"name\":\"add\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"clamp\",\"inputs\":[{\"name\":\"value\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"minValue\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"maxValue\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"divide\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"max\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"min\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"modulo\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"multiply\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"power\",\"inputs\":[{\"name\":\"base\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"exponent\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"subtract\",\"inputs\":[{\"name\":\"a\",\"type\":\"int256\",\"internalType\":\"int256\"},{\"name\":\"b\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"int256\",\"internalType\":\"int256\"}],\"stateMutability\":\"pure\"}]",
+	ABI: "[{\"type\":\"function\",\"name\":\"add\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"divide\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"max\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"min\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"modulo\",\"inputs\":[{\"name\":\"a\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"b\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"multiply\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"power\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"subtract\",\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"y\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"pure\"}]",
 }
 
 // PlugMathABI is the input ABI used to generate the binding from.
@@ -180,12 +180,12 @@ func (_PlugMath *PlugMathTransactorRaw) Transact(opts *bind.TransactOpts, method
 	return _PlugMath.Contract.contract.Transact(opts, method, params...)
 }
 
-// Add is a free data retrieval call binding the contract method 0xa5f3c23b.
+// Add is a free data retrieval call binding the contract method 0x771602f7.
 //
-// Solidity: function add(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Add(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
+// Solidity: function add(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Add(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "add", a, b)
+	err := _PlugMath.contract.Call(opts, &out, "add", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -197,26 +197,26 @@ func (_PlugMath *PlugMathCaller) Add(opts *bind.CallOpts, a *big.Int, b *big.Int
 
 }
 
-// Add is a free data retrieval call binding the contract method 0xa5f3c23b.
+// Add is a free data retrieval call binding the contract method 0x771602f7.
 //
-// Solidity: function add(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Add(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Add(&_PlugMath.CallOpts, a, b)
+// Solidity: function add(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Add(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Add(&_PlugMath.CallOpts, x, y)
 }
 
-// Add is a free data retrieval call binding the contract method 0xa5f3c23b.
+// Add is a free data retrieval call binding the contract method 0x771602f7.
 //
-// Solidity: function add(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Add(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Add(&_PlugMath.CallOpts, a, b)
+// Solidity: function add(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Add(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Add(&_PlugMath.CallOpts, x, y)
 }
 
-// Clamp is a free data retrieval call binding the contract method 0x7b8d0f0c.
+// Divide is a free data retrieval call binding the contract method 0xf88e9fbf.
 //
-// Solidity: function clamp(int256 value, int256 minValue, int256 maxValue) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Clamp(opts *bind.CallOpts, value *big.Int, minValue *big.Int, maxValue *big.Int) (*big.Int, error) {
+// Solidity: function divide(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Divide(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "clamp", value, minValue, maxValue)
+	err := _PlugMath.contract.Call(opts, &out, "divide", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -228,26 +228,26 @@ func (_PlugMath *PlugMathCaller) Clamp(opts *bind.CallOpts, value *big.Int, minV
 
 }
 
-// Clamp is a free data retrieval call binding the contract method 0x7b8d0f0c.
+// Divide is a free data retrieval call binding the contract method 0xf88e9fbf.
 //
-// Solidity: function clamp(int256 value, int256 minValue, int256 maxValue) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Clamp(value *big.Int, minValue *big.Int, maxValue *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Clamp(&_PlugMath.CallOpts, value, minValue, maxValue)
+// Solidity: function divide(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Divide(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Divide(&_PlugMath.CallOpts, x, y)
 }
 
-// Clamp is a free data retrieval call binding the contract method 0x7b8d0f0c.
+// Divide is a free data retrieval call binding the contract method 0xf88e9fbf.
 //
-// Solidity: function clamp(int256 value, int256 minValue, int256 maxValue) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Clamp(value *big.Int, minValue *big.Int, maxValue *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Clamp(&_PlugMath.CallOpts, value, minValue, maxValue)
+// Solidity: function divide(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Divide(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Divide(&_PlugMath.CallOpts, x, y)
 }
 
-// Divide is a free data retrieval call binding the contract method 0xf5984236.
+// Max is a free data retrieval call binding the contract method 0x6d5433e6.
 //
-// Solidity: function divide(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Divide(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
+// Solidity: function max(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Max(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "divide", a, b)
+	err := _PlugMath.contract.Call(opts, &out, "max", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -259,26 +259,26 @@ func (_PlugMath *PlugMathCaller) Divide(opts *bind.CallOpts, a *big.Int, b *big.
 
 }
 
-// Divide is a free data retrieval call binding the contract method 0xf5984236.
+// Max is a free data retrieval call binding the contract method 0x6d5433e6.
 //
-// Solidity: function divide(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Divide(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Divide(&_PlugMath.CallOpts, a, b)
+// Solidity: function max(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Max(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Max(&_PlugMath.CallOpts, x, y)
 }
 
-// Divide is a free data retrieval call binding the contract method 0xf5984236.
+// Max is a free data retrieval call binding the contract method 0x6d5433e6.
 //
-// Solidity: function divide(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Divide(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Divide(&_PlugMath.CallOpts, a, b)
+// Solidity: function max(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Max(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Max(&_PlugMath.CallOpts, x, y)
 }
 
-// Max is a free data retrieval call binding the contract method 0x81fe5786.
+// Min is a free data retrieval call binding the contract method 0x7ae2b5c7.
 //
-// Solidity: function max(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Max(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
+// Solidity: function min(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Min(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "max", a, b)
+	err := _PlugMath.contract.Call(opts, &out, "min", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -290,54 +290,23 @@ func (_PlugMath *PlugMathCaller) Max(opts *bind.CallOpts, a *big.Int, b *big.Int
 
 }
 
-// Max is a free data retrieval call binding the contract method 0x81fe5786.
+// Min is a free data retrieval call binding the contract method 0x7ae2b5c7.
 //
-// Solidity: function max(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Max(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Max(&_PlugMath.CallOpts, a, b)
+// Solidity: function min(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Min(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Min(&_PlugMath.CallOpts, x, y)
 }
 
-// Max is a free data retrieval call binding the contract method 0x81fe5786.
+// Min is a free data retrieval call binding the contract method 0x7ae2b5c7.
 //
-// Solidity: function max(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Max(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Max(&_PlugMath.CallOpts, a, b)
+// Solidity: function min(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Min(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Min(&_PlugMath.CallOpts, x, y)
 }
 
-// Min is a free data retrieval call binding the contract method 0x29aa9cbe.
+// Modulo is a free data retrieval call binding the contract method 0xbaaf073d.
 //
-// Solidity: function min(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Min(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
-	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "min", a, b)
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// Min is a free data retrieval call binding the contract method 0x29aa9cbe.
-//
-// Solidity: function min(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Min(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Min(&_PlugMath.CallOpts, a, b)
-}
-
-// Min is a free data retrieval call binding the contract method 0x29aa9cbe.
-//
-// Solidity: function min(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Min(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Min(&_PlugMath.CallOpts, a, b)
-}
-
-// Modulo is a free data retrieval call binding the contract method 0x121c3169.
-//
-// Solidity: function modulo(int256 a, int256 b) pure returns(int256 result)
+// Solidity: function modulo(uint256 a, uint256 b) pure returns(uint256 result)
 func (_PlugMath *PlugMathCaller) Modulo(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _PlugMath.contract.Call(opts, &out, "modulo", a, b)
@@ -352,26 +321,26 @@ func (_PlugMath *PlugMathCaller) Modulo(opts *bind.CallOpts, a *big.Int, b *big.
 
 }
 
-// Modulo is a free data retrieval call binding the contract method 0x121c3169.
+// Modulo is a free data retrieval call binding the contract method 0xbaaf073d.
 //
-// Solidity: function modulo(int256 a, int256 b) pure returns(int256 result)
+// Solidity: function modulo(uint256 a, uint256 b) pure returns(uint256 result)
 func (_PlugMath *PlugMathSession) Modulo(a *big.Int, b *big.Int) (*big.Int, error) {
 	return _PlugMath.Contract.Modulo(&_PlugMath.CallOpts, a, b)
 }
 
-// Modulo is a free data retrieval call binding the contract method 0x121c3169.
+// Modulo is a free data retrieval call binding the contract method 0xbaaf073d.
 //
-// Solidity: function modulo(int256 a, int256 b) pure returns(int256 result)
+// Solidity: function modulo(uint256 a, uint256 b) pure returns(uint256 result)
 func (_PlugMath *PlugMathCallerSession) Modulo(a *big.Int, b *big.Int) (*big.Int, error) {
 	return _PlugMath.Contract.Modulo(&_PlugMath.CallOpts, a, b)
 }
 
-// Multiply is a free data retrieval call binding the contract method 0x3c4308a8.
+// Multiply is a free data retrieval call binding the contract method 0x165c4a16.
 //
-// Solidity: function multiply(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Multiply(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
+// Solidity: function multiply(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Multiply(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "multiply", a, b)
+	err := _PlugMath.contract.Call(opts, &out, "multiply", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -383,26 +352,26 @@ func (_PlugMath *PlugMathCaller) Multiply(opts *bind.CallOpts, a *big.Int, b *bi
 
 }
 
-// Multiply is a free data retrieval call binding the contract method 0x3c4308a8.
+// Multiply is a free data retrieval call binding the contract method 0x165c4a16.
 //
-// Solidity: function multiply(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Multiply(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Multiply(&_PlugMath.CallOpts, a, b)
+// Solidity: function multiply(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Multiply(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Multiply(&_PlugMath.CallOpts, x, y)
 }
 
-// Multiply is a free data retrieval call binding the contract method 0x3c4308a8.
+// Multiply is a free data retrieval call binding the contract method 0x165c4a16.
 //
-// Solidity: function multiply(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Multiply(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Multiply(&_PlugMath.CallOpts, a, b)
+// Solidity: function multiply(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Multiply(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Multiply(&_PlugMath.CallOpts, x, y)
 }
 
-// Power is a free data retrieval call binding the contract method 0x529f36a9.
+// Power is a free data retrieval call binding the contract method 0xc04f01fc.
 //
-// Solidity: function power(int256 base, uint256 exponent) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Power(opts *bind.CallOpts, base *big.Int, exponent *big.Int) (*big.Int, error) {
+// Solidity: function power(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Power(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "power", base, exponent)
+	err := _PlugMath.contract.Call(opts, &out, "power", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -414,26 +383,26 @@ func (_PlugMath *PlugMathCaller) Power(opts *bind.CallOpts, base *big.Int, expon
 
 }
 
-// Power is a free data retrieval call binding the contract method 0x529f36a9.
+// Power is a free data retrieval call binding the contract method 0xc04f01fc.
 //
-// Solidity: function power(int256 base, uint256 exponent) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Power(base *big.Int, exponent *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Power(&_PlugMath.CallOpts, base, exponent)
+// Solidity: function power(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Power(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Power(&_PlugMath.CallOpts, x, y)
 }
 
-// Power is a free data retrieval call binding the contract method 0x529f36a9.
+// Power is a free data retrieval call binding the contract method 0xc04f01fc.
 //
-// Solidity: function power(int256 base, uint256 exponent) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Power(base *big.Int, exponent *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Power(&_PlugMath.CallOpts, base, exponent)
+// Solidity: function power(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Power(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Power(&_PlugMath.CallOpts, x, y)
 }
 
-// Subtract is a free data retrieval call binding the contract method 0xb93ea812.
+// Subtract is a free data retrieval call binding the contract method 0x3ef5e445.
 //
-// Solidity: function subtract(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCaller) Subtract(opts *bind.CallOpts, a *big.Int, b *big.Int) (*big.Int, error) {
+// Solidity: function subtract(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCaller) Subtract(opts *bind.CallOpts, x *big.Int, y *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _PlugMath.contract.Call(opts, &out, "subtract", a, b)
+	err := _PlugMath.contract.Call(opts, &out, "subtract", x, y)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -445,16 +414,16 @@ func (_PlugMath *PlugMathCaller) Subtract(opts *bind.CallOpts, a *big.Int, b *bi
 
 }
 
-// Subtract is a free data retrieval call binding the contract method 0xb93ea812.
+// Subtract is a free data retrieval call binding the contract method 0x3ef5e445.
 //
-// Solidity: function subtract(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathSession) Subtract(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Subtract(&_PlugMath.CallOpts, a, b)
+// Solidity: function subtract(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathSession) Subtract(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Subtract(&_PlugMath.CallOpts, x, y)
 }
 
-// Subtract is a free data retrieval call binding the contract method 0xb93ea812.
+// Subtract is a free data retrieval call binding the contract method 0x3ef5e445.
 //
-// Solidity: function subtract(int256 a, int256 b) pure returns(int256 result)
-func (_PlugMath *PlugMathCallerSession) Subtract(a *big.Int, b *big.Int) (*big.Int, error) {
-	return _PlugMath.Contract.Subtract(&_PlugMath.CallOpts, a, b)
+// Solidity: function subtract(uint256 x, uint256 y) pure returns(uint256 result)
+func (_PlugMath *PlugMathCallerSession) Subtract(x *big.Int, y *big.Int) (*big.Int, error) {
+	return _PlugMath.Contract.Subtract(&_PlugMath.CallOpts, x, y)
 }

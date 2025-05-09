@@ -31,7 +31,7 @@ var (
 
 // PlugAssertMetaData contains all meta data concerning the PlugAssert contract.
 var PlugAssertMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"function\",\"name\":\"assertFalse\",\"inputs\":[{\"name\":\"condition\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"message\",\"type\":\"string\",\"internalType\":\"string\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"assertFalse\",\"inputs\":[{\"name\":\"condition\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"assertTrue\",\"inputs\":[{\"name\":\"condition\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"assertTrue\",\"inputs\":[{\"name\":\"condition\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"message\",\"type\":\"string\",\"internalType\":\"string\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"fail\",\"inputs\":[{\"name\":\"message\",\"type\":\"string\",\"internalType\":\"string\"}],\"outputs\":[],\"stateMutability\":\"pure\"}]",
+	ABI: "[{\"type\":\"function\",\"name\":\"assertFalse\",\"inputs\":[{\"name\":\"condition\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"assertTrue\",\"inputs\":[{\"name\":\"condition\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"pure\"}]",
 }
 
 // PlugAssertABI is the input ABI used to generate the binding from.
@@ -180,12 +180,12 @@ func (_PlugAssert *PlugAssertTransactorRaw) Transact(opts *bind.TransactOpts, me
 	return _PlugAssert.Contract.contract.Transact(opts, method, params...)
 }
 
-// AssertFalse is a free data retrieval call binding the contract method 0x7ba04809.
+// AssertFalse is a free data retrieval call binding the contract method 0xa5982885.
 //
-// Solidity: function assertFalse(bool condition, string message) pure returns()
-func (_PlugAssert *PlugAssertCaller) AssertFalse(opts *bind.CallOpts, condition bool, message string) error {
+// Solidity: function assertFalse(bool condition) pure returns()
+func (_PlugAssert *PlugAssertCaller) AssertFalse(opts *bind.CallOpts, condition bool) error {
 	var out []interface{}
-	err := _PlugAssert.contract.Call(opts, &out, "assertFalse", condition, message)
+	err := _PlugAssert.contract.Call(opts, &out, "assertFalse", condition)
 
 	if err != nil {
 		return err
@@ -195,47 +195,18 @@ func (_PlugAssert *PlugAssertCaller) AssertFalse(opts *bind.CallOpts, condition 
 
 }
 
-// AssertFalse is a free data retrieval call binding the contract method 0x7ba04809.
-//
-// Solidity: function assertFalse(bool condition, string message) pure returns()
-func (_PlugAssert *PlugAssertSession) AssertFalse(condition bool, message string) error {
-	return _PlugAssert.Contract.AssertFalse(&_PlugAssert.CallOpts, condition, message)
-}
-
-// AssertFalse is a free data retrieval call binding the contract method 0x7ba04809.
-//
-// Solidity: function assertFalse(bool condition, string message) pure returns()
-func (_PlugAssert *PlugAssertCallerSession) AssertFalse(condition bool, message string) error {
-	return _PlugAssert.Contract.AssertFalse(&_PlugAssert.CallOpts, condition, message)
-}
-
-// AssertFalse0 is a free data retrieval call binding the contract method 0xa5982885.
+// AssertFalse is a free data retrieval call binding the contract method 0xa5982885.
 //
 // Solidity: function assertFalse(bool condition) pure returns()
-func (_PlugAssert *PlugAssertCaller) AssertFalse0(opts *bind.CallOpts, condition bool) error {
-	var out []interface{}
-	err := _PlugAssert.contract.Call(opts, &out, "assertFalse0", condition)
-
-	if err != nil {
-		return err
-	}
-
-	return err
-
+func (_PlugAssert *PlugAssertSession) AssertFalse(condition bool) error {
+	return _PlugAssert.Contract.AssertFalse(&_PlugAssert.CallOpts, condition)
 }
 
-// AssertFalse0 is a free data retrieval call binding the contract method 0xa5982885.
+// AssertFalse is a free data retrieval call binding the contract method 0xa5982885.
 //
 // Solidity: function assertFalse(bool condition) pure returns()
-func (_PlugAssert *PlugAssertSession) AssertFalse0(condition bool) error {
-	return _PlugAssert.Contract.AssertFalse0(&_PlugAssert.CallOpts, condition)
-}
-
-// AssertFalse0 is a free data retrieval call binding the contract method 0xa5982885.
-//
-// Solidity: function assertFalse(bool condition) pure returns()
-func (_PlugAssert *PlugAssertCallerSession) AssertFalse0(condition bool) error {
-	return _PlugAssert.Contract.AssertFalse0(&_PlugAssert.CallOpts, condition)
+func (_PlugAssert *PlugAssertCallerSession) AssertFalse(condition bool) error {
+	return _PlugAssert.Contract.AssertFalse(&_PlugAssert.CallOpts, condition)
 }
 
 // AssertTrue is a free data retrieval call binding the contract method 0x0c9fd581.
@@ -265,62 +236,4 @@ func (_PlugAssert *PlugAssertSession) AssertTrue(condition bool) error {
 // Solidity: function assertTrue(bool condition) pure returns()
 func (_PlugAssert *PlugAssertCallerSession) AssertTrue(condition bool) error {
 	return _PlugAssert.Contract.AssertTrue(&_PlugAssert.CallOpts, condition)
-}
-
-// AssertTrue0 is a free data retrieval call binding the contract method 0xa34edc03.
-//
-// Solidity: function assertTrue(bool condition, string message) pure returns()
-func (_PlugAssert *PlugAssertCaller) AssertTrue0(opts *bind.CallOpts, condition bool, message string) error {
-	var out []interface{}
-	err := _PlugAssert.contract.Call(opts, &out, "assertTrue0", condition, message)
-
-	if err != nil {
-		return err
-	}
-
-	return err
-
-}
-
-// AssertTrue0 is a free data retrieval call binding the contract method 0xa34edc03.
-//
-// Solidity: function assertTrue(bool condition, string message) pure returns()
-func (_PlugAssert *PlugAssertSession) AssertTrue0(condition bool, message string) error {
-	return _PlugAssert.Contract.AssertTrue0(&_PlugAssert.CallOpts, condition, message)
-}
-
-// AssertTrue0 is a free data retrieval call binding the contract method 0xa34edc03.
-//
-// Solidity: function assertTrue(bool condition, string message) pure returns()
-func (_PlugAssert *PlugAssertCallerSession) AssertTrue0(condition bool, message string) error {
-	return _PlugAssert.Contract.AssertTrue0(&_PlugAssert.CallOpts, condition, message)
-}
-
-// Fail is a free data retrieval call binding the contract method 0x78122f3a.
-//
-// Solidity: function fail(string message) pure returns()
-func (_PlugAssert *PlugAssertCaller) Fail(opts *bind.CallOpts, message string) error {
-	var out []interface{}
-	err := _PlugAssert.contract.Call(opts, &out, "fail", message)
-
-	if err != nil {
-		return err
-	}
-
-	return err
-
-}
-
-// Fail is a free data retrieval call binding the contract method 0x78122f3a.
-//
-// Solidity: function fail(string message) pure returns()
-func (_PlugAssert *PlugAssertSession) Fail(message string) error {
-	return _PlugAssert.Contract.Fail(&_PlugAssert.CallOpts, message)
-}
-
-// Fail is a free data retrieval call binding the contract method 0x78122f3a.
-//
-// Solidity: function fail(string message) pure returns()
-func (_PlugAssert *PlugAssertCallerSession) Fail(message string) error {
-	return _PlugAssert.Contract.Fail(&_PlugAssert.CallOpts, message)
 }
