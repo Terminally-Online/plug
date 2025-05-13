@@ -49,4 +49,29 @@ contract PlugSocketTest is Test {
         vm.expectRevert(Ownable.Unauthorized.selector);
         socket.transferOwnership(_randomNonZeroAddress());
     }
+
+    function test_domainHashSet() public {
+        // Deploy a new vault
+        socket = deployVault();
+        
+        // Get the expected domain hash by constructing it manually
+        bytes32 expectedDomainHash = socket.getEIP712DomainHash(
+            PlugTypesLib.EIP712Domain({
+                name: socket.name(),
+                version: socket.version(),
+                chainId: block.chainid,
+                verifyingContract: address(socket)
+            })
+        );
+
+        // Compare the actual domain hash with the expected one
+        assertEq(
+            socket.domainHash(),
+            expectedDomainHash,
+            "Domain hash should match expected value"
+        );
+        
+        // Verify it's not zero
+        assertTrue(socket.domainHash() != 0x0, "Domain hash should not be zero");
+    }
 }

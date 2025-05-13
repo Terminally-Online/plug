@@ -49,8 +49,7 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 		{Type: abi.Type{T: abi.AddressTy}},
 		{Type: abi.Type{T: abi.AddressTy}},
 	}.Pack(
-		// big.NewInt((time.Now().Unix()), // TODO MASON: we don't want this changing everytime do we? Otherwise we get a new socket.
-		big.NewInt(1738), // this is what magic nonce is in the app currently.
+		big.NewInt((time.Now().Unix())),
 		from,
 		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
 		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
@@ -128,13 +127,15 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 		return Plugs{}, nil, utils.ErrBuild(err.Error())
 	}
 
-	domainHash := crypto.Keccak256(
-		[]byte(EIP712_DOMAIN_TYPEHASH),
-		crypto.Keccak256([]byte(domainName)),
-		crypto.Keccak256([]byte(domainVersion)),
-		common.LeftPadBytes(chainId.Bytes(), 32),
-		socket.Bytes(),
-	)
+	// TODO MASON AND CHANCE: I deployed my socket and the domain hash was not set on that side. _initializePlug was never called upon deployment. Not sure if I'm tripping.
+	// domainHash := crypto.Keccak256(
+	// 	[]byte(EIP712_DOMAIN_TYPEHASH),
+	// 	crypto.Keccak256([]byte(domainName)),
+	// 	crypto.Keccak256([]byte(domainVersion)),
+	// 	common.LeftPadBytes(chainId.Bytes(), 32),
+	// 	socket.Bytes(),
+	// )
+	domainHash := common.FromHex("0x0000000000000000000000000000000000000000000000000000000000000000")
 	plugsHash := GetPlugsHash(plugs)
 	signatureHash := crypto.Keccak256(
 		[]byte("\x19\x01"),
