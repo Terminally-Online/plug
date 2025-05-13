@@ -106,7 +106,7 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 	}
 
 	// Retrieved the simulation ID, now time to fetch the traces from it.
-	traceURL := fmt.Sprintf("%s/%s/%s/%s/simulation/%s/trace",
+	traceURL := fmt.Sprintf("%s/%s/%s/%s/simulation/%s/call_trace",
 		c.BaseURL, c.ProjectOwner, c.ProjectSlug, tx.ChainId, simResponse.Simulation.ID)
 
 	traceReq, err := http.NewRequest("GET", traceURL, nil)
@@ -125,8 +125,6 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 	if err := json.NewDecoder(traceResp.Body).Decode(&trace); err != nil {
 		return nil, fmt.Errorf("failed to parse trace response: %v", err)
 	}
-
-	fmt.Printf("trace response: %+v\n", trace)
 
 	trace.GasPrice = simResponse.Simulation.Result.TransactionReceipt.EffectiveGasPrice
 
