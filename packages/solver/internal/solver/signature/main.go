@@ -49,7 +49,8 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 		{Type: abi.Type{T: abi.AddressTy}},
 		{Type: abi.Type{T: abi.AddressTy}},
 	}.Pack(
-		big.NewInt(time.Now().Unix()),
+		// big.NewInt((time.Now().Unix()), // TODO MASON: we don't want this changing everytime do we? Otherwise we get a new socket.
+		big.NewInt(1738), // this is what magic nonce is in the app currently.
 		from,
 		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
 		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),

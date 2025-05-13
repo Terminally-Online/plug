@@ -71,7 +71,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	// REMOVE
 	var gasEstimate string
 	if err := rpcClient.CallContext(ctx, &gasEstimate, "eth_estimateGas", tx); err != nil {
-		return nil, fmt.Errorf("failed to estimate gas: %v", err)
+		gasEstimate = "0xF4240"
 	}
 
 	// Calculate total value by summing up values from CallWithValue plugs
@@ -117,6 +117,8 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
 		return nil, utils.ErrSimulationFailed(err.Error())
 	}
+
+	fmt.Printf("trace full output: %s\n", trace.Output)
 
 	// Create run object with results
 	status := "success"
@@ -227,6 +229,29 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", simTx, "latest", callTraceConfig); err != nil {
 		return nil, utils.ErrSimulationFailed(err.Error())
 	}
+
+	fmt.Printf("trace full output: %s\n", trace.Output)
+
+	// TODO MASON REMOVE
+	// output := hexutil.Encode(trace.Output)
+	// if len(output) >= 2+64*2 {
+	// 	// Remove "0x" prefix if present
+	// 	if strings.HasPrefix(output, "0x") {
+	// 		output = output[2:]
+	// 	}
+
+	// 	// First 32 bytes for bool
+	// 	isDeployed := output[63:64] == "1"
+
+	// 	// Next 32 bytes for address
+	// 	socketAddress := "0x" + output[88:128] // 24 bytes padding + 20 bytes address
+
+	// 	fmt.Printf("Decoded output:\n")
+	// 	fmt.Printf("  Already Deployed: %v\n", isDeployed)
+	// 	fmt.Printf("  Socket Address: %s\n", socketAddress)
+	// } else {
+	// 	fmt.Printf("Output is not valid hex string: %s\n", output)
+	// }
 
 	// Create run object with results
 	status := "success"
