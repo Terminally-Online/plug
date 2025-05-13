@@ -79,24 +79,19 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		Data:    tx["data"].(string),
 		Value:   totalValue,
 	}
+
 	trace, err := Sentio.SimulateTransaction(simRequest)
 	if err != nil {
 		return nil, fmt.Errorf("sentio simulation failed: %v", err)
 	}
-
-	// callTraceConfig := map[string]any{
-	// 	"tracer": "callTracer",
-	// }
-	// var trace Trace
-	// if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-	// 	fmt.Printf("rpc debug_traceCall error: %v\n\n", err)
-	// 	return nil, utils.ErrSimulationFailed(err.Error())
-	// }
+	utils.LogObject("SimulateLivePlugs::trace", trace)
 
 	status := "success"
-	errorMsg, _ := FindRevertError(trace)
-	if errorMsg != "" {
+	var errorMsg *string
+	revertReason, _ := FindRevertError(trace)
+	if revertReason != "" {
 		status = "failed"
+		errorMsg = &revertReason
 	}
 
 	run := &models.Run{
@@ -105,7 +100,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		From:        livePlugs.From,
 		To:          routerAddress.Hex(),
 		Status:      status,
-		Error:       &errorMsg,
+		Error:       errorMsg,
 		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},
