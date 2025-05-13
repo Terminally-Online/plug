@@ -63,16 +63,6 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 
 	tx["gasPrice"] = baseFee.BaseFeePerGas
 
-	callTraceConfig := map[string]any{
-		"tracer": "callTracer",
-	}
-
-	// REMOVE
-	var gasEstimate string
-	if err := rpcClient.CallContext(ctx, &gasEstimate, "eth_estimateGas", tx); err != nil {
-		gasEstimate = "0xF4240"
-	}
-
 	// Calculate total value by summing up values from CallWithValue plugs
 	// TODO MASON: do we need to do this? Why haven't we done it before?
 	totalValue := new(big.Int)
@@ -89,23 +79,23 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		Data:    tx["data"].(string),
 		Value:   totalValue,
 	}
-	simulation, err := Sentio.SimulateTransaction(simRequest)
+	trace, err := Sentio.SimulateTransaction(simRequest)
 	if err != nil {
 		return nil, fmt.Errorf("sentio simulation failed: %v", err)
 	}
-	fmt.Printf("sentio full output: %+v\n\n", simulation)
 
-	var trace Trace
-	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-		fmt.Printf("rpc debug_traceCall error: %v\n\n", err)
-		return nil, utils.ErrSimulationFailed(err.Error())
-	}
+	// callTraceConfig := map[string]any{
+	// 	"tracer": "callTracer",
+	// }
+	// var trace Trace
+	// if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
+	// 	fmt.Printf("rpc debug_traceCall error: %v\n\n", err)
+	// 	return nil, utils.ErrSimulationFailed(err.Error())
+	// }
 
-	fmt.Printf("trace full output: %+v\n", trace)
-
-	// Create run object with results
 	status := "success"
-	if trace.Error != "" {
+	errorMsg, _ := FindRevertError(trace)
+	if errorMsg != "" {
 		status = "failed"
 	}
 
@@ -115,6 +105,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		From:        livePlugs.From,
 		To:          routerAddress.Hex(),
 		Status:      status,
+		Error:       &errorMsg,
 		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},
