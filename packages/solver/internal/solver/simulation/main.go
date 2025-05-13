@@ -8,7 +8,6 @@ import (
 	"solver/internal/database/models"
 	"solver/internal/database/types"
 	"solver/internal/solver/signature"
-	"solver/internal/solver/simulation/sentio"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -83,42 +82,26 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		}
 	}
 
-	sentio := sentio.NewSentioClient("")
-	simulationID, err := sentio.SimulateTransaction(
-		livePlugs.ChainId,
-		common.HexToAddress(livePlugs.From),
-		routerAddress,
-		livePlugs.Data,
-		gasEstimate,
-		baseFee.BaseFeePerGas,
-		blockNumber,
-		*totalValue,
-	)
+	simRequest := SimulationRequest{
+		ChainId: fmt.Sprintf("%d", livePlugs.ChainId),
+		From:    livePlugs.From,
+		To:      routerAddress.Hex(),
+		Data:    tx["data"].(string),
+		Value:   totalValue,
+	}
+	simulation, err := Sentio.SimulateTransaction(simRequest)
 	if err != nil {
 		return nil, fmt.Errorf("sentio simulation failed: %v", err)
 	}
-	fmt.Printf("Simulation ID: %s\n", simulationID)
+	fmt.Printf("sentio full output: %+v\n\n", simulation)
 
-	// REMOVE
-
-	var trace struct {
-		Type     string         `json:"type"`
-		From     common.Address `json:"from"`
-		To       common.Address `json:"to"`
-		Value    string         `json:"value"`
-		Gas      string         `json:"gas"`
-		GasUsed  string         `json:"gasUsed"`
-		GasPrice string         `json:"gasPrice"`
-		Input    hexutil.Bytes  `json:"input"`
-		Output   hexutil.Bytes  `json:"output"`
-		Error    string         `json:"error"`
-	}
-
+	var trace Trace
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
+		fmt.Printf("rpc debug_traceCall error: %v\n\n", err)
 		return nil, utils.ErrSimulationFailed(err.Error())
 	}
 
-	fmt.Printf("trace full output: %s\n", trace.Output)
+	fmt.Printf("trace full output: %+v\n", trace)
 
 	// Create run object with results
 	status := "success"
@@ -231,27 +214,6 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	}
 
 	fmt.Printf("trace full output: %s\n", trace.Output)
-
-	// TODO MASON REMOVE
-	// output := hexutil.Encode(trace.Output)
-	// if len(output) >= 2+64*2 {
-	// 	// Remove "0x" prefix if present
-	// 	if strings.HasPrefix(output, "0x") {
-	// 		output = output[2:]
-	// 	}
-
-	// 	// First 32 bytes for bool
-	// 	isDeployed := output[63:64] == "1"
-
-	// 	// Next 32 bytes for address
-	// 	socketAddress := "0x" + output[88:128] // 24 bytes padding + 20 bytes address
-
-	// 	fmt.Printf("Decoded output:\n")
-	// 	fmt.Printf("  Already Deployed: %v\n", isDeployed)
-	// 	fmt.Printf("  Socket Address: %s\n", socketAddress)
-	// } else {
-	// 	fmt.Printf("Output is not valid hex string: %s\n", output)
-	// }
 
 	// Create run object with results
 	status := "success"
