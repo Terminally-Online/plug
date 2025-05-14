@@ -80,7 +80,7 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 }
 
 func (c *Client) Plug(livePlugs *signature.LivePlugs) ([]signature.Result, error) {
-	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
+	routerAddress := common.HexToAddress(references.Plug["router"])
 
 	l, err := livePlugs.Wrap()
 	if err != nil {

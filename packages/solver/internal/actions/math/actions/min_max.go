@@ -55,7 +55,7 @@ func MinimumOrMaximum(lookup *actions.SchemaLookup[MinMaxRequest]) ([]signature.
 		return nil, fmt.Errorf("failed to get calldata for max function: %w", err)
 	}
 
-	mathContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["math"])
+	mathContract := common.HexToAddress(references.Plug["math"])
 	return []signature.Plug{{
 		To:      mathContract,
 		Data:    calldata,

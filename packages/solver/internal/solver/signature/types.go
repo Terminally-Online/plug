@@ -144,7 +144,7 @@ func (l LivePlugs) Wrap() (*plug_router.PlugTypesLibLivePlugs, error) {
 
 // Helper method to get router contract address for this chain
 func (l *LivePlugs) GetRouterAddress() common.Address {
-	if router, ok := references.Networks[l.ChainId].References["plug"]["router"]; ok {
+	if router, ok := references.Plug["router"]; ok {
 		return common.HexToAddress(router)
 	}
 	return common.Address{}

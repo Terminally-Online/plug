@@ -91,7 +91,7 @@ func BalanceNative(lookup *actions.SchemaLookup[BalanceRequest]) ([]signature.Pl
 	}
 
 	return []signature.Plug{{
-		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["evm"]),
+		To:      common.HexToAddress(references.Plug["evm"]),
 		Data:    balanceCalldata,
 		Updates: updates,
 	}}, nil

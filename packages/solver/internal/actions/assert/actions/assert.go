@@ -40,7 +40,7 @@ func HandleAssert(lookup *actions.SchemaLookup[AssertRequest]) ([]signature.Plug
 		return nil, fmt.Errorf("failed to pack assertTrue calldata: %w", err)
 	}
 
-	assertContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["assert"])
+	assertContract := common.HexToAddress(references.Plug["assert"])
 	return []signature.Plug{{
 		Selector: signature.StaticCall,
 		To:       assertContract,

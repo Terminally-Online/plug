@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.5.1
+
+### Patch Changes
+
+- 7ae88c1: feat: include action contracts in generated deployment scripts
+
 ## 0.5.0
 
 ### Minor Changes

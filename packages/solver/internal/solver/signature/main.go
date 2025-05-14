@@ -3,6 +3,7 @@ package signature
 import (
 	"math/big"
 	"os"
+	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/utils"
 	"time"
@@ -19,11 +20,11 @@ var (
 
 const (
 	EIP712_DOMAIN_TYPEHASH = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
-	UPDATE_TYPEHASH        = "0x56b7ba00148b10c99ae43c2f84a4ec0ec1dfa2e5d7d5954f23e627d964b83435"
-	SLICE_TYPEHASH         = "0x705d2fbc03b585d2178271bc5e779f63e494ae79418e11352a00b51e1edeeaae"
-	PLUG_TYPEHASH          = "0x77f9edb2051551cf1c4102bcde8eba61d391a9e0536544fe44cc2330cc4913fa"
-	PLUGS_TYPEHASH         = "0xf730b3caf995a40c1030675beebec0f819730393c3020ff6bd0295c733af216b"
-	LIVE_PLUGS_TYPEHASH    = "0xb17d5f6d50f15d707601c6994c8e42d3c170be70fe81f012884129e8e5bf41ff"
+	SLICE_TYPEHASH         = "0xf8939514938e0a800705081290e2e4c7efcf49061b28bf5b38f457c851eb82ac"
+	UPDATE_TYPEHASH        = "0x85c9aec0e14ad33e63489c03355fa65515340a998cc26cd360d11267b451b6fd"
+	PLUG_TYPEHASH          = "0x7cae6e9d732b3307b20040708ed6876bf34aeb91eb6bcfbfd18581cb0376b60b"
+	PLUGS_TYPEHASH         = "0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2"
+	LIVE_PLUGS_TYPEHASH    = "0x858fa8b1b482c729dcb5ae30adab7db7ed354ebaba182da4ff91412001f7fd45"
 )
 
 func GetSolverHash() ([]byte, error) {
@@ -51,8 +52,11 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 	}.Pack(
 		big.NewInt(time.Now().Unix()),
 		from,
-		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
-		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
+		common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
+		// TODO: We need a way to know the implementation address that was used when deploying the socket.
+		//       There is going to be some tricky stuff here. It will not matter as long as we have everyone
+		//       on one version but this is going to have to be fixed sooner than later.
+		common.HexToAddress(references.Plug["socket"]),
 	)
 	if err != nil {
 		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())

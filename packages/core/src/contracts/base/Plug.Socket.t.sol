@@ -27,8 +27,13 @@ contract PlugSocketTest is Test {
         assertEq(socket.symbol(), "PLUGS");
     }
 
+    function test_domain() public {
+        assertNotEq(socket.domainHash(), "");
+    }
+
     function testRevert_Initialize_Again() public {
         vm.deal(address(socket), 100 ether);
+        vm.expectRevert("PlugTypes:already-initialized");
         socket.initialize(signer, oneClicker);
     }
 
