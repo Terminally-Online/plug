@@ -108,6 +108,7 @@ contract PlugSocket is
      */
     function initialize(address $owner, address $oneClicker) public {
         _initializeOwner($owner);
+        _initializePlug();
 
         if ($oneClicker != address(0)) {
             oneClickersToAllowed[$oneClicker] = true;

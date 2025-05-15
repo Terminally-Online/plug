@@ -8,6 +8,8 @@ import (
 	"solver/internal/utils"
 	"strings"
 	"time"
+
+	plug "github.com/terminally-online/plug/packages/references/common"
 )
 
 var (
@@ -24,18 +26,7 @@ var (
 		"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 	}
 
-	Plug = map[string]string{
-		"router":   "0x000000007f3fA8e1Bdca1Adecd8528f0D63a3FE9",
-		"factory":  "0x0000000035F767aB09BeE35323D2405290377873",
-		"socket":   "0x00000000Be03b0b5ebBA6b138aB72AEE1097Ea20",
-		"assert":   "0x0000000043fCd2f536248A3C4460240812e84C9d",
-		"boolean":  "0x00000000BAeB8597208f08e56Eb7a0D703f22614",
-		"coercion": "0x0000000072f0b1700faEb2db53328E6343CF6F92",
-		"database": "0x0000000007189742A4a2ED3F90008a6B7FAedc21",
-		"math":     "0x000000009b04081B17B00A4F7D588757A64B6B80",
-		"evm":      "0x00000000bb7a076fd9606836A7D3394A078Bc486",
-	}
-
+	Plug = plug.Plug
 	Mainnet = &Network{
 		Name: "Ethereum Mainnet",
 		Icon: struct {
@@ -71,7 +62,7 @@ var (
 				"token":         "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
 				"art":           "0x6544bC8A0dE6ECe429F14840BA74611cA5098A92",
 			},
-			"plug": Plug,
+			"plug": plug.Plug,
 			"weth": {
 				"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 			},
@@ -116,7 +107,7 @@ var (
 				"vault":       "0xF540D790413FCFAedAC93518Ae99EdDacE82cb78",
 			},
 			"multicall": Multicall,
-			"plug":      Plug,
+			"plug":      plug.Plug,
 			"weth": {
 				"address": "0x4200000000000000000000000000000000000006",
 			},

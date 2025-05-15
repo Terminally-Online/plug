@@ -54,7 +54,7 @@ func NumberComparison(lookup *actions.SchemaLookup[CompareNumbersRequest]) ([]si
 		return nil, fmt.Errorf("failed to pack %s calldata: %w", lookup.Inputs.Comparison, err)
 	}
 
-	booleanContract := common.HexToAddress(references.Networks[lookup.ChainId].References["plug"]["boolean"])
+	booleanContract := common.HexToAddress(references.Plug["boolean"])
 	return []signature.Plug{{
 		Selector: signature.StaticCall,
 		To:       booleanContract,

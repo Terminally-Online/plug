@@ -1,0 +1,10 @@
+package common
+
+var (
+	SliceTypeHash = "0xf8939514938e0a800705081290e2e4c7efcf49061b28bf5b38f457c851eb82ac"
+	UpdateTypeHash = "0x85c9aec0e14ad33e63489c03355fa65515340a998cc26cd360d11267b451b6fd"
+	PlugTypeHash = "0x7cae6e9d732b3307b20040708ed6876bf34aeb91eb6bcfbfd18581cb0376b60b"
+	PlugsTypeHash = "0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2"
+	LivePlugsTypeHash = "0x858fa8b1b482c729dcb5ae30adab7db7ed354ebaba182da4ff91412001f7fd45"
+	Eip712DomainTypeHash = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
+)
