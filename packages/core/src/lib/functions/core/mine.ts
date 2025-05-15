@@ -361,7 +361,6 @@ async function generateGoFile(addresses: Record<string, any>) {
 		)
 	}
 
-	// Prepare individual address variables and Plug map entries
 	const addressVars: string[] = []
 	const mapEntries: string[] = []
 	Object.keys(plugContracts).forEach(contractName => {
@@ -380,7 +379,6 @@ async function generateGoFile(addresses: Record<string, any>) {
 	const configurations = await configs()
 	const configsa = [...configurations, DEFAULT_SCHEMA.config]
 
-	// Compute typehash constants for all configs, deduplicated by type name
 	const typeHashMap: Record<string, string> = {}
 	for (const config of configsa) {
 		// @ts-expect-error
