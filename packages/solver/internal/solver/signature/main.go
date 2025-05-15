@@ -11,20 +11,12 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	plug "github.com/terminally-online/plug/packages/references/common"
 )
 
 var (
 	domainName    = "Plug Socket"
 	domainVersion = "0.0.1"
-)
-
-const (
-	EIP712_DOMAIN_TYPEHASH = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
-	SLICE_TYPEHASH         = "0xf8939514938e0a800705081290e2e4c7efcf49061b28bf5b38f457c851eb82ac"
-	UPDATE_TYPEHASH        = "0x85c9aec0e14ad33e63489c03355fa65515340a998cc26cd360d11267b451b6fd"
-	PLUG_TYPEHASH          = "0x7cae6e9d732b3307b20040708ed6876bf34aeb91eb6bcfbfd18581cb0376b60b"
-	PLUGS_TYPEHASH         = "0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2"
-	LIVE_PLUGS_TYPEHASH    = "0x858fa8b1b482c729dcb5ae30adab7db7ed354ebaba182da4ff91412001f7fd45"
 )
 
 func GetSolverHash() ([]byte, error) {
@@ -66,7 +58,7 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 
 func getSliceHash(slice coil.Slice) [32]byte {
 	return crypto.Keccak256Hash(
-		[]byte(SLICE_TYPEHASH),
+		[]byte(plug.SliceTypeHash),
 		[]byte{slice.Index},
 		common.LeftPadBytes(slice.Start.Bytes(), 32),
 		common.LeftPadBytes(slice.Length.Bytes(), 32),
@@ -76,7 +68,7 @@ func getSliceHash(slice coil.Slice) [32]byte {
 func getUpdateHash(update coil.Update) [32]byte {
 	sliceHash := getSliceHash(update.Slice)
 	return crypto.Keccak256Hash(
-		[]byte(UPDATE_TYPEHASH),
+		[]byte(plug.UpdateTypeHash),
 		common.LeftPadBytes(update.Start.Bytes(), 32),
 		sliceHash[:],
 	)
@@ -91,15 +83,15 @@ func getUpdateArrayHash(updates []coil.Update) [32]byte {
 	return crypto.Keccak256Hash(encoded)
 }
 
-func GetPlugHash(plug Plug) [32]byte {
-	updateArrayHash := getUpdateArrayHash(plug.Updates)
+func GetPlugHash(p Plug) [32]byte {
+	updateArrayHash := getUpdateArrayHash(p.Updates)
 
 	return crypto.Keccak256Hash(
-		[]byte(PLUG_TYPEHASH),
-		[]byte{uint8(plug.Selector)},
-		plug.To.Bytes(),
-		crypto.Keccak256(plug.Data),
-		common.LeftPadBytes(plug.Value.Bytes(), 32),
+		[]byte(plug.PlugTypeHash),
+		[]byte{uint8(p.Selector)},
+		p.To.Bytes(),
+		crypto.Keccak256(p.Data),
+		common.LeftPadBytes(p.Value.Bytes(), 32),
 		updateArrayHash[:],
 	)
 }
@@ -117,7 +109,7 @@ func GetPlugArrayHash(plugs []Plug) [32]byte {
 func GetPlugsHash(plugs Plugs) [32]byte {
 	plugArrayHash := GetPlugArrayHash(plugs.Plugs)
 	return crypto.Keccak256Hash(
-		[]byte(PLUGS_TYPEHASH),
+		[]byte(plug.PlugsTypeHash),
 		plugs.Socket.Bytes(),
 		plugArrayHash[:],
 		crypto.Keccak256(plugs.Solver),
@@ -132,7 +124,7 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 	}
 
 	domainHash := crypto.Keccak256(
-		[]byte(EIP712_DOMAIN_TYPEHASH),
+		[]byte(plug.Eip712DomainTypeHash),
 		crypto.Keccak256([]byte(domainName)),
 		crypto.Keccak256([]byte(domainVersion)),
 		common.LeftPadBytes(chainId.Bytes(), 32),
