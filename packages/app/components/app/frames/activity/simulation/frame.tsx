@@ -77,24 +77,29 @@ export const SimulationFrame: FC<{
 					<Share size={18} className="opacity-60" />
 					Share
 				</Button>
-			) : simulation.status !== "success" && (
-				<Button
-					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
-					onClick={() => {
-						const message = [`Socket: ${activity.plug?.socketId ?? "EOA"}`, `Simulation ${simulation.id}`].join(" - ")
+			) : (
+				simulation.status !== "success" && (
+					<Button
+						className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
+						onClick={() => {
+							const message = [
+								`Socket: ${activity.plug?.socketId ?? "EOA"}`,
+								`Simulation ${simulation.id}`
+							].join(" - ")
 
-						const encodedMessage = encodeURIComponent(message)
-						window.open(`https://t.me/evmchance?text=${encodedMessage}`, "_blank")
-					}}
-				>
-					<MessageCircleQuestionIcon size={18} className="opacity-60" />
-					Get Help
-				</Button>
+							const encodedMessage = encodeURIComponent(message)
+							window.open(`https://t.me/evmchance?text=${encodedMessage}`, "_blank")
+						}}
+					>
+						<MessageCircleQuestionIcon size={18} className="opacity-60" />
+						Get Help
+					</Button>
+				)
 			)}
 
 			<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 				<p className="font-bold opacity-40">Details</p>
-				<div className="h-[2px] w-full bg-plug-green/10" />
+				<div className="h-[1px] w-full bg-plug-green/10" />
 			</div>
 
 			<p className="flex flex-row items-center justify-between gap-4 font-bold">

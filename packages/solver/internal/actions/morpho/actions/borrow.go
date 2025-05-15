@@ -36,13 +36,12 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, fmt.Errorf("failed to deserialize market params: %w", err)
 	}
 
-	var amountUpdates []coil.Update
-	amount, amountUpdates, err := actions.GetAndUpdate(
+	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&BorrowFunc,
 		"amount",
-		amountUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
@@ -60,9 +59,10 @@ func Borrow(lookup *actions.SchemaLookup[BorrowRequest]) ([]signature.Plug, erro
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	morphoRouterContract := common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"])
 	return []signature.Plug{{
-		To:      common.HexToAddress(references.Networks[lookup.ChainId].References["morpho"]["router"]),
+		To:      morphoRouterContract,
 		Data:    borrowCalldata,
-		Updates: amountUpdates,
+		Updates: updates,
 	}}, nil
 }

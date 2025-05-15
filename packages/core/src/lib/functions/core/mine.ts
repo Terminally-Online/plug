@@ -1,8 +1,15 @@
+import { configs } from '../bundle'
 import packageJson from '@/package.json'
 import { exec, execSync } from 'child_process'
+import { keccak256, toUtf8Bytes, TypedDataEncoder } from 'ethers'
 import { default as fs } from 'fs-extra'
+import path from 'path'
 
-import { constantContracts, etchContracts } from '@/src/lib/constants'
+import {
+	constantContracts,
+	DEFAULT_SCHEMA,
+	etchContracts
+} from '@/src/lib/constants'
 import { Contract } from '@/src/lib/types'
 
 const efficientAddressesPath = 'create2crunch/efficient_addresses.txt'
@@ -319,9 +326,106 @@ processContracts()
 		console.log(`🏁 Mining completed`)
 		console.log(`	- Duration: ${duration} seconds`)
 
-		process.exit(0)
+		generateGoFile(addresses).then(() => {
+			process.exit(0)
+		})
 	})
 	.catch(error => {
 		console.error('An error occurred:', error)
 		process.exit(1)
 	})
+
+async function generateGoFile(addresses: Record<string, any>) {
+	const latestVersion = Object.keys(addresses).sort().pop()!
+	const plugContracts = addresses[latestVersion]?.contracts || {}
+
+	// Helper to convert to Go exported CapitalCamelCase
+	function toGoExportedCamelCase(key: string) {
+		if (!key) return 'Router'
+		return key
+			.split('_')
+			.map(part => part.charAt(0).toUpperCase() + part.slice(1))
+			.join('')
+	}
+
+	// Helper to convert typehash names to Go exported CapitalCamelCase
+	function toGoTypehashCamelCase(typeHashName: string) {
+		// Remove trailing _TYPEHASH, split, capitalize, join, then add TypeHash
+		const base = typeHashName.replace(/_TYPEHASH$/, '')
+		return (
+			base
+				.toLowerCase()
+				.split('_')
+				.map(part => part.charAt(0).toUpperCase() + part.slice(1))
+				.join('') + 'TypeHash'
+		)
+	}
+
+	const addressVars: string[] = []
+	const mapEntries: string[] = []
+	Object.keys(plugContracts).forEach(contractName => {
+		let key = contractName
+			.replaceAll('.', '')
+			.replaceAll('Plug', '')
+			.replaceAll('sol', '')
+		key = key.toLowerCase().replace(/\s+/g, '_')
+		if (!key) key = 'router'
+		const varName = toGoExportedCamelCase(key)
+		const address = plugContracts[contractName]?.deployment?.address || ''
+		addressVars.push(`${varName} = "${address}"`)
+		mapEntries.push(`\t\t"${key}": ${varName},`)
+	})
+
+	const configurations = await configs()
+	const configsa = [...configurations, DEFAULT_SCHEMA.config]
+
+	const typeHashMap: Record<string, string> = {}
+	for (const config of configsa) {
+		// @ts-expect-error
+		const encoder = new TypedDataEncoder(config.types)
+		Object.keys(config.types).forEach(typeName => {
+			const typeHashName = `${typeName
+				.replace(/([a-z])([A-Z])/g, '$1_$2')
+				.replace(/([A-Z])([A-Z])(?=[a-z])/g, '$1_$2')
+				.replace(/([0-9])([A-Z])/g, '$1_$2')
+				.toUpperCase()}_TYPEHASH`
+			if (!(typeHashName in typeHashMap)) {
+				typeHashMap[typeHashName] = keccak256(
+					toUtf8Bytes(encoder.encodeType(typeName))
+				)
+			}
+		})
+	}
+
+	const typeHashLines = Object.entries(typeHashMap)
+		.map(
+			([typeHashName, typeHashValue]) =>
+				`${toGoTypehashCamelCase(typeHashName)} = "${typeHashValue}"`
+		)
+		.join('\n')
+
+	// Write addresses.go
+	const addressesGoFile = `package common
+
+var (
+${addressVars.map(l => '\t' + l).join('\n')}
+
+\tPlug = map[string]string{
+${mapEntries.join('\n')}
+\t}
+)
+`
+
+	// Write typehashes.go
+	const typehashesGoFile = `package common
+
+var (
+\t${typeHashLines.trim().split('\n').join('\n\t')}
+)
+`
+
+	const outDir = path.join(__dirname, '../../../../../references/common')
+	fs.ensureDirSync(outDir)
+	fs.writeFileSync(path.join(outDir, 'addresses.go'), addressesGoFile)
+	fs.writeFileSync(path.join(outDir, 'type_hashes.go'), typehashesGoFile)
+}

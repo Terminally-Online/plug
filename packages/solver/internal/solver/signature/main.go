@@ -3,6 +3,7 @@ package signature
 import (
 	"math/big"
 	"os"
+	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/utils"
 	"time"
@@ -10,24 +11,12 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	plug "github.com/terminally-online/plug/packages/references/common"
 )
 
 var (
 	domainName    = "Plug Socket"
 	domainVersion = "0.0.1"
-)
-
-const (
-	EIP712_DOMAIN_TYPEHASH   = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
-	UPDATE_TYPEHASH          = "0x56b7ba00148b10c99ae43c2f84a4ec0ec1dfa2e5d7d5954f23e627d964b83435"
-	SLICE_TYPEHASH           = "0x705d2fbc03b585d2178271bc5e779f63e494ae79418e11352a00b51e1edeeaae"
-	PLUG_TYPEHASH            = "0x77f9edb2051551cf1c4102bcde8eba61d391a9e0536544fe44cc2330cc4913fa"
-	PLUGS_TYPEHASH           = "0xf730b3caf995a40c1030675beebec0f819730393c3020ff6bd0295c733af216b"
-	LIVE_PLUGS_TYPEHASH      = "0xb17d5f6d50f15d707601c6994c8e42d3c170be70fe81f012884129e8e5bf41ff"
-	SELECTOR_CALL            = 0
-	SELECTOR_DELEGATECALL    = 1
-	SELECTOR_CALL_WITH_VALUE = 2
-	SELECTOR_STATICCALL      = 3
 )
 
 func GetSolverHash() ([]byte, error) {
@@ -55,8 +44,11 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 	}.Pack(
 		big.NewInt(time.Now().Unix()),
 		from,
-		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
-		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
+		common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
+		// TODO: We need a way to know the implementation address that was used when deploying the socket.
+		//       There is going to be some tricky stuff here. It will not matter as long as we have everyone
+		//       on one version but this is going to have to be fixed sooner than later.
+		common.HexToAddress(references.Plug["socket"]),
 	)
 	if err != nil {
 		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())
@@ -66,7 +58,7 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 
 func getSliceHash(slice coil.Slice) [32]byte {
 	return crypto.Keccak256Hash(
-		[]byte(SLICE_TYPEHASH),
+		[]byte(plug.SliceTypeHash),
 		[]byte{slice.Index},
 		common.LeftPadBytes(slice.Start.Bytes(), 32),
 		common.LeftPadBytes(slice.Length.Bytes(), 32),
@@ -76,7 +68,7 @@ func getSliceHash(slice coil.Slice) [32]byte {
 func getUpdateHash(update coil.Update) [32]byte {
 	sliceHash := getSliceHash(update.Slice)
 	return crypto.Keccak256Hash(
-		[]byte(UPDATE_TYPEHASH),
+		[]byte(plug.UpdateTypeHash),
 		common.LeftPadBytes(update.Start.Bytes(), 32),
 		sliceHash[:],
 	)
@@ -91,15 +83,15 @@ func getUpdateArrayHash(updates []coil.Update) [32]byte {
 	return crypto.Keccak256Hash(encoded)
 }
 
-func GetPlugHash(plug Plug) [32]byte {
-	updateArrayHash := getUpdateArrayHash(plug.Updates)
+func GetPlugHash(p Plug) [32]byte {
+	updateArrayHash := getUpdateArrayHash(p.Updates)
 
 	return crypto.Keccak256Hash(
-		[]byte(PLUG_TYPEHASH),
-		[]byte{plug.Selector},
-		plug.To.Bytes(),
-		crypto.Keccak256(plug.Data),
-		common.LeftPadBytes(plug.Value.Bytes(), 32),
+		[]byte(plug.PlugTypeHash),
+		[]byte{uint8(p.Selector)},
+		p.To.Bytes(),
+		crypto.Keccak256(p.Data),
+		common.LeftPadBytes(p.Value.Bytes(), 32),
 		updateArrayHash[:],
 	)
 }
@@ -117,7 +109,7 @@ func GetPlugArrayHash(plugs []Plug) [32]byte {
 func GetPlugsHash(plugs Plugs) [32]byte {
 	plugArrayHash := GetPlugArrayHash(plugs.Plugs)
 	return crypto.Keccak256Hash(
-		[]byte(PLUGS_TYPEHASH),
+		[]byte(plug.PlugsTypeHash),
 		plugs.Socket.Bytes(),
 		plugArrayHash[:],
 		crypto.Keccak256(plugs.Solver),
@@ -132,7 +124,7 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 	}
 
 	domainHash := crypto.Keccak256(
-		[]byte(EIP712_DOMAIN_TYPEHASH),
+		[]byte(plug.Eip712DomainTypeHash),
 		crypto.Keccak256([]byte(domainName)),
 		crypto.Keccak256([]byte(domainVersion)),
 		common.LeftPadBytes(chainId.Bytes(), 32),

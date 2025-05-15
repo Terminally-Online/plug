@@ -19,17 +19,18 @@ import {
 
 import plugCore from "@terminallyonline/plug-core/package.json"
 
+import { connectedChains } from "@/contexts"
 import { ChainId, formatAddress, getChainName } from "@/lib"
+import { useAccount } from "@/lib/hooks/account/useAccount"
+import { useResponse } from "@/lib/hooks/useResponse"
 import app from "@/package.json"
+import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
-import { useAccount } from "@/lib/hooks/account/useAccount"
-import { ChainImage } from "../../sockets/chains/chain.image"
-import { connectedChains } from "@/contexts"
+
 import { SocketDeployFrame } from "../../frames/socket/deploy/frame"
+import { ChainImage } from "../../sockets/chains/chain.image"
 import { ColumnSettingsDeploymentItem } from "./deployment/item"
-import { useResponse } from "@/lib/hooks/useResponse"
-import { api } from "@/server/client"
 
 export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
@@ -50,36 +51,40 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 			<div {...props}>
 				<div className="flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Session</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
-				{user && <p className="flex flex-row items-center justify-between gap-2 font-bold">
-					<BookUser size={14} className="opacity-20" />
-					<span className="opacity-40">Id</span>{" "}
-					<span
-						className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
-						onClick={() => navigator.clipboard.writeText(user.id ?? "")}
-					>
-						{formatAddress(user.id)}
-					</span>
-				</p>}
-				{chainId && <p className="flex flex-row items-center justify-between gap-2 font-bold">
-					<Waypoints size={14} className="opacity-20" />
-					<span className="opacity-40">Chain</span>{" "}
-					<span className="group ml-auto flex flex-row items-center gap-2">
-						<ChainImage chainId={chainId as ChainId} size="xs" />
-						{getChainName(chainId as ChainId)} (<span className="opacity-40">{chainId}</span>)
-					</span>
-				</p>}
+				{user && (
+					<p className="flex flex-row items-center justify-between gap-2 font-bold">
+						<BookUser size={14} className="opacity-20" />
+						<span className="opacity-40">Id</span>{" "}
+						<span
+							className="group ml-auto flex cursor-pointer flex-row items-center gap-1"
+							onClick={() => navigator.clipboard.writeText(user.id ?? "")}
+						>
+							{formatAddress(user.id)}
+						</span>
+					</p>
+				)}
+				{chainId && (
+					<p className="flex flex-row items-center justify-between gap-2 font-bold">
+						<Waypoints size={14} className="opacity-20" />
+						<span className="opacity-40">Chain</span>{" "}
+						<span className="group ml-auto flex flex-row items-center gap-2">
+							<ChainImage chainId={chainId as ChainId} size="xs" />
+							{getChainName(chainId as ChainId)} (<span className="opacity-40">{chainId}</span>)
+						</span>
+					</p>
+				)}
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Socket</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<BookUser size={14} className="opacity-20" />
 					<span className="opacity-40">Address</span>{" "}
 					<span
-						className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
+						className="group ml-auto flex cursor-pointer flex-row items-center gap-1"
 						onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}
 					>
 						{formatAddress(socket?.socketAddress)}
@@ -103,7 +108,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Status</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<span className="opacity-40">Solver</span>
@@ -113,18 +118,18 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 				</p>
 
 				{connectedChains.map((chain, chainIndex) => (
-					<ColumnSettingsDeploymentItem 
-						key={chainIndex} 
-						index={index} 
-						chainId={chain.id} 
-						factory={socket.deploymentFactory} 
-						address={socket.socketAddress} 
+					<ColumnSettingsDeploymentItem
+						key={chainIndex}
+						index={index}
+						chainId={chain.id}
+						factory={socket.deploymentFactory}
+						address={socket.socketAddress}
 					/>
 				))}
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Account</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<CalendarCheck size={14} className="opacity-20" />
@@ -143,7 +148,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Identity</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<User size={14} className="opacity-20" />
@@ -169,7 +174,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Flags</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<Computer size={14} className="opacity-20" />
@@ -181,7 +186,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 
 				<div className="mt-4 flex flex-row items-center gap-4 font-bold">
 					<p className="opacity-40">Versions</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
+					<div className="h-[1px] w-full bg-plug-green/10" />
 				</div>
 				<p className="flex flex-row items-center justify-between gap-2 font-bold">
 					<Globe size={14} className="opacity-20" />
@@ -201,11 +206,7 @@ export const ColumnSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number
 			</div>
 
 			{connectedChains.map((chain, chainIndex) => (
-				<SocketDeployFrame
-					key={chainIndex}
-					index={index}
-					chainId={chain.id}
-				/>
+				<SocketDeployFrame key={chainIndex} index={index} chainId={chain.id} />
 			))}
 		</>
 	)

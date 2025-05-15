@@ -18,7 +18,8 @@ contract PlugCoercionDeployment is Script {
 
         if (PlugEtcherLib.PLUG_COERCION_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_COERCION_SALT, PlugEtcherLib.PLUG_COERCION_INITCODE
+                PlugEtcherLib.PLUG_COERCION_SALT,
+                PlugEtcherLib.PLUG_COERCION_INITCODE
             );
         }
 

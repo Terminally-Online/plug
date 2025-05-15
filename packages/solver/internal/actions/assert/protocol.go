@@ -8,7 +8,17 @@ import (
 )
 
 var (
-	Assert = "assert"
+	ActionAssertKey = "true_or_false"
+
+	ActionAssertSentence = "Assert that {0<condition:bool>} is {1<assertion:bool>}"
+
+	ActionAssert = actions.NewActionDefinition(
+		ActionAssertSentence,
+		assert_actions.HandleAssert,
+		assert_options.AssertOptions,
+		nil,
+		actions.IsEmptyOnchainFunc,
+	)
 )
 
 func New() actions.Protocol {
@@ -19,14 +29,7 @@ func New() actions.Protocol {
 			Tags:   []string{"validation", "assert", "condition"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				Assert: actions.NewActionDefinition(
-					"Assert that {0<condition:bool>} is {1<assertion:bool>}",
-					assert_actions.HandleAssert,
-					assert_options.AssertOptions,
-					actions.IsStatic,
-					actions.IsGlobal,
-					actions.IsEmptyOnchainFunc,
-				),
+				ActionAssertKey: ActionAssert,
 			},
 		},
 	)

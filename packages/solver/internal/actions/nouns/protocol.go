@@ -8,10 +8,43 @@ import (
 )
 
 var (
-	IncreaseBid    = "increase_bid"
-	HasTrait       = "has_trait"
-	IsTokenId      = "is_token_id"
-	CurrentAuction = "current_auction"
+	ActionIncreaseBidKey = "increase_bid"
+
+	ActionBidSentence          = "Bid on noun with {0<amount:string>} ETH"
+	ActionIncreaseBidSentence  = "Outbid the current bid by {0<percent:string>} %"
+	ReadHasTraitSentence       = "Noun that has a {0<traitType:string>} of {0=>1<trait:string>}"
+	ReadCurrentAuctionSentence = "Get current auction"
+
+	ActionBid = actions.NewActionDefinition(
+		ActionBidSentence,
+		nouns_actions.Bid,
+		nil,
+		nil,
+		actions.IsEmptyOnchainFunc,
+	)
+	ActionIncreaseBid = actions.NewActionDefinition(
+		ActionIncreaseBidSentence,
+		nouns_actions.IncreaseBid,
+		nil,
+		nil,
+		actions.IsEmptyOnchainFunc,
+	)
+	ReadHasTrait = actions.NewActionDefinition(
+		ReadHasTraitSentence,
+		nouns_actions.HasTrait,
+		nouns_options.HasTraitOptions,
+		&actions.ActionProperties{
+			IsSearchable: true,
+		},
+		actions.IsEmptyOnchainFunc,
+	)
+	ReadCurrentAuction = actions.NewActionDefinition(
+		ReadCurrentAuctionSentence,
+		nouns_actions.CurrentAuction,
+		nil,
+		nil,
+		actions.IsEmptyOnchainFunc,
+	)
 )
 
 func New() actions.Protocol {
@@ -22,38 +55,10 @@ func New() actions.Protocol {
 			Tags:   []string{"nft"},
 			Chains: []*references.Network{references.Mainnet},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				actions.ActionBid: actions.NewActionDefinition(
-					"Bid on noun with {0<amount:string>} ETH",
-					nouns_actions.Bid,
-					nil,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
-				actions.ReadCurrentAuction: actions.NewActionDefinition(
-					"Get current auction",
-					nouns_actions.CurrentAuction,
-					nil,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
-				actions.ReadHasTrait: actions.NewActionDefinition(
-					"Noun that has a {0<traitType:string>} of {0=>1<trait:string>}",
-					nouns_actions.HasTrait,
-					nouns_options.HasTraitOptions,
-					actions.IsGlobal,
-					actions.IsDynamic,
-					actions.IsEmptyOnchainFunc,
-				),
-				IncreaseBid: actions.NewActionDefinition(
-					"Outbid the current bid by {0<percent:string>} %",
-					nouns_actions.IncreaseBid,
-					nil,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
+				actions.ActionBid:          ActionBid,
+				ActionIncreaseBidKey:       ActionIncreaseBid,
+				actions.ReadHasTrait:       ReadHasTrait,
+				actions.ReadCurrentAuction: ReadCurrentAuction,
 			},
 		},
 	)

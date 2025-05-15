@@ -2,17 +2,7 @@ import { useSession } from "next-auth/react"
 import { FC, useCallback, useMemo, useState } from "react"
 
 import { motion } from "framer-motion"
-import {
-	AlertTriangle,
-	Calendar,
-	CircleDollarSign,
-	Eye,
-	Library,
-	Pause,
-	Play,
-	Send,
-	Waypoints
-} from "lucide-react"
+import { AlertTriangle, Calendar, CircleDollarSign, Eye, Library, Pause, Play, Send, Waypoints } from "lucide-react"
 
 import { useAtom, useAtomValue } from "jotai"
 
@@ -25,10 +15,10 @@ import { Counter } from "@/components/shared/utils/counter"
 import { connectedChains } from "@/contexts"
 import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
+import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 import { areAllSentencesValidAtom } from "@/state/sentences"
-import { useSocket } from "@/state/authentication"
 
 export const RunFrame: FC<{
 	index: number
@@ -87,7 +77,7 @@ export const RunFrame: FC<{
 	const isActionful = useMemo(() => {
 		if (!plug || !solverActions) return false
 
-		return plug.actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
+		return plug.actions.some(action => solverActions[action.protocol]?.schema[action.action]?.properties.type === "action")
 	}, [plug, solverActions])
 
 	// Using our atom to check if all sentences are valid
@@ -157,10 +147,12 @@ export const RunFrame: FC<{
 					<>
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Details</p>
-							<div className="h-[2px] w-full bg-plug-green/10" />
+							<div className="h-[1px] w-full bg-plug-green/10" />
 						</div>
 
-						{solverActions && plug?.actions && (() => {
+						{solverActions &&
+							plug?.actions &&
+							(() => {
 								const uniqueProtocols = Array.from(
 									new Set(plug.actions?.map(action => action.protocol))
 								)
@@ -172,7 +164,9 @@ export const RunFrame: FC<{
 										<div className="relative flex flex-row gap-4 font-bold">
 											<span className="flex w-max flex-row items-center gap-4">
 												<Library size={18} className="opacity-20" />
-												<span className="opacity-40">Protocol{plug.actions.length > 1 && "s"}</span>
+												<span className="opacity-40">
+													Protocol{plug.actions.length > 1 && "s"}
+												</span>
 											</span>{" "}
 											<div className="relative ml-auto flex w-[45%] overflow-hidden">
 												{shouldScroll && (
@@ -225,8 +219,7 @@ export const RunFrame: FC<{
 										</div>
 									</>
 								)
-							})()
-						}
+							})()}
 
 						{chain && (
 							<p className="flex flex-row justify-between font-bold">
@@ -250,9 +243,7 @@ export const RunFrame: FC<{
 								<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
 									<Counter count={0.0} /> ETH
 								</span>
-								<span className="ml-2 flex flex-row items-center">
-									Free
-								</span>
+								<span className="ml-2 flex flex-row items-center">Free</span>
 							</span>
 						</p>
 					</>
@@ -262,7 +253,7 @@ export const RunFrame: FC<{
 					<>
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Schedule</p>
-							<div className="h-[2px] w-full bg-plug-green/10" />
+							<div className="h-[1px] w-full bg-plug-green/10" />
 						</div>
 
 						<p className="flex flex-row justify-between font-bold">

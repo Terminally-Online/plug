@@ -75,7 +75,7 @@ func (c *CoilInput[T, R]) GetUintFromFloatFunc(decimals uint8) func() (*big.Int,
 			return big.NewInt(0), nil
 		}
 
-		stringValue, ok := interface{}(c.GetValue()).(string)
+		stringValue, ok := any(c.GetValue()).(string)
 		if !ok {
 			return nil, fmt.Errorf("cannot get value from float: expected string value, got %T", c.GetValue())
 		}

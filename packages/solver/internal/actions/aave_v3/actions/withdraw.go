@@ -29,14 +29,12 @@ func Withdraw(lookup *actions.SchemaLookup[WithdrawRequest]) ([]signature.Plug, 
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	var updates []coil.Update
-
 	amount, updates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&WithdrawFunc,
 		"amount",
-		updates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {

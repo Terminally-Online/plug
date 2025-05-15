@@ -52,7 +52,9 @@ contract PlugMockDexTest is Test {
         dex.setFixedReturn(address(tokenA), address(tokenB), fixedAmount);
 
         // Verify fixed return was set correctly
-        assertEq(dex.fixedReturns(address(tokenA), address(tokenB)), fixedAmount);
+        assertEq(
+            dex.fixedReturns(address(tokenA), address(tokenB)), fixedAmount
+        );
     }
 
     function test_GetAmountOut_WithRate() public {
@@ -65,7 +67,8 @@ contract PlugMockDexTest is Test {
         uint256 expectedAmountOut = (amountIn * rate) / 1 ether;
 
         // Verify getAmountOut returns the expected amount
-        uint256 amountOut = dex.getAmountOut(address(tokenA), address(tokenB), amountIn);
+        uint256 amountOut =
+            dex.getAmountOut(address(tokenA), address(tokenB), amountIn);
         assertEq(amountOut, expectedAmountOut);
     }
 
@@ -75,7 +78,8 @@ contract PlugMockDexTest is Test {
         dex.setFixedReturn(address(tokenA), address(tokenB), 50 ether);
 
         // Fixed return should have priority
-        uint256 amountOut = dex.getAmountOut(address(tokenA), address(tokenB), 10 ether);
+        uint256 amountOut =
+            dex.getAmountOut(address(tokenA), address(tokenB), 10 ether);
         assertEq(amountOut, 50 ether);
     }
 

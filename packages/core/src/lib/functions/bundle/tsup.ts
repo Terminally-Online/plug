@@ -160,6 +160,7 @@ async function generateProxyPackages(exports: Exports) {
 	files.add('/dist')
 	files.add('/src')
 	files.add('/artifacts')
+	files.add('/broadcast')
 	const packageJson = await fs.readJSON('package.json')
 	packageJson.files = [...files.values()]
 	await fs.writeFile(

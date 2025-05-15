@@ -8,8 +8,26 @@ import (
 )
 
 var (
-	LogicOperation = "logic_peration"
-	CompareNumbers = "compare_numbers"
+	ActionNumberComparisonKey = "number_comparison"
+	ActionNumberLogicKey      = "logic_operation"
+
+	ActionNumberComparisonSentence = "{0<a:uint256>} {1<comparison:string>} {2<b:uint256>}"
+	ActionNumberLogicSentence      = "{0<a:bool>} {1<comparison:string>} {2<b:[(1)!=isNot?bool:null]>}"
+
+	ActionNumberComparison = actions.NewActionDefinition(
+		ActionNumberComparisonSentence,
+		boolean_actions.NumberComparison,
+		boolean_options.NumberComparisonOptions,
+		nil,
+		&boolean_actions.NumberComparisonFunc,
+	)
+	ActionNumberLogic = actions.NewActionDefinition(
+		ActionNumberLogicSentence,
+		boolean_actions.NumberLogic,
+		boolean_options.NumberLogicOptions,
+		nil,
+		&boolean_actions.NumberLogicFunc,
+	)
 )
 
 func New() actions.Protocol {
@@ -20,22 +38,8 @@ func New() actions.Protocol {
 			Tags:   []string{"logic", "condition", "comparison"},
 			Chains: []*references.Network{references.Mainnet, references.Base},
 			Actions: map[string]actions.ActionDefinitionInterface{
-				CompareNumbers: actions.NewActionDefinition(
-					"Check if {0<a:integer>} {1<comparison:string>} {2<b:integer>}",
-					boolean_actions.CompareNumbers,
-					boolean_options.CompareNumbersOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
-				LogicOperation: actions.NewActionDefinition(
-					"Check if {0<a:boolean>} {1<operation:string>} {2<b:boolean>}",
-					boolean_actions.LogicOperation,
-					boolean_options.LogicOperationOptions,
-					actions.IsGlobal,
-					actions.IsStatic,
-					actions.IsEmptyOnchainFunc,
-				),
+				ActionNumberComparisonKey: ActionNumberComparison,
+				ActionNumberLogicKey:      ActionNumberLogic,
 			},
 		},
 	)

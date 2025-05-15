@@ -79,6 +79,14 @@ export type SchemasResponseOptionsSet = z.infer<typeof SchemasResponseOptionsSet
 const SchemasResponseCoilsSchema = z.record(z.string(), z.string())
 export type SchemasResponseCoils = z.infer<typeof SchemasResponseCoilsSchema>
 
+const SchemasResponsePropertiesSchema = z.object({
+	type: z.string(),
+	isUnlisted: z.boolean(),
+	isSearchable: z.boolean(),
+	isUserSpecific: z.boolean(),
+})
+export type SchemasResponseProperties = z.infer<typeof SchemasResponsePropertiesSchema>
+
 const SchemasResponseSchemaSchema = z.object({
 	metadata: z.object({
 		icon: z.string(),
@@ -88,7 +96,7 @@ const SchemasResponseSchemaSchema = z.object({
 	schema: z.record(
 		z.string(),
 		z.object({
-			type: z.string(),
+			properties: SchemasResponsePropertiesSchema,
 			sentence: z.string(),
 			options: SchemasResponseOptionsSetSchema.optional(),
 			coils: SchemasResponseCoilsSchema.optional()

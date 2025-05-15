@@ -10,24 +10,6 @@ export const contracts = [
                         "name": "condition",
                         "type": "bool",
                         "internalType": "bool"
-                    },
-                    {
-                        "name": "message",
-                        "type": "string",
-                        "internalType": "string"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "assertFalse",
-                "inputs": [
-                    {
-                        "name": "condition",
-                        "type": "bool",
-                        "internalType": "bool"
                     }
                 ],
                 "outputs": [],
@@ -41,37 +23,6 @@ export const contracts = [
                         "name": "condition",
                         "type": "bool",
                         "internalType": "bool"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "assertTrue",
-                "inputs": [
-                    {
-                        "name": "condition",
-                        "type": "bool",
-                        "internalType": "bool"
-                    },
-                    {
-                        "name": "message",
-                        "type": "string",
-                        "internalType": "string"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "fail",
-                "inputs": [
-                    {
-                        "name": "message",
-                        "type": "string",
-                        "internalType": "string"
                     }
                 ],
                 "outputs": [],
@@ -82,30 +33,6 @@ export const contracts = [
     {
         "name": "PlugBoolean",
         "abi": [
-            {
-                "type": "function",
-                "name": "isAfterTime",
-                "inputs": [
-                    {
-                        "name": "time",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "threshold",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
             {
                 "type": "function",
                 "name": "isAnd",
@@ -119,30 +46,6 @@ export const contracts = [
                         "name": "b",
                         "type": "bool",
                         "internalType": "bool"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isBeforeTime",
-                "inputs": [
-                    {
-                        "name": "time",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "threshold",
-                        "type": "uint256",
-                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
@@ -185,65 +88,17 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "isBetweenTimes",
-                "inputs": [
-                    {
-                        "name": "time",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "start",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "end",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
                 "name": "isEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isFalse",
-                "inputs": [
-                    {
-                        "name": "value",
-                        "type": "bool",
-                        "internalType": "bool"
                     }
                 ],
                 "outputs": [
@@ -260,12 +115,12 @@ export const contracts = [
                 "name": "isGreaterThan",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -284,12 +139,12 @@ export const contracts = [
                 "name": "isGreaterThanOrEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -332,12 +187,12 @@ export const contracts = [
                 "name": "isLessThan",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -356,12 +211,12 @@ export const contracts = [
                 "name": "isLessThanOrEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -447,12 +302,12 @@ export const contracts = [
                 "name": "isNotEqual",
                 "inputs": [
                     {
-                        "name": "value",
+                        "name": "a",
                         "type": "uint256",
                         "internalType": "uint256"
                     },
                     {
-                        "name": "threshold",
+                        "name": "b",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -479,87 +334,6 @@ export const contracts = [
                         "name": "b",
                         "type": "bool",
                         "internalType": "bool"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isSameDay",
-                "inputs": [
-                    {
-                        "name": "timestamp1",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "timestamp2",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isTrue",
-                "inputs": [
-                    {
-                        "name": "value",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isWeekday",
-                "inputs": [
-                    {
-                        "name": "timestamp",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "isWeekend",
-                "inputs": [
-                    {
-                        "name": "timestamp",
-                        "type": "uint256",
-                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
@@ -2127,50 +1901,21 @@ export const contracts = [
                 "name": "add",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "clamp",
-                "inputs": [
-                    {
-                        "name": "value",
-                        "type": "int256",
-                        "internalType": "int256"
-                    },
-                    {
-                        "name": "minValue",
-                        "type": "int256",
-                        "internalType": "int256"
-                    },
-                    {
-                        "name": "maxValue",
-                        "type": "int256",
-                        "internalType": "int256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2180,21 +1925,21 @@ export const contracts = [
                 "name": "divide",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2204,21 +1949,21 @@ export const contracts = [
                 "name": "max",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2228,21 +1973,21 @@ export const contracts = [
                 "name": "min",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2253,20 +1998,20 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
                         "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2276,21 +2021,21 @@ export const contracts = [
                 "name": "multiply",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2300,12 +2045,12 @@ export const contracts = [
                 "name": "power",
                 "inputs": [
                     {
-                        "name": "base",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "exponent",
+                        "name": "y",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -2313,8 +2058,8 @@ export const contracts = [
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2324,21 +2069,21 @@ export const contracts = [
                 "name": "subtract",
                 "inputs": [
                     {
-                        "name": "a",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "x",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
-                        "name": "b",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "name": "y",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
                     {
                         "name": "result",
-                        "type": "int256",
-                        "internalType": "int256"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "pure"
@@ -2943,24 +2688,9 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "selector",
-                                                "type": "uint8",
-                                                "internalType": "uint8"
-                                            },
-                                            {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
                                                 "name": "data",
                                                 "type": "bytes",
                                                 "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
                                             },
                                             {
                                                 "name": "updates",
@@ -3057,24 +2787,9 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "selector",
-                                                "type": "uint8",
-                                                "internalType": "uint8"
-                                            },
-                                            {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
                                                 "name": "data",
                                                 "type": "bytes",
                                                 "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
                                             },
                                             {
                                                 "name": "updates",
@@ -3156,24 +2871,9 @@ export const contracts = [
                         "internalType": "struct PlugTypesLib.Plug[]",
                         "components": [
                             {
-                                "name": "selector",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "to",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
                                 "name": "data",
                                 "type": "bytes",
                                 "internalType": "bytes"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
                             },
                             {
                                 "name": "updates",
@@ -3236,24 +2936,9 @@ export const contracts = [
                         "internalType": "struct PlugTypesLib.Plug",
                         "components": [
                             {
-                                "name": "selector",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "to",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
                                 "name": "data",
                                 "type": "bytes",
                                 "internalType": "bytes"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
                             },
                             {
                                 "name": "updates",
@@ -3326,24 +3011,9 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
-                                        "name": "selector",
-                                        "type": "uint8",
-                                        "internalType": "uint8"
-                                    },
-                                    {
-                                        "name": "to",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
                                         "name": "data",
                                         "type": "bytes",
                                         "internalType": "bytes"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "updates",
@@ -3428,24 +3098,9 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
-                                        "name": "selector",
-                                        "type": "uint8",
-                                        "internalType": "uint8"
-                                    },
-                                    {
-                                        "name": "to",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
                                         "name": "data",
                                         "type": "bytes",
                                         "internalType": "bytes"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "updates",
@@ -3682,24 +3337,9 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "selector",
-                                                "type": "uint8",
-                                                "internalType": "uint8"
-                                            },
-                                            {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
                                                 "name": "data",
                                                 "type": "bytes",
                                                 "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
                                             },
                                             {
                                                 "name": "updates",
@@ -3896,24 +3536,9 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "selector",
-                                                "type": "uint8",
-                                                "internalType": "uint8"
-                                            },
-                                            {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
                                                 "name": "data",
                                                 "type": "bytes",
                                                 "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
                                             },
                                             {
                                                 "name": "updates",
@@ -3981,25 +3606,7 @@ export const contracts = [
                         "internalType": "address"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$results",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Result",
-                        "components": [
-                            {
-                                "name": "index",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "error",
-                                "type": "string",
-                                "internalType": "string"
-                            }
-                        ]
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "payable"
             },
             {
@@ -4022,24 +3629,9 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
-                                        "name": "selector",
-                                        "type": "uint8",
-                                        "internalType": "uint8"
-                                    },
-                                    {
-                                        "name": "to",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
                                         "name": "data",
                                         "type": "bytes",
                                         "internalType": "bytes"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "updates",
@@ -4095,25 +3687,7 @@ export const contracts = [
                         ]
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$results",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Result",
-                        "components": [
-                            {
-                                "name": "index",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "error",
-                                "type": "string",
-                                "internalType": "string"
-                            }
-                        ]
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "payable"
             },
             {
@@ -4154,7 +3728,7 @@ export const contracts = [
                         "internalType": "string"
                     }
                 ],
-                "stateMutability": "view"
+                "stateMutability": "pure"
             },
             {
                 "type": "function",
@@ -4284,8 +3858,8 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "$index",
-                        "type": "uint8",
-                        "internalType": "uint8"
+                        "type": "uint256",
+                        "internalType": "uint256"
                     },
                     {
                         "name": "$reason",
@@ -5681,8 +5255,8 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "$livePlugs",
-                        "type": "tuple[]",
-                        "internalType": "struct PlugTypesLib.LivePlugs[]",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.LivePlugs",
                         "components": [
                             {
                                 "name": "plugs",
@@ -5700,24 +5274,9 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "selector",
-                                                "type": "uint8",
-                                                "internalType": "uint8"
-                                            },
-                                            {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
                                                 "name": "data",
                                                 "type": "bytes",
                                                 "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
                                             },
                                             {
                                                 "name": "updates",
@@ -5789,8 +5348,8 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "$livePlugs",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.LivePlugs",
+                        "type": "tuple[]",
+                        "internalType": "struct PlugTypesLib.LivePlugs[]",
                         "components": [
                             {
                                 "name": "plugs",
@@ -5808,24 +5367,9 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "selector",
-                                                "type": "uint8",
-                                                "internalType": "uint8"
-                                            },
-                                            {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
                                                 "name": "data",
                                                 "type": "bytes",
                                                 "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
                                             },
                                             {
                                                 "name": "updates",

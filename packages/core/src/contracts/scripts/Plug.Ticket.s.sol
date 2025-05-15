@@ -18,7 +18,8 @@ contract PlugTicketDeployment is Script {
 
         if (PlugEtcherLib.PLUG_TICKET_ADDRESS.code.length == 0) {
             PlugEtcherLib.FACTORY.safeCreate2(
-                PlugEtcherLib.PLUG_TICKET_SALT, PlugEtcherLib.PLUG_TICKET_INITCODE
+                PlugEtcherLib.PLUG_TICKET_SALT,
+                PlugEtcherLib.PLUG_TICKET_INITCODE
             );
         }
 
