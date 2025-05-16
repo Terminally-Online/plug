@@ -36,7 +36,7 @@
 		"@hello-pangea/dnd": "^18.0.1",
 		"@next-auth/prisma-adapter": "^1.0.7",
 		"@next/third-parties": "15.2.1",
-		"@prisma/client": "5.22.0",
+		"@prisma/client": "6.8.1",
 		"@t3-oss/env-core": "^0.12.0",
 		"@t3-oss/env-nextjs": "^0.12.0",
 		"@tanstack/react-query": "^5.66.11",
