@@ -110,7 +110,7 @@ export const LandingFooter: FC = () => {
 					<p>Copyright Terminally Online, Inc. 2024</p>
 					<button
 						className="transition-all duration-200 ease-in-out hover:text-plug-green lg:ml-auto"
-						onClick={() => handleCallToAction(routes.comingSoon)}
+						onClick={() => handleCallToAction("/terms")}
 					>
 						Terms of Service
 					</button>
