@@ -57,11 +57,17 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 }
 
 func getSliceHash(slice coil.Slice) [32]byte {
+	var typeIdByte byte
+	if slice.TypeId != nil {
+		typeIdByte = byte(*slice.TypeId)
+	}
+
 	return crypto.Keccak256Hash(
 		[]byte(plug.SliceTypeHash),
 		[]byte{slice.Index},
 		common.LeftPadBytes(slice.Start.Bytes(), 32),
 		common.LeftPadBytes(slice.Length.Bytes(), 32),
+		[]byte{typeIdByte},
 	)
 }
 
