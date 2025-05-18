@@ -123,19 +123,52 @@ func GetPlugsHash(plugs Plugs) [32]byte {
 	)
 }
 
+func GetDomainHash(chainId *big.Int, socket common.Address) ([]byte, error) {
+	nameHash := crypto.Keccak256([]byte(domainName))
+	versionHash := crypto.Keccak256([]byte(domainVersion))
+
+	// Convert all byte slices to [32]byte arrays
+	var typeHashArray [32]byte
+	var nameHashArray [32]byte
+	var versionHashArray [32]byte
+
+	typeHashBytes := common.FromHex(plug.Eip712DomainTypeHash)
+	copy(typeHashArray[:], typeHashBytes)
+	copy(nameHashArray[:], nameHash)
+	copy(versionHashArray[:], versionHash)
+
+	packed, err := abi.Arguments{
+		{Type: abi.Type{T: abi.FixedBytesTy, Size: 32}},
+		{Type: abi.Type{T: abi.FixedBytesTy, Size: 32}},
+		{Type: abi.Type{T: abi.FixedBytesTy, Size: 32}},
+		{Type: abi.Type{T: abi.UintTy, Size: 256}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}.Pack(
+		typeHashArray,
+		nameHashArray,
+		versionHashArray,
+		chainId,
+		socket,
+	)
+	if err != nil {
+		return nil, utils.ErrBuild("failed to pack domain: " + err.Error())
+	}
+
+	domainHash := crypto.Keccak256(packed)
+	return domainHash, nil
+}
+
 func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, []byte, error) {
 	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
 	if err != nil {
 		return Plugs{}, nil, utils.ErrBuild(err.Error())
 	}
 
-	domainHash := crypto.Keccak256(
-		[]byte(plug.Eip712DomainTypeHash),
-		crypto.Keccak256([]byte(domainName)),
-		crypto.Keccak256([]byte(domainVersion)),
-		common.LeftPadBytes(chainId.Bytes(), 32),
-		socket.Bytes(),
-	)
+	domainHash, err := GetDomainHash(chainId, socket)
+	if err != nil {
+		return Plugs{}, nil, err
+	}
+
 	plugsHash := GetPlugsHash(plugs)
 	signatureHash := crypto.Keccak256(
 		[]byte("\x19\x01"),
