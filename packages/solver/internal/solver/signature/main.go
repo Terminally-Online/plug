@@ -222,7 +222,6 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 		return Plugs{}, nil, utils.ErrBuild(err.Error())
 	}
 
-	// get public key of private key
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
@@ -271,7 +270,6 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 		return Plugs{}, nil, utils.ErrBuild(err.Error())
 	}
 
-	fmt.Printf("signature before modification: %x\n", signature)
 	signature[64] += 27
 
 	fmt.Printf("signature: %x\n", signature)

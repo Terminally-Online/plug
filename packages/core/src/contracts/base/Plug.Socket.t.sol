@@ -83,15 +83,12 @@ contract PlugSocketTest is Test {
     }
 
     function test_debugSignatureValidation() public {
-        // Setup exact addresses from your Go test
         address solverAddr = 0xE09C3f7a144D3b1Bef42499486cA5C36d20ec5d1;
         address socketAddr = 0xFc49633D9e97a489E6E4CE63D21Ff98D5918C96d;
         
-        // Create the exact same Plugs struct as your Go code
         PlugTypesLib.Plugs memory testPlugs;
         testPlugs.socket = socketAddr;
         
-        // Create the single plug with exact same data
         PlugTypesLib.Plug[] memory plugArray = new PlugTypesLib.Plug[](1);
         plugArray[0].data = hex"a9059cbb0000000000000000000000000bb5d848487b10f8cfba21493c8f6d47e8a8b17c000000000000000000000000000000000000000000000000000000174876e800";
         plugArray[0].updates = new PlugTypesLib.Update[](0);
@@ -104,7 +101,6 @@ contract PlugSocketTest is Test {
  bytes32 PLUGS_TYPEHASH =
         0x05b2ab8b8c7ceee9902f5288470f7189883657d476121976b1079d47722718a2;
 
-        // Log the components being packed in getPlugsHash
         bytes32 plugArrayHash = socket.getPlugArrayHash(testPlugs.plugs);
         console2.log("Components being packed:");
         console2.log("1. PLUGS_TYPEHASH:", vm.toString(PLUGS_TYPEHASH));
@@ -132,7 +128,6 @@ contract PlugSocketTest is Test {
         );
         console2.logBytes32(domainHashValue);
         
-        // Log the raw components for final digest
         bytes memory prefix = hex"1901";
         console2.logBytes(prefix);
         console2.logBytes32(domainHashValue);
@@ -144,26 +139,23 @@ contract PlugSocketTest is Test {
         bytes32 finalDigest = keccak256(digestInput);
         console2.logBytes32(finalDigest);
 
-        // Suppose you have the Go-generated signature as a hex string:
         bytes memory signature = hex"55380155db822987674a0128637b0aa9e0d52056a33a8058a51d28965a16861762a97bed8fb148751b7a816725e0917a7d3e46d898fd158dfce33036aa89eabc1b";
         require(signature.length == 65, "Invalid signature length");
 
-bytes32 r;
-bytes32 s;
-uint8 v;
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
 
-assembly {
-    r := mload(add(signature, 32))
-    s := mload(add(signature, 64))
-    v := byte(0, mload(add(signature, 96)))
-}
+        assembly {
+            r := mload(add(signature, 32))
+            s := mload(add(signature, 64))
+            v := byte(0, mload(add(signature, 96)))
+        }
 
-// Now use ecrecover
-address recovered = ecrecover(finalDigest, v, r, s);
-console2.log("Recovered address:", recovered);
+        address recovered = ecrecover(finalDigest, v, r, s);
+        console2.log("Recovered address:", recovered);
 
-// Or with ECDSA.recover (if using OpenZeppelin/Solady)
-address recovered2 = ECDSA.recover(finalDigest, signature);
-console2.log("Recovered address (ECDSA):", recovered2);
+        address recovered2 = ECDSA.recover(finalDigest, signature);
+        console2.log("Recovered address (ECDSA):", recovered2);
     }
 }

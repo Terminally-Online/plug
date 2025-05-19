@@ -33,34 +33,21 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 
 	routerAddress := livePlugs.GetRouterAddress()
 
-	tx := map[string]any{
-		"from": livePlugs.From,
-		"to":   routerAddress.Hex(),
-	}
-
+	var callData string
 	if livePlugs.Data != "" {
-		tx["data"] = livePlugs.Data
+		callData = livePlugs.Data
 	} else {
-		callData, err := livePlugs.GetCallData()
+		callDataBytes, err := livePlugs.GetCallData()
 		if err != nil {
 			return nil, err
 		}
-		tx["data"] = hexutil.Bytes(callData).String()
+		callData = hexutil.Bytes(callDataBytes).String()
 	}
 
 	var blockNumber string
 	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
 		return nil, fmt.Errorf("failed to get block number: %v", err)
 	}
-
-	var baseFee struct {
-		BaseFeePerGas string `json:"baseFeePerGas"`
-	}
-	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
-		return nil, fmt.Errorf("failed to get base fee: %v", err)
-	}
-
-	tx["gasPrice"] = baseFee.BaseFeePerGas
 
 	// Calculate total value by summing up values from CallWithValue plugs
 	// TODO MASON: do we need to do this? Why haven't we done it before?
@@ -75,7 +62,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		ChainId: fmt.Sprintf("%d", livePlugs.ChainId),
 		From:    livePlugs.From,
 		To:      routerAddress.Hex(),
-		Data:    tx["data"].(string),
+		Data:    callData,
 		Value:   totalValue,
 	}
 
@@ -139,50 +126,16 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	}
 	defer rpcClient.Close()
 
-	simTx := map[string]any{
-		"from": tx.From.Hex(),
-		"to":   tx.To.Hex(),
-	}
-
-	if len(tx.Data) > 0 {
-		simTx["data"] = hexutil.Bytes(tx.Data).String()
-	}
-
-	if tx.Value != nil {
-		simTx["value"] = hexutil.EncodeBig(tx.Value)
-	}
-
-	if tx.Gas != nil {
-		simTx["gas"] = hexutil.EncodeBig(tx.Gas)
-	} else {
-		var gasEstimate string
-		if err := rpcClient.CallContext(ctx, &gasEstimate, "eth_estimateGas", simTx); err != nil {
-			return nil, fmt.Errorf("failed to estimate gas: %v", err)
-		}
-		simTx["gas"] = gasEstimate
-	}
-
-	// Get block metadata for base fee
-	var blockNumber string
-	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
-		return nil, fmt.Errorf("failed to get block number: %v", err)
-	}
-
-	var baseFee struct {
-		BaseFeePerGas string `json:"baseFeePerGas"`
-	}
-	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
-		return nil, fmt.Errorf("failed to get base fee: %v", err)
-	}
-	simTx["gasPrice"] = baseFee.BaseFeePerGas
-
 	simRequest := SimulationRequest{
 		ChainId: fmt.Sprintf("%d", chainId),
 		From:    tx.From.Hex(),
 		To:      tx.To.Hex(),
 		Data:    hexutil.Bytes(tx.Data).String(),
 		Value:   tx.Value,
-		// Add any additional fields from simTx that SimulationRequest supports
+	}
+
+	if len(tx.Data) > 0 {
+		simRequest.Data = hexutil.Bytes(tx.Data).String()
 	}
 
 	trace, err := Sentio.SimulateTransaction(simRequest)
