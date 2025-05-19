@@ -144,7 +144,7 @@ func (l LivePlugs) Wrap() (*plug_router.PlugTypesLibLivePlugs, error) {
 
 // Helper method to get router contract address for this chain
 func (l *LivePlugs) GetRouterAddress() common.Address {
-	if router, ok := references.Plug["router"]; ok {
+	if router, ok := references.Networks[l.ChainId].References["plug"]["router"]; ok {
 		return common.HexToAddress(router)
 	}
 	return common.Address{}
@@ -162,16 +162,22 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 		return nil, err
 	}
 
-	livePlugSlice := []plug_router.PlugTypesLibLivePlugs{*livePlugs}
+	// livePlugSlice := []plug_router.PlugTypesLibLivePlugs{*livePlugs}
 
-	plugCalldata, err := routerAbi.Pack("plug0", livePlugSlice)
+	// plugCalldata, err := routerAbi.Pack("plug0", livePlugSlice)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to pack calldata: %w", err)
+	// }
+
+	plugCalldata, err := routerAbi.Pack("plug", *livePlugs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
 	}
 
-	// Add identifier for tracing
-	identifier := []byte("plug")
-	return append(plugCalldata, identifier...), nil
+	return plugCalldata, nil
+	// // Add identifier for tracing
+	// identifier := []byte("plug")
+	// return append(plugCalldata, identifier...), nil
 }
 
 // Execute submits the LivePlugs transaction to the blockchain and returns the transaction hash
