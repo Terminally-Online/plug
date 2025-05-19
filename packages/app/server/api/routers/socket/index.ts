@@ -22,7 +22,6 @@ const client = createClient(mainnet.id)
 const getDeployment = async (admin: `0x${string}`) => {
 	const { deployment: { address: factory } } = getSocketFactory()
 	const { deployment: { address: implementation } } = getSocketImplementation()
-	// TODO MASON AND CHANCE: This doesn't seem to add up, it looks like the salt also includes the delegate address and the socket implementation address in the factory deploy method. Does the reference here and in seed.ts need to be updated or am I missing something
 	const { hex: salt } = getSocketSalt(
 		MAGIC_NONCE,
 		admin as `0x${string}`,
@@ -73,7 +72,6 @@ export const socket = createTRPCRouter({
 		let implementation = undefined
 		let salt = undefined
 		if (ctx.session.address.startsWith("0x")) {
-			console.log("ctx.session.address", ctx.session.address)
 			const { 
 				socketAddress: deploymentSocketAddress,
 				deploymentFactory,
