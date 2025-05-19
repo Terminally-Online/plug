@@ -162,22 +162,16 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 		return nil, err
 	}
 
-	// livePlugSlice := []plug_router.PlugTypesLibLivePlugs{*livePlugs}
+	livePlugSlice := []plug_router.PlugTypesLibLivePlugs{*livePlugs}
 
-	// plugCalldata, err := routerAbi.Pack("plug0", livePlugSlice)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to pack calldata: %w", err)
-	// }
-
-	plugCalldata, err := routerAbi.Pack("plug", *livePlugs)
+	plugCalldata, err := routerAbi.Pack("plug0", livePlugSlice)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
 	}
 
-	return plugCalldata, nil
-	// // Add identifier for tracing
-	// identifier := []byte("plug")
-	// return append(plugCalldata, identifier...), nil
+	// Add identifier for tracing
+	identifier := []byte("plug")
+	return append(plugCalldata, identifier...), nil
 }
 
 // Execute submits the LivePlugs transaction to the blockchain and returns the transaction hash
