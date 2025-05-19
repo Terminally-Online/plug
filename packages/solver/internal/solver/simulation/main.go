@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"os"
 	"solver/internal/client"
 	"solver/internal/database/models"
 	"solver/internal/database/types"
@@ -60,7 +61,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 
 	simRequest := SimulationRequest{
 		ChainId: fmt.Sprintf("%d", livePlugs.ChainId),
-		From:    livePlugs.From,
+		From:    os.Getenv("SOLVER_ADDRESS"),
 		To:      routerAddress.Hex(),
 		Data:    callData,
 		Value:   totalValue,
@@ -85,7 +86,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	run := &models.Run{
 		LivePlugsId: livePlugs.Id,
 		IntentId:    livePlugs.IntentId,
-		From:        livePlugs.From,
+		From:        os.Getenv("SOLVER_ADDRESS"),
 		To:          routerAddress.Hex(),
 		Status:      status,
 		Error:       errorMsg,
