@@ -1,6 +1,7 @@
 package signature
 
 import (
+	"fmt"
 	"math/big"
 	"os"
 	"solver/internal/bindings/references"
@@ -62,8 +63,10 @@ func getSliceHash(slice coil.Slice) [32]byte {
 		typeIdByte = byte(*slice.TypeId)
 	}
 
+	sliceTypeHashArray := getTypeHashArray(plug.SliceTypeHash)
+
 	return crypto.Keccak256Hash(
-		[]byte(plug.SliceTypeHash),
+		sliceTypeHashArray[:],
 		[]byte{slice.Index},
 		common.LeftPadBytes(slice.Start.Bytes(), 32),
 		common.LeftPadBytes(slice.Length.Bytes(), 32),
@@ -73,8 +76,9 @@ func getSliceHash(slice coil.Slice) [32]byte {
 
 func getUpdateHash(update coil.Update) [32]byte {
 	sliceHash := getSliceHash(update.Slice)
+	updateHashArray := getTypeHashArray(plug.UpdateTypeHash)
 	return crypto.Keccak256Hash(
-		[]byte(plug.UpdateTypeHash),
+		updateHashArray[:],
 		common.LeftPadBytes(update.Start.Bytes(), 32),
 		sliceHash[:],
 	)
@@ -89,15 +93,21 @@ func getUpdateArrayHash(updates []coil.Update) [32]byte {
 	return crypto.Keccak256Hash(encoded)
 }
 
+func getTypeHashArray(typehash string) [32]byte {
+	typeHashBytes := common.FromHex(typehash)
+	var typeHashArray [32]byte
+	copy(typeHashArray[:], typeHashBytes)
+	return typeHashArray
+}
+
 func GetPlugHash(p Plug) [32]byte {
 	updateArrayHash := getUpdateArrayHash(p.Updates)
 
+	plugHashArray := getTypeHashArray(plug.PlugTypeHash)
+
 	return crypto.Keccak256Hash(
-		[]byte(plug.PlugTypeHash),
-		[]byte{uint8(p.Selector)},
-		p.To.Bytes(),
+		plugHashArray[:],
 		crypto.Keccak256(p.Data),
-		common.LeftPadBytes(p.Value.Bytes(), 32),
 		updateArrayHash[:],
 	)
 }
@@ -114,8 +124,11 @@ func GetPlugArrayHash(plugs []Plug) [32]byte {
 
 func GetPlugsHash(plugs Plugs) [32]byte {
 	plugArrayHash := GetPlugArrayHash(plugs.Plugs)
+
+	plugHashArray := getTypeHashArray(plug.PlugsTypeHash)
+
 	return crypto.Keccak256Hash(
-		[]byte(plug.PlugsTypeHash),
+		plugHashArray[:],
 		plugs.Socket.Bytes(),
 		plugArrayHash[:],
 		crypto.Keccak256(plugs.Solver),
@@ -123,17 +136,16 @@ func GetPlugsHash(plugs Plugs) [32]byte {
 	)
 }
 
+// CONFIRMED FUNCTIONAL
 func GetDomainHash(chainId *big.Int, socket common.Address) ([]byte, error) {
 	nameHash := crypto.Keccak256([]byte(domainName))
 	versionHash := crypto.Keccak256([]byte(domainVersion))
 
 	// Convert all byte slices to [32]byte arrays
-	var typeHashArray [32]byte
 	var nameHashArray [32]byte
 	var versionHashArray [32]byte
 
-	typeHashBytes := common.FromHex(plug.Eip712DomainTypeHash)
-	copy(typeHashArray[:], typeHashBytes)
+	typeHashSlice := getTypeHashArray(plug.Eip712DomainTypeHash)
 	copy(nameHashArray[:], nameHash)
 	copy(versionHashArray[:], versionHash)
 
@@ -144,7 +156,7 @@ func GetDomainHash(chainId *big.Int, socket common.Address) ([]byte, error) {
 		{Type: abi.Type{T: abi.UintTy, Size: 256}},
 		{Type: abi.Type{T: abi.AddressTy}},
 	}.Pack(
-		typeHashArray,
+		typeHashSlice,
 		nameHashArray,
 		versionHashArray,
 		chainId,
@@ -155,10 +167,14 @@ func GetDomainHash(chainId *big.Int, socket common.Address) ([]byte, error) {
 	}
 
 	domainHash := crypto.Keccak256(packed)
+	domainHashHex := common.BytesToHash(domainHash)
+	fmt.Printf("domainHashHex: %s\n", domainHashHex.Hex())
 	return domainHash, nil
 }
 
 func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, []byte, error) {
+	fmt.Printf("Plugs %+v\n", plugs)
+
 	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
 	if err != nil {
 		return Plugs{}, nil, utils.ErrBuild(err.Error())
