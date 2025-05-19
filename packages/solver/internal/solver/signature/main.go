@@ -20,9 +20,6 @@ var (
 	domainVersion = "0.0.1"
 )
 
-// TODO: Remove any panic usage
-// TODO: domain hash is working, is solver hash and plug hash?
-
 func GetSolverHash() ([]byte, error) {
 	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
 	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
@@ -30,36 +27,43 @@ func GetSolverHash() ([]byte, error) {
 	//       executed 10k blocks late after it was held from execution.
 	// expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
 	expiration := big.NewInt(0)
-	solver, err := abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 48}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
-	if err != nil {
-		return nil, utils.ErrBuild("failed to pack solver: " + err.Error())
+	solver := common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))
+
+	expirationBytes := expiration.Bytes()
+	if len(expirationBytes) < 6 {
+		padded := make([]byte, 6)
+		copy(padded[6-len(expirationBytes):], expirationBytes)
+		expirationBytes = padded
 	}
-	return solver, nil
+	solverData := append([]byte{}, expirationBytes...)
+	solverData = append(solverData, solver.Bytes()...)
+
+	fmt.Printf("prehashed solver bytes: %x\n", solverData)
+
+	return solverData, nil
 }
 
-func GetSaltHash(from common.Address) ([]byte, error) {
-	salt, err := abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 96}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}.Pack(
-		// big.NewInt((time.Now().Unix())),
-		big.NewInt(0), // fixed for now
-		from,
-		common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-		// TODO: We need a way to know the implementation address that was used when deploying the socket.
-		//       There is going to be some tricky stuff here. It will not matter as long as we have everyone
-		//       on one version but this is going to have to be fixed sooner than later.
-		common.HexToAddress(references.Plug["socket"]),
-	)
-	if err != nil {
-		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())
+func GetSaltHash(from common.Address) []byte {
+	nonce := big.NewInt(0)                                                     // fixed for now
+	admin := common.HexToAddress("0x50701f4f523766bFb5C195F93333107d1cB8cD90") // TODO MASON: this should be the owner address I believe, not hard coded or the socket address.
+	oneClicker := common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))
+	implementation := common.HexToAddress(references.Plug["socket"])
+
+	nonceBytes := nonce.Bytes()
+	if len(nonceBytes) < 12 {
+		padded := make([]byte, 12)
+		copy(padded[12-len(nonceBytes):], nonceBytes)
+		nonceBytes = padded
 	}
-	return salt, nil
+
+	salt := append([]byte{}, nonceBytes...)
+	salt = append(salt, admin.Bytes()...)
+	salt = append(salt, oneClicker.Bytes()...)
+	salt = append(salt, implementation.Bytes()...)
+
+	fmt.Printf("prehashed salt bytes: %x\n", salt)
+
+	return salt
 }
 
 func getSliceHash(slice coil.Slice) [32]byte {
@@ -127,6 +131,7 @@ func GetPlugArrayHash(plugs []Plug) [32]byte {
 	var encoded []byte
 	for _, plug := range plugs {
 		hash := GetPlugHash(plug)
+		fmt.Printf("plugHash: %x\n", hash)
 		encoded = append(encoded, hash[:]...)
 	}
 
@@ -235,15 +240,6 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 	plugsDataHex := common.Bytes2Hex(plugsData)
 	fmt.Printf("plugsDataHex: %s\n", plugsDataHex)
 
-	salt := plugs.Salt
-	fmt.Printf("salt: %x\n", salt)
-	saltHex := common.Bytes2Hex(salt)
-	fmt.Printf("saltHex: %s\n", saltHex)
-
-	solverData := plugs.Solver
-	solverHex := common.Bytes2Hex(solverData)
-	fmt.Printf("solverHex: %s\n", solverHex)
-
 	domainHash, err := GetDomainHash(chainId, socket)
 	if err != nil {
 		return Plugs{}, nil, err
@@ -251,19 +247,12 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 
 	plugsHash := GetPlugsHash(plugs)
 
-	digestInput := append([]byte{0x19, 0x01}, domainHash...)
+	digestInput := append([]byte{0x19, 0x01}, domainHash[:]...)
 	digestInput = append(digestInput, plugsHash[:]...)
 	fmt.Printf("digestInput: %x\n", digestInput)
 
 	signatureHash := crypto.Keccak256(digestInput)
 	fmt.Printf("finalDigest: %x\n", signatureHash)
-
-	// signatureHash := crypto.Keccak256(
-	// 	[]byte("\x19\x01"),
-	// 	domainHash,
-	// 	plugsHash[:],
-	// )
-	// fmt.Printf("finalDigest: %x\n", signatureHash)
 
 	signature, err := crypto.Sign(signatureHash, privateKey)
 	if err != nil {
@@ -276,3 +265,6 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 
 	return plugs, signature, nil
 }
+
+// "rawInput": "0x52c47baa0fb919f7f2c9d53e71f458fd9edd4b2d2378a7decc87411ad45ebffe000000000000000000000000000000000000000000000000000000000000001b55380155db822987674a0128637b0aa9e0d52056a33a8058a51d28965a16861762a97bed8fb148751b7a816725e0917a7d3e46d898fd158dfce33036aa89eabc",
+// "rawOutput": "0x0000000000000000000000008533eb2f10de4b528022048612a14c97d531e58e",
