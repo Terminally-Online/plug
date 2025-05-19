@@ -75,10 +75,10 @@ export const socket = createTRPCRouter({
 			const { 
 				socketAddress: deploymentSocketAddress,
 				deploymentFactory,
-				deploymentNonce, 
+				deploymentNonce,
 				deploymentDelegate, 
 				deploymentImplementation, 
-				deploymentSalt 
+				deploymentSalt  
 			} = await getDeployment(ctx.session.address as `0x${string}`)
 
 			socketAddress = deploymentSocketAddress
