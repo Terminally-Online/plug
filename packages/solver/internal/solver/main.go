@@ -158,7 +158,10 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 		return nil, err
 	}
 	fromAddress := common.HexToAddress(from)
-	salt := signature.GetSaltHash(fromAddress)
+	salt, err := signature.GetSaltHash(fromAddress)
+	if err != nil {
+		return nil, err
+	}
 
 	plugsSigned, plugsSignature, err := signature.GetSignature(
 		big.NewInt(int64(chainId)),

@@ -8,6 +8,7 @@ import (
 	"solver/internal/bindings/references"
 	"solver/internal/coil"
 	"solver/internal/utils"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -25,45 +26,41 @@ func GetSolverHash() ([]byte, error) {
 	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
 	//       end up having the case where things are Plugs are not properly executed because they are being
 	//       executed 10k blocks late after it was held from execution.
-	// expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
-	expiration := big.NewInt(0)
-	solver := common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))
-
-	expirationBytes := expiration.Bytes()
-	if len(expirationBytes) < 6 {
-		padded := make([]byte, 6)
-		copy(padded[6-len(expirationBytes):], expirationBytes)
-		expirationBytes = padded
+	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
+	fmt.Printf("solver expiration: %s\n", expiration.String())
+	solver, err := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 48}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
+	if err != nil {
+		return nil, utils.ErrBuild("failed to pack solver: " + err.Error())
 	}
-	solverData := append([]byte{}, expirationBytes...)
-	solverData = append(solverData, solver.Bytes()...)
-
-	fmt.Printf("prehashed solver bytes: %x\n", solverData)
-
-	return solverData, nil
+	fmt.Printf("solverData %x\n", solver)
+	return solver, nil
 }
 
-func GetSaltHash(from common.Address) []byte {
-	nonce := big.NewInt(0)                                                     // fixed for now
-	admin := common.HexToAddress("0x50701f4f523766bFb5C195F93333107d1cB8cD90") // TODO MASON: this should be the owner address I believe, not hard coded or the socket address.
-	oneClicker := common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))
-	implementation := common.HexToAddress(references.Plug["socket"])
-
-	nonceBytes := nonce.Bytes()
-	if len(nonceBytes) < 12 {
-		padded := make([]byte, 12)
-		copy(padded[12-len(nonceBytes):], nonceBytes)
-		nonceBytes = padded
+func GetSaltHash(from common.Address) ([]byte, error) {
+	saltHashNonce := big.NewInt(time.Now().Unix())
+	fmt.Printf("saltHashNonce: %s\n", saltHashNonce.String())
+	salt, err := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 96}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}.Pack(
+		saltHashNonce,
+		common.HexToAddress("0x50701f4f523766bFb5C195F93333107d1cB8cD90"), // TODO MASON THIS IS THE OWNER ADDRESS
+		common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
+		// TODO: We need a way to know the implementation address that was used when deploying the socket.
+		//       There is going to be some tricky stuff here. It will not matter as long as we have everyone
+		//       on one version but this is going to have to be fixed sooner than later.
+		common.HexToAddress(references.Plug["socket"]),
+	)
+	if err != nil {
+		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())
 	}
-
-	salt := append([]byte{}, nonceBytes...)
-	salt = append(salt, admin.Bytes()...)
-	salt = append(salt, oneClicker.Bytes()...)
-	salt = append(salt, implementation.Bytes()...)
-
-	fmt.Printf("prehashed salt bytes: %x\n", salt)
-
-	return salt
+	fmt.Printf("saltData %x\n", salt)
+	return salt, nil
 }
 
 func getSliceHash(slice coil.Slice) [32]byte {
