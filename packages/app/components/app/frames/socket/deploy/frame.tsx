@@ -71,12 +71,12 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 				data: intent.transactions[0].data,
 				value: intent.transactions[0].value
 			},
-			{ 
+			{
 				onSuccess: () => refetch(),
-				onError: error => console.error(error) 
+				onError: error => console.error(error)
 			}
 		)
-	}, [bytecode, intent])
+	}, [bytecode, intent, refetch, sendTransaction])
 
 	return (
 		<Frame
@@ -103,7 +103,7 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-row items-center gap-4">
 						<p className="font-bold opacity-40">Details</p>
-						<div className="h-[2px] w-full bg-plug-green/10" />
+						<div className="h-[1px] w-full bg-plug-green/10" />
 					</div>
 					<p className="flex w-full flex-row items-center gap-4 font-bold">
 						<Waypoints size={18} className="opacity-20" />
@@ -113,18 +113,20 @@ export const SocketDeployFrame: FC<{ index: number; chainId: ChainId }> = ({ ind
 							{formatTitle(getChainName(chainId))}
 						</span>
 					</p>
-					{intent && intent.transactions.length > 0 && <div className="w-full font-bold">
-						<p className="flex w-full flex-row items-center gap-4">
-							<Factory size={18} className="opacity-20" />
-							<span className="mr-auto opacity-40">Factory</span>
-							<span
-								className="group ml-auto flex flex-row items-center gap-1 cursor-pointer"
-								onClick={() => navigator.clipboard.writeText(socket?.deploymentFactory ?? "")}
-							>
-								{formatAddress(socket?.deploymentFactory ?? "")}
-							</span>
-						</p>
-					</div>}
+					{intent && intent.transactions.length > 0 && (
+						<div className="w-full font-bold">
+							<p className="flex w-full flex-row items-center gap-4">
+								<Factory size={18} className="opacity-20" />
+								<span className="mr-auto opacity-40">Factory</span>
+								<span
+									className="group ml-auto flex cursor-pointer flex-row items-center gap-1"
+									onClick={() => navigator.clipboard.writeText(socket?.deploymentFactory ?? "")}
+								>
+									{formatAddress(socket?.deploymentFactory ?? "")}
+								</span>
+							</p>
+						</div>
+					)}
 					<div className="w-full font-bold">
 						<p className="flex w-full flex-row items-center gap-4">
 							<Diameter size={18} className="opacity-20" />

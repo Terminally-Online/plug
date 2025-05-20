@@ -29,13 +29,12 @@ func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	var approveUpdates []coil.Update
 	approveAmount, approveUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&actions.Erc20ApprovalFunc,
 		"_value",
-		approveUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {
@@ -50,13 +49,12 @@ func Earn(lookup *actions.SchemaLookup[EarnRequest]) ([]signature.Plug, error) {
 		return nil, fmt.Errorf("failed to pack approve calldata: %w", err)
 	}
 
-	var depositUpdates []coil.Update
 	depositAmount, depositUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&EarnFunc,
 		"assets",
-		depositUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
 	if err != nil {

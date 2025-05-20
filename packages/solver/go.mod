@@ -12,6 +12,7 @@ require (
 	github.com/prometheus/client_golang v1.19.0
 	github.com/swaggest/openapi-go v0.2.57
 	github.com/swaggest/rest v0.2.73
+	github.com/terminally-online/plug/packages/references v0.0.0-20250515133905-54e97d9cb670
 	github.com/wealdtech/go-ens/v3 v3.6.0
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
@@ -60,6 +61,7 @@ require (
 	github.com/swaggest/jsonschema-go v0.3.73 // indirect
 	github.com/swaggest/refl v1.3.1 // indirect
 	github.com/swaggest/usecase v1.3.1 // indirect
+	github.com/terminally-online/plug v0.0.0-20250519211332-3c0f297bf4f9 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/wealdtech/go-multicodec v1.4.0 // indirect

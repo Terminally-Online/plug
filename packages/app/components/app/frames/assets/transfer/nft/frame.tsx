@@ -1,115 +1,118 @@
-import { FC, useCallback, useMemo, useRef, useState } from "react"
+import { FC, useCallback, useMemo } from "react"
 
 import { useAtom, useAtomValue } from "jotai"
 
 import { TransferRecipient } from "@/components/app/frames/assets/transfer/recipient/recipient"
 import { Frame } from "@/components/app/frames/base"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
-import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Counter } from "@/components/shared/utils/counter"
-import { chains, cn, formatTitle } from "@/lib"
-import { RouterOutputs } from "@/server/client"
-import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { cn, formatTitle, getChainId, useStateDebounce } from "@/lib"
+import { api, RouterOutputs } from "@/server/client"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
+import { getAddress, isAddress } from "viem"
+import { useSocket } from "@/state/authentication"
+import { useAccount } from "@/lib/hooks/account/useAccount"
+import { useSendTransaction } from "wagmi"
+import { TransferSFTAmount } from "../sft/amount"
+import { ScrollingError } from "../../scrolling-error"
+import { ChainSpecificButton } from "@/components/shared/buttons/authenticate"
+import { base } from "viem/chains"
 
-export const TransferNFTFrame: FC<{
+type TransferNFTFrameProps = {
 	index: number
-	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+	collectible?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["data"]>
+	included?: NonNullable<RouterOutputs["service"]["zerion"]["nfts"]["detail"]["included"]>[number]
 	color: string
 	textColor: string
-	isERC1155: boolean
-}> = ({ index, collectible, collection, color, textColor, isERC1155 }) => {
-	const containerRef = useRef<HTMLDivElement>(null)
-	const inputRef = useRef<HTMLInputElement>(null)
-
+}
+export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({ index, collectible, included, color, textColor }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
-	const frameKey = `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
+	const frameKey = `collectible___${collectible?.id}___transfer-amount`
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
-	const { frame, transfer } = useColumnActions(index, frameKey)
+	const { frame, navigate } = useColumnActions(index, frameKey)
 
-	const [isPrecise, setIsPrecise] = useState(false)
+	const { isAuthenticated } = useAccount()
+	const { socket } = useSocket()
+	const { error, sendTransaction, isPending } = useSendTransaction()
 
-	const maxAmount = parseInt(collectible.amount)
+	const chainId = getChainId("base")
+	const from = socket
+		? index === COLUMNS.SIDEBAR_INDEX
+			? getAddress(socket.id)
+			: getAddress(socket.socketAddress)
+		: ""
 
-	const handleDragStart = useCallback(
-		(e: React.MouseEvent<HTMLDivElement>) => {
-			e.preventDefault()
+	const balance = 1
+	const token = `${collectible?.attributes?.contract_address}:${collectible?.attributes?.token_id}:${collectible?.attributes?.interface === "ERC1155" ? 1155 : 721}`
+	const amount = useStateDebounce<string>(`${parseInt(column?.transfer?.precise ?? "0")}`)
+	const recipient =
+		column && socket
+			? index === COLUMNS.SIDEBAR_INDEX
+				? getAddress(socket.socketAddress)
+				: column.transfer?.recipient && isAddress(column.transfer?.recipient)
+					? getAddress(column.transfer?.recipient)
+					: ""
+			: ""
 
-			const activeElement = document.activeElement as HTMLElement
-			if (activeElement && activeElement.tagName === "INPUT") {
-				activeElement.blur()
-			}
+	const isEOA = column && column.index === COLUMNS.SIDEBAR_INDEX
+	const options = { isEOA, simulate: true }
 
-			const handleDrag = (e: MouseEvent) => {
-				if (containerRef.current) {
-					const rect = containerRef.current.getBoundingClientRect()
-					const x = e.clientX - rect.left
-					const rawPercentage = x / rect.width
-					const nearestWholeNumber = Math.round(rawPercentage * maxAmount)
-					const snappedPercentage = (nearestWholeNumber / maxAmount) * 100
-
-					transfer(prev => ({
-						...prev,
-						percentage: snappedPercentage,
-						precise: nearestWholeNumber.toString()
-					}))
-				}
-			}
-
-			const handleDragEnd = () => {
-				document.removeEventListener("mousemove", handleDrag)
-				document.removeEventListener("mouseup", handleDragEnd)
-				if (inputRef.current) {
-					inputRef.current.focus()
-				}
-			}
-
-			document.addEventListener("mousemove", handleDrag)
-			document.addEventListener("mouseup", handleDragEnd)
-		},
-		[transfer, maxAmount, containerRef]
-	)
-
-	const handleAmountChange = (value: string) => {
-		const numericValue = value.replace(/[^0-9]/g, "")
-
-		if (numericValue === "") {
-			transfer(prev => ({
-				...prev,
-				precise: "0",
-				percentage: 0
-			}))
-		} else {
-			const parsedValue = parseInt(numericValue)
-			const maxAmount = parseInt(collectible.amount)
-			const clampedValue = Math.min(Math.max(0, parsedValue), maxAmount)
-			const percentage = (clampedValue / maxAmount) * 100
-
-			transfer(prev => ({
-				...prev,
-				precise: clampedValue.toString(),
-				percentage
-			}))
-		}
-	}
-
-	const handleMaxClick = useCallback(() => {
-		if (isERC1155) {
-			transfer(prev => ({
-				...prev,
-				percentage: 100,
-				precise: maxAmount.toString()
-			}))
-		}
-	}, [isERC1155, maxAmount, transfer])
-
-	// Computed values
 	const isReady = useMemo(() => {
-		if (!isERC1155) return true
-		const numAmount = parseInt(column?.transfer?.precise ?? "0")
-		return !isNaN(numAmount) && numAmount > 0 && numAmount <= maxAmount
-	}, [column?.transfer?.precise, isERC1155, maxAmount])
+		const amount = parseInt(column?.transfer?.precise ?? "0")
+
+		if (isNaN(amount)) return false
+
+		return amount > 0 && amount <= balance
+	}, [column?.transfer?.precise, balance])
+	const enabled = !!column && !!socket && isAuthenticated && isReady && isFrame
+
+	const { data: intent } = api.solver.actions.intent.useQuery({
+		chainId,
+		from,
+		inputs: [{
+			protocol: "plug",
+			action: "transfer",
+			token,
+			amount,
+			recipient
+		}],
+		options
+	}, {
+		enabled,
+	})
+
+	const toggleSavedMutation = api.plugs.activity.toggleSaved.useMutation()
+	const handleTransactionOffchain = useCallback(() => {
+		if (!intent) return
+
+		toggleSavedMutation.mutate(
+			{ id: intent.intentId },
+			{
+				onSuccess: () => {
+					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+					frame(`${intent.intentId}-activity`)
+				}
+			}
+		)
+	}, [intent, frame, index, navigate, toggleSavedMutation])
+	const handleTransactionOnchain = useCallback(() => {
+		if (!column || !intent || !isReady || isPending) return
+
+		if (column.index === COLUMNS.SIDEBAR_INDEX)
+			sendTransaction(
+				{
+					to: intent.transactions[0].to,
+					data: intent.transactions[0].data,
+					value: intent.transactions[0].value
+				},
+				{
+					onSuccess: handleTransactionOffchain
+				}
+			)
+		else handleTransactionOffchain()
+	}, [column, intent, handleTransactionOffchain, isPending, isReady, sendTransaction])
+
+	const isDisabled = (intent && isPending) || isReady === false
 
 	return (
 		<Frame
@@ -119,7 +122,7 @@ export const TransferNFTFrame: FC<{
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10 blur-2xl filter"
 						style={{
-							backgroundImage: `url(${collection.iconUrl})`,
+							backgroundImage: `url(${included?.attributes?.metadata?.icon?.url})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
@@ -131,7 +134,7 @@ export const TransferNFTFrame: FC<{
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10"
 						style={{
-							backgroundImage: `url(${collection.iconUrl})`,
+							backgroundImage: `url(${included?.attributes?.metadata?.icon?.url})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
@@ -145,46 +148,45 @@ export const TransferNFTFrame: FC<{
 			label="Transfer"
 			visible={isFrame}
 			handleBack={() =>
-				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
+				frame(index !== COLUMNS.SIDEBAR_INDEX
+					? `collectible___${collectible?.id}___transfer-recipient`
+					: `collectible___${collectible?.id}`
+				)
 			}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-			<div className="relative mb-4 flex flex-col gap-2">
+			<div className="relative my-4 flex flex-col gap-2">
 				<div className="flex flex-col gap-2">
-					<div className="px-6">
-						<TransferRecipient
-							address={column?.transfer?.recipient ?? ""}
-							handleSelect={() =>
-								frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)
-							}
-						/>
-					</div>
+					{index !== COLUMNS.SIDEBAR_INDEX && (
+						<div className="px-6">
+							<TransferRecipient
+								address={column?.transfer?.recipient ?? ""}
+								handleSelect={() => frame(`collectible___${collectible?.id}___transfer-recipient`)}
+							/>
+						</div>
+					)}
 
-					{!isERC1155 ? (
+					{collectible?.attributes?.interface !== "ERC1155" ? (
 						<div className="px-6">
 							<Accordion>
 								<div className="flex w-full flex-row items-center gap-4">
 									<div className="relative h-10 w-10 min-w-10">
 										<CollectibleImage
-											className="rounded-md"
-											video={
-												collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined
-											}
-											image={collectible.imageUrl ?? undefined}
-											fallbackImage={collection.iconUrl ?? undefined}
-											name={collectible.name || collection.name}
+											video={collectible?.attributes?.metadata?.content?.video?.url}
+											image={collectible?.attributes?.metadata?.content?.detail?.url}
+											name={collectible?.attributes?.metadata?.name ?? ""}
 										/>
 									</div>
 									<div className="flex w-full flex-col truncate overflow-ellipsis">
 										<div className="flex flex-row items-center justify-between">
 											<p className="mr-auto font-bold">
-												{formatTitle(collectible.name || collection.name)}
+												{formatTitle(collectible?.attributes?.metadata?.name || included?.attributes?.metadata?.name || "")}
 											</p>
 										</div>
 										<div className="flex flex-row items-center justify-between">
 											<p className="mr-auto truncate overflow-ellipsis text-sm font-bold tabular-nums opacity-40">
-												#{collectible.tokenId}
+												#{collectible?.attributes?.token_id}
 											</p>
 										</div>
 									</div>
@@ -192,111 +194,19 @@ export const TransferNFTFrame: FC<{
 							</Accordion>
 						</div>
 					) : (
-						<div className="relative z-[5] flex flex-col gap-4">
-							<div
-								className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-plug-green/10 p-4"
-								ref={containerRef}
-								onMouseDown={handleDragStart}
-								onMouseEnter={() => setIsPrecise(true)}
-								onMouseLeave={() => setIsPrecise(false)}
-							>
-								<div className="flex w-full flex-row">
-									<div className="flex flex-row items-center gap-4 px-2">
-										<div className="h-8 w-8 min-w-8 overflow-hidden">
-											<CollectibleImage
-												className="rounded-sm"
-												video={
-													collectible.videoUrl?.includes("mp4")
-														? collectible.videoUrl
-														: undefined
-												}
-												image={collectible.imageUrl ?? undefined}
-												fallbackImage={collection.iconUrl ?? undefined}
-												name={collectible.name || collection.name}
-												size="sm"
-											/>
-										</div>
-
-										<div className="flex flex-col">
-											<p className="mr-auto truncate overflow-ellipsis font-bold">{`${collectible.name}`}</p>
-											<p className="flex w-max flex-row text-sm font-bold text-black/40">
-												<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
-											</p>
-										</div>
-									</div>
-
-									<div className="ml-auto flex-col items-end px-2">
-										<div className="pointer-events-none relative flex h-full w-max min-w-32 flex-col items-center justify-center text-right">
-											{isPrecise && (
-												<input
-													ref={inputRef}
-													value={
-														column?.transfer?.precise === "0"
-															? ""
-															: column?.transfer?.precise
-													}
-													onChange={e => handleAmountChange(e.target.value)}
-													className="sr-only pointer-events-none absolute inset-0"
-													autoFocus
-												/>
-											)}
-
-											<p
-												className="my-auto ml-auto flex flex-row font-bold tabular-nums transition-all duration-200 ease-in-out"
-												style={{ color: isPrecise ? color : undefined }}
-											>
-												<Counter count={column?.transfer?.precise ?? "0"} />
-
-												{isPrecise && (
-													<div
-														className="absolute -right-2 bottom-3 top-3 w-[3px] animate-pulse rounded-full"
-														style={{ backgroundColor: color }}
-													/>
-												)}
-											</p>
-										</div>
-									</div>
-								</div>
-
-								<div
-									className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
-									style={{ width: `${column?.transfer?.percentage}%`, backgroundColor: color }}
-								>
-									<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
-									<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
-									<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_-4px_4px_0_rgba(255,255,255,0.5)]" />
-								</div>
-							</div>
-						</div>
-					)}
-				</div>
-
-				<div className="flex flex-row items-center justify-between gap-4 px-6">
-					<p className="flex flex-row items-center gap-1 font-bold tabular-nums">
-						<Image
-							src={chains[1].logo}
-							alt={"ethereum"}
-							className="mr-2 h-4 w-4 rounded-full"
-							width={24}
-							height={24}
+						<TransferSFTAmount
+							index={index}
+							collectible={collectible}
+							included={included}
+							color={color}
 						/>
-						$0.50
-						<span className="ml-auto pl-2 opacity-40">~11 secs</span>
-					</p>
-
-					{isERC1155 && (
-						<p
-							className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
-							onClick={handleMaxClick}
-							style={{ color: column?.transfer?.precise !== collectible.amount ? color : undefined }}
-						>
-							Max
-						</p>
 					)}
 				</div>
 
-				<div className="relative mx-6 mt-2">
-					<button
+				<div className="mx-6 mt-2 flex flex-col gap-4">
+					<ScrollingError error={error?.message ?? ""} />
+
+					<ChainSpecificButton
 						className={cn(
 							"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
 							isReady === false && "transparent"
@@ -304,12 +214,22 @@ export const TransferNFTFrame: FC<{
 						style={{
 							backgroundColor: isReady ? color : "transparent",
 							color: isReady ? textColor : color,
-							borderColor: isReady ? "transparent" : color
+							borderColor: isReady ? "#FFFFFF" : color
 						}}
-						disabled={!isReady}
+						chainId={base.id}
+						onClick={handleTransactionOnchain}
+						disabled={isDisabled}
 					>
-						{isReady ? "Send" : "Enter Amount"}
-					</button>
+						{!isAuthenticated
+							? "Connect Wallet"
+							: isPending
+								? "Transferring..."
+								: isReady
+									? index === COLUMNS.SIDEBAR_INDEX
+										? "Deposit"
+										: "Send"
+									: "Enter Amount"}
+					</ChainSpecificButton>
 				</div>
 			</div>
 		</Frame>

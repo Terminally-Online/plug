@@ -46,12 +46,11 @@ func MintLatest(lookup *actions.SchemaLookup[MintLatestRequest]) ([]signature.Pl
 		value = big.NewInt(0).Mul(big.NewInt(13), big.NewInt(10).Exp(big.NewInt(10), big.NewInt(18), nil))
 	}
 
-	return []signature.Plug{
-		{
-			To:      common.HexToAddress(references.Base.References["basepaint"]["referral"]),
-			Data:    mintLatestCalldata,
-			Value:   value,
-			Updates: updates,
-		},
-	}, nil
+	basepaintContract := common.HexToAddress(references.Base.References["basepaint"]["referral"])
+	return []signature.Plug{{
+		To:      basepaintContract,
+		Data:    mintLatestCalldata,
+		Value:   value,
+		Updates: updates,
+	}}, nil
 }

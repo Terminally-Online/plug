@@ -50,7 +50,7 @@ export const LandingFooter: FC = () => {
 							height={64}
 						/>
 						<p className="max-w-[380px] lg:max-w-[280px]">
-							Minimzie the complexity of your onchain experience and get better results with Plug.
+							Minimize the complexity of your onchain experience and get better results with Plug.
 						</p>
 					</div>
 					<div className="mb-2 flex flex-col items-start gap-2 lg:col-span-2">

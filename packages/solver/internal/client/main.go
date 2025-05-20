@@ -9,6 +9,7 @@ import (
 	"os"
 	"solver/bindings/multicall_primary"
 	"solver/bindings/plug_router"
+	"solver/bindings/plug_socket"
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
@@ -16,7 +17,6 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -65,7 +65,7 @@ func (c *Client) SolverReadOptions() *bind.CallOpts {
 }
 
 func (c *Client) WriteOptions(address common.Address, value *big.Int) *bind.TransactOpts {
-	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
+	transactionForwarder := func(_ common.Address, transaction *ethtypes.Transaction) (*ethtypes.Transaction, error) {
 		return transaction, nil
 	}
 
@@ -80,18 +80,44 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs map[string]signature.LivePlugs) ([]signature.Result, error) {
-	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
-	var lps []plug_router.PlugTypesLibLivePlugs
-	for _, livePlug := range livePlugs {
-		lps = append(lps, livePlug.Wrap())
+func (c *Client) Digest(chainId *big.Int, socket common.Address, plugs *plug_router.PlugTypesLibPlugs) ([]byte, error) {
+	socketAbi, _ := plug_socket.PlugSocketMetaData.GetAbi()
+	digestCalldata, err := socketAbi.Pack("getPlugsDigest", plugs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build getLivePlugsSigner calldata: %w", err)
 	}
+
+	output, err := c.CallContract(context.Background(), ethereum.CallMsg{
+		To:   &socket,
+		Data: digestCalldata,
+	}, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read digest: %w", err)
+	}
+	var digest [32]byte
+	err = socketAbi.UnpackIntoInterface(&digest, "getPlugsDigest", output)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unpack digest: %w", err)
+	}
+
+	return digest[:], nil
+}
+
+func (c *Client) Plug(livePlugs *signature.LivePlugs) ([]signature.Result, error) {
+	routerAddress := common.HexToAddress(references.Plug["router"])
+
+	l, err := livePlugs.Wrap()
+	if err != nil {
+		return nil, err
+	}
+
+	lps := []plug_router.PlugTypesLibLivePlugs{*l}
 
 	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {
 		return nil, err
 	}
-	transaction, err := router.Plug(c.SolverWriteOptions(), lps)
+	transaction, err := router.Plug0(c.SolverWriteOptions(), lps)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send plug transaction: %w", err)
 	}

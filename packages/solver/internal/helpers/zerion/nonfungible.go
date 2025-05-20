@@ -5,6 +5,8 @@ import (
 	"os"
 	"solver/internal/utils"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type ZerionNonFungibleMedia struct {
@@ -34,7 +36,7 @@ type ZerionNonFungibleMetadata struct {
 }
 
 type ZerionNonFungibleAttributes struct {
-	Amount         float64                   `json:"amount"`
+	Amount         string                    `json:"amount"`
 	ChangedAt      string                    `json:"changed_at"`
 	NFTInfo        ZerionNonFungibleMetadata `json:"nft_info"`
 	CollectionInfo struct {
@@ -55,17 +57,17 @@ type ZerionNonFungible struct {
 	} `json:"relationships"`
 }
 
-func GetCollectibles(chains []string, socketId, socketAddress string, limit int) ([]ZerionNonFungible, error) {
+func GetCollectibles(chains []string, socketId common.Address, socketAddress common.Address, limit int) ([]ZerionNonFungible, error) {
 	return getCollectibles(chains, socketId, socketAddress, limit, "")
 }
 
-func getCollectibles(chains []string, socketId, socketAddress string, limit int, next string) ([]ZerionNonFungible, error) {
+func getCollectibles(chains []string, socketId common.Address, socketAddress common.Address, limit int, next string) ([]ZerionNonFungible, error) {
 	if limit == 0 {
 		limit = 100
 	}
 
 	address := socketAddress
-	if address == "" {
+	if address == common.HexToAddress("") {
 		address = socketId
 	}
 

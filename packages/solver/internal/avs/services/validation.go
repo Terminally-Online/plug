@@ -47,7 +47,7 @@ func Validate(proofOfTask string, data string) (bool, error) {
 		}
 	}
 
-	routerAddress := common.HexToAddress(references.Networks[8453].References["plug"]["router"])
+	routerAddress := common.HexToAddress(references.Plug["router"])
 	filterer, err := plug_router.NewPlugRouterFilterer(
 		routerAddress,
 		client,
@@ -67,7 +67,7 @@ func Validate(proofOfTask string, data string) (bool, error) {
 			continue
 		}
 
-		if common.HexToHash(data) == plugResults.LivePlugsHash {
+		if common.HexToHash(data) == plugResults.PlugsHash {
 			found = true
 			break
 		}

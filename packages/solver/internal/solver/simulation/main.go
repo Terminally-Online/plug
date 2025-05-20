@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"os"
 	"solver/internal/client"
 	"solver/internal/database/models"
 	"solver/internal/database/types"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
 )
@@ -31,75 +32,65 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	}
 	defer rpcClient.Close()
 
-	// Get router address for this chain
 	routerAddress := livePlugs.GetRouterAddress()
 
-	// Create transaction parameters for simulation
-	tx := map[string]any{
-		"from": livePlugs.From,
-		"to":   routerAddress.Hex(),
-	}
-
-	// Include data if available
+	var callData string
 	if livePlugs.Data != "" {
-		tx["data"] = livePlugs.Data
+		callData = livePlugs.Data
 	} else {
-		// Generate call data if not already available
-		callData, err := livePlugs.GetCallData()
+		callDataBytes, err := livePlugs.GetCallData()
 		if err != nil {
 			return nil, err
 		}
-		tx["data"] = hexutil.Bytes(callData).String()
+		callData = hexutil.Bytes(callDataBytes).String()
 	}
 
-	// Get block metadata for simulation
 	var blockNumber string
 	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
 		return nil, fmt.Errorf("failed to get block number: %v", err)
 	}
 
-	var baseFee struct {
-		BaseFeePerGas string `json:"baseFeePerGas"`
-	}
-	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
-		return nil, fmt.Errorf("failed to get base fee: %v", err)
-	}
-
-	tx["gasPrice"] = baseFee.BaseFeePerGas
-
-	callTraceConfig := map[string]any{
-		"tracer": "callTracer",
+	// Calculate total value by summing up values from CallWithValue plugs
+	// TODO MASON: do we need to do this? Why haven't we done it before?
+	totalValue := new(big.Int)
+	for _, plug := range livePlugs.Plugs.Plugs {
+		if plug.Value != nil {
+			totalValue.Add(totalValue, plug.Value)
+		}
 	}
 
-	var trace struct {
-		Type     string         `json:"type"`
-		From     common.Address `json:"from"`
-		To       common.Address `json:"to"`
-		Value    string         `json:"value"`
-		Gas      string         `json:"gas"`
-		GasUsed  string         `json:"gasUsed"`
-		GasPrice string         `json:"gasPrice"`
-		Input    hexutil.Bytes  `json:"input"`
-		Output   hexutil.Bytes  `json:"output"`
-		Error    string         `json:"error"`
+	simRequest := SimulationRequest{
+		ChainId: fmt.Sprintf("%d", livePlugs.ChainId),
+		From:    os.Getenv("SOLVER_ADDRESS"),
+		To:      routerAddress.Hex(),
+		Data:    callData,
+		Value:   totalValue,
+		Gas:     big.NewInt(20_000_000),
 	}
 
-	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
-	}
+	fmt.Printf("SimulateLivePlugs::simRequest: %+v\n", simRequest)
 
-	// Create run object with results
+	trace, err := Sentio.SimulateTransaction(simRequest)
+	if err != nil {
+		return nil, fmt.Errorf("sentio simulation failed: %v", err)
+	}
+	utils.LogObject("SimulateLivePlugs::trace", trace)
+
 	status := "success"
-	if trace.Error != "" {
+	var errorMsg *string
+	revertReason, _ := FindRevertError(trace)
+	if revertReason != "" {
 		status = "failed"
+		errorMsg = &revertReason
 	}
 
 	run := &models.Run{
 		LivePlugsId: livePlugs.Id,
 		IntentId:    livePlugs.IntentId,
-		From:        livePlugs.From,
+		From:        os.Getenv("SOLVER_ADDRESS"),
 		To:          routerAddress.Hex(),
 		Status:      status,
+		Error:       errorMsg,
 		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},
@@ -137,62 +128,30 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 	}
 	defer rpcClient.Close()
 
-	simTx := map[string]any{
-		"from": tx.From.Hex(),
-		"to":   tx.To.Hex(),
+	simRequest := SimulationRequest{
+		ChainId: fmt.Sprintf("%d", chainId),
+		From:    tx.From.Hex(),
+		To:      tx.To.Hex(),
+		Data:    hexutil.Bytes(tx.Data).String(),
+		Value:   tx.Value,
 	}
 
 	if len(tx.Data) > 0 {
-		simTx["data"] = hexutil.Bytes(tx.Data).String()
+		simRequest.Data = hexutil.Bytes(tx.Data).String()
 	}
 
-	if tx.Value != nil {
-		simTx["value"] = hexutil.EncodeBig(tx.Value)
+	trace, err := Sentio.SimulateTransaction(simRequest)
+	if err != nil {
+		return nil, fmt.Errorf("sentio simulation failed: %v", err)
 	}
+	utils.LogObject("SimulateEOATx::trace", trace)
 
-	if tx.Gas != nil {
-		simTx["gas"] = hexutil.EncodeBig(tx.Gas)
-	}
-
-	// Get block metadata for simulation
-	var blockNumber string
-	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
-		return nil, fmt.Errorf("failed to get block number: %v", err)
-	}
-
-	var baseFee struct {
-		BaseFeePerGas string `json:"baseFeePerGas"`
-	}
-	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
-		return nil, fmt.Errorf("failed to get base fee: %v", err)
-	}
-
-	simTx["gasPrice"] = baseFee.BaseFeePerGas
-	callTraceConfig := map[string]any{
-		"tracer": "callTracer",
-	}
-
-	var trace struct {
-		Type     string         `json:"type"`
-		From     common.Address `json:"from"`
-		To       common.Address `json:"to"`
-		Value    string         `json:"value"`
-		Gas      string         `json:"gas"`
-		GasUsed  string         `json:"gasUsed"`
-		GasPrice string         `json:"gasPrice"`
-		Input    hexutil.Bytes  `json:"input"`
-		Output   hexutil.Bytes  `json:"output"`
-		Error    string         `json:"error"`
-	}
-
-	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", simTx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
-	}
-
-	// Create run object with results
 	status := "success"
-	if trace.Error != "" {
+	var errorMsg *string
+	revertReason, _ := FindRevertError(trace)
+	if revertReason != "" {
 		status = "failed"
+		errorMsg = &revertReason
 	}
 
 	run := &models.Run{
@@ -200,6 +159,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint6
 		To:     tx.To.Hex(),
 		Value:  types.NewBigInt(tx.Value),
 		Status: status,
+		Error:  errorMsg,
 		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},

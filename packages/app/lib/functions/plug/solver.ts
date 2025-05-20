@@ -4,6 +4,7 @@ import axios from "axios"
 
 import { env } from "@/env"
 import { IntentResponse, KillResponse, SchemasResponse } from "@/lib/types"
+import { formTestnet } from "viem/chains"
 
 let cachedSchemas: Record<string, SchemasResponse | undefined> = {}
 
@@ -14,17 +15,27 @@ export const schemas = async (
 	search: Array<string> = [],
 	from?: string
 ): Promise<SchemasResponse> => {
-	const params = {
+	const params: Record<string, any> = {
 		protocol,
 		action,
 		from,
 		chainId,
-		...search.reduce((acc, value) => {
-			const [key, val] = value.split("=")
-			if (val === "") return acc
-			return { ...acc, [key]: val }
-		}, {})
 	}
+
+	// For gorilla/schema decoder to correctly decode into a slice of structs,
+	// we need to format the URL parameters like this: search.0.index=0&search.0.value=ethereum
+	search.forEach((item) => {
+		const [rawKey, val] = item.split("=")
+		if (val !== "") {
+			// Extract the index from the format "search[key]"
+			const indexMatch = rawKey.match(/search\[(\d+)\]/)
+			if (indexMatch && indexMatch[1]) {
+				const index = parseInt(indexMatch[1])
+				params[`search.${index}.index`] = index
+				params[`search.${index}.value`] = val
+			}
+		}
+	})
 
 	const cacheKey = JSON.stringify(params)
 

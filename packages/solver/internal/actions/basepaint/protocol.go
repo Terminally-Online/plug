@@ -7,6 +7,21 @@ import (
 	"solver/internal/bindings/references"
 )
 
+var (
+	ActionMintSentence = "Mint {0<count:uint64>} copy of the current canvas to {1<recipient:string>}"
+
+	ActionMint = actions.NewActionDefinition(
+		ActionMintSentence,
+		basepaint_actions.MintLatest,
+		basepaint_options.MintLatestOptions,
+		&actions.ActionProperties{
+			IsSearchable:   true,
+			IsUserSpecific: true,
+		},
+		&basepaint_actions.MintLatestFunc,
+	)
+)
+
 func New() actions.Protocol {
 	return actions.NewProtocol(actions.Protocol{
 		Name:   "BasePaint",
@@ -14,14 +29,7 @@ func New() actions.Protocol {
 		Tags:   []string{"lending", "defi"},
 		Chains: []*references.Network{references.Base},
 		Actions: map[string]actions.ActionDefinitionInterface{
-			actions.ActionMint: actions.NewActionDefinition(
-				"Mint {0<count:uint64>} copy of the current canvas to {1<recipient:string>}",
-				basepaint_actions.MintLatest,
-				basepaint_options.MintLatestOptions,
-				actions.IsUser,
-				actions.IsDynamic,
-				&basepaint_actions.MintLatestFunc,
-			),
+			actions.ActionMint: ActionMint,
 		},
 	})
 }

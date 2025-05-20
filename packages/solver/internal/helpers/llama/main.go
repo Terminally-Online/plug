@@ -1,9 +1,8 @@
 package llama
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"solver/internal/utils"
 	"strings"
 )
 
@@ -29,6 +28,22 @@ type LlamaCoinResponse struct {
 	} `json:"coins"`
 }
 
+func GetChainName(chainId uint64) (string, error) {
+	switch chainId {
+	case 1:
+		return "ethereum", nil
+	case 8453:
+		return "base", nil
+	case 137:
+		return "polygon", nil
+	case 42161:
+		return "arbitrum", nil
+	case 10:
+		return "optimism", nil
+	}
+	return "", fmt.Errorf("unknown chain id: %d", chainId)
+}
+
 func GetPriceKey(chain, address string) string {
 	return fmt.Sprintf("%s:%s", strings.ToLower(chain), address)
 }
@@ -41,19 +56,18 @@ func GetPrices(queries []string) (map[string]LlamaPriceData, error) {
 	query := strings.Join(queries, ",")
 	url := fmt.Sprintf("https://coins.llama.fi/chart/%s?span=48&period=30m&searchWidth=1200", query)
 
-	resp, err := http.Get(url)
+	response, err := utils.MakeHTTPRequest(
+		url,
+		"GET",
+		map[string]string{
+			"accept": "application/json",
+		},
+		nil,
+		nil,
+		LlamaCoinResponse{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch prices: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	var response LlamaCoinResponse
-	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+		return nil, fmt.Errorf("failed to get zerion positions: %w", err)
 	}
 
 	result := make(map[string]LlamaPriceData)

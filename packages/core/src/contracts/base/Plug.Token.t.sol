@@ -17,7 +17,9 @@ contract PlugTokenTest is Test {
     uint256 internal constant TOTAL_SUPPLY = 9_000_000 ether;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event CrosschainMint(address indexed to, uint256 amount, address indexed sender);
+    event CrosschainMint(
+        address indexed to, uint256 amount, address indexed sender
+    );
 
     function setUp() public virtual {
         owner = PlugAddressesLib.PLUG_OWNER_ADDRESS;

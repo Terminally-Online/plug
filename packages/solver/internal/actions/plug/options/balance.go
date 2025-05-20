@@ -6,8 +6,8 @@ import (
 )
 
 func BalanceOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Options, error) {
-	fungiblesIndex := 0
-	fungiblesOptions, err := options.GetFungiblesAndFungiblesHeldOptions(lookup, fungiblesIndex)
+	holdingsIndex := 0
+	holdingsOptions, err := options.GetHoldingsOptions(lookup, holdingsIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -19,8 +19,7 @@ func BalanceOptions[T any](lookup *actions.SchemaLookup[T]) (map[int]actions.Opt
 	}
 
 	return map[int]actions.Options{
-		fungiblesIndex: {Simple: fungiblesOptions},
-		addressIndex:   {Simple: addressOptions},
-		2:              {Simple: actions.BaseThresholdFields},
+		holdingsIndex: {Simple: holdingsOptions},
+		addressIndex:  {Simple: addressOptions},
 	}, nil
 }

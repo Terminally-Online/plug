@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"maps"
 	"math/big"
+	"os"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/assert"
@@ -16,6 +17,7 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
+	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver/signature"
@@ -24,6 +26,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 	"gorm.io/gorm"
 )
 
@@ -31,6 +34,10 @@ type Solver struct {
 	Protocols map[string]actions.Protocol
 	IsKilled  bool
 }
+
+var (
+	SolverInstance = New()
+)
 
 func New() *Solver {
 	return &Solver{
@@ -89,7 +96,7 @@ func (s *Solver) GetTransaction(plugs []signature.Plug, raw json.RawMessage, cha
 		}
 
 		if transactions[i].Value.Cmp(big.NewInt(0)) != 0 {
-			transactions[i].Selector = signature.SELECTOR_CALL_WITH_VALUE
+			transactions[i].Selector = signature.CallWithValue
 		}
 	}
 
@@ -148,6 +155,31 @@ func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 	return plugs, nil
 }
 
+func GetSignature(chainId *big.Int, socket common.Address, plugs signature.Plugs) (signature.Plugs, []byte, error) {
+	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
+	if err != nil {
+		return signature.Plugs{}, nil, utils.ErrBuild(err.Error())
+	}
+
+	plugs.Salt, _ = signature.GetSaltHash(socket)
+	plugs.Solver, _ = signature.GetSolverHash()
+
+	wrapped, _ := plugs.Wrap()
+	client, _ := client.New(chainId.Uint64())
+	digest, err := client.Digest(chainId, socket, wrapped)
+	if err != nil {
+		return signature.Plugs{}, nil, utils.ErrBuild(err.Error())
+	}
+	sig, err := crypto.Sign(digest[:], privateKey)
+	if err != nil {
+		return signature.Plugs{}, nil, utils.ErrBuild(err.Error())
+	}
+
+	sig[crypto.RecoveryIDOffset] += 27
+
+	return plugs, sig, nil
+}
+
 func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from string) (*signature.LivePlugs, error) {
 	solver, err := signature.GetSolverHash()
 	if err != nil {
@@ -159,7 +191,7 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 		return nil, err
 	}
 
-	plugsSigned, plugsSignature, err := signature.GetSignature(
+	plugsSigned, plugsSignature, err := GetSignature(
 		big.NewInt(int64(chainId)),
 		fromAddress,
 		signature.Plugs{
@@ -173,10 +205,78 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 		return nil, utils.ErrBuild("failed to sign: " + err.Error())
 	}
 
-	return &signature.LivePlugs{
+	livePlugs := signature.LivePlugs{
 		Plugs:     plugsSigned,
 		Signature: plugsSignature,
-	}, nil
+	}
+
+	// client, _ := client.New(chainId)
+	// socketAbi, _ := plug_socket.PlugSocketMetaData.GetAbi()
+	// lp, _ := livePlugs.Wrap()
+
+	// TODO: This validation is left here at the time of writing this comment because we MAY have
+	//       fixed signatures but it is tempermental a bit. Delete this upon 06/01/2025.
+
+	// { // [Passing] Domain hash validation
+	// 	socketContract, _ := plug_socket.NewPlugSocket(fromAddress, client)
+	// 	domain, _ := socketContract.Domain(client.ReadOptions(fromAddress))
+	//
+	// 	domainHash, _ := socketContract.GetEIP712DomainHash(client.ReadOptions(fromAddress), domain)
+	// 	log.Printf("Domain hash %s", hexutil.Encode(domainHash[:]))
+	// }
+	//
+	//
+	// { // [Failing] Plugs digest validation
+	// 	wrappedPlugs, _ := plugsSigned.Wrap()
+	// 	digestCalldata, err := socketAbi.Pack("getPlugsDigest", wrappedPlugs)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to build getLivePlugsSigner calldata: %w", err)
+	// 	}
+	//
+	// 	output, err := client.CallContract(context.Background(), ethereum.CallMsg{
+	// 		To:   &fromAddress,
+	// 		Data: digestCalldata,
+	// 	}, nil)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to read digest: %w", err)
+	// 	}
+	// 	var digest [32]byte
+	// 	err = socketAbi.UnpackIntoInterface(&digest, "getPlugsDigest", output)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to unpack digest: %w", err)
+	// 	}
+	// 	log.Printf("Digest %s", hexutil.Encode(digest[:]))
+	// }
+	//
+	// { // [Passing] Signer validation
+	// 	signerCalldata, err := socketAbi.Pack("getLivePlugsSigner", lp)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to build getLivePlugsSigner calldata: %w", err)
+	// 	}
+	//
+	// 	output, err := client.CallContract(context.Background(), ethereum.CallMsg{
+	// 		To:   &fromAddress,
+	// 		Data: signerCalldata,
+	// 	}, nil)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to read signer: %w", err)
+	// 	}
+	//
+	// 	var signer common.Address
+	// 	err = socketAbi.UnpackIntoInterface(&signer, "getLivePlugsSigner", output)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to unpack signer: %w", err)
+	// 	}
+	//
+	// 	solverAddress := common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))
+	// 	if signer != solverAddress {
+	// 		return nil, fmt.Errorf("failed to generate valid signature: %s != %s", solverAddress, signer)
+	// 	} else {
+	// 		log.Println("SIGNERS ARE MATCHING AND VALID")
+	// 	}
+	// }
+
+	return &livePlugs, nil
 }
 
 func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
@@ -335,18 +435,6 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 	result := &Solution{
 		Run:       run,
 		LivePlugs: livePlugs,
-	}
-
-	// TODO: I have no idea what this was doing and I commented it out and cannot decipher it right now.
-	//       I will come back here myself or when I realize this caused a regression. - CHANCE
-	if livePlugs != nil {
-		// routerAddress := livePlugs.GetRouterAddress()
-		// routerPlug := &signature.MinimalPlug{
-		// 	To:    routerAddress,
-		// 	Data:  callData,
-		// 	Value: big.NewInt(0),
-		// }
-		// result.Transactions = routerPlug
 	}
 
 	return result, nil

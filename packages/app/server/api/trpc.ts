@@ -1,4 +1,4 @@
-import { NextApiRequest } from "next"
+import { NextApiRequest, NextApiResponse } from "next"
 import { type Session } from "next-auth"
 
 import { initTRPC, TRPCError } from "@trpc/server"
@@ -13,12 +13,14 @@ import { db } from "@/server/db"
 import { emitter } from "@/server/emitter"
 
 interface CreateContextOptions {
+	res: NextApiResponse
 	session: Session | null
 	headers?: NextApiRequest["headers"]
 }
 
-export const createInnerTRPCContext = ({ session, headers }: CreateContextOptions) => {
+export const createInnerTRPCContext = ({ res, session, headers }: CreateContextOptions) => {
 	return {
+		res,
 		session,
 		db,
 		emitter,
@@ -31,6 +33,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 	const session = await getServerAuthSession({ req, res })
 
 	return createInnerTRPCContext({
+		res,
 		session,
 		headers: req.headers
 	})

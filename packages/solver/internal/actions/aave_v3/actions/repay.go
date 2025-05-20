@@ -51,15 +51,17 @@ func Repay(lookup *actions.SchemaLookup[RepayRequest]) ([]signature.Plug, error)
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	var repayUpdates []coil.Update
 	repayAmount, repayUpdates, err := actions.GetAndUpdate(
 		&lookup.Inputs.Amount,
 		lookup.Inputs.Amount.GetUintFromFloatFunc(uint8(decimals)),
 		&RepayFunc,
 		"amount",
-		repayUpdates,
+		nil,
 		lookup.PreviousActionDefinition,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	repayCalldata, err := RepayFunc.GetCalldata(
 		tokenIn,
