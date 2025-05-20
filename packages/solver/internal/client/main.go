@@ -9,6 +9,7 @@ import (
 	"os"
 	"solver/bindings/multicall_primary"
 	"solver/bindings/plug_router"
+	"solver/bindings/plug_socket"
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
@@ -77,6 +78,29 @@ func (c *Client) WriteOptions(address common.Address, value *big.Int) *bind.Tran
 }
 func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
+}
+
+func (c *Client) Digest(chainId *big.Int, socket common.Address, plugs *plug_router.PlugTypesLibPlugs) ([]byte, error) {
+	socketAbi, _ := plug_socket.PlugSocketMetaData.GetAbi()
+	digestCalldata, err := socketAbi.Pack("getPlugsDigest", plugs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build getLivePlugsSigner calldata: %w", err)
+	}
+
+	output, err := c.CallContract(context.Background(), ethereum.CallMsg{
+		To:   &socket,
+		Data: digestCalldata,
+	}, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read digest: %w", err)
+	}
+	var digest [32]byte
+	err = socketAbi.UnpackIntoInterface(&digest, "getPlugsDigest", output)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unpack digest: %w", err)
+	}
+
+	return digest[:], nil
 }
 
 func (c *Client) Plug(livePlugs *signature.LivePlugs) ([]signature.Result, error) {

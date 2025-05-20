@@ -8,8 +8,6 @@ import (
 	"solver/internal/avs/services"
 	"solver/internal/avs/types"
 	"solver/internal/solver/signature"
-
-	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 const IntentStream = "circuit:intents"
@@ -64,11 +62,11 @@ func HandleStream(ctx context.Context) {
 					taskDefinitionId = int(td)
 				}
 
-				livePlugsHash := signature.GetPlugsHash(livePlugs.Plugs)
-				livePlugsHashBytes := hexutil.Bytes(livePlugsHash[:])
+				// livePlugsHash := signature.GetPlugsHash(livePlugs.Plugs)
+				// livePlugsHashBytes := hexutil.Bytes(livePlugsHash[:])
 				executionResponse := types.ExecutionResponse{
-					ProofOfTask:      transactionHash,
-					Data:             &livePlugsHashBytes,
+					ProofOfTask: transactionHash,
+					// Data:             &livePlugsHashBytes,
 					TaskDefinitionId: taskDefinitionId,
 				}
 

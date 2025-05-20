@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client"
 
 import { MAGIC_NONCE } from "@/server/api/routers/socket"
 import { env } from "@/env"
-import { encodeAbiParameters, parseAbiParameters } from "viem"
 import { getSocketAddress, getSocketFactory, getSocketImplementation, getSocketSalt } from "@/lib/functions/socket"
 
 const prisma = new PrismaClient()

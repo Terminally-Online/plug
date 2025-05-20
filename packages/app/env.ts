@@ -15,7 +15,7 @@ export const env = createEnv({
 		ANTHROPIC_KEY: z.string(),
 		SOLVER_URL: z.string().startsWith("http").default("http://localhost:8080"),
 		SOLVER_API_KEY: z.string().default("alphapapapapaalphapapaindia"),
-		SOLVER_DELEGATE_ADDRESS: z.string().startsWith("0x").default("0x62180042606624f02d8a130da8a3171e9b33894d"),
+		SOLVER_DELEGATE_ADDRESS: z.string().startsWith("0x"),
 		PORT: z.string().optional().default("3000").transform(Number),
 		DOCKER_CONTAINER_NAME: z.string().optional().default("postgres"),
 		DOCKER_DATABASE_NAME: z.string().optional().default("postgres"),

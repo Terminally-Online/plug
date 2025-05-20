@@ -265,6 +265,8 @@ github.com/swaggest/usecase v1.3.1 h1:JdKV30MTSsDxAXxkldLNcEn8O2uf565khyo6gr5sS+
 github.com/swaggest/usecase v1.3.1/go.mod h1:cae3lDd5VDmM36OQcOOOdAlEDg40TiQYIp99S9ejWqA=
 github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 h1:epCh84lMvA70Z7CTTCmYQn2CKbY8j86K7/FAIr141uY=
 github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7/go.mod h1:q4W45IWZaF22tdD+VEXcAWRA037jwmWEB5VWYORlTpc=
+github.com/terminally-online/plug v0.0.0-20250519211332-3c0f297bf4f9 h1:3jvYdgtjLd5Pf5oxWI6mgquqK3gxk0ZEHgqfqFRA6V4=
+github.com/terminally-online/plug v0.0.0-20250519211332-3c0f297bf4f9/go.mod h1:mZdWGkbzTWLt+NDk4wI8reAce29jjOyCIvVi9KfDcS8=
 github.com/terminally-online/plug/packages/references v0.0.0-20250515133905-54e97d9cb670 h1:toK3zUAnDTi42Z6CYQ1Gf9zYr/scAk+Wi6KPw8xrT4Y=
 github.com/terminally-online/plug/packages/references v0.0.0-20250515133905-54e97d9cb670/go.mod h1:8iGyg5enw7ptiAvSJhXMN0CQpNoqU3jr9o8uAgiomV0=
 github.com/tklauser/go-sysconf v0.3.12 h1:0QaGUFOdQaIVdPgfITYzaTegZvdCjmYO52cSFAEVmqU=

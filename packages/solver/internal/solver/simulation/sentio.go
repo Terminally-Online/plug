@@ -56,8 +56,8 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 	// 1 gwei, sentio also requires gasPrice (boo)
 	gasPrice := "0xF4240"
 
-	reqBody := map[string]interface{}{
-		"simulation": map[string]interface{}{
+	reqBody := map[string]any{
+		"simulation": map[string]any{
 			"networkId":        tx.ChainId,
 			"chainId":          tx.ChainId,
 			"to":               tx.To,
@@ -88,6 +88,8 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 	if err != nil {
 		return nil, fmt.Errorf("simulation request failed: %v", err)
 	}
+	// TODO: @Mason Just use MakeHttpRequest. I don't feel like taking care of it myself while I 
+	//       am cleaning everything else up, but it should be ez pz. - CHANCE
 	defer resp.Body.Close()
 
 	var simResponse struct {

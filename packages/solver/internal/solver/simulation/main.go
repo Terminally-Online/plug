@@ -65,6 +65,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		To:      routerAddress.Hex(),
 		Data:    callData,
 		Value:   totalValue,
+		Gas:     big.NewInt(20_000_000),
 	}
 
 	fmt.Printf("SimulateLivePlugs::simRequest: %+v\n", simRequest)
