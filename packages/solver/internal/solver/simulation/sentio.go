@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"os"
 	"time"
 
 	"solver/internal/utils"
@@ -16,6 +17,8 @@ import (
 const (
 	SentioBaseURL  = "https://app.sentio.xyz/api/v1/solidity"
 	DefaultTimeout = 30 * time.Second
+	ProjectOwner   = "mason"
+	ProjectSlug    = "plugsims"
 )
 
 var Sentio *SentioClient
@@ -41,9 +44,9 @@ type SentioSimulationResponse struct {
 
 func init() {
 	Sentio = &SentioClient{
-		ProjectOwner: "mason",
-		ProjectSlug:  "testing",
-		APIKey:       "6hyo9WIlX1As5wG6NWLfMTu8H6Y5BS9Wr",
+		ProjectOwner: ProjectOwner,
+		ProjectSlug:  ProjectSlug,
+		APIKey:       os.Getenv("SENTIO_API_KEY"),
 		BaseURL:      SentioBaseURL,
 		HttpClient: &http.Client{
 			Timeout: DefaultTimeout,
