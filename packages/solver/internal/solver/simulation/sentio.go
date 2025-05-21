@@ -28,6 +28,17 @@ type SentioClient struct {
 	HttpClient   *http.Client
 }
 
+type SentioSimulationResponse struct {
+	Simulation struct {
+		ID     string `json:"id"`
+		Result struct {
+			TransactionReceipt struct {
+				EffectiveGasPrice string `json:"effectiveGasPrice"`
+			} `json:"transactionReceipt"`
+		} `json:"result"`
+	} `json:"simulation"`
+}
+
 func init() {
 	Sentio = &SentioClient{
 		ProjectOwner: "mason",
@@ -84,26 +95,16 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 		"api-key":      c.APIKey,
 	}
 
-	var simResponse struct {
-		Simulation struct {
-			ID     string `json:"id"`
-			Result struct {
-				TransactionReceipt struct {
-					EffectiveGasPrice string `json:"effectiveGasPrice"`
-				} `json:"transactionReceipt"`
-			} `json:"result"`
-		} `json:"simulation"`
-	}
-
-	if _, err := utils.MakeHTTPRequest(
+	simResponse, err := utils.MakeHTTPRequest(
 		url,
 		"POST",
 		headers,
 		nil,
 		bytes.NewBuffer(jsonData),
-		&simResponse,
-	); err != nil {
-		return nil, fmt.Errorf("simulation request failed: %v", err)
+		SentioSimulationResponse{},
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	// Retrieved the simulation ID, now time to fetch the traces from it.
@@ -114,15 +115,15 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 		"api-key": c.APIKey,
 	}
 
-	var trace Trace
-	if _, err := utils.MakeHTTPRequest(
+	trace, err := utils.MakeHTTPRequest(
 		traceURL,
 		"GET",
 		traceHeaders,
 		nil,
 		nil,
-		&trace,
-	); err != nil {
+		Trace{},
+	)
+	if err != nil {
 		return nil, fmt.Errorf("trace request failed: %v", err)
 	}
 

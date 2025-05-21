@@ -72,7 +72,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 
 	trace, err := Sentio.SimulateTransaction(simRequest)
 	if err != nil {
-		return nil, fmt.Errorf("sentio simulation failed: %v", err)
+		return nil, fmt.Errorf("simulation failed: %v", err)
 	}
 	utils.LogObject("SimulateLivePlugs::trace", trace)
 
