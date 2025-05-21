@@ -78,11 +78,8 @@ func HandleBeforeSave(model interface{}) error {
 			continue
 		}
 
-		// TODO: This is causing us to lose zero-value fields.
-		if !fieldValue.IsZero() {
-			strValue := converter.toStr(fieldValue.Interface())
-			strField.SetString(strValue)
-		}
+		strValue := converter.toStr(fieldValue.Interface())
+		strField.SetString(strValue)
 	}
 	return nil
 }
