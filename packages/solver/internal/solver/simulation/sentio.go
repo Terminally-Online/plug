@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"time"
+
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
@@ -51,10 +54,10 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 	if tx.Gas != nil {
 		gas = hexutil.EncodeBig(tx.Gas)
 	} else {
-		gas = "0x30D40"
+		gas = hexutil.EncodeBig(big.NewInt(20000000)) // 20M gas
 	}
-	// 1 gwei, sentio also requires gasPrice (boo)
-	gasPrice := "0xF4240"
+	// 1 gwei, sentio also requires gasPrice
+	gasPrice := hexutil.EncodeBig(big.NewInt(1000000000))
 
 	reqBody := map[string]any{
 		"simulation": map[string]any{
@@ -76,21 +79,10 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 		return nil, fmt.Errorf("failed to marshal simulation request: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create simulation request: %v", err)
+	headers := map[string]string{
+		"Content-Type": "application/json",
+		"api-key":      c.APIKey,
 	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api-key", c.APIKey)
-
-	resp, err := c.HttpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("simulation request failed: %v", err)
-	}
-	// TODO: @Mason Just use MakeHttpRequest. I don't feel like taking care of it myself while I 
-	//       am cleaning everything else up, but it should be ez pz. - CHANCE
-	defer resp.Body.Close()
 
 	var simResponse struct {
 		Simulation struct {
@@ -103,29 +95,35 @@ func (c *SentioClient) SimulateTransaction(tx SimulationRequest) (*Trace, error)
 		} `json:"simulation"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&simResponse); err != nil {
-		return nil, fmt.Errorf("failed to parse simulation response: %v", err)
+	if _, err := utils.MakeHTTPRequest(
+		url,
+		"POST",
+		headers,
+		nil,
+		bytes.NewBuffer(jsonData),
+		&simResponse,
+	); err != nil {
+		return nil, fmt.Errorf("simulation request failed: %v", err)
 	}
 
 	// Retrieved the simulation ID, now time to fetch the traces from it.
 	traceURL := fmt.Sprintf("%s/%s/%s/%s/simulation/%s/call_trace",
 		c.BaseURL, c.ProjectOwner, c.ProjectSlug, tx.ChainId, simResponse.Simulation.ID)
 
-	traceReq, err := http.NewRequest("GET", traceURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create trace request: %v", err)
+	traceHeaders := map[string]string{
+		"api-key": c.APIKey,
 	}
-	traceReq.Header.Set("api-key", c.APIKey)
-
-	traceResp, err := c.HttpClient.Do(traceReq)
-	if err != nil {
-		return nil, fmt.Errorf("trace request failed: %v", err)
-	}
-	defer traceResp.Body.Close()
 
 	var trace Trace
-	if err := json.NewDecoder(traceResp.Body).Decode(&trace); err != nil {
-		return nil, fmt.Errorf("failed to parse trace response: %v", err)
+	if _, err := utils.MakeHTTPRequest(
+		traceURL,
+		"GET",
+		traceHeaders,
+		nil,
+		nil,
+		&trace,
+	); err != nil {
+		return nil, fmt.Errorf("trace request failed: %v", err)
 	}
 
 	trace.GasPrice = simResponse.Simulation.Result.TransactionReceipt.EffectiveGasPrice
