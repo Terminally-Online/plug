@@ -59,3 +59,16 @@ type Log struct {
 	Topics  []common.Hash  `json:"topics"`
 	Data    hexutil.Bytes  `json:"data"`
 }
+
+type EventParameter struct {
+	Name    string
+	Type    string
+	Indexed bool
+	Value   interface{}
+}
+
+type DecodedLog struct {
+	Name       *string
+	Parameters []EventParameter
+	Raw        Log
+}

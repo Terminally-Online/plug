@@ -76,6 +76,9 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	}
 	utils.LogObject("SimulateLivePlugs::trace", trace)
 
+	logs := ExtractAllLogs(trace)
+	fmt.Printf("logs: %+v\n", logs)
+
 	status := "success"
 	var errorMsg *string
 	revertReason, _ := FindRevertError(trace)

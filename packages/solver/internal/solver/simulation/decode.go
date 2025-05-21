@@ -6,7 +6,27 @@ import (
 	"fmt"
 	"math/big"
 	"solver/bindings/plug_socket"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
+
+// ABIProvider is an interface for fetching ABIs by contract address
+type ABIProvider interface {
+	GetABI(addr common.Address) (*abi.ABI, error)
+}
+
+type DecodedOutput struct {
+	FunctionName string
+	Values       []interface{}
+	RawOutput    hexutil.Bytes
+}
+
+type DecodedTrace struct {
+	Logs   []DecodedLog
+	Output *DecodedOutput
+}
 
 func FindRevertError(trace *Trace) (string, string) {
 	for _, call := range trace.Calls {
@@ -39,6 +59,7 @@ func decodeRevertError(output string) string {
 	}
 
 	// Get the ABI
+	// TODO: need to do the abi lookup
 	plugSocketAbi, err := plug_socket.PlugSocketMetaData.GetAbi()
 	if err != nil {
 		return "failed to parse error ABI"
@@ -68,4 +89,72 @@ func decodeRevertError(output string) string {
 	}
 
 	return fmt.Sprintf("error selector: 0x%x", selector)
+}
+
+// ExtractAllLogs recursively extracts all logs from a trace or call and their nested calls
+func ExtractAllLogs(node interface{}) []Log {
+	if node == nil {
+		return nil
+	}
+
+	var logs []Log
+	var calls []Call
+
+	switch n := node.(type) {
+	case *Trace:
+		logs = n.Logs
+		calls = n.Calls
+	case *Call:
+		logs = n.Logs
+		calls = n.Calls
+	default:
+		return nil
+	}
+
+	// Start with logs from this node
+	allLogs := make([]Log, len(logs))
+	copy(allLogs, logs)
+
+	// Recursively get logs from nested calls
+	for _, call := range calls {
+		allLogs = append(allLogs, ExtractAllLogs(&call)...)
+	}
+
+	return allLogs
+}
+
+// DecodeTraceResults decodes all logs and outputs from a trace using the provided ABI provider
+func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
+	if trace == nil {
+		return nil, fmt.Errorf("trace is nil")
+	}
+
+	// Decode the main trace output if it exists
+	var output *DecodedOutput
+	if len(trace.Output) > 0 {
+		// TODO: Get ABI for the target contract and decode the output
+		output = &DecodedOutput{
+			RawOutput: trace.Output,
+		}
+	}
+
+	// Extract all logs from the trace and its calls
+	allLogs := ExtractAllLogs(trace)
+	decodedLogs := make([]DecodedLog, 0, len(allLogs))
+
+	// Decode each log using the ABI provider
+	for _, log := range allLogs {
+		// output := &DecodedLog{
+		// 	Address: log.Address,
+		// 	Signature:  string(log.Topics[0].Bytes()),
+		// 	Raw:    log,
+		// }
+		// todo: get the abi for this log, decode it.
+		// if we can't decode it, make the format match our DecodedLog struct
+	}
+
+	return &DecodedTrace{
+		Logs:   decodedLogs,
+		Output: output,
+	}, nil
 }
