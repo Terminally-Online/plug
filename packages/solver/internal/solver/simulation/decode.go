@@ -140,6 +140,7 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 	// Decode each log using the ABI provider
 	for _, log := range allLogs {
 		signature := log.Topics[0].Hex()
+		fmt.Printf("Signature: %s\n", signature)
 		eventDef := events.EventsBySignature[signature]
 
 		decoded := DecodedLog{

@@ -28,6 +28,11 @@ var (
 		"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 	}
 
+	LogBindings = map[string][]string{
+		"erc":  []string{"20", "721", "1155"},
+		"plug": []string{"lib"},
+	}
+
 	Plug    = plug.Plug
 	Mainnet = &Network{
 		Name: "Ethereum Mainnet",
@@ -267,6 +272,17 @@ func GenerateReferences() error {
 		}
 	}
 
+	// generate log bindings for additional contracts/libraries
+	for dir, values := range LogBindings {
+		for _, value := range values {
+			// Generate ABI
+
+			if err := extractEvents(dir, value, allEvents); err != nil {
+				return fmt.Errorf("extracting events for %s/%s: %w", dir, value, err)
+			}
+		}
+	}
+
 	if len(allEvents) > 0 {
 		if err := generateEventsFile(allEvents); err != nil {
 			return fmt.Errorf("generating events file: %w", err)
@@ -285,10 +301,11 @@ func extractEvents(folderName, contractName string, allEvents map[string]EventRe
 	}
 
 	var abiDef []struct {
-		Type      string       `json:"type"`
-		Name      string       `json:"name"`
-		Inputs    []EventInput `json:"inputs"`
-		Anonymous bool         `json:"anonymous"`
+		Type       string       `json:"type"`
+		Name       string       `json:"name"`
+		Inputs     []EventInput `json:"inputs"`
+		Anonymous  bool         `json:"anonymous"`
+		Components []EventInput `json:"components"`
 	}
 	if err := json.Unmarshal(data, &abiDef); err != nil {
 		return err
@@ -299,10 +316,19 @@ func extractEvents(folderName, contractName string, allEvents map[string]EventRe
 			continue
 		}
 
-		// Build the written out signature (e.g. Transfer(address,uint256)), then hash it to get the event signature
+		// Build the written out signature with proper tuple handling
 		inputTypes := make([]string, len(item.Inputs))
 		for i, input := range item.Inputs {
-			inputTypes[i] = input.Type
+			if strings.HasPrefix(input.Type, "tuple") {
+				// Handle tuple type by including its components
+				components := getComponentsString(input.Components)
+				inputTypes[i] = fmt.Sprintf("(%s)", components)
+				if strings.HasSuffix(input.Type, "[]") {
+					inputTypes[i] += "[]"
+				}
+			} else {
+				inputTypes[i] = input.Type
+			}
 		}
 		eventSig := fmt.Sprintf("%s(%s)", item.Name, strings.Join(inputTypes, ","))
 		signature := fmt.Sprintf("0x%x", crypto.Keccak256([]byte(eventSig)))
@@ -310,7 +336,7 @@ func extractEvents(folderName, contractName string, allEvents map[string]EventRe
 		// Create ABI arguments
 		inputs := make([]abi.Argument, len(item.Inputs))
 		for i, input := range item.Inputs {
-			abiType, err := abi.NewType(input.Type, "", nil)
+			abiType, err := abi.NewType(input.Type, "", toArgumentMarshaling(input.Components))
 			if err != nil {
 				return fmt.Errorf("parsing type %s: %w", input.Type, err)
 			}
@@ -327,9 +353,6 @@ func extractEvents(folderName, contractName string, allEvents map[string]EventRe
 			Inputs:    inputs,
 			Contract:  fmt.Sprintf("%s/%s", folderName, contractName),
 		}
-
-		fmt.Printf("Added event %s with signature %s from %s/%s\n",
-			item.Name, signature, folderName, contractName)
 	}
 
 	return nil
@@ -347,7 +370,7 @@ func generateEventsFile(events map[string]EventReference) error {
 	for signature, event := range events {
 		inputs := make([]string, len(event.Inputs))
 		for i, input := range event.Inputs {
-			inputs[i] = fmt.Sprintf(`{Name: %q, Type: mustNewType(%q), Indexed: %t}`,
+			inputs[i] = fmt.Sprintf(`{Name: %q, Type: getNewType(%q), Indexed: %t}`,
 				input.Name, input.Type.String(), input.Indexed)
 		}
 
@@ -356,38 +379,83 @@ func generateEventsFile(events map[string]EventReference) error {
         Signature: %q,
         Inputs:    []abi.Argument{%s},
         Contract:  %q,
-    },`, signature, event.Name, signature, strings.Join(inputs, ", "), event.Contract)
+    },`,
+			signature,
+			event.Name,
+			signature,
+			strings.Join(inputs, ", "),
+			event.Contract,
+		)
 		eventDefs = append(eventDefs, def)
 	}
 
+	getNewTypeFunc := `func getNewType(t string) abi.Type {
+    // Handle empty tuple type
+    if t == "()" {
+        return abi.Type{
+            T:            abi.TupleTy,
+            TupleElems:   []*abi.Type{},
+            TupleRawNames: []string{},
+        }
+    }
+
+    // For all types (including tuples), let go-ethereum's ABI package handle the parsing
+    typ, err := abi.NewType(t, "", nil)
+    if err != nil {
+        panic(fmt.Sprintf("failed to parse type %s: %v", t, err))
+    }
+    return typ
+}`
+
 	content := fmt.Sprintf(`// Code generated - DO NOT EDIT.
-	package events
+package events
 
-	import (
-		"fmt"
-		"github.com/ethereum/go-ethereum/accounts/abi"
-		"github.com/ethereum/go-ethereum/core/types"
-	)
+import (
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"fmt"
+)
 
-	type EventDefinition struct {
-		Name      string
-		Signature string
-		Inputs    []abi.Argument
-		Contract  string
-	}
+type EventDefinition struct {
+	Name      string
+	Signature string
+	Inputs    []abi.Argument
+	Contract  string
+}
 
-	func mustNewType(t string) abi.Type {
-		typ, err := abi.NewType(t, "", nil)
-		if err != nil {
-			panic(err)
+%s
+
+var EventsBySignature = map[string]*EventDefinition{
+%s
+}`, getNewTypeFunc, strings.Join(eventDefs, "\n"))
+
+	return os.WriteFile(filepath.Join(eventsDir, "main.go"), []byte(content), 0644)
+}
+
+func getComponentsString(components []EventInput) string {
+	parts := make([]string, len(components))
+	for i, comp := range components {
+		if strings.HasPrefix(comp.Type, "tuple") {
+			subComponents := getComponentsString(comp.Components)
+			parts[i] = fmt.Sprintf("(%s)", subComponents)
+			if strings.HasSuffix(comp.Type, "[]") {
+				parts[i] += "[]"
+			}
+		} else {
+			parts[i] = comp.Type
 		}
-		return typ
 	}
+	return strings.Join(parts, ",")
+}
 
-	var EventsBySignature = map[string]*EventDefinition{
-	%s
-	}`, strings.Join(eventDefs, "\n"))
-
-	eventsPath := filepath.Join(eventsDir, "main.go")
-	return os.WriteFile(eventsPath, []byte(content), 0644)
+func toArgumentMarshaling(inputs []EventInput) []abi.ArgumentMarshaling {
+	result := make([]abi.ArgumentMarshaling, len(inputs))
+	for i, input := range inputs {
+		result[i] = abi.ArgumentMarshaling{
+			Name:       input.Name,
+			Type:       input.Type,
+			Components: toArgumentMarshaling(input.Components),
+			Indexed:    input.Indexed,
+		}
+	}
+	return result
 }

@@ -76,8 +76,11 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 	}
 	utils.LogObject("SimulateLivePlugs::trace", trace)
 
-	logs := ExtractAllLogs(trace)
-	fmt.Printf("logs: %+v\n", logs)
+	decodedTrace, err := DecodeTraceResults(trace)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode trace results: %v", err)
+	}
+	fmt.Printf("decoded logs: %+v\n", decodedTrace.Logs)
 
 	status := "success"
 	var errorMsg *string

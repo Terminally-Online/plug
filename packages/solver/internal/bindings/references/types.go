@@ -24,7 +24,8 @@ type EventReference struct {
 }
 
 type EventInput struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Indexed bool   `json:"indexed"`
+	Name       string       `json:"name"`
+	Type       string       `json:"type"`
+	Indexed    bool         `json:"indexed"`
+	Components []EventInput `json:"components"`
 }

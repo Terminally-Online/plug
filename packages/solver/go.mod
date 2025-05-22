@@ -61,7 +61,6 @@ require (
 	github.com/swaggest/jsonschema-go v0.3.73 // indirect
 	github.com/swaggest/refl v1.3.1 // indirect
 	github.com/swaggest/usecase v1.3.1 // indirect
-	github.com/terminally-online/plug v0.0.0-20250519211332-3c0f297bf4f9 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/wealdtech/go-multicodec v1.4.0 // indirect
