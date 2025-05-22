@@ -68,6 +68,7 @@ type EventParameter struct {
 }
 
 type DecodedLog struct {
+	Address    common.Address
 	Name       *string
 	Parameters []EventParameter
 	Raw        Log

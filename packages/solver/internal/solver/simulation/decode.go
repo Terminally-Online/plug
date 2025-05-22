@@ -6,16 +6,11 @@ import (
 	"fmt"
 	"math/big"
 	"solver/bindings/plug_socket"
+	"solver/internal/bindings/events"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
-
-// ABIProvider is an interface for fetching ABIs by contract address
-type ABIProvider interface {
-	GetABI(addr common.Address) (*abi.ABI, error)
-}
 
 type DecodedOutput struct {
 	FunctionName string
@@ -144,17 +139,69 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 
 	// Decode each log using the ABI provider
 	for _, log := range allLogs {
-		// output := &DecodedLog{
-		// 	Address: log.Address,
-		// 	Signature:  string(log.Topics[0].Bytes()),
-		// 	Raw:    log,
-		// }
-		// todo: get the abi for this log, decode it.
-		// if we can't decode it, make the format match our DecodedLog struct
+		signature := log.Topics[0].Hex()
+		eventDef := events.EventsBySignature[signature]
+
+		decoded := DecodedLog{
+			Address: log.Address,
+			Raw:     log,
+		}
+
+		if eventDef != nil {
+			// We found a matching event definition
+			decoded.Name = &eventDef.Name
+
+			// Decode the arguments
+			if args, err := DecodeLog(&log); err == nil {
+				fmt.Printf("Decoded log: %+v\n", args)
+				// decoded.Parameters = args
+			}
+		}
+
+		decodedLogs = append(decodedLogs, decoded)
 	}
 
 	return &DecodedTrace{
 		Logs:   decodedLogs,
 		Output: output,
 	}, nil
+}
+
+func DecodeLog(log *Log) (map[string]interface{}, error) {
+	if len(log.Topics) == 0 {
+		return nil, fmt.Errorf("log has no topics")
+	}
+
+	signature := log.Topics[0].Hex()
+	def, exists := events.EventsBySignature[signature]
+	if !exists {
+		return nil, fmt.Errorf("unknown event signature: %s", signature)
+	}
+
+	event := abi.Event{
+		Name:   def.Name,
+		Inputs: def.Inputs,
+	}
+
+	decoded := make(map[string]interface{})
+
+	// Handle non-indexed parameters (data)
+	if len(log.Data) > 0 {
+		if err := event.Inputs.UnpackIntoMap(decoded, log.Data); err != nil {
+			return nil, fmt.Errorf("unpacking data: %w", err)
+		}
+	}
+
+	// Handle indexed parameters (topics)
+	indexedInputs := 0
+	for _, input := range def.Inputs {
+		if input.Indexed {
+			if indexedInputs+1 < len(log.Topics) { // +1 because first topic is signature
+				decoded[input.Name] = log.Topics[indexedInputs+1] // +1 to skip signature
+				indexedInputs++
+			}
+		}
+	}
+
+	return decoded, nil
 }

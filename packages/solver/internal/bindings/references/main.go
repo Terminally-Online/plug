@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/crypto"
 	plug "github.com/terminally-online/plug/packages/references/common"
 )
 
@@ -26,7 +28,7 @@ var (
 		"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 	}
 
-	Plug = plug.Plug
+	Plug    = plug.Plug
 	Mainnet = &Network{
 		Name: "Ethereum Mainnet",
 		Icon: struct {
@@ -233,6 +235,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 
 func GenerateReferences() error {
 	processed := make(map[string]bool)
+	allEvents := make(map[string]EventReference)
 
 	for _, network := range Networks {
 		explorer := fmt.Sprintf(MultichainEtherscan, network.ChainIds[0])
@@ -249,8 +252,14 @@ func GenerateReferences() error {
 					continue
 				}
 
+				// Generate ABI
 				if err := GenerateReference(explorer, folderName, contractName, address, retries); err != nil {
 					return err
+				}
+
+				// Extract events from the generated ABI
+				if err := extractEvents(folderName, contractName, allEvents); err != nil {
+					return fmt.Errorf("extracting events for %s/%s: %w", folderName, contractName, err)
 				}
 
 				processed[key] = true
@@ -258,5 +267,127 @@ func GenerateReferences() error {
 		}
 	}
 
+	if len(allEvents) > 0 {
+		if err := generateEventsFile(allEvents); err != nil {
+			return fmt.Errorf("generating events file: %w", err)
+		}
+	}
+
 	return nil
+}
+
+func extractEvents(folderName, contractName string, allEvents map[string]EventReference) error {
+	abiPath := filepath.Join(".", "abis", folderName, fmt.Sprintf("%s.json", contractName))
+
+	data, err := os.ReadFile(abiPath)
+	if err != nil {
+		return err
+	}
+
+	var abiDef []struct {
+		Type      string       `json:"type"`
+		Name      string       `json:"name"`
+		Inputs    []EventInput `json:"inputs"`
+		Anonymous bool         `json:"anonymous"`
+	}
+	if err := json.Unmarshal(data, &abiDef); err != nil {
+		return err
+	}
+
+	for _, item := range abiDef {
+		if item.Type != "event" || item.Anonymous {
+			continue
+		}
+
+		// Build the written out signature (e.g. Transfer(address,uint256)), then hash it to get the event signature
+		inputTypes := make([]string, len(item.Inputs))
+		for i, input := range item.Inputs {
+			inputTypes[i] = input.Type
+		}
+		eventSig := fmt.Sprintf("%s(%s)", item.Name, strings.Join(inputTypes, ","))
+		signature := fmt.Sprintf("0x%x", crypto.Keccak256([]byte(eventSig)))
+
+		// Create ABI arguments
+		inputs := make([]abi.Argument, len(item.Inputs))
+		for i, input := range item.Inputs {
+			abiType, err := abi.NewType(input.Type, "", nil)
+			if err != nil {
+				return fmt.Errorf("parsing type %s: %w", input.Type, err)
+			}
+			inputs[i] = abi.Argument{
+				Name:    input.Name,
+				Type:    abiType,
+				Indexed: input.Indexed,
+			}
+		}
+
+		allEvents[signature] = EventReference{
+			Name:      item.Name,
+			Signature: signature,
+			Inputs:    inputs,
+			Contract:  fmt.Sprintf("%s/%s", folderName, contractName),
+		}
+
+		fmt.Printf("Added event %s with signature %s from %s/%s\n",
+			item.Name, signature, folderName, contractName)
+	}
+
+	return nil
+}
+
+func generateEventsFile(events map[string]EventReference) error {
+	fmt.Printf("Generating events file with %d events\n", len(events))
+
+	eventsDir := filepath.Join(".", "internal", "bindings", "events")
+	if err := os.MkdirAll(eventsDir, 0755); err != nil {
+		return fmt.Errorf("creating events directory: %w", err)
+	}
+
+	var eventDefs []string
+	for signature, event := range events {
+		inputs := make([]string, len(event.Inputs))
+		for i, input := range event.Inputs {
+			inputs[i] = fmt.Sprintf(`{Name: %q, Type: mustNewType(%q), Indexed: %t}`,
+				input.Name, input.Type.String(), input.Indexed)
+		}
+
+		def := fmt.Sprintf(`    %q: &EventDefinition{
+        Name:      %q,
+        Signature: %q,
+        Inputs:    []abi.Argument{%s},
+        Contract:  %q,
+    },`, signature, event.Name, signature, strings.Join(inputs, ", "), event.Contract)
+		eventDefs = append(eventDefs, def)
+	}
+
+	content := fmt.Sprintf(`// Code generated - DO NOT EDIT.
+	package events
+
+	import (
+		"fmt"
+		"github.com/ethereum/go-ethereum/accounts/abi"
+		"github.com/ethereum/go-ethereum/core/types"
+	)
+
+	type EventDefinition struct {
+		Name      string
+		Signature string
+		Inputs    []abi.Argument
+		Contract  string
+	}
+
+	func mustNewType(t string) abi.Type {
+		typ, err := abi.NewType(t, "", nil)
+		if err != nil {
+			panic(err)
+		}
+		return typ
+	}
+
+	var EventsBySignature = map[string]*EventDefinition{
+	%s
+	}`, strings.Join(eventDefs, "\n"))
+
+	eventsPath := filepath.Join(eventsDir, "main.go")
+	return os.WriteFile(eventsPath, []byte(content), 0644)
 }
