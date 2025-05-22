@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"solver/bindings/plug_socket"
 	"solver/internal/bindings/events"
-	"solver/internal/database/models"
+	"solver/internal/database/types"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -20,7 +20,7 @@ type DecodedOutput struct {
 }
 
 type DecodedTrace struct {
-	Logs   []models.DecodedLog
+	Logs   []types.DecodedLog
 	Output *DecodedOutput
 }
 
@@ -87,12 +87,12 @@ func decodeRevertError(output string) string {
 }
 
 // ExtractAllLogs recursively extracts all logs from a trace or call and their nested calls
-func ExtractAllLogs(node interface{}) []models.Log {
+func ExtractAllLogs(node interface{}) []types.Log {
 	if node == nil {
 		return nil
 	}
 
-	var logs []models.Log
+	var logs []types.Log
 	var calls []Call
 
 	switch n := node.(type) {
@@ -107,7 +107,7 @@ func ExtractAllLogs(node interface{}) []models.Log {
 	}
 
 	// Start with logs from this node
-	allLogs := make([]models.Log, len(logs))
+	allLogs := make([]types.Log, len(logs))
 	copy(allLogs, logs)
 
 	// Recursively get logs from nested calls
@@ -135,13 +135,13 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 
 	// Extract all logs from the trace and its calls
 	allLogs := ExtractAllLogs(trace)
-	decodedLogs := make([]models.DecodedLog, 0, len(allLogs))
+	decodedLogs := make([]types.DecodedLog, 0, len(allLogs))
 
 	for _, log := range allLogs {
 		signature := log.Topics[0].Hex()
 		eventDef := events.EventsBySignature[signature]
 
-		decoded := models.DecodedLog{
+		decoded := types.DecodedLog{
 			Address: log.Address,
 			Raw:     log,
 		}
@@ -151,7 +151,6 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 
 			event := abi.NewEvent(eventDef.Name, eventDef.Name, false, eventDef.Inputs)
 
-			// Decode the arguments
 			args := make(map[string]interface{})
 			if err := event.Inputs.UnpackIntoMap(args, log.Data); err != nil {
 				fmt.Printf("failed to unpack simulation log data: %v\n", err)
@@ -168,10 +167,9 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 				}
 			}
 
-			// Combine indexed and non-indexed parameters
-			params := make([]models.EventParameter, 0)
+			params := make([]types.EventParameter, 0)
 			for k, v := range args {
-				params = append(params, models.EventParameter{
+				params = append(params, types.EventParameter{
 					Name:    k,
 					Type:    getInputType(eventDef.Inputs, k),
 					Value:   v,
@@ -179,7 +177,7 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 				})
 			}
 			for k, v := range indexedArgs {
-				params = append(params, models.EventParameter{
+				params = append(params, types.EventParameter{
 					Name:    k,
 					Type:    getInputType(eventDef.Inputs, k),
 					Value:   v,

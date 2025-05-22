@@ -3,7 +3,7 @@ package simulation
 import (
 	"math/big"
 
-	"solver/internal/database/models"
+	"solver/internal/database/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -23,22 +23,22 @@ type Location struct {
 }
 
 type Call struct {
-	Depth        int          `json:"depth"`
-	From         string       `json:"from"`
-	To           string       `json:"to"`
-	StartIndex   int          `json:"startIndex"`
-	EndIndex     int          `json:"endIndex"`
-	Value        string       `json:"value"`
-	RawInput     string       `json:"rawInput"`
-	RawOutput    string       `json:"rawOutput"`
-	Type         string       `json:"type"`
-	Calls        []Call       `json:"calls"`
-	Logs         []models.Log `json:"logs"`
-	Location     Location     `json:"location"`
-	FunctionName string       `json:"functionName"`
-	Gas          string       `json:"gas"`
-	GasUsed      string       `json:"gasUsed"`
-	Error        string       `json:"error,omitempty"`
+	Depth        int         `json:"depth"`
+	From         string      `json:"from"`
+	To           string      `json:"to"`
+	StartIndex   int         `json:"startIndex"`
+	EndIndex     int         `json:"endIndex"`
+	Value        string      `json:"value"`
+	RawInput     string      `json:"rawInput"`
+	RawOutput    string      `json:"rawOutput"`
+	Type         string      `json:"type"`
+	Calls        []Call      `json:"calls"`
+	Logs         []types.Log `json:"logs"`
+	Location     Location    `json:"location"`
+	FunctionName string      `json:"functionName"`
+	Gas          string      `json:"gas"`
+	GasUsed      string      `json:"gasUsed"`
+	Error        string      `json:"error,omitempty"`
 }
 
 type Trace struct {
@@ -53,5 +53,5 @@ type Trace struct {
 	Output   hexutil.Bytes  `json:"output"`
 	Error    string         `json:"error"`
 	Calls    []Call         `json:"calls"`
-	Logs     []models.Log   `json:"logs"`
+	Logs     []types.Log    `json:"logs"`
 }
