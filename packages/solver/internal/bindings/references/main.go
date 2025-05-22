@@ -29,8 +29,8 @@ var (
 	}
 
 	LogBindings = map[string][]string{
-		"erc":  []string{"20", "721", "1155"},
-		"plug": []string{"lib"},
+		"erc":  {"721", "1155", "20"},
+		"plug": {"lib"},
 	}
 
 	Plug    = plug.Plug
@@ -333,7 +333,17 @@ func extractEvents(folderName, contractName string, allEvents map[string]EventRe
 		eventSig := fmt.Sprintf("%s(%s)", item.Name, strings.Join(inputTypes, ","))
 		signature := fmt.Sprintf("0x%x", crypto.Keccak256([]byte(eventSig)))
 
-		// Create ABI arguments
+		if existing, exists := allEvents[signature]; exists {
+			// Only log if it's actually a different event (not just the same contract type)
+			if existing.Contract != fmt.Sprintf("%s/%s", folderName, contractName) {
+				fmt.Printf("⚠️ Event signature collision detected!\n")
+				fmt.Printf("  Signature: %s\n", signature)
+				fmt.Printf("  New Event: %s from %s/%s\n", eventSig, folderName, contractName)
+				fmt.Printf("  Existing Event: %s from %s\n", existing.Name, existing.Contract)
+				fmt.Printf("  This means these events will be indistinguishable on-chain!\n\n")
+			}
+		}
+
 		inputs := make([]abi.Argument, len(item.Inputs))
 		for i, input := range item.Inputs {
 			abiType, err := abi.NewType(input.Type, "", toArgumentMarshaling(input.Components))

@@ -149,40 +149,38 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 		if eventDef != nil {
 			decoded.Name = eventDef.Name
 
+			// Pre-allocate slice with correct size to maintain order
+			params := make([]types.EventParameter, len(eventDef.Inputs))
+
 			event := abi.NewEvent(eventDef.Name, eventDef.Name, false, eventDef.Inputs)
 
+			// Decode non-indexed args
 			args := make(map[string]interface{})
 			if err := event.Inputs.UnpackIntoMap(args, log.Data); err != nil {
 				fmt.Printf("failed to unpack simulation log data: %v\n", err)
 				continue
 			}
 
-			indexedArgs := make(map[string]interface{})
+			// Process all inputs in original ABI order
+			topicIndex := 1 // Skip first topic (event signature)
 			for i, input := range eventDef.Inputs {
+				param := types.EventParameter{
+					Name:    input.Name,
+					Type:    input.Type.String(),
+					Indexed: input.Indexed,
+				}
+
 				if input.Indexed {
-					// i+1 because first topic is the signature
-					if i+1 < len(log.Topics) {
-						indexedArgs[input.Name] = log.Topics[i+1]
+					if topicIndex < len(log.Topics) {
+						param.Value = log.Topics[topicIndex]
+						topicIndex++
+					}
+				} else {
+					if v, ok := args[input.Name]; ok {
+						param.Value = v
 					}
 				}
-			}
-
-			params := make([]types.EventParameter, 0)
-			for k, v := range args {
-				params = append(params, types.EventParameter{
-					Name:    k,
-					Type:    getInputType(eventDef.Inputs, k),
-					Value:   v,
-					Indexed: false,
-				})
-			}
-			for k, v := range indexedArgs {
-				params = append(params, types.EventParameter{
-					Name:    k,
-					Type:    getInputType(eventDef.Inputs, k),
-					Value:   v,
-					Indexed: true,
-				})
+				params[i] = param // Place parameter in correct position
 			}
 			decoded.Parameters = params
 		}
@@ -194,14 +192,4 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 		Logs:   decodedLogs,
 		Output: output,
 	}, nil
-}
-
-// getInputType returns the type of the input with the given name from the provided inputs
-func getInputType(inputs []abi.Argument, name string) string {
-	for _, input := range inputs {
-		if input.Name == name {
-			return input.Type.String()
-		}
-	}
-	return ""
 }
