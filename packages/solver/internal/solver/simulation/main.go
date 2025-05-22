@@ -97,8 +97,10 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		To:          routerAddress.Hex(),
 		Status:      status,
 		Error:       errorMsg,
+		Logs:        decodedTrace.Logs,
 		Data: models.RunOutputData{
-			Raw: trace.Output,
+			Decoded: decodedTrace,
+			Raw:     trace.Output,
 		},
 	}
 

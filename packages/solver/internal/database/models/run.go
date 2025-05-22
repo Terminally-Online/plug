@@ -10,6 +10,7 @@ import (
 	"solver/internal/utils"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"gorm.io/gorm"
 )
@@ -24,6 +25,7 @@ type Run struct {
 	From            string        `json:"-" gorm:"type:text"`
 	To              string        `json:"-" gorm:"type:text"`
 	Value           *types.BigInt `json:"-" gorm:"type:bigint"`
+	Logs            []DecodedLog  `json:"logs,omitempty" gorm:"type:jsonb;serializer:json"`
 	Data            RunOutputData `json:"-" gorm:"type:jsonb"`
 	TransactionHash *string       `json:"transactionHash,omitempty" gorm:"type:text"`
 
@@ -42,7 +44,28 @@ type RunOutputData struct {
 	Decoded any           `json:"decoded,omitempty" gorm:"type:jsonb"`
 }
 
-// Add these methods to the RunOutputData type
+type Log struct {
+	Address common.Address `json:"address"`
+	Topics  []common.Hash  `json:"topics"`
+	Data    hexutil.Bytes  `json:"data"`
+}
+
+type EventParameter struct {
+	Name    string      `json:"name"`
+	Type    string      `json:"type"`
+	Indexed bool        `json:"indexed"`
+	Value   interface{} `json:"value"`
+}
+
+type DecodedLog struct {
+	Address    common.Address   `json:"address"`
+	Name       string           `json:"name"`
+	Parameters []EventParameter `json:"parameters"`
+	Raw        Log              `json:"raw"`
+}
+
+type DecodedLogs []DecodedLog
+
 func (r *RunOutputData) Scan(value any) error {
 	bytes, ok := value.([]byte)
 	if !ok {
@@ -53,6 +76,26 @@ func (r *RunOutputData) Scan(value any) error {
 
 func (r RunOutputData) Value() (driver.Value, error) {
 	return json.Marshal(r)
+}
+
+func (l DecodedLogs) Value() (driver.Value, error) {
+	val, err := json.Marshal(l)
+	if err != nil {
+		fmt.Printf("Error marshaling logs: %v\n", err)
+		return nil, err
+	}
+	return val, nil
+}
+
+func (l *DecodedLogs) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("expected []byte got %T", value)
+	}
+	return json.Unmarshal(bytes, l)
 }
 
 func (r *Run) BeforeCreate(tx *gorm.DB) error {

@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"solver/bindings/plug_socket"
 	"solver/internal/bindings/events"
+	"solver/internal/database/models"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -19,7 +20,7 @@ type DecodedOutput struct {
 }
 
 type DecodedTrace struct {
-	Logs   []DecodedLog
+	Logs   []models.DecodedLog
 	Output *DecodedOutput
 }
 
@@ -35,7 +36,6 @@ func FindRevertError(trace *Trace) (string, string) {
 	return "", ""
 }
 
-// TODO MASON: How can I programatically fetch the ABI by contract address in our repo?
 func decodeRevertError(output string) string {
 	// If output is less than 4 bytes (8 hex chars + "0x"), it's not a valid error
 	if len(output) < 10 {
@@ -87,12 +87,12 @@ func decodeRevertError(output string) string {
 }
 
 // ExtractAllLogs recursively extracts all logs from a trace or call and their nested calls
-func ExtractAllLogs(node interface{}) []Log {
+func ExtractAllLogs(node interface{}) []models.Log {
 	if node == nil {
 		return nil
 	}
 
-	var logs []Log
+	var logs []models.Log
 	var calls []Call
 
 	switch n := node.(type) {
@@ -107,7 +107,7 @@ func ExtractAllLogs(node interface{}) []Log {
 	}
 
 	// Start with logs from this node
-	allLogs := make([]Log, len(logs))
+	allLogs := make([]models.Log, len(logs))
 	copy(allLogs, logs)
 
 	// Recursively get logs from nested calls
@@ -135,28 +135,58 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 
 	// Extract all logs from the trace and its calls
 	allLogs := ExtractAllLogs(trace)
-	decodedLogs := make([]DecodedLog, 0, len(allLogs))
+	decodedLogs := make([]models.DecodedLog, 0, len(allLogs))
 
-	// Decode each log using the ABI provider
 	for _, log := range allLogs {
 		signature := log.Topics[0].Hex()
-		fmt.Printf("Signature: %s\n", signature)
 		eventDef := events.EventsBySignature[signature]
 
-		decoded := DecodedLog{
+		decoded := models.DecodedLog{
 			Address: log.Address,
 			Raw:     log,
 		}
 
 		if eventDef != nil {
-			// We found a matching event definition
-			decoded.Name = &eventDef.Name
+			decoded.Name = eventDef.Name
+
+			event := abi.NewEvent(eventDef.Name, eventDef.Name, false, eventDef.Inputs)
 
 			// Decode the arguments
-			if args, err := DecodeLog(&log); err == nil {
-				fmt.Printf("Decoded log: %+v\n", args)
-				// decoded.Parameters = args
+			args := make(map[string]interface{})
+			if err := event.Inputs.UnpackIntoMap(args, log.Data); err != nil {
+				fmt.Printf("failed to unpack simulation log data: %v\n", err)
+				continue
 			}
+
+			indexedArgs := make(map[string]interface{})
+			for i, input := range eventDef.Inputs {
+				if input.Indexed {
+					// i+1 because first topic is the signature
+					if i+1 < len(log.Topics) {
+						indexedArgs[input.Name] = log.Topics[i+1]
+					}
+				}
+			}
+
+			// Combine indexed and non-indexed parameters
+			params := make([]models.EventParameter, 0)
+			for k, v := range args {
+				params = append(params, models.EventParameter{
+					Name:    k,
+					Type:    getInputType(eventDef.Inputs, k),
+					Value:   v,
+					Indexed: false,
+				})
+			}
+			for k, v := range indexedArgs {
+				params = append(params, models.EventParameter{
+					Name:    k,
+					Type:    getInputType(eventDef.Inputs, k),
+					Value:   v,
+					Indexed: true,
+				})
+			}
+			decoded.Parameters = params
 		}
 
 		decodedLogs = append(decodedLogs, decoded)
@@ -168,41 +198,12 @@ func DecodeTraceResults(trace *Trace) (*DecodedTrace, error) {
 	}, nil
 }
 
-func DecodeLog(log *Log) (map[string]interface{}, error) {
-	if len(log.Topics) == 0 {
-		return nil, fmt.Errorf("log has no topics")
-	}
-
-	signature := log.Topics[0].Hex()
-	def, exists := events.EventsBySignature[signature]
-	if !exists {
-		return nil, fmt.Errorf("unknown event signature: %s", signature)
-	}
-
-	event := abi.Event{
-		Name:   def.Name,
-		Inputs: def.Inputs,
-	}
-
-	decoded := make(map[string]interface{})
-
-	// Handle non-indexed parameters (data)
-	if len(log.Data) > 0 {
-		if err := event.Inputs.UnpackIntoMap(decoded, log.Data); err != nil {
-			return nil, fmt.Errorf("unpacking data: %w", err)
+// getInputType returns the type of the input with the given name from the provided inputs
+func getInputType(inputs []abi.Argument, name string) string {
+	for _, input := range inputs {
+		if input.Name == name {
+			return input.Type.String()
 		}
 	}
-
-	// Handle indexed parameters (topics)
-	indexedInputs := 0
-	for _, input := range def.Inputs {
-		if input.Indexed {
-			if indexedInputs+1 < len(log.Topics) { // +1 because first topic is signature
-				decoded[input.Name] = log.Topics[indexedInputs+1] // +1 to skip signature
-				indexedInputs++
-			}
-		}
-	}
-
-	return decoded, nil
+	return ""
 }
